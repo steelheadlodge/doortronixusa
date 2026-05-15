@@ -257,6 +257,10 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
           <span class="hint">Standard lead time: 3–4 weeks from Malakoff, TX</span>
         </div>
         <div class="field">
+          <label>PO / Reference #</label>
+          <input type="text" name="poNumber" id="f_po" placeholder="Your PO or job reference number">
+        </div>
+        <div class="field full">
           <label>Number of Door Openings <span class="req">*</span></label>
           <select name="quantity" id="f_qty" required>
             <option value="">— Quantity —</option>
@@ -360,7 +364,30 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
             <input type="radio" name="transom" id="tr_yes" value="yes">
             <label for="tr_yes">With Transom (+$250)</label>
           </div>
-          <span class="hint">Max package height with transom: 11'6"</span>
+          <span class="hint">Standard header height 7'6"–8'0". Max with transom: 11'6"</span>
+        </div>
+
+        <!-- FTTH (only shown when transom selected) -->
+        <div class="field" id="ftth-field" style="display:none;">
+          <label>FTTH — Floor to Top of Header</label>
+          <div class="ft-in-group">
+            <div class="field">
+              <select id="f_ftthft" name="ftthFt">
+                <option value="">Ft —</option>
+                <option value="9">9'</option><option value="10">10'</option>
+                <option value="11">11'</option>
+              </select>
+            </div>
+            <div class="field">
+              <select id="f_ftthin" name="ftthIn">
+                <option value="0">0"</option><option value="1">1"</option><option value="2">2"</option>
+                <option value="3">3"</option><option value="4">4"</option><option value="5">5"</option>
+                <option value="6">6"</option><option value="7">7"</option><option value="8">8"</option>
+                <option value="9">9"</option><option value="10">10"</option><option value="11">11"</option>
+              </select>
+            </div>
+          </div>
+          <span class="hint">Dimension from finished floor to top of header/frame. Required for transom orders.</span>
         </div>
 
         <!-- Frame Width -->
@@ -428,8 +455,96 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
         </div>
       </div>
 
-      <!-- ── OPTIONS & UPGRADES ── -->
-      <div class="section-header">④ Options &amp; Upgrades</div>
+      <!-- ── DOOR SPECIFICATIONS ── -->
+      <div class="section-header">④ Door Specifications</div>
+
+      <div class="form-grid">
+        <!-- Glass type -->
+        <div class="field full">
+          <label>Glass / Glazing Type</label>
+          <div class="chip-group">
+            <input type="radio" name="glassType" id="gt_clear" value="Clear Tempered" checked>
+            <label for="gt_clear">Clear Tempered (std)</label>
+            <input type="radio" name="glassType" id="gt_lowe" value="Low-E Tempered">
+            <label for="gt_lowe">Low-E Tempered</label>
+            <input type="radio" name="glassType" id="gt_tint" value="Tinted Tempered">
+            <label for="gt_tint">Tinted Tempered</label>
+            <input type="radio" name="glassType" id="gt_frost" value="Frosted">
+            <label for="gt_frost">Frosted</label>
+          </div>
+          <span class="hint">Glass is <strong>not included</strong> in pricing — specify type for glazing coordination. Lead-lined available, specify in notes.</span>
+        </div>
+
+        <!-- Stile width -->
+        <div class="field">
+          <label>Stile Width</label>
+          <div class="chip-group">
+            <input type="radio" name="stileWidth" id="sw_narrow" value="narrow" checked>
+            <label for="sw_narrow">Narrow (std)</label>
+            <input type="radio" name="stileWidth" id="sw_medium" value="medium">
+            <label for="sw_medium">Medium 3-3/4" (+$180/panel)</label>
+          </div>
+        </div>
+
+        <!-- Bottom rail -->
+        <div class="field">
+          <label>Bottom Rail</label>
+          <div class="chip-group">
+            <input type="radio" name="bottomRail" id="br_std" value="std" checked>
+            <label for="br_std">3-1/2" (std)</label>
+            <input type="radio" name="bottomRail" id="br_6" value="6in">
+            <label for="br_6">6" (+$80/panel)</label>
+            <input type="radio" name="bottomRail" id="br_10" value="10in">
+            <label for="br_10">10" (+$160/panel)</label>
+          </div>
+        </div>
+
+        <!-- Threshold -->
+        <div class="field">
+          <label>Threshold</label>
+          <div class="chip-group">
+            <input type="radio" name="threshold" id="th_std" value="Standard 1/2&quot;" checked>
+            <label for="th_std">1/2" Standard</label>
+            <input type="radio" name="threshold" id="th_none" value="No Threshold">
+            <label for="th_none">No Threshold</label>
+            <input type="radio" name="threshold" id="th_rec" value="Recessed (call)">
+            <label for="th_rec">Recessed (call)</label>
+          </div>
+        </div>
+
+        <!-- Sensor -->
+        <div class="field">
+          <label>Activation Sensor</label>
+          <div class="chip-group">
+            <input type="radio" name="sensor" id="sn_std" value="Standard Optex (incl.)" checked>
+            <label for="sn_std">Standard (incl.)</label>
+            <input type="radio" name="sensor" id="sn_optex" value="Optex OA-203">
+            <label for="sn_optex">Optex OA-203 (+$220)</label>
+            <input type="radio" name="sensor" id="sn_bea" value="BEA Wizard">
+            <label for="sn_bea">BEA Wizard (+$130)</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Alarm Contacts -->
+      <div class="addon-section-label">Alarm Contacts / Monitoring</div>
+      <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px;">
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;border:1.5px solid var(--border);border-radius:20px;padding:5px 12px;user-select:none;" id="ac_breakout_lbl">
+          <input type="checkbox" name="alarmBreakout" id="ac_breakout" style="accent-color:var(--blue);">Monitor Breakout
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;border:1.5px solid var(--border);border-radius:20px;padding:5px 12px;user-select:none;" id="ac_closed_lbl">
+          <input type="checkbox" name="alarmClosed" id="ac_closed" style="accent-color:var(--blue);">Monitor Fully Closed
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;border:1.5px solid var(--border);border-radius:20px;padding:5px 12px;user-select:none;" id="ac_open_lbl">
+          <input type="checkbox" name="alarmOpen" id="ac_open" style="accent-color:var(--blue);">Monitor Fully Open
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;border:1.5px solid var(--border);border-radius:20px;padding:5px 12px;user-select:none;">
+          <input type="checkbox" name="alarmLock" id="ac_lock" style="accent-color:var(--blue);">Monitor Electric Lock
+        </label>
+      </div>
+
+      <!-- ── HARDWARE & OPTIONS ── -->
+      <div class="section-header">⑤ Hardware &amp; Options</div>
       <p style="font-size:12px;color:var(--mgray);margin-bottom:12px;">All prices are net contractor pricing. Check items to add to your estimate.</p>
 
       <div class="addon-section-label">Hardware &amp; Locking</div>
@@ -522,52 +637,7 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
         </div>
       </div>
 
-      <div class="addon-section-label">Frame &amp; Glazing Upgrades</div>
-
-      <div id="addon_medium_stiles" class="addon-item" data-price="180" data-unit="/panel" data-perpanel="true" onclick="toggleAddon(this)">
-        <div class="addon-check-visual"></div>
-        <div class="addon-label-wrap">
-          <div class="al">Medium Stiles (3-3/4")</div>
-          <div class="ad">For doors and sidelites — includes 6" bottom rail</div>
-        </div>
-        <div class="addon-price-tag">$180/panel</div>
-        <div class="addon-qty-wrap">
-          <label>Panels:</label>
-          <select onclick="event.stopPropagation()" onchange="calcPrice()">
-            <option>1</option><option>2</option><option>3</option><option>4</option>
-          </select>
-        </div>
-      </div>
-
-      <div id="addon_rails_6in" class="addon-item" data-price="80" data-unit="ea" onclick="toggleAddon(this)">
-        <div class="addon-check-visual"></div>
-        <div class="addon-label-wrap">
-          <div class="al">6" Bottom Rails</div>
-          <div class="ad">4" standard — upgrade per panel</div>
-        </div>
-        <div class="addon-price-tag">$80 ea</div>
-        <div class="addon-qty-wrap">
-          <label>Qty:</label>
-          <select onclick="event.stopPropagation()" onchange="calcPrice()">
-            <option>1</option><option>2</option><option>3</option><option>4</option>
-          </select>
-        </div>
-      </div>
-
-      <div id="addon_rails_10in" class="addon-item" data-price="160" data-unit="ea" onclick="toggleAddon(this)">
-        <div class="addon-check-visual"></div>
-        <div class="addon-label-wrap">
-          <div class="al">10" Bottom Rails</div>
-          <div class="ad">Per panel</div>
-        </div>
-        <div class="addon-price-tag">$160 ea</div>
-        <div class="addon-qty-wrap">
-          <label>Qty:</label>
-          <select onclick="event.stopPropagation()" onchange="calcPrice()">
-            <option>1</option><option>2</option><option>3</option><option>4</option>
-          </select>
-        </div>
-      </div>
+      <div class="addon-section-label">Frame Extras</div>
 
       <div id="addon_muntin_2in" class="addon-item" data-price="150" data-unit="ea" onclick="toggleAddon(this)">
         <div class="addon-check-visual"></div>
@@ -599,45 +669,16 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
         </div>
       </div>
 
-      <div class="addon-section-label">Safety &amp; Sensors</div>
+      <div class="addon-section-label">Safety &amp; Electrical</div>
 
       <div id="addon_battery" class="addon-item" data-price="2200" data-unit="ea" onclick="toggleAddon(this)">
         <div class="addon-check-visual"></div>
         <div class="addon-label-wrap">
-          <div class="al">Battery Backup</div>
+          <div class="al">Battery Backup (UPS)</div>
           <div class="ad">Concealed within header — maintains one cycle on power loss</div>
         </div>
         <div class="addon-price-tag">$2,200</div>
         <div class="addon-qty-wrap"></div>
-      </div>
-
-      <div id="addon_optex" class="addon-item" data-price="220" data-unit="ea" onclick="toggleAddon(this)">
-        <div class="addon-check-visual"></div>
-        <div class="addon-label-wrap">
-          <div class="al">Optex OA-203 Sidelite Presence Sensor</div>
-        </div>
-        <div class="addon-price-tag">$220 ea</div>
-        <div class="addon-qty-wrap">
-          <label>Qty:</label>
-          <select onclick="event.stopPropagation()" onchange="calcPrice()">
-            <option>1</option><option>2</option><option>3</option><option>4</option>
-          </select>
-        </div>
-      </div>
-
-      <div id="addon_bea" class="addon-item" data-price="130" data-unit="ea" onclick="toggleAddon(this)">
-        <div class="addon-check-visual"></div>
-        <div class="addon-label-wrap">
-          <div class="al">BEA Wizard Sensor</div>
-          <div class="ad">Substitute for standard Optex sensors</div>
-        </div>
-        <div class="addon-price-tag">$130 ea</div>
-        <div class="addon-qty-wrap">
-          <label>Qty:</label>
-          <select onclick="event.stopPropagation()" onchange="calcPrice()">
-            <option>1</option><option>2</option><option>3</option><option>4</option>
-          </select>
-        </div>
       </div>
 
       <div id="addon_nose_casters" class="addon-item" data-price="200" data-unit="ea" onclick="toggleAddon(this)">
@@ -651,14 +692,14 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
       </div>
 
       <!-- Notes -->
-      <div class="section-header">⑤ Notes &amp; Special Requirements</div>
+      <div class="section-header">⑥ Notes &amp; Special Requirements</div>
       <div class="field">
         <textarea name="notes" id="f_notes" placeholder="Access control requirements, lead-lined panels, unusual site conditions, installation type (new construction / retrofit), emergency egress requirements, or anything else we should know..."></textarea>
       </div>
 
       <!-- Submit -->
       <div class="submit-section">
-        <p>Prices shown are net contractor pricing and do not include freight, installation, or applicable taxes. Doortronix will confirm your quote with exact freight within 4 business hours. All quotes are obligation-free.</p>
+        <p>Prices shown are net contractor pricing and do not include glass, freight, installation, or applicable taxes. Doortronix will confirm your quote with exact freight within 4 business hours. All quotes are obligation-free.</p>
         <button type="submit" class="btn-submit">Submit Quote Request →</button>
       </div>
 
@@ -789,6 +830,13 @@ function toggleAddon(el) {
   calcPrice();
 }
 
+// ── FTTH field visibility ───────────────────────────────────────────
+function updateFTTH() {
+  const hasTransom = rv('transom') === 'yes';
+  const f = document.getElementById('ftth-field');
+  if (f) f.style.display = hasTransom ? '' : 'none';
+}
+
 // ── FBO-only add-on visibility ──────────────────────────────────────
 function updateAddonVisibility() {
   const cfg = getConfig();
@@ -824,6 +872,30 @@ function calcPrice() {
   if (rv('transom') === 'yes') {
     total += cfg.transom;
     lines.push({ label: 'Transom', amount: cfg.transom });
+  }
+
+  // Stile / rail / sensor upcharges (panels = active + sidelite panels)
+  const totalPanels = cfg.panels * 2;
+  if (rv('stileWidth') === 'medium') {
+    const amt = 180 * totalPanels;
+    total += amt;
+    lines.push({ label: `Medium Stiles ×${totalPanels} panels`, amount: amt });
+  }
+  const railVal = rv('bottomRail');
+  if (railVal === '6in') {
+    const amt = 80 * totalPanels;
+    total += amt;
+    lines.push({ label: `6" Bottom Rails ×${totalPanels} panels`, amount: amt });
+  } else if (railVal === '10in') {
+    const amt = 160 * totalPanels;
+    total += amt;
+    lines.push({ label: `10" Bottom Rails ×${totalPanels} panels`, amount: amt });
+  }
+  const sensorVal = rv('sensor');
+  if (sensorVal === 'Optex OA-203') {
+    total += 220; lines.push({ label: 'Optex OA-203 Sensor', amount: 220 });
+  } else if (sensorVal === 'BEA Wizard') {
+    total += 130; lines.push({ label: 'BEA Wizard Sensor', amount: 130 });
   }
 
   // Width adjustment
@@ -881,7 +953,7 @@ function calcPrice() {
     html += `<div class="price-line"><span class="pl">× ${qty} openings</span><span class="pv">${fmt(grandTotal)}</span></div>`;
   }
   html += `<div class="price-total-row"><span class="pt-label">Estimated Total</span><span class="pt-value">${fmt(grandTotal)}</span></div>`;
-  html += `<div class="price-note">Net contractor pricing. Does not include freight, installation, or taxes. Doortronix will confirm final pricing and freight within 4 business hours.</div>`;
+  html += `<div class="price-note">Net contractor pricing. Does not include glass, freight, installation, or taxes. Doortronix will confirm final pricing and freight within 4 business hours.</div>`;
   body.innerHTML = html;
 
   // Store for confirmation
@@ -891,14 +963,27 @@ function calcPrice() {
 // ── Spec summary ────────────────────────────────────────────────────
 function updateSpecSummary() {
   const cfg = getConfig();
+  const ftthStr = rv('transom') === 'yes' ? (() => { const ft=fv('f_ftthft'),i=fv('f_ftthin')||'0'; return ft ? `${ft}'${i==='0'?'':i+'"'}` : '—'; })() : null;
+  const alarmContacts = [
+    document.getElementById('ac_breakout')?.checked ? 'Monitor Breakout' : '',
+    document.getElementById('ac_closed')?.checked ? 'Monitor Fully Closed' : '',
+    document.getElementById('ac_open')?.checked ? 'Monitor Fully Open' : '',
+    document.getElementById('ac_lock')?.checked ? 'Monitor Electric Lock' : '',
+  ].filter(Boolean).join(', ') || 'None';
   const specs = [
     ['Configuration', cfg ? cfg.label : '—'],
     ['Code', cfg ? cfg.code : '—'],
-    ['Glazing', rv('glazing') || '—'],
-    ['Transom', rv('transom') === 'yes' ? 'Yes (+$250)' : 'No'],
+    ['Finish', rv('glazing') || '—'],
+    ['Glass Type', rv('glassType') || '—'],
+    ['Stile Width', rv('stileWidth') === 'medium' ? 'Medium 3-3/4"' : 'Narrow (std)'],
+    ['Bottom Rail', rv('bottomRail') === '6in' ? '6"' : rv('bottomRail') === '10in' ? '10"' : '3-1/2" (std)'],
+    ['Threshold', rv('threshold') || '—'],
+    ['Sensor', rv('sensor') || '—'],
+    ['Transom', rv('transom') === 'yes' ? `Yes (+$250)${ftthStr ? ' — FTTH: ' + ftthStr : ''}` : 'No'],
     ['Frame Width', getWidthStr()],
     ['Frame Height', getHeightStr()],
     ['Net Opening', getOpenStr() || '—'],
+    ['Alarm Contacts', alarmContacts],
     ['Quantity', fv('f_qty') || '—'],
   ];
   document.getElementById('spec-summary').innerHTML = specs.map(([k,v]) =>
@@ -1098,6 +1183,7 @@ function drawDoor(svgId, vW, vH, isConf) {
 
 // ── Update all ───────────────────────────────────────────────────────
 function updateAll() {
+  updateFTTH();
   calcPrice();
   updateSpecSummary();
   drawDoor('door-svg', 400, 300, false);
@@ -1128,15 +1214,30 @@ document.getElementById('quoteForm').addEventListener('submit', async function(e
   });
 
   const pd = window._priceData;
+  const ftthFt = fv('f_ftthft'), ftthIn = fv('f_ftthin') || '0';
+  const ftthStr2 = ftthFt ? `${ftthFt}'${ftthIn === '0' ? '' : ftthIn + '"'}` : '';
+  const alarmContacts2 = [
+    document.getElementById('ac_breakout')?.checked ? 'Monitor Breakout' : '',
+    document.getElementById('ac_closed')?.checked ? 'Monitor Fully Closed' : '',
+    document.getElementById('ac_open')?.checked ? 'Monitor Fully Open' : '',
+    document.getElementById('ac_lock')?.checked ? 'Monitor Electric Lock' : '',
+  ].filter(Boolean).join(', ') || 'None';
   const data = {
     name: fv('f_name'), company: fv('f_company'), role: fv('f_role'),
     phone: fv('f_phone'), email: fv('f_email'),
     projectName: fv('f_project'), location: fv('f_location'),
-    shipDate: fv('f_shipdate'), quantity: fv('f_qty'),
+    poNumber: fv('f_po'), shipDate: fv('f_shipdate'), quantity: fv('f_qty'),
     configuration: cfg ? cfg.label + ' (' + cfg.code + ')' : rv('config'),
-    glazing: rv('glazing'), transom: rv('transom') === 'yes' ? 'Yes' : 'No',
+    frameFinish: rv('glazing'), glassType: rv('glassType'),
+    stileWidth: rv('stileWidth') === 'medium' ? 'Medium 3-3/4"' : 'Narrow (std)',
+    bottomRail: rv('bottomRail') === '6in' ? '6"' : rv('bottomRail') === '10in' ? '10"' : '3-1/2" (std)',
+    threshold: rv('threshold'),
+    sensor: rv('sensor'),
+    transom: rv('transom') === 'yes' ? 'Yes' : 'No',
+    ftth: ftthStr2 || 'N/A',
     frameWidth: getWidthStr(), frameHeight: getHeightStr(),
     netOpening: getOpenStr(),
+    alarmContacts: alarmContacts2,
     addons: addons.join(', ') || 'None',
     estimatedTotal: pd ? '$' + pd.grandTotal.toLocaleString() : 'See notes',
     notes: fv('f_notes'),
@@ -1170,9 +1271,14 @@ function showConf(data, pd) {
     .map(([k,v])=>`<div class="conf-spec-row"><span class="ck">${k}</span><span class="cv">${v||'—'}</span></div>`).join('');
 
   const doorSpecs = [
-    ['Configuration',data.configuration],['Frame Width',data.frameWidth],
-    ['Frame Height',data.frameHeight],['Net Opening',data.netOpening||'—'],
-    ['Glazing',data.glazing],['Transom',data.transom],
+    ['Configuration',data.configuration],
+    ['Frame Finish',data.frameFinish],['Glass Type',data.glassType],
+    ['Stile Width',data.stileWidth],['Bottom Rail',data.bottomRail],
+    ['Threshold',data.threshold],['Sensor',data.sensor],
+    ['Transom',data.transom + (data.ftth && data.ftth !== 'N/A' ? ' — FTTH: '+data.ftth : '')],
+    ['Frame Width',data.frameWidth],['Frame Height',data.frameHeight],
+    ['Net Opening',data.netOpening||'—'],
+    ['Alarm Contacts',data.alarmContacts],
     ['Add-ons',data.addons],
   ];
   document.getElementById('conf-door').innerHTML = doorSpecs
@@ -1186,7 +1292,7 @@ function showConf(data, pd) {
       ph += `<div class="conf-price-line"><span class="cpk">× ${pd.qty} openings</span><span class="cpv">= $${pd.grandTotal.toLocaleString()}</span></div>`;
     }
     ph += `<div class="conf-price-total"><span>Estimated Total</span><span>$${pd.grandTotal.toLocaleString()}</span></div>`;
-    ph += `<p style="font-size:10px;color:var(--mgray);margin-top:8px;">Net contractor pricing. Freight, installation &amp; taxes not included. Subject to final review by Doortronix.</p>`;
+    ph += `<p style="font-size:10px;color:var(--mgray);margin-top:8px;">Net contractor pricing. Glass, freight, installation &amp; taxes not included. Subject to final review by Doortronix.</p>`;
     document.getElementById('conf-price-box').innerHTML = ph;
   }
 
