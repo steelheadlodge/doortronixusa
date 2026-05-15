@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Request a Quote — Doortronix USA</title>
+<style>
+  /* ── Reset & base ─────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, Helvetica, sans-serif; font-size: 14px;
+         background: #F0F4F8; color: #111; min-height: 100vh; }
+
+  /* ── Brand colors ─────────────────────────────────────────── */
+  :root {
+    --blue:   #1B4F8A;
+    --dblue:  #163F6E;
+    --orange: #E87722;
+    --lgray:  #F2F4F7;
+    --mgray:  #6B7280;
+    --border: #D0D5DD;
+    --white:  #FFFFFF;
+    --green:  #166534;
+    --lgreen: #DCFCE7;
+    --red:    #DC2626;
+  }
+
+  /* ── Top bar ──────────────────────────────────────────────── */
+  .topbar {
+    background: var(--blue);
+    color: #fff;
+    padding: 14px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 8px rgba(0,0,0,.25);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .topbar .brand { font-size: 20px; font-weight: 700; letter-spacing: .5px; }
+  .topbar .brand span { color: var(--orange); }
+  .topbar .sub { font-size: 12px; color: #B8CCE4; }
+  .topbar .tagline { font-size: 12px; color: #B8CCE4; text-align: right; }
+
+  /* ── Layout ───────────────────────────────────────────────── */
+  .layout {
+    display: grid;
+    grid-template-columns: 1fr 420px;
+    gap: 0;
+    max-width: 1300px;
+    margin: 0 auto;
+    min-height: calc(100vh - 56px);
+  }
+
+  /* ── Form panel ───────────────────────────────────────────── */
+  .form-panel {
+    background: var(--white);
+    padding: 32px 36px 48px;
+    overflow-y: auto;
+    border-right: 1px solid var(--border);
+  }
+  .form-panel h1 {
+    font-size: 22px; font-weight: 700; color: var(--blue);
+    margin-bottom: 4px;
+  }
+  .form-panel .intro {
+    font-size: 13px; color: var(--mgray); margin-bottom: 28px;
+    line-height: 1.5;
+  }
+  .trust-bar {
+    display: flex; flex-wrap: wrap; gap: 10px;
+    margin-bottom: 28px;
+  }
+  .trust-chip {
+    background: var(--lgreen); color: var(--green);
+    border: 1px solid #BBF7D0;
+    border-radius: 20px; padding: 4px 12px;
+    font-size: 11px; font-weight: 700;
+  }
+
+  /* ── Section headers ──────────────────────────────────────── */
+  .section-header {
+    background: var(--blue); color: #fff;
+    padding: 8px 14px; border-radius: 6px;
+    font-size: 12px; font-weight: 700; letter-spacing: .6px;
+    text-transform: uppercase; margin: 28px 0 16px;
+  }
+
+  /* ── Form grid ────────────────────────────────────────────── */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .form-grid .full { grid-column: 1 / -1; }
+
+  .field { display: flex; flex-direction: column; gap: 5px; }
+  .field label {
+    font-size: 12px; font-weight: 700; color: #374151;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .field label .req { color: var(--red); font-size: 13px; }
+  .field input, .field select, .field textarea {
+    padding: 9px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    font-size: 13px;
+    font-family: Arial, sans-serif;
+    color: #111;
+    background: #fff;
+    transition: border-color .15s, box-shadow .15s;
+    width: 100%;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus {
+    outline: none;
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(27,79,138,.12);
+  }
+  .field textarea { resize: vertical; min-height: 80px; }
+  .field .hint { font-size: 11px; color: var(--mgray); margin-top: 2px; }
+
+  /* ── Option chips (for finish, glazing, activation) ─────── */
+  .chip-group { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip-group input[type=radio], .chip-group input[type=checkbox] { display: none; }
+  .chip-group label {
+    border: 1.5px solid var(--border);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--mgray);
+    cursor: pointer;
+    transition: all .15s;
+    user-select: none;
+  }
+  .chip-group input:checked + label {
+    border-color: var(--blue);
+    background: var(--blue);
+    color: #fff;
+  }
+  .chip-group input[type=checkbox]:checked + label {
+    border-color: var(--orange);
+    background: var(--orange);
+    color: #fff;
+  }
+  .chip-group label:hover { border-color: var(--blue); color: var(--blue); }
+
+  /* ── Size row ─────────────────────────────────────────────── */
+  .size-row { display: grid; grid-template-columns: 1fr 24px 1fr; align-items: center; gap: 8px; }
+  .size-sep { text-align: center; color: var(--mgray); font-size: 16px; }
+
+  /* ── Submit ───────────────────────────────────────────────── */
+  .submit-section {
+    margin-top: 36px;
+    padding-top: 28px;
+    border-top: 2px solid var(--lgray);
+  }
+  .submit-section p {
+    font-size: 12px; color: var(--mgray); margin-bottom: 16px; line-height: 1.5;
+  }
+  .btn-submit {
+    width: 100%;
+    padding: 16px;
+    background: var(--orange);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .15s, transform .1s;
+    letter-spacing: .3px;
+  }
+  .btn-submit:hover { background: #CF6A1A; }
+  .btn-submit:active { transform: scale(.99); }
+
+  /* ── Preview panel ────────────────────────────────────────── */
+  .preview-panel {
+    background: var(--lgray);
+    padding: 24px 20px;
+    position: sticky;
+    top: 56px;
+    height: calc(100vh - 56px);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .preview-title {
+    font-size: 13px; font-weight: 700; color: var(--blue);
+    text-transform: uppercase; letter-spacing: .6px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .preview-title::after {
+    content: ""; flex: 1; height: 2px; background: var(--blue); opacity: .2;
+  }
+  #drawing-wrap {
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+  }
+  #door-svg { width: 100%; height: auto; display: block; }
+
+  /* ── Spec summary card ───────────────────────────────────── */
+  .spec-card {
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+  }
+  .spec-card h3 { font-size: 12px; font-weight: 700; color: var(--blue);
+    text-transform: uppercase; letter-spacing: .5px; margin-bottom: 12px; }
+  .spec-row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 5px 0; border-bottom: 1px solid var(--lgray);
+    font-size: 12px;
+  }
+  .spec-row:last-child { border-bottom: none; }
+  .spec-row .sk { color: var(--mgray); }
+  .spec-row .sv { font-weight: 700; color: #111; text-align: right; max-width: 55%; }
+
+  /* ── Confirmation overlay ────────────────────────────────── */
+  #confirmation {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(10,30,60,.7);
+    z-index: 200;
+    overflow-y: auto;
+    padding: 32px 16px;
+  }
+  .conf-box {
+    background: #fff;
+    max-width: 860px;
+    margin: 0 auto;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,.3);
+  }
+  .conf-header {
+    background: var(--blue);
+    color: #fff;
+    padding: 24px 32px;
+    display: flex; justify-content: space-between; align-items: flex-start;
+  }
+  .conf-header h2 { font-size: 20px; margin-bottom: 4px; }
+  .conf-header p { font-size: 13px; color: #B8CCE4; }
+  .conf-header .conf-ref { font-size: 12px; color: #B8CCE4; text-align: right; }
+  .conf-body { padding: 32px; }
+  .conf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+  .conf-section h3 {
+    font-size: 11px; font-weight: 700; color: var(--blue);
+    text-transform: uppercase; letter-spacing: .6px;
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid var(--blue);
+  }
+  .conf-spec-row {
+    display: flex; justify-content: space-between;
+    padding: 5px 0; border-bottom: 1px solid #F0F4F8;
+    font-size: 12px;
+  }
+  .conf-spec-row .ck { color: var(--mgray); }
+  .conf-spec-row .cv { font-weight: 700; }
+  #conf-svg-wrap { margin-top: 24px; }
+  #conf-svg-wrap h3 {
+    font-size: 11px; font-weight: 700; color: var(--blue);
+    text-transform: uppercase; letter-spacing: .6px;
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid var(--blue);
+  }
+  #conf-svg { width: 100%; height: auto; border: 1px solid var(--border); border-radius: 6px; }
+  .conf-footer {
+    background: var(--lgray);
+    padding: 20px 32px;
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 12px; flex-wrap: wrap;
+  }
+  .conf-footer p { font-size: 12px; color: var(--mgray); }
+  .btn-print {
+    padding: 10px 24px; background: var(--blue); color: #fff;
+    border: none; border-radius: 6px; font-size: 13px; font-weight: 700;
+    cursor: pointer;
+  }
+  .btn-print:hover { background: var(--dblue); }
+  .btn-close {
+    padding: 10px 24px; background: #fff; color: var(--mgray);
+    border: 1.5px solid var(--border); border-radius: 6px;
+    font-size: 13px; font-weight: 700; cursor: pointer;
+  }
+  .btn-close:hover { border-color: var(--red); color: var(--red); }
+
+  .orange-bar {
+    height: 4px; background: var(--orange); width: 100%;
+  }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    .preview-panel { position: static; height: auto; }
+    .form-grid { grid-template-columns: 1fr; }
+    .conf-grid { grid-template-columns: 1fr; }
+  }
+  @media print {
+    #confirmation { position: static; background: none; padding: 0; }
+    .conf-footer .btn-print, .conf-footer .btn-close { display: none; }
+    .conf-box { box-shadow: none; border: 1px solid #ccc; }
+    .topbar, .form-panel, .preview-panel { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── Top Bar ───────────────────────────────────────────────── -->
+<div class="topbar">
+  <div>
+    <div class="brand">DOORTRONIX <span>USA</span></div>
+    <div class="sub">doortronixusa.com</div>
+  </div>
+  <div class="tagline">
+    Manufactured in Bullard, Texas<br>
+    Factory-Direct to Contractors Nationwide
+  </div>
+</div>
+
+<!-- ── Main Layout ────────────────────────────────────────────── -->
+<div class="layout">
+
+  <!-- ── FORM PANEL ─────────────────────────────────────────── -->
+  <div class="form-panel">
+    <h1>Request a Factory-Direct Quote</h1>
+    <p class="intro">Fill out all 20 fields below. Our team in Bullard, Texas will respond with a detailed quote, confirmed lead time, and freight estimate within <strong>4 business hours</strong>.</p>
+
+    <div class="trust-bar">
+      <span class="trust-chip">✓ Manufactured in Bullard, TX</span>
+      <span class="trust-chip">✓ Factory-Direct Pricing</span>
+      <span class="trust-chip">✓ 4-Hour Response</span>
+      <span class="trust-chip">✓ Ships in 3–4 Weeks</span>
+    </div>
+
+    <form id="quoteForm" novalidate>
+
+      <!-- ── CONTACT ───────────────────────────────────────── -->
+      <div class="section-header">① Contact Information</div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Full Name <span class="req">*</span></label>
+          <input type="text" name="name" id="f_name" placeholder="Your full name" required>
+        </div>
+        <div class="field">
+          <label>Company Name <span class="req">*</span></label>
+          <input type="text" name="company" id="f_company" placeholder="Your company" required>
+        </div>
+        <div class="field">
+          <label>Your Role <span class="req">*</span></label>
+          <select name="role" id="f_role" required>
+            <option value="">— Select your role —</option>
+            <option>General Contractor</option>
+            <option>Glazier</option>
+            <option>Locksmith / Service Tech</option>
+            <option>Architect / Specifier</option>
+            <option>Facility Manager</option>
+            <option>Owner / Developer</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Phone Number <span class="req">*</span></label>
+          <input type="tel" name="phone" id="f_phone" placeholder="(555) 000-0000" required>
+        </div>
+        <div class="field full">
+          <label>Email Address <span class="req">*</span></label>
+          <input type="email" name="email" id="f_email" placeholder="you@yourcompany.com" required>
+        </div>
+      </div>
+
+      <!-- ── PROJECT ───────────────────────────────────────── -->
+      <div class="section-header">② Project Details</div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Project Name</label>
+          <input type="text" name="projectName" id="f_project" placeholder="e.g. Walmart #4321 or Hospital Lobby">
+        </div>
+        <div class="field">
+          <label>Project City & State <span class="req">*</span></label>
+          <input type="text" name="projectLocation" id="f_location" placeholder="e.g. Dallas, TX" required>
+        </div>
+        <div class="field">
+          <label>Target Ship Date</label>
+          <input type="date" name="shipDate" id="f_shipdate">
+          <span class="hint">Standard lead time: 3–4 weeks from Bullard, TX</span>
+        </div>
+        <div class="field">
+          <label>Number of Door Openings <span class="req">*</span></label>
+          <select name="quantity" id="f_qty" required>
+            <option value="">— Quantity —</option>
+            <option>1</option><option>2</option><option>3</option>
+            <option>4</option><option>5</option><option>6</option>
+            <option>7</option><option>8</option><option>9</option>
+            <option>10+</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- ── DOOR CONFIGURATION ────────────────────────────── -->
+      <div class="section-header">③ Door Configuration</div>
+      <div class="form-grid">
+
+        <!-- Field 9: Door Type -->
+        <div class="field full">
+          <label>Door Type <span class="req">*</span></label>
+          <div class="chip-group" id="doorTypeGroup">
+            <input type="radio" name="doorType" id="dt_slide" value="Automatic Sliding" checked>
+            <label for="dt_slide">Automatic Sliding</label>
+            <input type="radio" name="doorType" id="dt_glass" value="All-Glass Sliding">
+            <label for="dt_glass">All-Glass Sliding</label>
+            <input type="radio" name="doorType" id="dt_herm" value="Hermetic / ICU">
+            <label for="dt_herm">Hermetic / ICU</label>
+            <input type="radio" name="doorType" id="dt_swing" value="Automatic Swinging">
+            <label for="dt_swing">Auto Swinging</label>
+            <input type="radio" name="doorType" id="dt_fold" value="Automatic Folding">
+            <label for="dt_fold">Auto Folding</label>
+            <input type="radio" name="doorType" id="dt_rev" value="Revolving Door">
+            <label for="dt_rev">Revolving</label>
+          </div>
+        </div>
+
+        <!-- Field 10 & 11: Width & Height -->
+        <div class="field full">
+          <label>Rough Opening Size <span class="req">*</span></label>
+          <div class="size-row">
+            <div class="field">
+              <select name="width" id="f_width" required>
+                <option value="">Width —</option>
+                <option value='36"'>36" (3'0")</option>
+                <option value='42"'>42" (3'6")</option>
+                <option value='48"'>48" (4'0")</option>
+                <option value='60"'>60" (5'0")</option>
+                <option value='72"'>72" (6'0")</option>
+                <option value='84"'>84" (7'0")</option>
+                <option value='96"'>96" (8'0")</option>
+                <option value='108"'>108" (9'0")</option>
+                <option value='120"'>120" (10'0")</option>
+                <option value='144"'>144" (12'0")</option>
+                <option value="custom">Custom…</option>
+              </select>
+              <input type="text" id="f_width_custom" name="widthCustom"
+                placeholder='e.g. 78"' style="display:none; margin-top:6px;">
+            </div>
+            <div class="size-sep">×</div>
+            <div class="field">
+              <select name="height" id="f_height" required>
+                <option value="">Height —</option>
+                <option value='84"'>84" (7'0")</option>
+                <option value='90"'>90" (7'6")</option>
+                <option value='96"'>96" (8'0")</option>
+                <option value='102"'>102" (8'6")</option>
+                <option value='108"'>108" (9'0")</option>
+                <option value='120"'>120" (10'0")</option>
+                <option value="custom">Custom…</option>
+              </select>
+              <input type="text" id="f_height_custom" name="heightCustom"
+                placeholder='e.g. 100"' style="display:none; margin-top:6px;">
+            </div>
+          </div>
+        </div>
+
+        <!-- Field 13: Panel config -->
+        <div class="field">
+          <label>Panel Configuration</label>
+          <div class="chip-group" id="panelGroup">
+            <input type="radio" name="panels" id="p_bi" value="Bi-Parting" checked>
+            <label for="p_bi">Bi-Parting</label>
+            <input type="radio" name="panels" id="p_single" value="Single Slide">
+            <label for="p_single">Single Slide</label>
+            <input type="radio" name="panels" id="p_na" value="N/A">
+            <label for="p_na">N/A</label>
+          </div>
+        </div>
+
+        <!-- Field 14: Frame Finish -->
+        <div class="field">
+          <label>Frame Finish</label>
+          <div class="chip-group" id="finishGroup">
+            <input type="radio" name="finish" id="fi_ca" value="Clear Anodized" checked>
+            <label for="fi_ca">Clear Anodized</label>
+            <input type="radio" name="finish" id="fi_db" value="Dark Bronze">
+            <label for="fi_db">Dark Bronze</label>
+            <input type="radio" name="finish" id="fi_bk" value="Black">
+            <label for="fi_bk">Black</label>
+            <input type="radio" name="finish" id="fi_wh" value="White">
+            <label for="fi_wh">White</label>
+            <input type="radio" name="finish" id="fi_cu" value="Custom Paint">
+            <label for="fi_cu">Custom Paint</label>
+          </div>
+        </div>
+
+        <!-- Field 15: Glazing -->
+        <div class="field">
+          <label>Glazing Type</label>
+          <div class="chip-group" id="glazingGroup">
+            <input type="radio" name="glazing" id="gl_ct" value="Clear Tempered" checked>
+            <label for="gl_ct">Clear Tempered</label>
+            <input type="radio" name="glazing" id="gl_le" value="Low-E Tempered">
+            <label for="gl_le">Low-E</label>
+            <input type="radio" name="glazing" id="gl_ti" value="Tinted">
+            <label for="gl_ti">Tinted</label>
+            <input type="radio" name="glazing" id="gl_fr" value="Frosted">
+            <label for="gl_fr">Frosted</label>
+            <input type="radio" name="glazing" id="gl_ll" value="Lead-Lined">
+            <label for="gl_ll">Lead-Lined</label>
+            <input type="radio" name="glazing" id="gl_no" value="No Glazing">
+            <label for="gl_no">No Glazing</label>
+          </div>
+        </div>
+
+        <!-- Field 16: Activation -->
+        <div class="field">
+          <label>Activation Method</label>
+          <div class="chip-group" id="activationGroup">
+            <input type="radio" name="activation" id="ac_mw" value="Microwave Sensor" checked>
+            <label for="ac_mw">Microwave Sensor</label>
+            <input type="radio" name="activation" id="ac_pb" value="Push Button">
+            <label for="ac_pb">Push Button</label>
+            <input type="radio" name="activation" id="ac_fm" value="Floor Mat">
+            <label for="ac_fm">Floor Mat</label>
+            <input type="radio" name="activation" id="ac_ac" value="Access Control">
+            <label for="ac_ac">Access Control</label>
+            <input type="radio" name="activation" id="ac_mx" value="Multiple / Combo">
+            <label for="ac_mx">Multiple / Combo</label>
+          </div>
+        </div>
+
+        <!-- Fields 17–19: Toggle options -->
+        <div class="field">
+          <label>ADA / Low-Energy Mode</label>
+          <div class="chip-group">
+            <input type="radio" name="ada" id="ada_y" value="Yes — ADA required" checked>
+            <label for="ada_y">Yes — Required</label>
+            <input type="radio" name="ada" id="ada_n" value="No">
+            <label for="ada_n">No</label>
+            <input type="radio" name="ada" id="ada_u" value="Unsure">
+            <label for="ada_u">Unsure</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Battery Backup</label>
+          <div class="chip-group">
+            <input type="radio" name="battery" id="bat_y" value="Yes — Required">
+            <label for="bat_y">Yes — Required</label>
+            <input type="radio" name="battery" id="bat_n" value="No" checked>
+            <label for="bat_n">No</label>
+            <input type="radio" name="battery" id="bat_u" value="Preferred">
+            <label for="bat_u">Preferred</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Access Control Wiring</label>
+          <div class="chip-group">
+            <input type="radio" name="accctrl" id="acc_y" value="Yes — Pre-wire for access control">
+            <label for="acc_y">Yes — Pre-wire</label>
+            <input type="radio" name="accctrl" id="acc_n" value="No" checked>
+            <label for="acc_n">No</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Installation Type</label>
+          <div class="chip-group">
+            <input type="radio" name="insttype" id="in_nc" value="New Construction" checked>
+            <label for="in_nc">New Construction</label>
+            <input type="radio" name="insttype" id="in_rf" value="Retrofit / Replacement">
+            <label for="in_rf">Retrofit / Replacement</label>
+          </div>
+        </div>
+
+        <!-- Field 20: Notes -->
+        <div class="field full">
+          <label>Special Requirements / Additional Notes</label>
+          <textarea name="notes" id="f_notes"
+            placeholder="Tell us anything else about your project — existing hardware, code requirements, unusual conditions, lead-lined panels for radiology, emergency egress requirements, etc."></textarea>
+        </div>
+
+      </div><!-- /form-grid -->
+
+      <!-- ── Submit ──────────────────────────────────────────── -->
+      <div class="submit-section">
+        <p>By submitting this form you agree that Doortronix USA may contact you about your quote request. We do not share your information with third parties. All quotes are obligation-free.</p>
+        <button type="submit" class="btn-submit">
+          Submit Quote Request — Response Within 4 Business Hours
+        </button>
+      </div>
+
+    </form>
+  </div><!-- /form-panel -->
+
+  <!-- ── PREVIEW PANEL ───────────────────────────────────────── -->
+  <div class="preview-panel">
+    <div class="preview-title">Live Door Preview</div>
+
+    <div id="drawing-wrap">
+      <svg id="door-svg" viewBox="0 0 380 320" xmlns="http://www.w3.org/2000/svg"></svg>
+    </div>
+
+    <div class="spec-card">
+      <h3>Configuration Summary</h3>
+      <div id="spec-summary"></div>
+    </div>
+  </div>
+
+</div><!-- /layout -->
+
+<!-- ── CONFIRMATION OVERLAY ───────────────────────────────────── -->
+<div id="confirmation">
+  <div class="conf-box">
+    <div class="orange-bar"></div>
+    <div class="conf-header">
+      <div>
+        <h2>✓ Quote Request Submitted</h2>
+        <p>Our team in Bullard, Texas will respond within 4 business hours with your detailed quote, confirmed production lead time, and freight estimate.</p>
+      </div>
+      <div class="conf-ref">
+        <div style="font-size:16px;font-weight:700;color:#fff;" id="conf-ref-num"></div>
+        <div style="margin-top:4px;" id="conf-ref-date"></div>
+      </div>
+    </div>
+    <div class="conf-body">
+      <div class="conf-grid">
+        <div class="conf-section">
+          <h3>Contact Information</h3>
+          <div id="conf-contact"></div>
+        </div>
+        <div class="conf-section">
+          <h3>Project Details</h3>
+          <div id="conf-project"></div>
+        </div>
+      </div>
+      <div style="margin-top:24px;" class="conf-section">
+        <h3>Door Configuration</h3>
+        <div id="conf-door" style="display:grid;grid-template-columns:1fr 1fr;gap:0 24px;"></div>
+      </div>
+      <div id="conf-svg-wrap">
+        <h3 style="font-size:11px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid var(--blue);">Confirmation Drawing — Door Elevation</h3>
+        <svg id="conf-svg" viewBox="0 0 760 420" xmlns="http://www.w3.org/2000/svg"></svg>
+      </div>
+    </div>
+    <div class="conf-footer">
+      <p>Doortronix USA — Manufactured in Bullard, Texas | Factory-Direct to Contractors Nationwide | doortronixusa.com</p>
+      <div style="display:flex;gap:10px;">
+        <button class="btn-close" onclick="closeConfirmation()">Close</button>
+        <button class="btn-print" onclick="window.print()">Print / Save PDF</button>
+      </div>
+    </div>
+    <div class="orange-bar"></div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// CONFIGURATION — Replace with your Formspree endpoint
+// Get a free endpoint at https://formspree.io (50 free/month)
+// Replace the string below with your endpoint URL
+// ═══════════════════════════════════════════════════════════════════
+const FORMSPREE_ENDPOINT = "https://formspree.io/f/mykorzwy";
+// If you haven't set up Formspree yet, the form will still show the
+// confirmation drawing — you'll just need to manually record the data.
+
+// ─── Helper: get form value ───────────────────────────────────────
+function fv(id) {
+  const el = document.getElementById(id);
+  return el ? el.value.trim() : "";
+}
+function rv(name) {
+  const el = document.querySelector(`input[name="${name}"]:checked`);
+  return el ? el.value : "—";
+}
+
+// ─── Get display width/height ─────────────────────────────────────
+function getWidth() {
+  const w = fv('f_width');
+  if (w === 'custom') return fv('f_width_custom') || '?';
+  return w || '—';
+}
+function getHeight() {
+  const h = fv('f_height');
+  if (h === 'custom') return fv('f_height_custom') || '?';
+  return h || '—';
+}
+function parseInches(str) {
+  if (!str || str === '—' || str === '?') return null;
+  const n = parseFloat(str.replace(/"/g,'').replace(/'/g,''));
+  return isNaN(n) ? null : n;
+}
+
+// ─── Custom width/height toggle ───────────────────────────────────
+document.getElementById('f_width').addEventListener('change', function() {
+  document.getElementById('f_width_custom').style.display =
+    this.value === 'custom' ? 'block' : 'none';
+  updatePreview();
+});
+document.getElementById('f_height').addEventListener('change', function() {
+  document.getElementById('f_height_custom').style.display =
+    this.value === 'custom' ? 'block' : 'none';
+  updatePreview();
+});
+
+// ─── Listen to all form changes ───────────────────────────────────
+document.getElementById('quoteForm').addEventListener('input', updatePreview);
+document.getElementById('quoteForm').addEventListener('change', updatePreview);
+
+// ═══════════════════════════════════════════════════════════════════
+// DOOR SVG DRAWING ENGINE
+// ═══════════════════════════════════════════════════════════════════
+function getGlazingFill(glazing) {
+  const map = {
+    'Clear Tempered': { fill: '#E8F4FD', stroke: '#A8D4F5' },
+    'Low-E Tempered': { fill: '#D4EDD4', stroke: '#8EC98E' },
+    'Tinted':         { fill: '#C8D8E8', stroke: '#7090B0' },
+    'Frosted':        { fill: '#F0EFEF', stroke: '#C8C8C8' },
+    'Lead-Lined':     { fill: '#D8D4C0', stroke: '#908878' },
+    'No Glazing':     { fill: '#D8D8D8', stroke: '#AAAAAA' },
+  };
+  return map[glazing] || map['Clear Tempered'];
+}
+function getFrameColor(finish) {
+  const map = {
+    'Clear Anodized': '#B8C4D0',
+    'Dark Bronze':    '#6B5040',
+    'Black':          '#2A2A2A',
+    'White':          '#E8E8E8',
+    'Custom Paint':   '#8890A0',
+  };
+  return map[finish] || '#B8C4D0';
+}
+
+function drawDoor(svgId, vbW, vbH, isConfirmation) {
+  const svg = document.getElementById(svgId);
+  if (!svg) return;
+  svg.innerHTML = '';
+
+  const doorType   = rv('doorType');
+  const panelCfg   = rv('panels');
+  const finish     = rv('finish');
+  const glazing    = rv('glazing');
+  const ada        = rv('ada');
+  const battery    = rv('battery');
+  const activation = rv('activation');
+  const width      = getWidth();
+  const height     = getHeight();
+  const wIn        = parseInches(width);
+  const hIn        = parseInches(height);
+
+  const frameFill  = getFrameColor(finish);
+  const glaze      = getGlazingFill(glazing);
+  const isHermetic = doorType === 'Hermetic / ICU';
+  const isSwing    = doorType === 'Automatic Swinging';
+  const isFolding  = doorType === 'Automatic Folding';
+  const isRevolving= doorType === 'Revolving Door';
+  const isAllGlass = doorType === 'All-Glass Sliding';
+  const isBi       = panelCfg === 'Bi-Parting';
+
+  // ── Derived layout constants ──────────────────────────────────
+  const titleH    = isConfirmation ? 80 : 0;
+  const marginL   = 60; const marginR = 60;
+  const marginT   = isConfirmation ? titleH + 30 : 20;
+  const marginB   = isConfirmation ? 90 : 50;
+  const drawW     = vbW - marginL - marginR;
+  const drawH     = vbH - marginT - marginB;
+
+  // Scale door to fit, maintaining aspect ratio
+  const aspectW = wIn || 72;
+  const aspectH = hIn || 84;
+  const scaleX  = drawW / aspectW;
+  const scaleY  = drawH / aspectH;
+  const scale   = Math.min(scaleX, scaleY);
+  const dW      = aspectW * scale;
+  const dH      = aspectH * scale;
+  const dX      = marginL + (drawW - dW) / 2;
+  const dY      = marginT + (drawH - dH) / 2;
+
+  const frameThick = isAllGlass ? 6 : (isHermetic ? 14 : 10);
+  const headerH    = isAllGlass ? 18 : (isHermetic ? 22 : 20);
+
+  // ── helpers ───────────────────────────────────────────────────
+  function rect(x,y,w,h,fill,stroke,sw,rx,ry,extra) {
+    const r = document.createElementNS('http://www.w3.org/2000/svg','rect');
+    r.setAttribute('x',x); r.setAttribute('y',y);
+    r.setAttribute('width',Math.max(w,0)); r.setAttribute('height',Math.max(h,0));
+    r.setAttribute('fill',fill||'none');
+    if(stroke){r.setAttribute('stroke',stroke);r.setAttribute('stroke-width',sw||1);}
+    if(rx) r.setAttribute('rx',rx);
+    if(ry) r.setAttribute('ry',ry);
+    if(extra) Object.entries(extra).forEach(([k,v])=>r.setAttribute(k,v));
+    svg.appendChild(r); return r;
+  }
+  function line(x1,y1,x2,y2,stroke,sw,dash) {
+    const l = document.createElementNS('http://www.w3.org/2000/svg','line');
+    l.setAttribute('x1',x1);l.setAttribute('y1',y1);
+    l.setAttribute('x2',x2);l.setAttribute('y2',y2);
+    l.setAttribute('stroke',stroke||'#666');
+    l.setAttribute('stroke-width',sw||1);
+    if(dash) l.setAttribute('stroke-dasharray',dash);
+    svg.appendChild(l); return l;
+  }
+  function text(x,y,str,size,fill,anchor,weight,family) {
+    const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+    t.setAttribute('x',x); t.setAttribute('y',y);
+    t.setAttribute('font-size',size||11);
+    t.setAttribute('fill',fill||'#111');
+    t.setAttribute('text-anchor',anchor||'middle');
+    t.setAttribute('font-weight',weight||'normal');
+    t.setAttribute('font-family',family||'Arial, sans-serif');
+    t.textContent = str;
+    svg.appendChild(t); return t;
+  }
+  function circle(cx,cy,r,fill,stroke,sw) {
+    const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c.setAttribute('cx',cx);c.setAttribute('cy',cy);c.setAttribute('r',r);
+    c.setAttribute('fill',fill||'none');
+    if(stroke){c.setAttribute('stroke',stroke);c.setAttribute('stroke-width',sw||1);}
+    svg.appendChild(c); return c;
+  }
+  function path(d,fill,stroke,sw,dash) {
+    const p = document.createElementNS('http://www.w3.org/2000/svg','path');
+    p.setAttribute('d',d);
+    p.setAttribute('fill',fill||'none');
+    if(stroke){p.setAttribute('stroke',stroke);p.setAttribute('stroke-width',sw||1);}
+    if(dash) p.setAttribute('stroke-dasharray',dash);
+    svg.appendChild(p); return p;
+  }
+  function dimLine(x1,y1,x2,y2,label,isH) {
+    // Draw a dimension line with arrows and label
+    const aw = 6, off = 8;
+    if(isH) {
+      // horizontal dim
+      line(x1,y1,x2,y2,'#1B4F8A',0.8);
+      // ticks
+      line(x1,y1-off,x1,y1+off,'#1B4F8A',0.8);
+      line(x2,y1-off,x2,y1+off,'#1B4F8A',0.8);
+      // arrowheads
+      path(`M${x1},${y1} l${aw},-3 l0,6 Z`,'#1B4F8A');
+      path(`M${x2},${y1} l${-aw},-3 l0,6 Z`,'#1B4F8A');
+      text((x1+x2)/2,y1-4,label,10,'#1B4F8A','middle','700');
+    } else {
+      // vertical dim
+      line(x1,y1,x2,y2,'#1B4F8A',0.8);
+      line(x1-off,y1,x1+off,y1,'#1B4F8A',0.8);
+      line(x1-off,y2,x1+off,y2,'#1B4F8A',0.8);
+      path(`M${x1},${y1} l-3,${aw} l6,0 Z`,'#1B4F8A');
+      path(`M${x1},${y2} l-3,${-aw} l6,0 Z`,'#1B4F8A');
+      const cx = x1-4, cy = (y1+y2)/2;
+      const t2 = text(cx-14,cy,label,10,'#1B4F8A','middle','700');
+      t2.setAttribute('transform',`rotate(-90,${cx},${cy})`);
+    }
+  }
+
+  // ── TITLE BLOCK (confirmation only) ──────────────────────────
+  if (isConfirmation) {
+    rect(0,0,vbW,titleH,'#1B4F8A',null);
+    text(20, 26, 'DOORTRONIX USA', 16, '#fff', 'start', '700');
+    text(20, 42, 'Confirmation Drawing — Door Elevation', 11, '#B8CCE4', 'start');
+    text(20, 56, `Type: ${doorType}  |  Config: ${panelCfg}`, 10, '#B8CCE4', 'start');
+
+    if (wIn && hIn) {
+      text(vbW/2, 42, `${width} W × ${height} H`, 14, '#E87722', 'middle', '700');
+    }
+    text(vbW-16, 20, 'CONFIRMATION DRAWING', 9, '#B8CCE4', 'end');
+    text(vbW-16, 34, 'Not for construction — for approval only', 8, '#7090A8', 'end');
+    const now = new Date();
+    text(vbW-16, 48, now.toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'}), 9, '#B8CCE4', 'end');
+  }
+
+  // ── REVOLVING DOOR ────────────────────────────────────────────
+  if (isRevolving) {
+    const cx = dX + dW/2, cy = dY + dH/2;
+    const r = Math.min(dW,dH)/2;
+    circle(cx,cy,r,glaze.fill,frameFill,frameThick/2);
+    // Cross dividers
+    line(cx-r,cy,cx+r,cy,frameFill,frameThick/3);
+    line(cx,cy-r,cx,cy+r,frameFill,frameThick/3);
+    // Center shaft
+    circle(cx,cy,8,frameFill,frameFill,2);
+    // Outer ring
+    circle(cx,cy,r,null,frameFill,frameThick/2);
+    text(cx,cy+r+20,'(Circular plan view)',10,'#888','middle');
+    if (isConfirmation) {
+      dimLine(dX, dY+dH+35, dX+dW, dY+dH+35, `${width} diameter`, true);
+    }
+  }
+  // ── SWING DOOR ────────────────────────────────────────────────
+  else if (isSwing) {
+    // Door leaf
+    rect(dX+frameThick, dY+headerH, dW-frameThick*2, dH-headerH-frameThick*0.5,
+         glaze.fill, frameFill, 3);
+    // Header/operator box
+    rect(dX, dY, dW, headerH+4, frameFill, '#888', 1.5);
+    text(dX+dW/2, dY+headerH/2+4, 'OPERATOR', 8, '#fff', 'middle', '700');
+    // Hinge side (left)
+    rect(dX, dY+headerH, frameThick*1.2, dH-headerH, frameFill, null);
+    // Latch side (right)
+    rect(dX+dW-frameThick, dY+headerH, frameThick, dH-headerH, frameFill, null);
+    // Sill
+    rect(dX, dY+dH-frameThick*0.5, dW, frameThick*0.5, frameFill, null);
+    // Swing arc (dashed quarter circle from bottom-right)
+    const arcR = dW - frameThick*2.4;
+    path(`M ${dX+frameThick*1.2} ${dY+dH-frameThick*0.5} a ${arcR} ${arcR} 0 0 0 ${arcR} ${-arcR}`,
+         'none','#1B4F8A',1,'4 3');
+    // Push-bar handle
+    const hx = dX+dW-frameThick-8, hy1 = dY+dH*0.35, hy2 = dY+dH*0.65;
+    line(hx,hy1,hx,hy2,'#555',2.5);
+    // ADA badge
+    if (ada === 'Yes — ADA required') {
+      rect(dX+4,dY+headerH+4,34,16,'#1B4F8A',null,0,3);
+      text(dX+21,dY+headerH+15,'ADA',8,'#fff','middle','700');
+    }
+    // Dims
+    if (isConfirmation) {
+      dimLine(dX, dY+dH+30, dX+dW, dY+dH+30, width, true);
+      dimLine(dX-28, dY, dX-28, dY+dH, height, false);
+    }
+  }
+  // ── FOLDING DOOR ──────────────────────────────────────────────
+  else if (isFolding) {
+    const numPanels = 4;
+    const pW = (dW - frameThick*2) / numPanels;
+    rect(dX, dY, dW, headerH+4, frameFill, '#888', 1.5);
+    text(dX+dW/2, dY+headerH/2+4, 'OPERATOR', 8, '#fff', 'middle', '700');
+    // Jambs
+    rect(dX, dY+headerH, frameThick, dH-headerH, frameFill);
+    rect(dX+dW-frameThick, dY+headerH, frameThick, dH-headerH, frameFill);
+    // Sill
+    rect(dX, dY+dH-frameThick*0.5, dW, frameThick*0.5, frameFill);
+    // Panels with chevron fold lines
+    for (let i=0; i<numPanels; i++) {
+      const px = dX + frameThick + i*pW;
+      rect(px, dY+headerH+4, pW-2, dH-headerH-frameThick*0.5-4, glaze.fill, frameFill, 2);
+      // fold line diagonal
+      line(px+pW/2, dY+headerH+4, px+(i%2===0?pW:0), dY+dH-frameThick*0.5-4, '#90A0B0', 1, '3 2');
+    }
+    if (isConfirmation) {
+      dimLine(dX, dY+dH+30, dX+dW, dY+dH+30, width, true);
+      dimLine(dX-28, dY, dX-28, dY+dH, height, false);
+    }
+  }
+  // ── SLIDING DOOR (including All-Glass & Hermetic) ─────────────
+  else {
+    // Hermetic gasket bg
+    if (isHermetic) {
+      rect(dX-4,dY-4,dW+8,dH+8,'none','#6B8040',2,'2');
+    }
+    // Outer frame
+    rect(dX, dY, dW, dH, '#E8EEF4', frameFill, isHermetic?3:2);
+
+    // Header track box
+    rect(dX, dY, dW, headerH, frameFill, '#777', 1);
+    text(dX+dW/2, dY+headerH*0.68, isAllGlass?'HEADER TRACK':'HEADER / OPERATOR', 7.5, '#fff', 'middle', '700');
+
+    // Sill
+    rect(dX, dY+dH-frameThick*0.6, dW, frameThick*0.6, frameFill, null);
+
+    // Left & right jambs
+    const jamb = isAllGlass ? frameThick*0.5 : frameThick;
+    rect(dX, dY+headerH, jamb, dH-headerH-frameThick*0.6, frameFill, null);
+    rect(dX+dW-jamb, dY+headerH, jamb, dH-headerH-frameThick*0.6, frameFill, null);
+
+    // Panels
+    const panelAreaX = dX + jamb;
+    const panelAreaW = dW - jamb*2;
+    const panelAreaY = dY + headerH + 2;
+    const panelAreaH = dH - headerH - frameThick*0.6 - 4;
+
+    if (isBi) {
+      const halfW = panelAreaW/2;
+      // Left panel
+      rect(panelAreaX, panelAreaY, halfW-2, panelAreaH,
+           glaze.fill, glaze.stroke, isAllGlass?0.8:1.5);
+      // Right panel
+      rect(panelAreaX+halfW+2, panelAreaY, halfW-2, panelAreaH,
+           glaze.fill, glaze.stroke, isAllGlass?0.8:1.5);
+      // Center meeting stile
+      rect(panelAreaX+halfW-2, panelAreaY, 4, panelAreaH, frameFill, '#666', 1);
+      // Panel movement arrows (dashed)
+      const arrowY = panelAreaY + panelAreaH*0.5;
+      line(panelAreaX+halfW*0.15, arrowY, panelAreaX+halfW*0.5, arrowY, '#1B4F8A', 1.2, '4 2');
+      path(`M${panelAreaX+halfW*0.5},${arrowY} l-5,-4 l0,8 Z`,'#1B4F8A');
+      line(panelAreaX+halfW+halfW*0.5, arrowY, panelAreaX+halfW+halfW*0.85, arrowY, '#1B4F8A', 1.2, '4 2');
+      path(`M${panelAreaX+halfW+halfW*0.5},${arrowY} l5,-4 l0,8 Z`,'#1B4F8A');
+    } else {
+      // Single slide — one moving panel (left) + one fixed sidelight (right)
+      const moveW = panelAreaW * 0.55;
+      const fixW  = panelAreaW * 0.45;
+      // Moving panel
+      rect(panelAreaX, panelAreaY, moveW-2, panelAreaH,
+           glaze.fill, glaze.stroke, 1.5);
+      // Sidelight / fixed
+      rect(panelAreaX+moveW+2, panelAreaY, fixW-2, panelAreaH,
+           glaze.fill, '#AABBC8', 1, null,null,{'stroke-dasharray':'4 2'});
+      // Slide arrow
+      const arrowY = panelAreaY + panelAreaH*0.5;
+      line(panelAreaX+moveW*0.2, arrowY, panelAreaX+moveW*0.7, arrowY, '#1B4F8A', 1.2, '4 2');
+      path(`M${panelAreaX+moveW*0.7},${arrowY} l-5,-4 l0,8 Z`,'#1B4F8A');
+      // Fixed label
+      text(panelAreaX+moveW+fixW/2+2, panelAreaY+panelAreaH/2, 'FIXED', 8, '#90A0B0', 'middle');
+    }
+
+    // Hermetic gasket indicator
+    if (isHermetic) {
+      rect(dX+1.5,dY+1.5,dW-3,dH-3,'none','#8B6914',2,'1');
+      text(dX+dW/2, dY+dH-3, 'HERMETIC SEAL — FULL PERIMETER', 7, '#8B6914', 'middle', '700');
+    }
+
+    // Sensor dot (top center of header)
+    if (activation === 'Microwave Sensor' || activation === 'Multiple / Combo') {
+      circle(dX+dW/2, dY+headerH*0.45, 5, '#E87722', '#C86010', 1);
+      text(dX+dW/2+8, dY+headerH*0.52, '⬤ SENSOR', 6.5, '#E87722', 'start', '700');
+    }
+
+    // Battery backup badge
+    if (battery !== 'No') {
+      rect(dX+dW-52, dY+headerH+6, 46, 14, '#1B4F8A', null, 0, 2);
+      text(dX+dW-29, dY+headerH+16, 'BATT. BACKUP', 6.5, '#fff', 'middle', '700');
+    }
+
+    // ADA badge
+    if (ada === 'Yes — ADA required') {
+      rect(dX+6, dY+headerH+6, 32, 14, '#166534', null, 0, 2);
+      text(dX+22, dY+headerH+16, 'ADA', 7, '#fff', 'middle', '700');
+    }
+
+    // Dimension lines
+    if (isConfirmation || wIn) {
+      const dimY = dY+dH+28;
+      dimLine(dX, dimY, dX+dW, dimY, width || '—', true);
+    }
+    if (isConfirmation || hIn) {
+      dimLine(dX-32, dY, dX-32, dY+dH, height || '—', false);
+    }
+  }
+
+  // ── TITLE BLOCK BAR (non-confirmation) ───────────────────────
+  if (!isConfirmation) {
+    const tbY = vbH - 38;
+    rect(0, tbY, vbW, 38, '#F0F4F8', '#D0D5DD', 1);
+    line(0, tbY, vbW, tbY, '#D0D5DD', 1);
+    text(12, tbY+14, 'DOORTRONIX USA', 9, '#1B4F8A', 'start', '700');
+    text(12, tbY+28, 'doortronixusa.com', 8, '#888', 'start');
+    text(vbW/2, tbY+14, doorType, 9, '#1B4F8A', 'middle', '700');
+    text(vbW/2, tbY+28, `${panelCfg} | ${finish} | ${glazing}`, 8, '#555', 'middle');
+    const now = new Date();
+    text(vbW-12, tbY+14, now.toLocaleDateString(), 8, '#888', 'end');
+    text(vbW-12, tbY+28, 'PREVIEW ONLY', 8, '#E87722', 'end', '700');
+  } else {
+    // Confirmation title block at bottom
+    const tbY = vbH - 60;
+    rect(0, tbY, vbW, 60, '#1B4F8A', null);
+    line(0, tbY, vbW, tbY, '#E87722', 2);
+    text(16, tbY+18, 'DOORTRONIX USA — CONFIRMATION DRAWING', 10, '#fff', 'start', '700');
+    text(16, tbY+32, 'Not for construction — for customer approval only', 8, '#B8CCE4', 'start');
+    text(16, tbY+46, 'Manufactured in Bullard, Texas | Factory-Direct from our Texas Production Facility', 8, '#B8CCE4', 'start');
+    text(vbW-16, tbY+18, `${doorType}`, 10, '#E87722', 'end', '700');
+    text(vbW-16, tbY+32, `${width} W × ${height} H`, 9, '#fff', 'end', '700');
+    text(vbW-16, tbY+46, `${finish} / ${glazing}`, 8, '#B8CCE4', 'end');
+  }
+}
+
+// ─── Update preview ───────────────────────────────────────────────
+function updatePreview() {
+  drawDoor('door-svg', 380, 320, false);
+  updateSpecSummary();
+}
+
+function updateSpecSummary() {
+  const specs = [
+    ['Door Type',   rv('doorType')],
+    ['Width',       getWidth()],
+    ['Height',      getHeight()],
+    ['Panels',      rv('panels')],
+    ['Frame Finish',rv('finish')],
+    ['Glazing',     rv('glazing')],
+    ['Activation',  rv('activation')],
+    ['ADA Mode',    rv('ada')],
+    ['Battery',     rv('battery')],
+    ['Access Ctrl', rv('accctrl')],
+  ];
+  const el = document.getElementById('spec-summary');
+  el.innerHTML = specs.map(([k,v]) =>
+    `<div class="spec-row"><span class="sk">${k}</span><span class="sv">${v||'—'}</span></div>`
+  ).join('');
+}
+
+// ─── Form submit ──────────────────────────────────────────────────
+document.getElementById('quoteForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+
+  // Basic validation
+  const required = ['f_name','f_company','f_role','f_phone','f_email','f_location','f_qty'];
+  let ok = true;
+  required.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el.value.trim()) {
+      el.style.borderColor = 'var(--red)';
+      ok = false;
+    } else {
+      el.style.borderColor = '';
+    }
+  });
+  if (!fv('f_width') && !fv('f_width_custom')) {
+    document.getElementById('f_width').style.borderColor = 'var(--red)'; ok = false;
+  }
+  if (!ok) {
+    alert('Please fill in all required fields (marked with *).');
+    return;
+  }
+
+  // Build data payload
+  const data = {
+    name:        fv('f_name'),
+    company:     fv('f_company'),
+    role:        fv('f_role'),
+    phone:       fv('f_phone'),
+    email:       fv('f_email'),
+    projectName: fv('f_project'),
+    location:    fv('f_location'),
+    shipDate:    fv('f_shipdate'),
+    quantity:    fv('f_qty'),
+    doorType:    rv('doorType'),
+    width:       getWidth(),
+    height:      getHeight(),
+    panels:      rv('panels'),
+    finish:      rv('finish'),
+    glazing:     rv('glazing'),
+    activation:  rv('activation'),
+    ada:         rv('ada'),
+    battery:     rv('battery'),
+    accctrl:     rv('accctrl'),
+    insttype:    rv('insttype'),
+    notes:       fv('f_notes'),
+  };
+
+  // ── Try Formspree submission ────────────────────────────────
+  if (FORMSPREE_ENDPOINT !== "https://formspree.io/f/YOUR_FORM_ID") {
+    try {
+      await fetch(FORMSPREE_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(data)
+      });
+    } catch(err) {
+      console.warn('Formspree submission failed:', err);
+    }
+  }
+
+  // ── Show confirmation ───────────────────────────────────────
+  showConfirmation(data);
+});
+
+function showConfirmation(data) {
+  // Reference number
+  const ref = 'DTX-' + Date.now().toString().slice(-6);
+  document.getElementById('conf-ref-num').textContent = 'Ref: ' + ref;
+  document.getElementById('conf-ref-date').textContent =
+    new Date().toLocaleDateString('en-US',{weekday:'short',year:'numeric',month:'short',day:'numeric'});
+
+  // Contact block
+  document.getElementById('conf-contact').innerHTML = [
+    ['Name', data.name], ['Company', data.company], ['Role', data.role],
+    ['Phone', data.phone], ['Email', data.email]
+  ].map(([k,v])=>`<div class="conf-spec-row"><span class="ck">${k}</span><span class="cv">${v||'—'}</span></div>`).join('');
+
+  // Project block
+  document.getElementById('conf-project').innerHTML = [
+    ['Project', data.projectName||'—'], ['Location', data.location],
+    ['Target Ship', data.shipDate||'ASAP'], ['Quantity', data.quantity+' opening(s)'],
+    ['Install Type', data.insttype]
+  ].map(([k,v])=>`<div class="conf-spec-row"><span class="ck">${k}</span><span class="cv">${v||'—'}</span></div>`).join('');
+
+  // Door block (2-column)
+  const doorSpecs = [
+    ['Door Type', data.doorType], ['Width', data.width],
+    ['Height', data.height], ['Panels', data.panels],
+    ['Frame Finish', data.finish], ['Glazing', data.glazing],
+    ['Activation', data.activation], ['ADA Mode', data.ada],
+    ['Battery Backup', data.battery], ['Access Control', data.accctrl],
+  ];
+  document.getElementById('conf-door').innerHTML = doorSpecs.map(([k,v])=>
+    `<div class="conf-spec-row"><span class="ck">${k}</span><span class="cv">${v||'—'}</span></div>`
+  ).join('');
+
+  // Generate confirmation drawing
+  drawDoor('conf-svg', 760, 420, true);
+
+  // Show overlay
+  document.getElementById('confirmation').style.display = 'block';
+  document.getElementById('confirmation').scrollTop = 0;
+}
+
+function closeConfirmation() {
+  document.getElementById('confirmation').style.display = 'none';
+}
+
+// ─── Init ─────────────────────────────────────────────────────────
+updatePreview();
+</script>
+</body>
+</html>

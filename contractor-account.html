@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contractor Account Application | Doortronix USA</title>
+  <meta name="description" content="Apply for a Doortronix USA contractor account. Factory-direct pricing for glaziers, general contractors, locksmiths, and facility managers. No distributor markup.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="container">
+    <strong>Factory-Direct from Bullard, Texas</strong> &nbsp;|&nbsp;
+    Contractors: Apply for direct pricing below &nbsp;|&nbsp;
+    <a href="tel:+19034881810">(903) 488-1810</a>
+  </div>
+</div>
+
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo" style="text-decoration:none;">
+      <div class="brand">Doortronix<span>USA</span></div>
+      <div class="tagline">Manufactured in Bullard, Texas</div>
+    </a>
+    <div class="nav-toggle"><span></span><span></span><span></span></div>
+    <div class="nav-links">
+      <div class="nav-dropdown">
+        <a href="#">Products</a>
+        <div class="dropdown-menu">
+          <a href="products/revolution.html">Revolution Sliding Door</a>
+          <a href="products/all-glass.html">All-Glass Sliding Door</a>
+          <a href="products/hermetic.html">Hermetic / ICU Door</a>
+          <a href="products/swinging.html">Swinging Door</a>
+        </div>
+      </div>
+      <a href="why-us.html">Why Doortronix</a>
+      <a href="buy-american.html">Buy American</a>
+      <a href="resources.html">Resources</a>
+      <a href="contact.html">Contact</a>
+      <a href="quote.html" class="btn-nav-cta">Get a Quote</a>
+    </div>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="container">
+    <h1>Contractor Account Application</h1>
+    <p>Set up your account for direct factory pricing, priority quoting, and access to our full product line. Takes about 3 minutes to complete.</p>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container">
+    <div class="two-col">
+
+      <!-- Application form -->
+      <div>
+        <div class="form-card" style="max-width:100%;">
+          <h2 style="font-size:20px; font-weight:700; color:var(--blue); margin-bottom:6px;">Account Application</h2>
+          <p style="font-size:13px; color:var(--mgray); margin-bottom:24px;">Fields marked * are required. We'll review your application and follow up within one business day.</p>
+
+          <form id="contractor-form" action="https://formspree.io/f/mykorzwy" method="POST">
+            <input type="hidden" name="form_type" value="Contractor Account Application">
+
+            <h3 style="font-size:14px; font-weight:700; color:var(--blue); text-transform:uppercase; letter-spacing:.5px; margin-bottom:16px; padding-bottom:8px; border-bottom:2px solid var(--orange);">Company Information</h3>
+
+            <div class="form-group">
+              <label for="company_name">Company Name *</label>
+              <input type="text" id="company_name" name="company_name" required placeholder="Smith Glass &amp; Glazing LLC">
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="contact_name">Contact Name *</label>
+                <input type="text" id="contact_name" name="contact_name" required placeholder="Jane Smith">
+              </div>
+              <div class="form-group">
+                <label for="title">Title / Role</label>
+                <input type="text" id="title" name="title" placeholder="Owner / Project Manager">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="phone">Phone *</label>
+                <input type="tel" id="phone" name="phone" required placeholder="(555) 555-1234">
+              </div>
+              <div class="form-group">
+                <label for="email">Email *</label>
+                <input type="email" id="email" name="email" required placeholder="jane@smithglass.com">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="address">Business Address *</label>
+              <input type="text" id="address" name="address" required placeholder="123 Commerce Dr, Dallas, TX 75201">
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="city">City *</label>
+                <input type="text" id="city" name="city" required>
+              </div>
+              <div class="form-group">
+                <label for="state">State *</label>
+                <input type="text" id="state" name="state" required placeholder="TX">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="license">Contractor License # (if applicable)</label>
+              <input type="text" id="license" name="license" placeholder="TX-12345678">
+            </div>
+
+            <h3 style="font-size:14px; font-weight:700; color:var(--blue); text-transform:uppercase; letter-spacing:.5px; margin:24px 0 16px; padding-bottom:8px; border-bottom:2px solid var(--orange);">Business Profile</h3>
+
+            <div class="form-group">
+              <label for="trade">Primary Trade *</label>
+              <select id="trade" name="primary_trade" required>
+                <option value="">Select your trade…</option>
+                <option>Glazier / Glass Contractor</option>
+                <option>General Contractor</option>
+                <option>Locksmith / Door Hardware</option>
+                <option>Facility Manager</option>
+                <option>Architect / Specifier</option>
+                <option>Mechanical / Building Contractor</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="annual_volume">Estimated Annual Door Volume</label>
+              <select id="annual_volume" name="annual_volume">
+                <option value="">Select range…</option>
+                <option>1–5 doors/year</option>
+                <option>6–20 doors/year</option>
+                <option>21–50 doors/year</option>
+                <option>51–100 doors/year</option>
+                <option>100+ doors/year</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="current_brands">Brands Currently Specified</label>
+              <input type="text" id="current_brands" name="current_brands" placeholder="e.g. Stanley, Horton, Besam…">
+            </div>
+            <div class="form-group">
+              <label for="project_types">Typical Project Types</label>
+              <input type="text" id="project_types" name="project_types" placeholder="e.g. retail, healthcare, government…">
+            </div>
+            <div class="form-group">
+              <label for="how_heard">How did you hear about Doortronix?</label>
+              <select id="how_heard" name="how_heard">
+                <option value="">Select…</option>
+                <option>Google / Web Search</option>
+                <option>Industry Referral</option>
+                <option>Trade Show</option>
+                <option>Architect Specification</option>
+                <option>Prior Customer</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="notes">Additional Notes</label>
+              <textarea id="notes" name="notes" rows="3" placeholder="Tell us about your business or an upcoming project…"></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width:100%; font-size:15px; padding:14px;">Submit Application</button>
+            <p style="font-size:12px; color:var(--mgray); text-align:center; margin-top:12px;">We'll review your application and contact you within one business day to discuss pricing and next steps.</p>
+          </form>
+        </div>
+      </div>
+
+      <!-- Benefits panel -->
+      <div>
+        <h2 style="font-size:22px; font-weight:700; color:var(--blue); margin-bottom:20px;">What You Get as a Contractor Account</h2>
+        <div style="display:flex; flex-direction:column; gap:16px;">
+          <div class="why-card">
+            <div class="why-icon">💰</div>
+            <h3>Factory-Direct Pricing</h3>
+            <p>No distributor markup. Our net price is your starting point — you set your margin. Repeat customers discuss preferred partner pricing for volume projects.</p>
+          </div>
+          <div class="why-card">
+            <div class="why-icon">⚡</div>
+            <h3>Priority Quoting</h3>
+            <p>Account holders move to the front of the quote queue. Same-day quoting for standard configurations when you submit before noon CT.</p>
+          </div>
+          <div class="why-card">
+            <div class="why-icon">📐</div>
+            <h3>Approval Drawings Included</h3>
+            <p>Every quote comes with approval drawings showing your exact opening, configuration, and dimensions. Ready for submittal and job site layout.</p>
+          </div>
+          <div class="why-card">
+            <div class="why-icon">🔧</div>
+            <h3>Direct Technical Support</h3>
+            <p>Installation questions, commissioning help, field troubleshooting — you call the factory. Not a distributor's support line. Not a call center.</p>
+          </div>
+          <div class="why-card">
+            <div class="why-icon">📦</div>
+            <h3>Parts on Demand</h3>
+            <p>Account holders get access to our parts list and can order replacement parts directly. Most common parts ship same day from Bullard, TX.</p>
+          </div>
+        </div>
+
+        <div class="callout" style="margin-top:24px;">
+          <p><strong>Already have a project in hand?</strong> Don't wait — <a href="quote.html">submit a quote request now</a> and note in the comments that you'd like to set up a contractor account. We'll handle both at once.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="brand">Doortronix<span style="color:var(--orange)">USA</span></div>
+        <p>Automatic door systems manufactured in Bullard, Texas.</p>
+        <div class="made-in">🇺🇸 Manufactured in Bullard, Texas</div>
+      </div>
+      <div>
+        <h4>Products</h4>
+        <ul>
+          <li><a href="products/revolution.html">Revolution Sliding Door</a></li>
+          <li><a href="products/all-glass.html">All-Glass Sliding Door</a></li>
+          <li><a href="products/hermetic.html">Hermetic / ICU Door</a></li>
+          <li><a href="products/swinging.html">Swinging Door</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Company</h4>
+        <ul>
+          <li><a href="why-us.html">Why Doortronix</a></li>
+          <li><a href="buy-american.html">Buy American</a></li>
+          <li><a href="contractor-account.html">Contractor Account</a></li>
+          <li><a href="resources.html">Resources</a></li>
+          <li><a href="contact.html">Contact Us</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="tel:+19034881810">(903) 488-1810</a></li>
+          <li><a href="mailto:info@doortronixusa.com">info@doortronixusa.com</a></li>
+          <li style="color:#B8CCE4; font-size:13px; margin-top:8px;">Doortronix Inc.<br>Bullard, TX 75757</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 Doortronix Inc. All rights reserved.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>
