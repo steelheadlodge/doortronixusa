@@ -483,20 +483,31 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
       <div class="section-header">④ Door Specifications</div>
 
       <div class="form-grid">
-        <!-- Glass type -->
-        <div class="field full">
-          <label>Glass / Glazing Type</label>
+        <!-- Door panel glass prep -->
+        <div class="field">
+          <label>Door Panel Glass Prep</label>
           <div class="chip-group">
-            <input type="radio" name="glassType" id="gt_clear" value="Clear Tempered" checked>
-            <label for="gt_clear">Clear Tempered (std)</label>
-            <input type="radio" name="glassType" id="gt_lowe" value="Low-E Tempered">
-            <label for="gt_lowe">Low-E Tempered</label>
-            <input type="radio" name="glassType" id="gt_tint" value="Tinted Tempered">
-            <label for="gt_tint">Tinted Tempered</label>
-            <input type="radio" name="glassType" id="gt_frost" value="Frosted">
-            <label for="gt_frost">Frosted</label>
+            <input type="radio" name="glassPrep" id="gp_quarter" value='1/4"'>
+            <label for="gp_quarter">1/4"</label>
+            <input type="radio" name="glassPrep" id="gp_9_16" value='9/16"'>
+            <label for="gp_9_16">9/16"</label>
+            <input type="radio" name="glassPrep" id="gp_5_8" value='5/8"'>
+            <label for="gp_5_8">5/8"</label>
+            <input type="radio" name="glassPrep" id="gp_1in" value='1"' checked>
+            <label for="gp_1in">1"</label>
           </div>
-          <span class="hint">Glass is <strong>not included</strong> in pricing — specify type for glazing coordination. Lead-lined available, specify in notes.</span>
+          <span class="hint">Glass <strong>not included</strong> — frame is prepped for specified thickness.</span>
+        </div>
+
+        <!-- Transom glass prep — only shown when transom selected -->
+        <div class="field" id="transom-glass-field" style="display:none;">
+          <label>Transom Glass Prep</label>
+          <div class="chip-group">
+            <input type="radio" name="transomGlassPrep" id="tgp_quarter" value='1/4"' checked>
+            <label for="tgp_quarter">1/4"</label>
+            <input type="radio" name="transomGlassPrep" id="tgp_1in" value='1"'>
+            <label for="tgp_1in">1"</label>
+          </div>
         </div>
 
         <!-- Stile width -->
@@ -873,6 +884,8 @@ function updateFTTH() {
   const hasTransom = rv('transom') === 'yes';
   const f = document.getElementById('ftth-field');
   if (f) f.style.display = hasTransom ? '' : 'none';
+  const tg = document.getElementById('transom-glass-field');
+  if (tg) tg.style.display = hasTransom ? '' : 'none';
 }
 
 // ── FBO-only add-on visibility ──────────────────────────────────────
@@ -1016,8 +1029,9 @@ function updateSpecSummary() {
   const specs = [
     ['Configuration', cfg ? cfg.label : '—'],
     ['Code', cfg ? cfg.code : '—'],
-    ['Finish', rv('glazing') || '—'],
-    ['Glass Type', rv('glassType') || '—'],
+    ['Frame Finish', rv('glazing') || '—'],
+    ['Door Glass Prep', rv('glassPrep') || '—'],
+    ...(rv('transom') === 'yes' ? [['Transom Glass Prep', rv('transomGlassPrep') || '—']] : []),
     ['Stile Width', rv('stileWidth') === 'medium' ? 'Medium 3-3/4"' : 'Narrow (std)'],
     ['Bottom Rail', rv('bottomRail') === '6in' ? '6"' : rv('bottomRail') === '10in' ? '10"' : '3-1/2" (std)'],
     ['Threshold', rv('threshold') || '—'],
@@ -1272,7 +1286,7 @@ document.getElementById('quoteForm').addEventListener('submit', async function(e
     projectName: fv('f_project'), location: fv('f_location'),
     poNumber: fv('f_po'), shipDate: fv('f_shipdate'), quantity: fv('f_qty'),
     configuration: cfg ? cfg.label + ' (' + cfg.code + ')' : rv('config'),
-    frameFinish: rv('glazing'), glassType: rv('glassType'),
+    frameFinish: rv('glazing'), doorGlassPrep: rv('glassPrep'), transomGlassPrep: rv('transomGlassPrep') || 'N/A',
     stileWidth: rv('stileWidth') === 'medium' ? 'Medium 3-3/4"' : 'Narrow (std)',
     bottomRail: rv('bottomRail') === '6in' ? '6"' : rv('bottomRail') === '10in' ? '10"' : '3-1/2" (std)',
     threshold: rv('threshold'),
@@ -1316,7 +1330,8 @@ function showConf(data, pd) {
 
   const doorSpecs = [
     ['Configuration',data.configuration],
-    ['Frame Finish',data.frameFinish],['Glass Type',data.glassType],
+    ['Frame Finish',data.frameFinish],['Door Glass Prep',data.doorGlassPrep],
+    ...(data.transom === 'Yes' ? [['Transom Glass Prep',data.transomGlassPrep]] : []),
     ['Stile Width',data.stileWidth],['Bottom Rail',data.bottomRail],
     ['Threshold',data.threshold],['Sensor',data.sensor],
     ['Transom',data.transom + (data.ftth && data.ftth !== 'N/A' ? ' — FTTH: '+data.ftth : '')],
