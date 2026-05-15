@@ -314,7 +314,7 @@
     <div class="sub">doortronixusa.com</div>
   </div>
   <div class="tagline">
-    Manufactured in Bullard, Texas<br>
+    Manufactured in Malakoff, Texas<br>
     Factory-Direct to Contractors Nationwide
   </div>
 </div>
@@ -325,10 +325,10 @@
   <!-- ── FORM PANEL ─────────────────────────────────────────── -->
   <div class="form-panel">
     <h1>Request a Factory-Direct Quote</h1>
-    <p class="intro">Fill out all 20 fields below. Our team in Bullard, Texas will respond with a detailed quote, confirmed lead time, and freight estimate within <strong>4 business hours</strong>.</p>
+    <p class="intro">Fill out all 20 fields below. Our team in Malakoff, Texas will respond with a detailed quote, confirmed lead time, and freight estimate within <strong>4 business hours</strong>.</p>
 
     <div class="trust-bar">
-      <span class="trust-chip">✓ Manufactured in Bullard, TX</span>
+      <span class="trust-chip">✓ Manufactured in Malakoff, TX</span>
       <span class="trust-chip">✓ Factory-Direct Pricing</span>
       <span class="trust-chip">✓ 4-Hour Response</span>
       <span class="trust-chip">✓ Ships in 3–4 Weeks</span>
@@ -384,7 +384,7 @@
         <div class="field">
           <label>Target Ship Date</label>
           <input type="date" name="shipDate" id="f_shipdate">
-          <span class="hint">Standard lead time: 3–4 weeks from Bullard, TX</span>
+          <span class="hint">Standard lead time: 3–4 weeks from Malakoff, TX</span>
         </div>
         <div class="field">
           <label>Number of Door Openings <span class="req">*</span></label>
@@ -408,10 +408,6 @@
           <div class="chip-group" id="doorTypeGroup">
             <input type="radio" name="doorType" id="dt_slide" value="Automatic Sliding" checked>
             <label for="dt_slide">Automatic Sliding</label>
-            <input type="radio" name="doorType" id="dt_glass" value="All-Glass Sliding">
-            <label for="dt_glass">All-Glass Sliding</label>
-            <input type="radio" name="doorType" id="dt_herm" value="Hermetic / ICU">
-            <label for="dt_herm">Hermetic / ICU</label>
             <input type="radio" name="doorType" id="dt_swing" value="Automatic Swinging">
             <label for="dt_swing">Auto Swinging</label>
             <input type="radio" name="doorType" id="dt_fold" value="Automatic Folding">
@@ -615,7 +611,7 @@
     <div class="conf-header">
       <div>
         <h2>✓ Quote Request Submitted</h2>
-        <p>Our team in Bullard, Texas will respond within 4 business hours with your detailed quote, confirmed production lead time, and freight estimate.</p>
+        <p>Our team in Malakoff, Texas will respond within 4 business hours with your detailed quote, confirmed production lead time, and freight estimate.</p>
       </div>
       <div class="conf-ref">
         <div style="font-size:16px;font-weight:700;color:#fff;" id="conf-ref-num"></div>
@@ -643,7 +639,7 @@
       </div>
     </div>
     <div class="conf-footer">
-      <p>Doortronix USA — Manufactured in Bullard, Texas | Factory-Direct to Contractors Nationwide | doortronixusa.com</p>
+      <p>Doortronix USA — Manufactured in Malakoff, Texas | Factory-Direct to Contractors Nationwide | doortronixusa.com</p>
       <div style="display:flex;gap:10px;">
         <button class="btn-close" onclick="closeConfirmation()">Close</button>
         <button class="btn-print" onclick="window.print()">Print / Save PDF</button>
@@ -750,11 +746,11 @@ function drawDoor(svgId, vbW, vbH, isConfirmation) {
 
   const frameFill  = getFrameColor(finish);
   const glaze      = getGlazingFill(glazing);
-  const isHermetic = doorType === 'Hermetic / ICU';
+  const isHermetic = false;
   const isSwing    = doorType === 'Automatic Swinging';
   const isFolding  = doorType === 'Automatic Folding';
   const isRevolving= doorType === 'Revolving Door';
-  const isAllGlass = doorType === 'All-Glass Sliding';
+  const isAllGlass = false;
   const isBi       = panelCfg === 'Bi-Parting';
 
   // ── Derived layout constants ──────────────────────────────────
@@ -1054,7 +1050,7 @@ function drawDoor(svgId, vbW, vbH, isConfirmation) {
     line(0, tbY, vbW, tbY, '#E87722', 2);
     text(16, tbY+18, 'DOORTRONIX USA — CONFIRMATION DRAWING', 10, '#fff', 'start', '700');
     text(16, tbY+32, 'Not for construction — for customer approval only', 8, '#B8CCE4', 'start');
-    text(16, tbY+46, 'Manufactured in Bullard, Texas | Factory-Direct from our Texas Production Facility', 8, '#B8CCE4', 'start');
+    text(16, tbY+46, 'Manufactured in Malakoff, Texas | Factory-Direct from our Texas Production Facility', 8, '#B8CCE4', 'start');
     text(vbW-16, tbY+18, `${doorType}`, 10, '#E87722', 'end', '700');
     text(vbW-16, tbY+32, `${width} W × ${height} H`, 9, '#fff', 'end', '700');
     text(vbW-16, tbY+46, `${finish} / ${glazing}`, 8, '#B8CCE4', 'end');
