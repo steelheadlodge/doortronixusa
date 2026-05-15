@@ -393,7 +393,7 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
         <!-- Frame Width -->
         <div class="field">
           <label>Frame Width <span class="req">*</span></label>
-          <div class="ft-in-group">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">
             <div class="field">
               <select id="f_wft" name="widthFt">
                 <option value="">Ft —</option>
@@ -411,23 +411,47 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
                 <option value="9">9"</option><option value="10">10"</option><option value="11">11"</option>
               </select>
             </div>
+            <div class="field">
+              <select id="f_w16" name="widthSixteenth">
+                <option value="0" selected>0</option>
+                <option value="1">1/16</option><option value="2">1/8</option><option value="3">3/16</option>
+                <option value="4">1/4</option><option value="5">5/16</option><option value="6">3/8</option>
+                <option value="7">7/16</option><option value="8">1/2</option><option value="9">9/16</option>
+                <option value="10">5/8</option><option value="11">11/16</option><option value="12">3/4</option>
+                <option value="13">13/16</option><option value="14">7/8</option><option value="15">15/16</option>
+              </select>
+            </div>
           </div>
-          <span class="hint" id="width-range-note"></span>
+          <span class="hint size-range-note" id="width-range-note"></span>
         </div>
 
         <!-- Frame Height -->
         <div class="field">
           <label>Frame Height</label>
-          <div class="ft-in-group">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">
             <div class="field">
               <select id="f_hft" name="heightFt">
-                <option value="7">7'</option><option value="8" selected>8'</option>
+                <option value="7" selected>7'</option><option value="8">8'</option>
                 <option value="9">9'</option><option value="10">10'</option><option value="11">11'</option>
+                <option value="12">12'</option>
               </select>
             </div>
             <div class="field">
               <select id="f_hin" name="heightIn">
-                <option value="0" selected>0"</option><option value="6">6"</option>
+                <option value="0">0"</option><option value="1">1"</option><option value="2">2"</option>
+                <option value="3">3"</option><option value="4">4"</option><option value="5">5"</option>
+                <option value="6" selected>6"</option><option value="7">7"</option><option value="8">8"</option>
+                <option value="9">9"</option><option value="10">10"</option><option value="11">11"</option>
+              </select>
+            </div>
+            <div class="field">
+              <select id="f_h16" name="heightSixteenth">
+                <option value="0" selected>0</option>
+                <option value="1">1/16</option><option value="2">1/8</option><option value="3">3/16</option>
+                <option value="4">1/4</option><option value="5">5/16</option><option value="6">3/8</option>
+                <option value="7">7/16</option><option value="8">1/2</option><option value="9">9/16</option>
+                <option value="10">5/8</option><option value="11">11/16</option><option value="12">3/4</option>
+                <option value="13">13/16</option><option value="14">7/8</option><option value="15">15/16</option>
               </select>
             </div>
           </div>
@@ -798,23 +822,32 @@ function getConfig() { return CONFIGS[rv('config')] || null; }
 function getWidthIn() {
   const ft = parseInt(fv('f_wft'));
   const inches = parseInt(fv('f_win')) || 0;
+  const sixteenth = parseInt(fv('f_w16')) || 0;
   if (!ft) return null;
-  return ft * 12 + inches;
+  return ft * 12 + inches + sixteenth / 16;
 }
 function getWidthStr() {
-  const ft = fv('f_wft'), inches = fv('f_win') || '0';
+  const ft = fv('f_wft');
   if (!ft) return '—';
-  return `${ft}'${inches === '0' ? '' : inches + '"'}`;
+  const inches = parseInt(fv('f_win')) || 0;
+  const sixteenth = parseInt(fv('f_w16')) || 0;
+  const inStr = inches === 0 && sixteenth === 0 ? '' : inches + (sixteenth ? '-' + SIXTEENTH_LABELS[sixteenth] : '') + '"';
+  return `${ft}'${inStr}`;
 }
+const SIXTEENTH_LABELS = ['','1/16','1/8','3/16','1/4','5/16','3/8','7/16','1/2','9/16','5/8','11/16','3/4','13/16','7/8','15/16'];
 function getHeightIn() {
   const ft = parseInt(fv('f_hft'));
   const inches = parseInt(fv('f_hin')) || 0;
+  const sixteenth = parseInt(fv('f_h16')) || 0;
   if (!ft) return null;
-  return ft * 12 + inches;
+  return ft * 12 + inches + sixteenth / 16;
 }
 function getHeightStr() {
-  const ft = fv('f_hft'), inches = fv('f_hin') || '0';
-  return `${ft}'${inches === '0' ? '' : inches + '"'}`;
+  const ft = fv('f_hft');
+  const inches = parseInt(fv('f_hin')) || 0;
+  const sixteenth = parseInt(fv('f_h16')) || 0;
+  const inStr = inches === 0 && sixteenth === 0 ? '' : inches + (sixteenth ? '-' + SIXTEENTH_LABELS[sixteenth] : '') + '"';
+  return `${ft}'${inStr}`;
 }
 function getOpenStr() {
   const ft = fv('f_oft'), inches = fv('f_oin') || '0';
@@ -822,6 +855,11 @@ function getOpenStr() {
   return `${ft}'${inches === '0' ? '' : inches + '"'}`;
 }
 function fmt(n) { return '$' + n.toLocaleString(); }
+function inToStr(totalIn) {
+  const ft = Math.floor(totalIn / 12);
+  const inches = totalIn % 12;
+  return `${ft}'${inches ? inches + '"' : '0"'}`;
+}
 
 // ── Add-on toggle ───────────────────────────────────────────────────
 function toggleAddon(el) {
@@ -903,26 +941,31 @@ function calcPrice() {
   if (wIn !== null) {
     const note = document.getElementById('width-range-note');
     if (wIn < cfg.minW) {
-      if (note) { note.textContent = `⚠ Under standard range (${cfg.minW/12}'0" min) — call us to confirm pricing`; note.className = 'size-range-note warn'; }
+      if (note) { note.textContent = `⚠ Minimum frame width is ${inToStr(cfg.minW)} — call us to confirm`; note.className = 'size-range-note warn'; }
     } else if (wIn > cfg.maxW) {
-      if (note) { note.textContent = `⚠ Over standard range (${cfg.maxW/12}'0" max) — call us to confirm pricing`; note.className = 'size-range-note warn'; }
+      if (note) { note.textContent = `⚠ Over ${inToStr(cfg.maxW)} — call us for pricing on wider openings`; note.className = 'size-range-note warn'; }
     } else {
-      if (note) { note.textContent = `✓ Within standard range`; note.className = 'size-range-note ok'; }
+      if (note) { note.textContent = `✓ Within range (${inToStr(cfg.minW)} – ${inToStr(cfg.maxW)})`; note.className = 'size-range-note ok'; }
     }
   } else {
     const note = document.getElementById('width-range-note');
-    if (note) { note.textContent = `Standard: ${cfg.minW/12}'0" to ${cfg.maxW/12}'0" frame width`; note.className = 'size-range-note'; }
+    if (note) { note.textContent = `Bi-part: 8'0" – 14'0"  |  Single: 6'6" – 9'0"`; note.className = 'size-range-note'; }
   }
 
-  // Height check (standard 7'6" – 8'0" = 90–96")
+  // Height check — no transom: 7'6"–8'0"; with transom: 7'6"–12'0"
   const hIn = getHeightIn();
   const hNote = document.getElementById('height-range-note');
   if (hIn !== null && hNote) {
-    if (hIn < 90 || hIn > 96) {
-      hNote.textContent = `⚠ Outside standard range (7'6" – 8'0") — call us to confirm pricing`;
+    const hMax = rv('transom') === 'yes' ? 144 : 96;
+    const hMaxStr = rv('transom') === 'yes' ? "12'0\"" : "8'0\"";
+    if (hIn < 90) {
+      hNote.textContent = `⚠ Minimum frame height is 7'6" — call us to confirm`;
+      hNote.className = 'size-range-note warn';
+    } else if (hIn > hMax) {
+      hNote.textContent = `⚠ Over ${hMaxStr} — call us for taller openings`;
       hNote.className = 'size-range-note warn';
     } else {
-      hNote.textContent = `✓ Standard height`;
+      hNote.textContent = `✓ Within range (7'6" – ${hMaxStr})`;
       hNote.className = 'size-range-note ok';
     }
   }
