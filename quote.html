@@ -1163,46 +1163,39 @@ function drawDoor(svgId, vW, vH, isConf) {
     r(pX+hw-2, pY, 4, pH, frame, '#666', 1);
     t(dX+dW/2, pY+pH/2+4, 'ESA', 9, '#888', 'middle');
   } else if (isBi) {
-    // Bipart
-    const sW = pW * 0.22, aW = (pW - sW*2) / 2;
-    // Left sidelight
-    r(pX, pY, sW-1, pH, glaze.fill, isFBO?frame:'#AABBC8', isFBO?1.5:1, 0);
-    if (!isFBO) l(pX,pY,pX,pY+pH,'#AABBC8',1,'3,2');
-    t(pX+sW/2, pY+pH/2+4, isFBO?'SL':'P', 7, '#888', 'middle');
-    // Left active panel
-    r(pX+sW+1, pY, aW-2, pH, glaze.fill, frame, 1.5);
-    // Right active panel
-    r(pX+sW+aW+2, pY, aW-2, pH, glaze.fill, frame, 1.5);
-    // Right sidelight
-    r(pX+pW-sW+1, pY, sW-1, pH, glaze.fill, isFBO?frame:'#AABBC8', isFBO?1.5:1, 0);
-    t(pX+pW-sW/2, pY+pH/2+4, isFBO?'SL':'P', 7, '#888', 'middle');
+    // Bipart — 4 equal panels
+    const gap = 3, panW = (pW - gap * 3) / 4;
+    const x1 = pX, x2 = pX + panW + gap, x3 = pX + (panW + gap) * 2, x4 = pX + (panW + gap) * 3;
+    const sideStroke = isFBO ? frame : '#AABBC8', sideSW = isFBO ? 1.5 : 1;
+    r(x1, pY, panW, pH, glaze.fill, sideStroke, sideSW);
+    r(x2, pY, panW, pH, glaze.fill, frame, 1.5);
+    r(x3, pY, panW, pH, glaze.fill, frame, 1.5);
+    r(x4, pY, panW, pH, glaze.fill, sideStroke, sideSW);
     // Center interlock
-    r(pX+sW+aW-1, pY, 4, pH, frame, '#666', 1);
-    // Movement arrows
-    const aY = pY+pH*0.45;
-    l(pX+sW+aW*0.2,aY,pX+sW+aW*0.6,aY,'#1B4F8A',1,'3,2');
-    path(`M${pX+sW+aW*0.6},${aY}l-4,-3l0,6Z`,'#1B4F8A');
-    l(pX+sW+aW+aW*0.4,aY,pX+sW+aW+aW*0.8,aY,'#1B4F8A',1,'3,2');
-    path(`M${pX+sW+aW+aW*0.4},${aY}l4,-3l0,6Z`,'#1B4F8A');
+    r(x3 - gap, pY, gap, pH, frame, '#666', 1);
+    // Movement arrows on active panels
+    const aY = pY + pH * 0.45;
+    l(x2 + panW*0.2, aY, x2 + panW*0.7, aY, '#1B4F8A', 1, '3,2');
+    path(`M${x2 + panW*0.7},${aY}l-4,-3l0,6Z`, '#1B4F8A');
+    l(x3 + panW*0.3, aY, x3 + panW*0.8, aY, '#1B4F8A', 1, '3,2');
+    path(`M${x3 + panW*0.3},${aY}l4,-3l0,6Z`, '#1B4F8A');
   } else {
-    // Single slide
-    const sW = pW * 0.38, aW = pW - sW;
+    // Single slide — 2 equal panels
+    const gap = 3, panW = (pW - gap) / 2;
+    const sideStroke = isFBO ? frame : '#AABBC8', sideSW = isFBO ? 1.5 : 1;
+    const aY = pY + pH * 0.45;
     if (isLH) {
-      // Fixed sidelight on left, active panel on right
-      r(pX, pY, sW-1, pH, glaze.fill, '#AABBC8', 1);
-      t(pX+sW/2, pY+pH*0.45, 'FIXED', 7, '#888', 'middle');
-      r(pX+sW+1, pY, aW-2, pH, glaze.fill, frame, 1.5);
-      const aY = pY+pH*0.45;
-      l(pX+sW+aW*0.25,aY,pX+sW+aW*0.65,aY,'#1B4F8A',1,'3,2');
-      path(`M${pX+sW+aW*0.25},${aY}l4,-3l0,6Z`,'#1B4F8A');
+      // Sidelight left, active panel right — slides left
+      r(pX, pY, panW, pH, glaze.fill, sideStroke, sideSW);
+      r(pX + panW + gap, pY, panW, pH, glaze.fill, frame, 1.5);
+      l(pX + panW + gap + panW*0.3, aY, pX + panW + gap + panW*0.8, aY, '#1B4F8A', 1, '3,2');
+      path(`M${pX + panW + gap + panW*0.3},${aY}l4,-3l0,6Z`, '#1B4F8A');
     } else {
-      // Active panel on left, fixed sidelight on right
-      r(pX, pY, aW-1, pH, glaze.fill, frame, 1.5);
-      r(pX+aW+1, pY, sW-2, pH, glaze.fill, '#AABBC8', 1);
-      t(pX+aW+sW/2, pY+pH*0.45, 'FIXED', 7, '#888', 'middle');
-      const aY = pY+pH*0.45;
-      l(pX+aW*0.3,aY,pX+aW*0.7,aY,'#1B4F8A',1,'3,2');
-      path(`M${pX+aW*0.7},${aY}l-4,-3l0,6Z`,'#1B4F8A');
+      // Active panel left — slides right, sidelight right
+      r(pX, pY, panW, pH, glaze.fill, frame, 1.5);
+      r(pX + panW + gap, pY, panW, pH, glaze.fill, sideStroke, sideSW);
+      l(pX + panW*0.2, aY, pX + panW*0.7, aY, '#1B4F8A', 1, '3,2');
+      path(`M${pX + panW*0.7},${aY}l-4,-3l0,6Z`, '#1B4F8A');
     }
   }
 
