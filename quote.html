@@ -5,338 +5,207 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Request a Quote — Doortronix USA</title>
 <style>
-  /* ── Reset & base ─────────────────────────────────────────── */
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: Arial, Helvetica, sans-serif; font-size: 14px;
-         background: #F0F4F8; color: #111; min-height: 100vh; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #F0F4F8; color: #111; min-height: 100vh; }
+:root {
+  --blue:   #1B4F8A; --dblue: #163F6E; --orange: #E87722;
+  --lgray:  #F2F4F7; --mgray: #6B7280; --border: #D0D5DD;
+  --white:  #FFFFFF; --green: #166534; --lgreen: #DCFCE7; --red: #DC2626;
+}
 
-  /* ── Brand colors ─────────────────────────────────────────── */
-  :root {
-    --blue:   #1B4F8A;
-    --dblue:  #163F6E;
-    --orange: #E87722;
-    --lgray:  #F2F4F7;
-    --mgray:  #6B7280;
-    --border: #D0D5DD;
-    --white:  #FFFFFF;
-    --green:  #166534;
-    --lgreen: #DCFCE7;
-    --red:    #DC2626;
-  }
+/* ── Top bar ── */
+.topbar { background:var(--blue); color:#fff; padding:14px 28px; display:flex; align-items:center; justify-content:space-between; box-shadow:0 2px 8px rgba(0,0,0,.25); position:sticky; top:0; z-index:100; }
+.topbar .brand { font-size:20px; font-weight:700; letter-spacing:.5px; }
+.topbar .brand span { color:var(--orange); }
+.topbar .sub { font-size:12px; color:#B8CCE4; }
+.topbar .tagline { font-size:12px; color:#B8CCE4; text-align:right; }
 
-  /* ── Top bar ──────────────────────────────────────────────── */
-  .topbar {
-    background: var(--blue);
-    color: #fff;
-    padding: 14px 28px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    box-shadow: 0 2px 8px rgba(0,0,0,.25);
-    position: sticky; top: 0; z-index: 100;
-  }
-  .topbar .brand { font-size: 20px; font-weight: 700; letter-spacing: .5px; }
-  .topbar .brand span { color: var(--orange); }
-  .topbar .sub { font-size: 12px; color: #B8CCE4; }
-  .topbar .tagline { font-size: 12px; color: #B8CCE4; text-align: right; }
+/* ── Layout ── */
+.layout { display:grid; grid-template-columns:1fr 440px; gap:0; max-width:1340px; margin:0 auto; min-height:calc(100vh - 56px); }
 
-  /* ── Layout ───────────────────────────────────────────────── */
-  .layout {
-    display: grid;
-    grid-template-columns: 1fr 420px;
-    gap: 0;
-    max-width: 1300px;
-    margin: 0 auto;
-    min-height: calc(100vh - 56px);
-  }
+/* ── Form panel ── */
+.form-panel { background:var(--white); padding:28px 32px 48px; overflow-y:auto; border-right:1px solid var(--border); }
+.form-panel h1 { font-size:21px; font-weight:700; color:var(--blue); margin-bottom:4px; }
+.form-panel .intro { font-size:13px; color:var(--mgray); margin-bottom:20px; line-height:1.5; }
+.trust-bar { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:22px; }
+.trust-chip { background:var(--lgreen); color:var(--green); border:1px solid #BBF7D0; border-radius:20px; padding:4px 12px; font-size:11px; font-weight:700; }
 
-  /* ── Form panel ───────────────────────────────────────────── */
-  .form-panel {
-    background: var(--white);
-    padding: 32px 36px 48px;
-    overflow-y: auto;
-    border-right: 1px solid var(--border);
-  }
-  .form-panel h1 {
-    font-size: 22px; font-weight: 700; color: var(--blue);
-    margin-bottom: 4px;
-  }
-  .form-panel .intro {
-    font-size: 13px; color: var(--mgray); margin-bottom: 28px;
-    line-height: 1.5;
-  }
-  .trust-bar {
-    display: flex; flex-wrap: wrap; gap: 10px;
-    margin-bottom: 28px;
-  }
-  .trust-chip {
-    background: var(--lgreen); color: var(--green);
-    border: 1px solid #BBF7D0;
-    border-radius: 20px; padding: 4px 12px;
-    font-size: 11px; font-weight: 700;
-  }
+/* ── Section headers ── */
+.section-header { background:var(--blue); color:#fff; padding:8px 14px; border-radius:6px; font-size:12px; font-weight:700; letter-spacing:.6px; text-transform:uppercase; margin:24px 0 14px; }
 
-  /* ── Section headers ──────────────────────────────────────── */
-  .section-header {
-    background: var(--blue); color: #fff;
-    padding: 8px 14px; border-radius: 6px;
-    font-size: 12px; font-weight: 700; letter-spacing: .6px;
-    text-transform: uppercase; margin: 28px 0 16px;
-  }
+/* ── Form grid ── */
+.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.form-grid .full { grid-column:1/-1; }
+.field { display:flex; flex-direction:column; gap:5px; }
+.field label { font-size:12px; font-weight:700; color:#374151; display:flex; align-items:center; gap:4px; }
+.field label .req { color:var(--red); font-size:13px; }
+.field input, .field select, .field textarea { padding:9px 12px; border:1.5px solid var(--border); border-radius:6px; font-size:13px; font-family:Arial,sans-serif; color:#111; background:#fff; transition:border-color .15s,box-shadow .15s; width:100%; }
+.field input:focus, .field select:focus, .field textarea:focus { outline:none; border-color:var(--blue); box-shadow:0 0 0 3px rgba(27,79,138,.12); }
+.field textarea { resize:vertical; min-height:70px; }
+.field .hint { font-size:11px; color:var(--mgray); margin-top:2px; }
 
-  /* ── Form grid ────────────────────────────────────────────── */
-  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  .form-grid .full { grid-column: 1 / -1; }
+/* ── Chip groups ── */
+.chip-group { display:flex; flex-wrap:wrap; gap:7px; }
+.chip-group input[type=radio], .chip-group input[type=checkbox] { display:none; }
+.chip-group label { border:1.5px solid var(--border); border-radius:20px; padding:5px 13px; font-size:12px; font-weight:600; color:var(--mgray); cursor:pointer; transition:all .15s; user-select:none; }
+.chip-group input:checked + label { border-color:var(--blue); background:var(--blue); color:#fff; }
+.chip-group label:hover { border-color:var(--blue); color:var(--blue); }
 
-  .field { display: flex; flex-direction: column; gap: 5px; }
-  .field label {
-    font-size: 12px; font-weight: 700; color: #374151;
-    display: flex; align-items: center; gap: 4px;
-  }
-  .field label .req { color: var(--red); font-size: 13px; }
-  .field input, .field select, .field textarea {
-    padding: 9px 12px;
-    border: 1.5px solid var(--border);
-    border-radius: 6px;
-    font-size: 13px;
-    font-family: Arial, sans-serif;
-    color: #111;
-    background: #fff;
-    transition: border-color .15s, box-shadow .15s;
-    width: 100%;
-  }
-  .field input:focus, .field select:focus, .field textarea:focus {
-    outline: none;
-    border-color: var(--blue);
-    box-shadow: 0 0 0 3px rgba(27,79,138,.12);
-  }
-  .field textarea { resize: vertical; min-height: 80px; }
-  .field .hint { font-size: 11px; color: var(--mgray); margin-top: 2px; }
+/* ── Config cards ── */
+.config-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:4px; }
+.config-grid input[type=radio] { display:none; }
+.config-card { border:2px solid var(--border); border-radius:10px; padding:10px 8px; cursor:pointer; transition:all .15s; text-align:center; background:#fff; display:block; }
+.config-card:hover { border-color:var(--blue); }
+.config-grid input[type=radio]:checked + .config-card { border-color:var(--blue); background:#EEF4FB; box-shadow:0 0 0 2px rgba(27,79,138,.15); }
+.config-card .cc-icon { margin:0 auto 5px; }
+.config-card .cc-name { font-size:12px; font-weight:700; color:var(--blue); line-height:1.2; }
+.config-card .cc-code { font-size:10px; color:var(--mgray); margin-top:2px; letter-spacing:.3px; }
+.config-card .cc-price { font-size:12px; font-weight:700; color:var(--orange); margin-top:4px; }
+.config-esa { grid-column:1/-1; }
 
-  /* ── Option chips (for finish, glazing, activation) ─────── */
-  .chip-group { display: flex; flex-wrap: wrap; gap: 8px; }
-  .chip-group input[type=radio], .chip-group input[type=checkbox] { display: none; }
-  .chip-group label {
-    border: 1.5px solid var(--border);
-    border-radius: 20px;
-    padding: 6px 14px;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--mgray);
-    cursor: pointer;
-    transition: all .15s;
-    user-select: none;
-  }
-  .chip-group input:checked + label {
-    border-color: var(--blue);
-    background: var(--blue);
-    color: #fff;
-  }
-  .chip-group input[type=checkbox]:checked + label {
-    border-color: var(--orange);
-    background: var(--orange);
-    color: #fff;
-  }
-  .chip-group label:hover { border-color: var(--blue); color: var(--blue); }
+/* ── Dimension row ── */
+.dim-row { display:grid; grid-template-columns:1fr 16px 1fr; align-items:center; gap:6px; }
+.dim-sep { text-align:center; color:var(--mgray); font-size:14px; font-weight:700; }
+.ft-in-group { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+.size-range-note { font-size:11px; color:var(--mgray); margin-top:5px; }
+.size-range-note.warn { color:#B45309; font-weight:700; }
+.size-range-note.ok { color:var(--green); }
 
-  /* ── Size row ─────────────────────────────────────────────── */
-  .size-row { display: grid; grid-template-columns: 1fr 24px 1fr; align-items: center; gap: 8px; }
-  .size-sep { text-align: center; color: var(--mgray); font-size: 16px; }
+/* ── Add-ons ── */
+.addon-section-label { font-size:11px; font-weight:700; color:var(--mgray); text-transform:uppercase; letter-spacing:.5px; margin:14px 0 8px; padding-bottom:4px; border-bottom:1px solid var(--border); }
+.addon-item { display:flex; align-items:center; justify-content:space-between; padding:7px 10px; border:1.5px solid var(--border); border-radius:7px; margin-bottom:5px; background:#fff; cursor:pointer; transition:all .15s; gap:8px; }
+.addon-item:hover { border-color:var(--blue); }
+.addon-item.checked { border-color:var(--orange); background:#FFF8F3; }
+.addon-item.disabled { opacity:.4; cursor:not-allowed; }
+.addon-check { display:none; }
+.addon-label-wrap { flex:1; }
+.addon-label-wrap .al { font-size:12px; font-weight:600; color:#111; }
+.addon-label-wrap .ad { font-size:10px; color:var(--mgray); margin-top:1px; }
+.addon-price-tag { font-size:12px; font-weight:700; color:var(--blue); white-space:nowrap; }
+.addon-qty-wrap { display:none; align-items:center; gap:4px; }
+.addon-item.checked .addon-qty-wrap { display:flex; }
+.addon-qty-wrap label { font-size:11px; color:var(--mgray); }
+.addon-qty-wrap select { padding:3px 6px; border:1.5px solid var(--border); border-radius:4px; font-size:12px; font-family:Arial; width:52px; }
+.addon-check-visual { width:18px; height:18px; border:2px solid var(--border); border-radius:4px; flex-shrink:0; display:flex; align-items:center; justify-content:center; transition:all .15s; }
+.addon-item.checked .addon-check-visual { background:var(--orange); border-color:var(--orange); }
+.addon-check-visual::after { content:'✓'; font-size:11px; color:#fff; font-weight:700; opacity:0; transition:opacity .1s; }
+.addon-item.checked .addon-check-visual::after { opacity:1; }
 
-  /* ── Submit ───────────────────────────────────────────────── */
-  .submit-section {
-    margin-top: 36px;
-    padding-top: 28px;
-    border-top: 2px solid var(--lgray);
-  }
-  .submit-section p {
-    font-size: 12px; color: var(--mgray); margin-bottom: 16px; line-height: 1.5;
-  }
-  .btn-submit {
-    width: 100%;
-    padding: 16px;
-    background: var(--orange);
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background .15s, transform .1s;
-    letter-spacing: .3px;
-  }
-  .btn-submit:hover { background: #CF6A1A; }
-  .btn-submit:active { transform: scale(.99); }
+/* ── Submit ── */
+.submit-section { margin-top:28px; padding-top:22px; border-top:2px solid var(--lgray); }
+.submit-section p { font-size:11px; color:var(--mgray); margin-bottom:14px; line-height:1.5; }
+.btn-submit { width:100%; padding:15px; background:var(--orange); color:#fff; border:none; border-radius:8px; font-size:15px; font-weight:700; cursor:pointer; transition:background .15s,transform .1s; letter-spacing:.3px; }
+.btn-submit:hover { background:#CF6A1A; }
+.btn-submit:active { transform:scale(.99); }
 
-  /* ── Preview panel ────────────────────────────────────────── */
-  .preview-panel {
-    background: var(--lgray);
-    padding: 24px 20px;
-    position: sticky;
-    top: 56px;
-    height: calc(100vh - 56px);
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-  .preview-title {
-    font-size: 13px; font-weight: 700; color: var(--blue);
-    text-transform: uppercase; letter-spacing: .6px;
-    display: flex; align-items: center; gap: 8px;
-  }
-  .preview-title::after {
-    content: ""; flex: 1; height: 2px; background: var(--blue); opacity: .2;
-  }
-  #drawing-wrap {
-    background: #fff;
-    border: 1.5px solid var(--border);
-    border-radius: 10px;
-    padding: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,.06);
-  }
-  #door-svg { width: 100%; height: auto; display: block; }
+/* ── Preview panel ── */
+.preview-panel { background:var(--lgray); padding:20px 18px; position:sticky; top:56px; height:calc(100vh - 56px); overflow-y:auto; display:flex; flex-direction:column; gap:14px; }
+.preview-title { font-size:12px; font-weight:700; color:var(--blue); text-transform:uppercase; letter-spacing:.6px; display:flex; align-items:center; gap:8px; }
+.preview-title::after { content:""; flex:1; height:2px; background:var(--blue); opacity:.2; }
+#drawing-wrap { background:#fff; border:1.5px solid var(--border); border-radius:10px; padding:10px; box-shadow:0 2px 8px rgba(0,0,0,.06); }
+#door-svg { width:100%; height:auto; display:block; }
 
-  /* ── Spec summary card ───────────────────────────────────── */
-  .spec-card {
-    background: #fff;
-    border: 1.5px solid var(--border);
-    border-radius: 10px;
-    padding: 16px;
-    box-shadow: 0 2px 8px rgba(0,0,0,.06);
-  }
-  .spec-card h3 { font-size: 12px; font-weight: 700; color: var(--blue);
-    text-transform: uppercase; letter-spacing: .5px; margin-bottom: 12px; }
-  .spec-row {
-    display: flex; justify-content: space-between; align-items: baseline;
-    padding: 5px 0; border-bottom: 1px solid var(--lgray);
-    font-size: 12px;
-  }
-  .spec-row:last-child { border-bottom: none; }
-  .spec-row .sk { color: var(--mgray); }
-  .spec-row .sv { font-weight: 700; color: #111; text-align: right; max-width: 55%; }
+/* ── Price card ── */
+.price-card { background:#fff; border:1.5px solid var(--border); border-radius:10px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,.06); }
+.price-card-header { background:var(--blue); color:#fff; padding:10px 14px; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; }
+.price-card-body { padding:12px 14px; }
+.price-line { display:flex; justify-content:space-between; align-items:baseline; padding:4px 0; border-bottom:1px solid var(--lgray); font-size:12px; gap:8px; }
+.price-line:last-of-type { border-bottom:none; }
+.price-line .pl { color:var(--mgray); flex:1; }
+.price-line .pv { font-weight:700; color:#111; white-space:nowrap; }
+.price-line .pv.add { color:var(--orange); }
+.price-divider { border:none; border-top:2px solid var(--border); margin:8px 0; }
+.price-total-row { display:flex; justify-content:space-between; align-items:center; padding:8px 0 4px; }
+.price-total-row .pt-label { font-size:12px; font-weight:700; color:var(--blue); }
+.price-total-row .pt-value { font-size:20px; font-weight:700; color:var(--blue); }
+.price-note { font-size:10px; color:var(--mgray); margin-top:8px; line-height:1.5; border-top:1px solid var(--lgray); padding-top:8px; }
+.price-call { text-align:center; padding:16px; color:var(--blue); }
+.price-call .pc-label { font-size:13px; font-weight:700; margin-bottom:4px; }
+.price-call .pc-phone { font-size:18px; font-weight:700; color:var(--orange); }
+.price-empty { text-align:center; padding:20px; color:var(--mgray); font-size:12px; }
 
-  /* ── Confirmation overlay ────────────────────────────────── */
-  #confirmation {
-    display: none;
-    position: fixed; inset: 0;
-    background: rgba(10,30,60,.7);
-    z-index: 200;
-    overflow-y: auto;
-    padding: 32px 16px;
-  }
-  .conf-box {
-    background: #fff;
-    max-width: 860px;
-    margin: 0 auto;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 20px 60px rgba(0,0,0,.3);
-  }
-  .conf-header {
-    background: var(--blue);
-    color: #fff;
-    padding: 24px 32px;
-    display: flex; justify-content: space-between; align-items: flex-start;
-  }
-  .conf-header h2 { font-size: 20px; margin-bottom: 4px; }
-  .conf-header p { font-size: 13px; color: #B8CCE4; }
-  .conf-header .conf-ref { font-size: 12px; color: #B8CCE4; text-align: right; }
-  .conf-body { padding: 32px; }
-  .conf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
-  .conf-section h3 {
-    font-size: 11px; font-weight: 700; color: var(--blue);
-    text-transform: uppercase; letter-spacing: .6px;
-    margin-bottom: 12px;
-    padding-bottom: 6px;
-    border-bottom: 2px solid var(--blue);
-  }
-  .conf-spec-row {
-    display: flex; justify-content: space-between;
-    padding: 5px 0; border-bottom: 1px solid #F0F4F8;
-    font-size: 12px;
-  }
-  .conf-spec-row .ck { color: var(--mgray); }
-  .conf-spec-row .cv { font-weight: 700; }
-  #conf-svg-wrap { margin-top: 24px; }
-  #conf-svg-wrap h3 {
-    font-size: 11px; font-weight: 700; color: var(--blue);
-    text-transform: uppercase; letter-spacing: .6px;
-    margin-bottom: 12px;
-    padding-bottom: 6px;
-    border-bottom: 2px solid var(--blue);
-  }
-  #conf-svg { width: 100%; height: auto; border: 1px solid var(--border); border-radius: 6px; }
-  .conf-footer {
-    background: var(--lgray);
-    padding: 20px 32px;
-    display: flex; justify-content: space-between; align-items: center;
-    gap: 12px; flex-wrap: wrap;
-  }
-  .conf-footer p { font-size: 12px; color: var(--mgray); }
-  .btn-print {
-    padding: 10px 24px; background: var(--blue); color: #fff;
-    border: none; border-radius: 6px; font-size: 13px; font-weight: 700;
-    cursor: pointer;
-  }
-  .btn-print:hover { background: var(--dblue); }
-  .btn-close {
-    padding: 10px 24px; background: #fff; color: var(--mgray);
-    border: 1.5px solid var(--border); border-radius: 6px;
-    font-size: 13px; font-weight: 700; cursor: pointer;
-  }
-  .btn-close:hover { border-color: var(--red); color: var(--red); }
+/* ── Spec card ── */
+.spec-card { background:#fff; border:1.5px solid var(--border); border-radius:10px; padding:14px; box-shadow:0 2px 8px rgba(0,0,0,.06); }
+.spec-card h3 { font-size:11px; font-weight:700; color:var(--blue); text-transform:uppercase; letter-spacing:.5px; margin-bottom:10px; }
+.spec-row { display:flex; justify-content:space-between; align-items:baseline; padding:4px 0; border-bottom:1px solid var(--lgray); font-size:11px; }
+.spec-row:last-child { border-bottom:none; }
+.spec-row .sk { color:var(--mgray); }
+.spec-row .sv { font-weight:700; color:#111; text-align:right; max-width:60%; }
 
-  .orange-bar {
-    height: 4px; background: var(--orange); width: 100%;
-  }
+/* ── Confirmation ── */
+#confirmation { display:none; position:fixed; inset:0; background:rgba(10,30,60,.7); z-index:200; overflow-y:auto; padding:28px 16px; }
+.conf-box { background:#fff; max-width:900px; margin:0 auto; border-radius:12px; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,.3); }
+.conf-header { background:var(--blue); color:#fff; padding:22px 28px; display:flex; justify-content:space-between; align-items:flex-start; }
+.conf-header h2 { font-size:19px; margin-bottom:4px; }
+.conf-header p { font-size:12px; color:#B8CCE4; }
+.conf-header .conf-ref { font-size:12px; color:#B8CCE4; text-align:right; }
+.conf-body { padding:28px; }
+.conf-grid { display:grid; grid-template-columns:1fr 1fr; gap:28px; }
+.conf-section h3 { font-size:11px; font-weight:700; color:var(--blue); text-transform:uppercase; letter-spacing:.6px; margin-bottom:10px; padding-bottom:5px; border-bottom:2px solid var(--blue); }
+.conf-spec-row { display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid #F0F4F8; font-size:12px; }
+.conf-spec-row .ck { color:var(--mgray); }
+.conf-spec-row .cv { font-weight:700; }
+.conf-price-box { background:var(--lgray); border-radius:8px; padding:14px 18px; margin-top:18px; }
+.conf-price-box h3 { font-size:11px; font-weight:700; color:var(--blue); text-transform:uppercase; letter-spacing:.6px; margin-bottom:10px; }
+.conf-price-line { display:flex; justify-content:space-between; font-size:12px; padding:3px 0; }
+.conf-price-line .cpk { color:var(--mgray); }
+.conf-price-line .cpv { font-weight:700; }
+.conf-price-total { display:flex; justify-content:space-between; font-size:15px; font-weight:700; color:var(--blue); margin-top:8px; padding-top:8px; border-top:2px solid var(--border); }
+#conf-svg-wrap { margin-top:20px; }
+#conf-svg-wrap h3 { font-size:11px; font-weight:700; color:var(--blue); text-transform:uppercase; letter-spacing:.6px; margin-bottom:10px; padding-bottom:5px; border-bottom:2px solid var(--blue); }
+#conf-svg { width:100%; height:auto; border:1px solid var(--border); border-radius:6px; }
+.conf-footer { background:var(--lgray); padding:18px 28px; display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
+.conf-footer p { font-size:11px; color:var(--mgray); }
+.btn-print { padding:9px 22px; background:var(--blue); color:#fff; border:none; border-radius:6px; font-size:13px; font-weight:700; cursor:pointer; }
+.btn-print:hover { background:var(--dblue); }
+.btn-close { padding:9px 22px; background:#fff; color:var(--mgray); border:1.5px solid var(--border); border-radius:6px; font-size:13px; font-weight:700; cursor:pointer; }
+.btn-close:hover { border-color:var(--red); color:var(--red); }
+.orange-bar { height:4px; background:var(--orange); width:100%; }
 
-  @media (max-width: 900px) {
-    .layout { grid-template-columns: 1fr; }
-    .preview-panel { position: static; height: auto; }
-    .form-grid { grid-template-columns: 1fr; }
-    .conf-grid { grid-template-columns: 1fr; }
-  }
-  @media print {
-    #confirmation { position: static; background: none; padding: 0; }
-    .conf-footer .btn-print, .conf-footer .btn-close { display: none; }
-    .conf-box { box-shadow: none; border: 1px solid #ccc; }
-    .topbar, .form-panel, .preview-panel { display: none; }
-  }
+@media (max-width:960px) {
+  .layout { grid-template-columns:1fr; }
+  .preview-panel { position:static; height:auto; }
+  .config-grid { grid-template-columns:repeat(2,1fr); }
+}
+@media (max-width:600px) {
+  .form-grid { grid-template-columns:1fr; }
+  .config-grid { grid-template-columns:1fr 1fr; }
+  .conf-grid { grid-template-columns:1fr; }
+}
+@media print {
+  #confirmation { position:static; background:none; padding:0; }
+  .conf-footer .btn-print, .conf-footer .btn-close { display:none; }
+  .conf-box { box-shadow:none; border:1px solid #ccc; }
+  .topbar, .form-panel, .preview-panel { display:none; }
+}
 </style>
 </head>
 <body>
 
-<!-- ── Top Bar ───────────────────────────────────────────────── -->
 <div class="topbar">
   <div>
     <div class="brand">DOORTRONIX <span>USA</span></div>
     <div class="sub">doortronixusa.com</div>
   </div>
-  <div class="tagline">
-    Manufactured in Malakoff, Texas<br>
-    Factory-Direct to Contractors Nationwide
-  </div>
+  <div class="tagline">Manufactured in Malakoff, Texas<br>Factory-Direct to Contractors Nationwide</div>
 </div>
 
-<!-- ── Main Layout ────────────────────────────────────────────── -->
 <div class="layout">
 
-  <!-- ── FORM PANEL ─────────────────────────────────────────── -->
+  <!-- ══ FORM PANEL ══ -->
   <div class="form-panel">
     <h1>Request a Factory-Direct Quote</h1>
-    <p class="intro">Fill out all 20 fields below. Our team in Malakoff, Texas will respond with a detailed quote, confirmed lead time, and freight estimate within <strong>4 business hours</strong>.</p>
-
+    <p class="intro">Configure your door below to see live contractor pricing. Our team in Malakoff, Texas will confirm your quote within <strong>4 business hours</strong>.</p>
     <div class="trust-bar">
       <span class="trust-chip">✓ Manufactured in Malakoff, TX</span>
-      <span class="trust-chip">✓ Factory-Direct Pricing</span>
+      <span class="trust-chip">✓ Factory-Direct Net Pricing</span>
       <span class="trust-chip">✓ 4-Hour Response</span>
       <span class="trust-chip">✓ Ships in 3–4 Weeks</span>
     </div>
 
     <form id="quoteForm" novalidate>
 
-      <!-- ── CONTACT ───────────────────────────────────────── -->
+      <!-- ── CONTACT ── -->
       <div class="section-header">① Contact Information</div>
       <div class="form-grid">
         <div class="field">
@@ -353,6 +222,7 @@
             <option value="">— Select your role —</option>
             <option>General Contractor</option>
             <option>Glazier</option>
+            <option>Automatic Door Technician</option>
             <option>Locksmith / Service Tech</option>
             <option>Architect / Specifier</option>
             <option>Facility Manager</option>
@@ -370,7 +240,7 @@
         </div>
       </div>
 
-      <!-- ── PROJECT ───────────────────────────────────────── -->
+      <!-- ── PROJECT ── -->
       <div class="section-header">② Project Details</div>
       <div class="form-grid">
         <div class="field">
@@ -378,7 +248,7 @@
           <input type="text" name="projectName" id="f_project" placeholder="e.g. Walmart #4321 or Hospital Lobby">
         </div>
         <div class="field">
-          <label>Project City & State <span class="req">*</span></label>
+          <label>Project City &amp; State <span class="req">*</span></label>
           <input type="text" name="projectLocation" id="f_location" placeholder="e.g. Dallas, TX" required>
         </div>
         <div class="field">
@@ -390,210 +260,420 @@
           <label>Number of Door Openings <span class="req">*</span></label>
           <select name="quantity" id="f_qty" required>
             <option value="">— Quantity —</option>
-            <option>1</option><option>2</option><option>3</option>
-            <option>4</option><option>5</option><option>6</option>
-            <option>7</option><option>8</option><option>9</option>
-            <option>10+</option>
+            <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+            <option value="4">4</option><option value="5">5</option><option value="6">6</option>
+            <option value="7">7</option><option value="8">8</option><option value="9">9</option>
+            <option value="10">10+</option>
           </select>
         </div>
       </div>
 
-      <!-- ── DOOR CONFIGURATION ────────────────────────────── -->
+      <!-- ── DOOR CONFIGURATION ── -->
       <div class="section-header">③ Door Configuration</div>
+
+      <div class="field full" style="margin-bottom:12px;">
+        <label>Select Configuration <span class="req">*</span></label>
+        <div class="config-grid" id="configGrid">
+
+          <input type="radio" name="config" id="cfg_fbo_bi" value="fbo-bi">
+          <label for="cfg_fbo_bi" class="config-card">
+            <svg class="cc-icon" width="70" height="36" viewBox="0 0 70 36"><rect x="0" y="0" width="70" height="36" fill="#EEF4FB" rx="3"/><rect x="0" y="0" width="70" height="6" fill="#1B4F8A"/><rect x="2" y="6" width="12" height="28" fill="#B8D4F0" stroke="#1B4F8A" stroke-width="1"/><rect x="15" y="6" width="17" height="28" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1"/><rect x="33" y="6" width="17" height="28" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1"/><rect x="51" y="6" width="12" height="28" fill="#B8D4F0" stroke="#1B4F8A" stroke-width="1"/><line x1="35" y1="12" x2="26" y2="22" stroke="#1B4F8A" stroke-width="1" stroke-dasharray="2,1"/><line x1="35" y1="12" x2="44" y2="22" stroke="#1B4F8A" stroke-width="1" stroke-dasharray="2,1"/></svg>
+            <div class="cc-name">FBO Bi-Part</div>
+            <div class="cc-code">SO-SX-SX-SO</div>
+            <div class="cc-price">from $3,900</div>
+          </label>
+
+          <input type="radio" name="config" id="cfg_fsl_bi" value="fsl-bi">
+          <label for="cfg_fsl_bi" class="config-card">
+            <svg class="cc-icon" width="70" height="36" viewBox="0 0 70 36"><rect x="0" y="0" width="70" height="36" fill="#EEF4FB" rx="3"/><rect x="0" y="0" width="70" height="6" fill="#1B4F8A"/><rect x="2" y="6" width="12" height="28" fill="#C8E0F8" stroke="#1B4F8A" stroke-width="1"/><rect x="15" y="6" width="17" height="28" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1"/><rect x="33" y="6" width="17" height="28" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1"/><rect x="51" y="6" width="12" height="28" fill="#C8E0F8" stroke="#1B4F8A" stroke-width="1"/><text x="35" y="24" font-size="7" fill="#1B4F8A" text-anchor="middle" font-family="Arial">↔</text></svg>
+            <div class="cc-name">FSL Bi-Part</div>
+            <div class="cc-code">O-SX-SX-O</div>
+            <div class="cc-price">from $3,900</div>
+          </label>
+
+          <input type="radio" name="config" id="cfg_esa" value="esa">
+          <label for="cfg_esa" class="config-card">
+            <svg class="cc-icon" width="70" height="36" viewBox="0 0 70 36"><rect x="0" y="0" width="70" height="36" fill="#F8F8F8" rx="3"/><rect x="0" y="0" width="70" height="6" fill="#888"/><rect x="2" y="6" width="12" height="28" fill="#E0E0E0" stroke="#999" stroke-width="1"/><rect x="15" y="6" width="17" height="28" fill="#F0F0F0" stroke="#999" stroke-width="1"/><rect x="33" y="6" width="17" height="28" fill="#F0F0F0" stroke="#999" stroke-width="1"/><rect x="51" y="6" width="12" height="28" fill="#E0E0E0" stroke="#999" stroke-width="1"/></svg>
+            <div class="cc-name">ESA Bi-Part</div>
+            <div class="cc-code">P-SX-SX-P</div>
+            <div class="cc-price" style="color:var(--mgray);">Call for pricing</div>
+          </label>
+
+          <input type="radio" name="config" id="cfg_fbo_rh" value="fbo-single-rh">
+          <label for="cfg_fbo_rh" class="config-card">
+            <svg class="cc-icon" width="70" height="36" viewBox="0 0 70 36"><rect x="0" y="0" width="70" height="36" fill="#EEF4FB" rx="3"/><rect x="0" y="0" width="70" height="6" fill="#1B4F8A"/><rect x="2" y="6" width="14" height="28" fill="#B8D4F0" stroke="#1B4F8A" stroke-width="1"/><rect x="17" y="6" width="28" height="28" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1"/><line x1="17" y1="20" x2="28" y2="14" stroke="#1B4F8A" stroke-width="1" stroke-dasharray="2,1"/><rect x="46" y="6" width="22" height="28" fill="#C8E0F8" stroke="#888" stroke-width="1" stroke-dasharray="3,2"/><text x="57" y="24" font-size="7" fill="#888" text-anchor="middle" font-family="Arial">P</text></svg>
+            <div class="cc-name">FBO Single — RH</div>
+            <div class="cc-code">SX-O → exterior</div>
+            <div class="cc-price">from $3,200</div>
+          </label>
+
+          <input type="radio" name="config" id="cfg_fbo_lh" value="fbo-single-lh">
+          <label for="cfg_fbo_lh" class="config-card">
+            <svg class="cc-icon" width="70" height="36" viewBox="0 0 70 36"><rect x="0" y="0" width="70" height="36" fill="#EEF4FB" rx="3"/><rect x="0" y="0" width="70" height="6" fill="#1B4F8A"/><rect x="2" y="6" width="22" height="28" fill="#C8E0F8" stroke="#888" stroke-width="1" stroke-dasharray="3,2"/><text x="13" y="24" font-size="7" fill="#888" text-anchor="middle" font-family="Arial">P</text><rect x="25" y="6" width="28" height="28" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1"/><line x1="53" y1="20" x2="42" y2="14" stroke="#1B4F8A" stroke-width="1" stroke-dasharray="2,1"/><rect x="54" y="6" width="14" height="28" fill="#B8D4F0" stroke="#1B4F8A" stroke-width="1"/></svg>
+            <div class="cc-name">FBO Single — LH</div>
+            <div class="cc-code">O-SX → exterior</div>
+            <div class="cc-price">from $3,200</div>
+          </label>
+
+          <input type="radio" name="config" id="cfg_fsl_rh" value="fsl-single-rh">
+          <label for="cfg_fsl_rh" class="config-card">
+            <svg class="cc-icon" width="70" height="36" viewBox="0 0 70 36"><rect x="0" y="0" width="70" height="36" fill="#EEF4FB" rx="3"/><rect x="0" y="0" width="70" height="6" fill="#1B4F8A"/><rect x="2" y="6" width="28" height="28" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1"/><text x="16" y="14" font-size="7" fill="#1B4F8A" text-anchor="middle" font-family="Arial">↔</text><rect x="31" y="6" width="37" height="28" fill="#C8E0F8" stroke="#1B4F8A" stroke-width="1"/><text x="49" y="24" font-size="7" fill="#888" text-anchor="middle" font-family="Arial">FIXED</text></svg>
+            <div class="cc-name">FSL Single — RH</div>
+            <div class="cc-code">SX-O → exterior</div>
+            <div class="cc-price">from $3,200</div>
+          </label>
+
+          <input type="radio" name="config" id="cfg_fsl_lh" value="fsl-single-lh">
+          <label for="cfg_fsl_lh" class="config-card config-esa">
+            <svg class="cc-icon" style="margin:0 auto;" width="70" height="36" viewBox="0 0 70 36"><rect x="0" y="0" width="70" height="36" fill="#EEF4FB" rx="3"/><rect x="0" y="0" width="70" height="6" fill="#1B4F8A"/><rect x="2" y="6" width="37" height="28" fill="#C8E0F8" stroke="#1B4F8A" stroke-width="1"/><text x="20" y="24" font-size="7" fill="#888" text-anchor="middle" font-family="Arial">FIXED</text><rect x="40" y="6" width="28" height="28" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1"/><text x="54" y="14" font-size="7" fill="#1B4F8A" text-anchor="middle" font-family="Arial">↔</text></svg>
+            <div class="cc-name">FSL Single — LH</div>
+            <div class="cc-code">O-SX → exterior</div>
+            <div class="cc-price">from $3,200</div>
+          </label>
+
+        </div>
+        <p style="font-size:11px;color:var(--mgray);margin-top:6px;">ESA (P-SX-SX-P) and all other configurations: call <strong>(888) 453-5196</strong>.</p>
+      </div>
+
       <div class="form-grid">
-
-        <!-- Field 9: Door Type -->
-        <div class="field full">
-          <label>Door Type <span class="req">*</span></label>
-          <div class="chip-group" id="doorTypeGroup">
-            <input type="radio" name="doorType" id="dt_slide" value="Automatic Sliding" checked>
-            <label for="dt_slide">Automatic Sliding</label>
-            <input type="radio" name="doorType" id="dt_swing" value="Automatic Swinging">
-            <label for="dt_swing">Auto Swinging</label>
-            <input type="radio" name="doorType" id="dt_fold" value="Automatic Folding">
-            <label for="dt_fold">Auto Folding</label>
-            <input type="radio" name="doorType" id="dt_rev" value="Revolving Door">
-            <label for="dt_rev">Revolving</label>
+        <!-- Glazing -->
+        <div class="field">
+          <label>Frame Finish / Glazing</label>
+          <div class="chip-group">
+            <input type="radio" name="glazing" id="gl_clear" value="204 Clear" checked>
+            <label for="gl_clear">204 Clear Anodized</label>
+            <input type="radio" name="glazing" id="gl_bronze" value="313 Dark Bronze">
+            <label for="gl_bronze">313 Dark Bronze</label>
           </div>
         </div>
 
-        <!-- Field 10 & 11: Width & Height -->
-        <div class="field full">
-          <label>Rough Opening Size <span class="req">*</span></label>
-          <div class="size-row">
+        <!-- Transom -->
+        <div class="field">
+          <label>Transom</label>
+          <div class="chip-group">
+            <input type="radio" name="transom" id="tr_no" value="no" checked>
+            <label for="tr_no">No Transom</label>
+            <input type="radio" name="transom" id="tr_yes" value="yes">
+            <label for="tr_yes">With Transom (+$250)</label>
+          </div>
+          <span class="hint">Max package height with transom: 11'6"</span>
+        </div>
+
+        <!-- Frame Width -->
+        <div class="field">
+          <label>Frame Width <span class="req">*</span></label>
+          <div class="ft-in-group">
             <div class="field">
-              <select name="width" id="f_width" required>
-                <option value="">Width —</option>
-                <option value='36"'>36" (3'0")</option>
-                <option value='42"'>42" (3'6")</option>
-                <option value='48"'>48" (4'0")</option>
-                <option value='60"'>60" (5'0")</option>
-                <option value='72"'>72" (6'0")</option>
-                <option value='84"'>84" (7'0")</option>
-                <option value='96"'>96" (8'0")</option>
-                <option value='108"'>108" (9'0")</option>
-                <option value='120"'>120" (10'0")</option>
-                <option value='144"'>144" (12'0")</option>
-                <option value="custom">Custom…</option>
+              <select id="f_wft" name="widthFt">
+                <option value="">Ft —</option>
+                <option value="6">6'</option><option value="7">7'</option><option value="8">8'</option>
+                <option value="9">9'</option><option value="10">10'</option><option value="11">11'</option>
+                <option value="12">12'</option><option value="13">13'</option><option value="14">14'</option>
+                <option value="15">15'</option><option value="16">16'</option>
               </select>
-              <input type="text" id="f_width_custom" name="widthCustom"
-                placeholder='e.g. 78"' style="display:none; margin-top:6px;">
             </div>
-            <div class="size-sep">×</div>
             <div class="field">
-              <select name="height" id="f_height" required>
-                <option value="">Height —</option>
-                <option value='84"'>84" (7'0")</option>
-                <option value='90"'>90" (7'6")</option>
-                <option value='96"'>96" (8'0")</option>
-                <option value='102"'>102" (8'6")</option>
-                <option value='108"'>108" (9'0")</option>
-                <option value='120"'>120" (10'0")</option>
-                <option value="custom">Custom…</option>
+              <select id="f_win" name="widthIn">
+                <option value="0">0"</option><option value="1">1"</option><option value="2">2"</option>
+                <option value="3">3"</option><option value="4">4"</option><option value="5">5"</option>
+                <option value="6">6"</option><option value="7">7"</option><option value="8">8"</option>
+                <option value="9">9"</option><option value="10">10"</option><option value="11">11"</option>
               </select>
-              <input type="text" id="f_height_custom" name="heightCustom"
-                placeholder='e.g. 100"' style="display:none; margin-top:6px;">
             </div>
           </div>
+          <span class="hint" id="width-range-note"></span>
         </div>
 
-        <!-- Field 13: Panel config -->
+        <!-- Frame Height -->
         <div class="field">
-          <label>Panel Configuration</label>
-          <div class="chip-group" id="panelGroup">
-            <input type="radio" name="panels" id="p_bi" value="Bi-Parting" checked>
-            <label for="p_bi">Bi-Parting</label>
-            <input type="radio" name="panels" id="p_single" value="Single Slide">
-            <label for="p_single">Single Slide</label>
-            <input type="radio" name="panels" id="p_na" value="N/A">
-            <label for="p_na">N/A</label>
+          <label>Frame Height</label>
+          <div class="ft-in-group">
+            <div class="field">
+              <select id="f_hft" name="heightFt">
+                <option value="7">7'</option><option value="8" selected>8'</option>
+                <option value="9">9'</option><option value="10">10'</option><option value="11">11'</option>
+              </select>
+            </div>
+            <div class="field">
+              <select id="f_hin" name="heightIn">
+                <option value="0">0"</option><option value="6" selected>6"</option>
+              </select>
+            </div>
           </div>
+          <span class="hint">Standard: 7'6" to 8'0"</span>
         </div>
 
-        <!-- Field 14: Frame Finish -->
-        <div class="field">
-          <label>Frame Finish</label>
-          <div class="chip-group" id="finishGroup">
-            <input type="radio" name="finish" id="fi_ca" value="Clear Anodized" checked>
-            <label for="fi_ca">Clear Anodized</label>
-            <input type="radio" name="finish" id="fi_db" value="Dark Bronze">
-            <label for="fi_db">Dark Bronze</label>
-            <input type="radio" name="finish" id="fi_bk" value="Black">
-            <label for="fi_bk">Black</label>
-            <input type="radio" name="finish" id="fi_wh" value="White">
-            <label for="fi_wh">White</label>
-            <input type="radio" name="finish" id="fi_cu" value="Custom Paint">
-            <label for="fi_cu">Custom Paint</label>
-          </div>
-        </div>
-
-        <!-- Field 15: Glazing -->
-        <div class="field">
-          <label>Glazing Type</label>
-          <div class="chip-group" id="glazingGroup">
-            <input type="radio" name="glazing" id="gl_ct" value="Clear Tempered" checked>
-            <label for="gl_ct">Clear Tempered</label>
-            <input type="radio" name="glazing" id="gl_le" value="Low-E Tempered">
-            <label for="gl_le">Low-E</label>
-            <input type="radio" name="glazing" id="gl_ti" value="Tinted">
-            <label for="gl_ti">Tinted</label>
-            <input type="radio" name="glazing" id="gl_fr" value="Frosted">
-            <label for="gl_fr">Frosted</label>
-            <input type="radio" name="glazing" id="gl_ll" value="Lead-Lined">
-            <label for="gl_ll">Lead-Lined</label>
-            <input type="radio" name="glazing" id="gl_no" value="No Glazing">
-            <label for="gl_no">No Glazing</label>
-          </div>
-        </div>
-
-        <!-- Field 16: Activation -->
-        <div class="field">
-          <label>Activation Method</label>
-          <div class="chip-group" id="activationGroup">
-            <input type="radio" name="activation" id="ac_mw" value="Microwave Sensor" checked>
-            <label for="ac_mw">Microwave Sensor</label>
-            <input type="radio" name="activation" id="ac_pb" value="Push Button">
-            <label for="ac_pb">Push Button</label>
-            <input type="radio" name="activation" id="ac_fm" value="Floor Mat">
-            <label for="ac_fm">Floor Mat</label>
-            <input type="radio" name="activation" id="ac_ac" value="Access Control">
-            <label for="ac_ac">Access Control</label>
-            <input type="radio" name="activation" id="ac_mx" value="Multiple / Combo">
-            <label for="ac_mx">Multiple / Combo</label>
-          </div>
-        </div>
-
-        <!-- Fields 17–19: Toggle options -->
-        <div class="field">
-          <label>ADA / Low-Energy Mode</label>
-          <div class="chip-group">
-            <input type="radio" name="ada" id="ada_y" value="Yes — ADA required" checked>
-            <label for="ada_y">Yes — Required</label>
-            <input type="radio" name="ada" id="ada_n" value="No">
-            <label for="ada_n">No</label>
-            <input type="radio" name="ada" id="ada_u" value="Unsure">
-            <label for="ada_u">Unsure</label>
-          </div>
-        </div>
-
-        <div class="field">
-          <label>Battery Backup</label>
-          <div class="chip-group">
-            <input type="radio" name="battery" id="bat_y" value="Yes — Required">
-            <label for="bat_y">Yes — Required</label>
-            <input type="radio" name="battery" id="bat_n" value="No" checked>
-            <label for="bat_n">No</label>
-            <input type="radio" name="battery" id="bat_u" value="Preferred">
-            <label for="bat_u">Preferred</label>
-          </div>
-        </div>
-
-        <div class="field">
-          <label>Access Control Wiring</label>
-          <div class="chip-group">
-            <input type="radio" name="accctrl" id="acc_y" value="Yes — Pre-wire for access control">
-            <label for="acc_y">Yes — Pre-wire</label>
-            <input type="radio" name="accctrl" id="acc_n" value="No" checked>
-            <label for="acc_n">No</label>
-          </div>
-        </div>
-
-        <div class="field">
-          <label>Installation Type</label>
-          <div class="chip-group">
-            <input type="radio" name="insttype" id="in_nc" value="New Construction" checked>
-            <label for="in_nc">New Construction</label>
-            <input type="radio" name="insttype" id="in_rf" value="Retrofit / Replacement">
-            <label for="in_rf">Retrofit / Replacement</label>
-          </div>
-        </div>
-
-        <!-- Field 20: Notes -->
+        <!-- Net slide opening -->
         <div class="field full">
-          <label>Special Requirements / Additional Notes</label>
-          <textarea name="notes" id="f_notes"
-            placeholder="Tell us anything else about your project — existing hardware, code requirements, unusual conditions, lead-lined panels for radiology, emergency egress requirements, etc."></textarea>
+          <label>Net Slide Opening (door clear width)</label>
+          <div class="ft-in-group" style="max-width:260px;">
+            <div class="field">
+              <select id="f_oft" name="openFt">
+                <option value="">Ft —</option>
+                <option value="2">2'</option><option value="3">3'</option><option value="4">4'</option>
+                <option value="5">5'</option><option value="6">6'</option><option value="7">7'</option>
+              </select>
+            </div>
+            <div class="field">
+              <select id="f_oin" name="openIn">
+                <option value="0">0"</option><option value="3">3"</option><option value="6">6"</option><option value="9">9"</option>
+              </select>
+            </div>
+          </div>
+          <span class="hint">If unsure, leave blank — we'll calculate from frame width.</span>
         </div>
+      </div>
 
-      </div><!-- /form-grid -->
+      <!-- ── OPTIONS & UPGRADES ── -->
+      <div class="section-header">④ Options &amp; Upgrades</div>
+      <p style="font-size:12px;color:var(--mgray);margin-bottom:12px;">All prices are net contractor pricing. Check items to add to your estimate.</p>
 
-      <!-- ── Submit ──────────────────────────────────────────── -->
+      <div class="addon-section-label">Hardware &amp; Locking</div>
+
+      <div id="addon_cart_bar" class="addon-item" data-price="100" data-unit="ea" onclick="toggleAddon(this)">
+        <div class="addon-check-visual"></div>
+        <div class="addon-label-wrap">
+          <div class="al">Cart Bar</div>
+          <div class="ad">Specify location in notes</div>
+        </div>
+        <div class="addon-price-tag">$100 ea</div>
+        <div class="addon-qty-wrap">
+          <label>Qty:</label>
+          <select onclick="event.stopPropagation()" onchange="calcPrice()">
+            <option>1</option><option>2</option><option>3</option><option>4</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="addon_key_switch" class="addon-item" data-price="50" data-unit="ea" onclick="toggleAddon(this)">
+        <div class="addon-check-visual"></div>
+        <div class="addon-label-wrap">
+          <div class="al">5-Position Key Switch</div>
+          <div class="ad">On/Off/1-Way/2-Way/Hold Open</div>
+        </div>
+        <div class="addon-price-tag">$50</div>
+        <div class="addon-qty-wrap"></div>
+      </div>
+
+      <div id="addon_electric_lock" class="addon-item" data-price="515" data-unit="ea" onclick="toggleAddon(this)">
+        <div class="addon-check-visual"></div>
+        <div class="addon-label-wrap">
+          <div class="al">Electric Lock</div>
+          <div class="ad">Fail Safe or Fail Secure — specify in notes</div>
+        </div>
+        <div class="addon-price-tag">$515</div>
+        <div class="addon-qty-wrap"></div>
+      </div>
+
+      <div id="addon_lock_indicator" class="addon-item" data-price="60" data-unit="ea" onclick="toggleAddon(this)">
+        <div class="addon-check-visual"></div>
+        <div class="addon-label-wrap">
+          <div class="al">Lock Indicator</div>
+        </div>
+        <div class="addon-price-tag">$60</div>
+        <div class="addon-qty-wrap"></div>
+      </div>
+
+      <div id="addon_ar_paddle" class="addon-item" data-price="355" data-unit="/panel" data-perpanel="true" onclick="toggleAddon(this)">
+        <div class="addon-check-visual"></div>
+        <div class="addon-label-wrap">
+          <div class="al">Adams Rite Paddle Exit Device</div>
+          <div class="ad">For full open or fixed sidelite units</div>
+        </div>
+        <div class="addon-price-tag">$355/panel</div>
+        <div class="addon-qty-wrap">
+          <label>Panels:</label>
+          <select onclick="event.stopPropagation()" onchange="calcPrice()">
+            <option>1</option><option>2</option><option>3</option><option>4</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="addon_ar_8600" class="addon-item" data-price="465" data-unit="/panel" data-perpanel="true" data-fboonly="true" onclick="toggleAddon(this)">
+        <div class="addon-check-visual"></div>
+        <div class="addon-label-wrap">
+          <div class="al">Adams Rite 8600 Panic Device</div>
+          <div class="ad">Full breakout open (FBO) units only</div>
+        </div>
+        <div class="addon-price-tag">$465/panel</div>
+        <div class="addon-qty-wrap">
+          <label>Panels:</label>
+          <select onclick="event.stopPropagation()" onchange="calcPrice()">
+            <option>1</option><option>2</option><option>3</option><option>4</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="addon_door_closer" class="addon-item" data-price="330" data-unit="ea" onclick="toggleAddon(this)">
+        <div class="addon-check-visual"></div>
+        <div class="addon-label-wrap">
+          <div class="al">Door Closer</div>
+        </div>
+        <div class="addon-price-tag">$330 ea</div>
+        <div class="addon-qty-wrap">
+          <label>Qty:</label>
+          <select onclick="event.stopPropagation()" onchange="calcPrice()">
+            <option>1</option><option>2</option><option>3</option><option>4</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="addon-section-label">Frame &amp; Glazing Upgrades</div>
+
+      <div id="addon_medium_stiles" class="addon-item" data-price="180" data-unit="/panel" data-perpanel="true" onclick="toggleAddon(this)">
+        <div class="addon-check-visual"></div>
+        <div class="addon-label-wrap">
+          <div class="al">Medium Stiles (3-3/4")</div>
+          <div class="ad">For doors and sidelites — includes 6" bottom rail</div>
+        </div>
+        <div class="addon-price-tag">$180/panel</div>
+        <div class="addon-qty-wrap">
+          <label>Panels:</label>
+          <select onclick="event.stopPropagation()" onchange="calcPrice()">
+            <option>1</option><option>2</option><option>3</option><option>4</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="addon_rails_6in" class="addon-item" data-price="80" data-unit="ea" onclick="toggleAddon(this)">
+        <div class="addon-check-visual"></div>
+        <div class="addon-label-wrap">
+          <div class="al">6" Bottom Rails</div>
+          <div class="ad">4" standard — upgrade per panel</div>
+        </div>
+        <div class="addon-price-tag">$80 ea</div>
+        <div class="addon-qty-wrap">
+          <label>Qty:</label>
+          <select onclick="event.stopPropagation()" onchange="calcPrice()">
+            <option>1</option><option>2</option><option>3</option><option>4</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="addon_rails_10in" class="addon-item" data-price="160" data-unit="ea" onclick="toggleAddon(this)">
+        <div class="addon-check-visual"></div>
+        <div class="addon-label-wrap">
+          <div class="al">10" Bottom Rails</div>
+          <div class="ad">Per panel</div>
+        </div>
+        <div class="addon-price-tag">$160 ea</div>
+        <div class="addon-qty-wrap">
+          <label>Qty:</label>
+          <select onclick="event.stopPropagation()" onchange="calcPrice()">
+            <option>1</option><option>2</option><option>3</option><option>4</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="addon_muntin_2in" class="addon-item" data-price="150" data-unit="ea" onclick="toggleAddon(this)">
+        <div class="addon-check-visual"></div>
+        <div class="addon-label-wrap">
+          <div class="al">Additional 2" Muntin Bars</div>
+          <div class="ad">Specify location in notes</div>
+        </div>
+        <div class="addon-price-tag">$150 ea</div>
+        <div class="addon-qty-wrap">
+          <label>Qty:</label>
+          <select onclick="event.stopPropagation()" onchange="calcPrice()">
+            <option>1</option><option>2</option><option>3</option><option>4</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="addon_mullion_transom" class="addon-item" data-price="100" data-unit="ea" onclick="toggleAddon(this)">
+        <div class="addon-check-visual"></div>
+        <div class="addon-label-wrap">
+          <div class="al">Mullion in Transom</div>
+          <div class="ad">Vertical or horizontal — specify in notes</div>
+        </div>
+        <div class="addon-price-tag">$100 ea</div>
+        <div class="addon-qty-wrap">
+          <label>Qty:</label>
+          <select onclick="event.stopPropagation()" onchange="calcPrice()">
+            <option>1</option><option>2</option><option>3</option><option>4</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="addon-section-label">Safety &amp; Sensors</div>
+
+      <div id="addon_battery" class="addon-item" data-price="2200" data-unit="ea" onclick="toggleAddon(this)">
+        <div class="addon-check-visual"></div>
+        <div class="addon-label-wrap">
+          <div class="al">Battery Backup</div>
+          <div class="ad">Concealed within header — maintains one cycle on power loss</div>
+        </div>
+        <div class="addon-price-tag">$2,200</div>
+        <div class="addon-qty-wrap"></div>
+      </div>
+
+      <div id="addon_optex" class="addon-item" data-price="220" data-unit="ea" onclick="toggleAddon(this)">
+        <div class="addon-check-visual"></div>
+        <div class="addon-label-wrap">
+          <div class="al">Optex OA-203 Sidelite Presence Sensor</div>
+        </div>
+        <div class="addon-price-tag">$220 ea</div>
+        <div class="addon-qty-wrap">
+          <label>Qty:</label>
+          <select onclick="event.stopPropagation()" onchange="calcPrice()">
+            <option>1</option><option>2</option><option>3</option><option>4</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="addon_bea" class="addon-item" data-price="130" data-unit="ea" onclick="toggleAddon(this)">
+        <div class="addon-check-visual"></div>
+        <div class="addon-label-wrap">
+          <div class="al">BEA Wizard Sensor</div>
+          <div class="ad">Substitute for standard Optex sensors</div>
+        </div>
+        <div class="addon-price-tag">$130 ea</div>
+        <div class="addon-qty-wrap">
+          <label>Qty:</label>
+          <select onclick="event.stopPropagation()" onchange="calcPrice()">
+            <option>1</option><option>2</option><option>3</option><option>4</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="addon_nose_casters" class="addon-item" data-price="200" data-unit="ea" onclick="toggleAddon(this)">
+        <div class="addon-check-visual"></div>
+        <div class="addon-label-wrap">
+          <div class="al">Nose Casters</div>
+          <div class="ad">Required for door openings over 97-1/2"</div>
+        </div>
+        <div class="addon-price-tag">$200</div>
+        <div class="addon-qty-wrap"></div>
+      </div>
+
+      <!-- Notes -->
+      <div class="section-header">⑤ Notes &amp; Special Requirements</div>
+      <div class="field">
+        <textarea name="notes" id="f_notes" placeholder="Access control requirements, lead-lined panels, unusual site conditions, installation type (new construction / retrofit), emergency egress requirements, or anything else we should know..."></textarea>
+      </div>
+
+      <!-- Submit -->
       <div class="submit-section">
-        <p>By submitting this form you agree that Doortronix USA may contact you about your quote request. We do not share your information with third parties. All quotes are obligation-free.</p>
-        <button type="submit" class="btn-submit">
-          Submit Quote Request — Response Within 4 Business Hours
-        </button>
+        <p>Prices shown are net contractor pricing and do not include freight, installation, or applicable taxes. Doortronix will confirm your quote with exact freight within 4 business hours. All quotes are obligation-free.</p>
+        <button type="submit" class="btn-submit">Submit Quote Request →</button>
       </div>
 
     </form>
   </div><!-- /form-panel -->
 
-  <!-- ── PREVIEW PANEL ───────────────────────────────────────── -->
+  <!-- ══ PREVIEW PANEL ══ -->
   <div class="preview-panel">
     <div class="preview-title">Live Door Preview</div>
-
     <div id="drawing-wrap">
-      <svg id="door-svg" viewBox="0 0 380 320" xmlns="http://www.w3.org/2000/svg"></svg>
+      <svg id="door-svg" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg"></svg>
+    </div>
+
+    <div class="preview-title">Price Estimate</div>
+    <div class="price-card">
+      <div class="price-card-header">Net Contractor Price</div>
+      <div class="price-card-body" id="price-body">
+        <div class="price-empty">Select a configuration above to see pricing.</div>
+      </div>
     </div>
 
     <div class="spec-card">
@@ -604,14 +684,14 @@
 
 </div><!-- /layout -->
 
-<!-- ── CONFIRMATION OVERLAY ───────────────────────────────────── -->
+<!-- ══ CONFIRMATION ══ -->
 <div id="confirmation">
   <div class="conf-box">
     <div class="orange-bar"></div>
     <div class="conf-header">
       <div>
         <h2>✓ Quote Request Submitted</h2>
-        <p>Our team in Malakoff, Texas will respond within 4 business hours with your detailed quote, confirmed production lead time, and freight estimate.</p>
+        <p>Our team in Malakoff, Texas will respond within 4 business hours with your confirmed quote, production lead time, and freight estimate.</p>
       </div>
       <div class="conf-ref">
         <div style="font-size:16px;font-weight:700;color:#fff;" id="conf-ref-num"></div>
@@ -629,19 +709,21 @@
           <div id="conf-project"></div>
         </div>
       </div>
-      <div style="margin-top:24px;" class="conf-section">
+      <div style="margin-top:20px;" class="conf-section">
         <h3>Door Configuration</h3>
-        <div id="conf-door" style="display:grid;grid-template-columns:1fr 1fr;gap:0 24px;"></div>
+        <div id="conf-door" style="display:grid;grid-template-columns:1fr 1fr;gap:0 20px;"></div>
       </div>
+      <div class="conf-price-box" id="conf-price-box"></div>
       <div id="conf-svg-wrap">
-        <h3 style="font-size:11px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid var(--blue);">Confirmation Drawing — Door Elevation</h3>
-        <svg id="conf-svg" viewBox="0 0 760 420" xmlns="http://www.w3.org/2000/svg"></svg>
+        <h3>Confirmation Drawing — Door Elevation</h3>
+        <svg id="conf-svg" viewBox="0 0 760 380" xmlns="http://www.w3.org/2000/svg"></svg>
       </div>
     </div>
     <div class="conf-footer">
-      <p>Doortronix USA — Manufactured in Malakoff, Texas | Factory-Direct to Contractors Nationwide | doortronixusa.com</p>
+      <p>Doortronix Inc. | 5783 County Road 1219, Malakoff, TX 75148 | (888) 453-5196 | doortronixusa.com<br>
+      Net contractor pricing. Freight, installation, and taxes not included. Subject to final review.</p>
       <div style="display:flex;gap:10px;">
-        <button class="btn-close" onclick="closeConfirmation()">Close</button>
+        <button class="btn-close" onclick="closeConf()">Close</button>
         <button class="btn-print" onclick="window.print()">Print / Save PDF</button>
       </div>
     </div>
@@ -650,550 +732,452 @@
 </div>
 
 <script>
-// ═══════════════════════════════════════════════════════════════════
-// CONFIGURATION — Replace with your Formspree endpoint
-// Get a free endpoint at https://formspree.io (50 free/month)
-// Replace the string below with your endpoint URL
-// ═══════════════════════════════════════════════════════════════════
-const FORMSPREE_ENDPOINT = "https://formspree.io/f/mykorzwy";
-// If you haven't set up Formspree yet, the form will still show the
-// confirmation drawing — you'll just need to manually record the data.
+const FORMSPREE = "https://formspree.io/f/mykorzwy";
 
-// ─── Helper: get form value ───────────────────────────────────────
-function fv(id) {
-  const el = document.getElementById(id);
-  return el ? el.value.trim() : "";
-}
-function rv(name) {
-  const el = document.querySelector(`input[name="${name}"]:checked`);
-  return el ? el.value : "—";
-}
+// ── Pricing data ────────────────────────────────────────────────────
+const CONFIGS = {
+  'fbo-bi':       { label:'FBO Bi-Part',       code:'SO-SX-SX-SO', base:3900, transom:250, minW:96,  maxW:168, panels:2, isFBO:true,  isBi:true  },
+  'fsl-bi':       { label:'FSL Bi-Part',        code:'O-SX-SX-O',  base:3900, transom:250, minW:96,  maxW:168, panels:2, isFBO:false, isBi:true  },
+  'fbo-single-rh':{ label:'FBO Single — RH',   code:'SX-O',        base:3200, transom:250, minW:78,  maxW:108, panels:1, isFBO:true,  isBi:false },
+  'fbo-single-lh':{ label:'FBO Single — LH',   code:'O-SX',        base:3200, transom:250, minW:78,  maxW:108, panels:1, isFBO:true,  isBi:false },
+  'fsl-single-rh':{ label:'FSL Single — RH',   code:'SX-O',        base:3200, transom:250, minW:78,  maxW:108, panels:1, isFBO:false, isBi:false },
+  'fsl-single-lh':{ label:'FSL Single — LH',   code:'O-SX',        base:3200, transom:250, minW:78,  maxW:108, panels:1, isFBO:false, isBi:false },
+  'esa':          { label:'ESA Bi-Part',        code:'P-SX-SX-P',  base:null, panels:2 },
+};
 
-// ─── Get display width/height ─────────────────────────────────────
-function getWidth() {
-  const w = fv('f_width');
-  if (w === 'custom') return fv('f_width_custom') || '?';
-  return w || '—';
-}
-function getHeight() {
-  const h = fv('f_height');
-  if (h === 'custom') return fv('f_height_custom') || '?';
-  return h || '—';
-}
-function parseInches(str) {
-  if (!str || str === '—' || str === '?') return null;
-  const n = parseFloat(str.replace(/"/g,'').replace(/'/g,''));
-  return isNaN(n) ? null : n;
-}
+// ── Helpers ─────────────────────────────────────────────────────────
+function fv(id) { const e=document.getElementById(id); return e?e.value.trim():''; }
+function rv(n)  { const e=document.querySelector(`input[name="${n}"]:checked`); return e?e.value:''; }
+function getConfig() { return CONFIGS[rv('config')] || null; }
 
-// ─── Custom width/height toggle ───────────────────────────────────
-document.getElementById('f_width').addEventListener('change', function() {
-  document.getElementById('f_width_custom').style.display =
-    this.value === 'custom' ? 'block' : 'none';
-  updatePreview();
-});
-document.getElementById('f_height').addEventListener('change', function() {
-  document.getElementById('f_height_custom').style.display =
-    this.value === 'custom' ? 'block' : 'none';
-  updatePreview();
-});
-
-// ─── Listen to all form changes ───────────────────────────────────
-document.getElementById('quoteForm').addEventListener('input', updatePreview);
-document.getElementById('quoteForm').addEventListener('change', updatePreview);
-
-// ═══════════════════════════════════════════════════════════════════
-// DOOR SVG DRAWING ENGINE
-// ═══════════════════════════════════════════════════════════════════
-function getGlazingFill(glazing) {
-  const map = {
-    'Clear Tempered': { fill: '#E8F4FD', stroke: '#A8D4F5' },
-    'Low-E Tempered': { fill: '#D4EDD4', stroke: '#8EC98E' },
-    'Tinted':         { fill: '#C8D8E8', stroke: '#7090B0' },
-    'Frosted':        { fill: '#F0EFEF', stroke: '#C8C8C8' },
-    'Lead-Lined':     { fill: '#D8D4C0', stroke: '#908878' },
-    'No Glazing':     { fill: '#D8D8D8', stroke: '#AAAAAA' },
-  };
-  return map[glazing] || map['Clear Tempered'];
+function getWidthIn() {
+  const ft = parseInt(fv('f_wft'));
+  const inches = parseInt(fv('f_win')) || 0;
+  if (!ft) return null;
+  return ft * 12 + inches;
 }
-function getFrameColor(finish) {
-  const map = {
-    'Clear Anodized': '#B8C4D0',
-    'Dark Bronze':    '#6B5040',
-    'Black':          '#2A2A2A',
-    'White':          '#E8E8E8',
-    'Custom Paint':   '#8890A0',
-  };
-  return map[finish] || '#B8C4D0';
+function getWidthStr() {
+  const ft = fv('f_wft'), inches = fv('f_win') || '0';
+  if (!ft) return '—';
+  return `${ft}'${inches === '0' ? '' : inches + '"'}`;
+}
+function getHeightStr() {
+  const ft = fv('f_hft'), inches = fv('f_hin') || '0';
+  return `${ft}'${inches === '0' ? '' : inches + '"'}`;
+}
+function getOpenStr() {
+  const ft = fv('f_oft'), inches = fv('f_oin') || '0';
+  if (!ft) return '';
+  return `${ft}'${inches === '0' ? '' : inches + '"'}`;
+}
+function fmt(n) { return '$' + n.toLocaleString(); }
+
+// ── Add-on toggle ───────────────────────────────────────────────────
+function toggleAddon(el) {
+  if (el.classList.contains('disabled')) return;
+  el.classList.toggle('checked');
+  calcPrice();
 }
 
-function drawDoor(svgId, vbW, vbH, isConfirmation) {
-  const svg = document.getElementById(svgId);
-  if (!svg) return;
-  svg.innerHTML = '';
-
-  const doorType   = rv('doorType');
-  const panelCfg   = rv('panels');
-  const finish     = rv('finish');
-  const glazing    = rv('glazing');
-  const ada        = rv('ada');
-  const battery    = rv('battery');
-  const activation = rv('activation');
-  const width      = getWidth();
-  const height     = getHeight();
-  const wIn        = parseInches(width);
-  const hIn        = parseInches(height);
-
-  const frameFill  = getFrameColor(finish);
-  const glaze      = getGlazingFill(glazing);
-  const isHermetic = false;
-  const isSwing    = doorType === 'Automatic Swinging';
-  const isFolding  = doorType === 'Automatic Folding';
-  const isRevolving= doorType === 'Revolving Door';
-  const isAllGlass = false;
-  const isBi       = panelCfg === 'Bi-Parting';
-
-  // ── Derived layout constants ──────────────────────────────────
-  const titleH    = isConfirmation ? 80 : 0;
-  const marginL   = 60; const marginR = 60;
-  const marginT   = isConfirmation ? titleH + 30 : 20;
-  const marginB   = isConfirmation ? 90 : 50;
-  const drawW     = vbW - marginL - marginR;
-  const drawH     = vbH - marginT - marginB;
-
-  // Scale door to fit, maintaining aspect ratio
-  const aspectW = wIn || 72;
-  const aspectH = hIn || 84;
-  const scaleX  = drawW / aspectW;
-  const scaleY  = drawH / aspectH;
-  const scale   = Math.min(scaleX, scaleY);
-  const dW      = aspectW * scale;
-  const dH      = aspectH * scale;
-  const dX      = marginL + (drawW - dW) / 2;
-  const dY      = marginT + (drawH - dH) / 2;
-
-  const frameThick = isAllGlass ? 6 : (isHermetic ? 14 : 10);
-  const headerH    = isAllGlass ? 18 : (isHermetic ? 22 : 20);
-
-  // ── helpers ───────────────────────────────────────────────────
-  function rect(x,y,w,h,fill,stroke,sw,rx,ry,extra) {
-    const r = document.createElementNS('http://www.w3.org/2000/svg','rect');
-    r.setAttribute('x',x); r.setAttribute('y',y);
-    r.setAttribute('width',Math.max(w,0)); r.setAttribute('height',Math.max(h,0));
-    r.setAttribute('fill',fill||'none');
-    if(stroke){r.setAttribute('stroke',stroke);r.setAttribute('stroke-width',sw||1);}
-    if(rx) r.setAttribute('rx',rx);
-    if(ry) r.setAttribute('ry',ry);
-    if(extra) Object.entries(extra).forEach(([k,v])=>r.setAttribute(k,v));
-    svg.appendChild(r); return r;
-  }
-  function line(x1,y1,x2,y2,stroke,sw,dash) {
-    const l = document.createElementNS('http://www.w3.org/2000/svg','line');
-    l.setAttribute('x1',x1);l.setAttribute('y1',y1);
-    l.setAttribute('x2',x2);l.setAttribute('y2',y2);
-    l.setAttribute('stroke',stroke||'#666');
-    l.setAttribute('stroke-width',sw||1);
-    if(dash) l.setAttribute('stroke-dasharray',dash);
-    svg.appendChild(l); return l;
-  }
-  function text(x,y,str,size,fill,anchor,weight,family) {
-    const t = document.createElementNS('http://www.w3.org/2000/svg','text');
-    t.setAttribute('x',x); t.setAttribute('y',y);
-    t.setAttribute('font-size',size||11);
-    t.setAttribute('fill',fill||'#111');
-    t.setAttribute('text-anchor',anchor||'middle');
-    t.setAttribute('font-weight',weight||'normal');
-    t.setAttribute('font-family',family||'Arial, sans-serif');
-    t.textContent = str;
-    svg.appendChild(t); return t;
-  }
-  function circle(cx,cy,r,fill,stroke,sw) {
-    const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
-    c.setAttribute('cx',cx);c.setAttribute('cy',cy);c.setAttribute('r',r);
-    c.setAttribute('fill',fill||'none');
-    if(stroke){c.setAttribute('stroke',stroke);c.setAttribute('stroke-width',sw||1);}
-    svg.appendChild(c); return c;
-  }
-  function path(d,fill,stroke,sw,dash) {
-    const p = document.createElementNS('http://www.w3.org/2000/svg','path');
-    p.setAttribute('d',d);
-    p.setAttribute('fill',fill||'none');
-    if(stroke){p.setAttribute('stroke',stroke);p.setAttribute('stroke-width',sw||1);}
-    if(dash) p.setAttribute('stroke-dasharray',dash);
-    svg.appendChild(p); return p;
-  }
-  function dimLine(x1,y1,x2,y2,label,isH) {
-    // Draw a dimension line with arrows and label
-    const aw = 6, off = 8;
-    if(isH) {
-      // horizontal dim
-      line(x1,y1,x2,y2,'#1B4F8A',0.8);
-      // ticks
-      line(x1,y1-off,x1,y1+off,'#1B4F8A',0.8);
-      line(x2,y1-off,x2,y1+off,'#1B4F8A',0.8);
-      // arrowheads
-      path(`M${x1},${y1} l${aw},-3 l0,6 Z`,'#1B4F8A');
-      path(`M${x2},${y1} l${-aw},-3 l0,6 Z`,'#1B4F8A');
-      text((x1+x2)/2,y1-4,label,10,'#1B4F8A','middle','700');
-    } else {
-      // vertical dim
-      line(x1,y1,x2,y2,'#1B4F8A',0.8);
-      line(x1-off,y1,x1+off,y1,'#1B4F8A',0.8);
-      line(x1-off,y2,x1+off,y2,'#1B4F8A',0.8);
-      path(`M${x1},${y1} l-3,${aw} l6,0 Z`,'#1B4F8A');
-      path(`M${x1},${y2} l-3,${-aw} l6,0 Z`,'#1B4F8A');
-      const cx = x1-4, cy = (y1+y2)/2;
-      const t2 = text(cx-14,cy,label,10,'#1B4F8A','middle','700');
-      t2.setAttribute('transform',`rotate(-90,${cx},${cy})`);
-    }
-  }
-
-  // ── TITLE BLOCK (confirmation only) ──────────────────────────
-  if (isConfirmation) {
-    rect(0,0,vbW,titleH,'#1B4F8A',null);
-    text(20, 26, 'DOORTRONIX USA', 16, '#fff', 'start', '700');
-    text(20, 42, 'Confirmation Drawing — Door Elevation', 11, '#B8CCE4', 'start');
-    text(20, 56, `Type: ${doorType}  |  Config: ${panelCfg}`, 10, '#B8CCE4', 'start');
-
-    if (wIn && hIn) {
-      text(vbW/2, 42, `${width} W × ${height} H`, 14, '#E87722', 'middle', '700');
-    }
-    text(vbW-16, 20, 'CONFIRMATION DRAWING', 9, '#B8CCE4', 'end');
-    text(vbW-16, 34, 'Not for construction — for approval only', 8, '#7090A8', 'end');
-    const now = new Date();
-    text(vbW-16, 48, now.toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'}), 9, '#B8CCE4', 'end');
-  }
-
-  // ── REVOLVING DOOR ────────────────────────────────────────────
-  if (isRevolving) {
-    const cx = dX + dW/2, cy = dY + dH/2;
-    const r = Math.min(dW,dH)/2;
-    circle(cx,cy,r,glaze.fill,frameFill,frameThick/2);
-    // Cross dividers
-    line(cx-r,cy,cx+r,cy,frameFill,frameThick/3);
-    line(cx,cy-r,cx,cy+r,frameFill,frameThick/3);
-    // Center shaft
-    circle(cx,cy,8,frameFill,frameFill,2);
-    // Outer ring
-    circle(cx,cy,r,null,frameFill,frameThick/2);
-    text(cx,cy+r+20,'(Circular plan view)',10,'#888','middle');
-    if (isConfirmation) {
-      dimLine(dX, dY+dH+35, dX+dW, dY+dH+35, `${width} diameter`, true);
-    }
-  }
-  // ── SWING DOOR ────────────────────────────────────────────────
-  else if (isSwing) {
-    // Door leaf
-    rect(dX+frameThick, dY+headerH, dW-frameThick*2, dH-headerH-frameThick*0.5,
-         glaze.fill, frameFill, 3);
-    // Header/operator box
-    rect(dX, dY, dW, headerH+4, frameFill, '#888', 1.5);
-    text(dX+dW/2, dY+headerH/2+4, 'OPERATOR', 8, '#fff', 'middle', '700');
-    // Hinge side (left)
-    rect(dX, dY+headerH, frameThick*1.2, dH-headerH, frameFill, null);
-    // Latch side (right)
-    rect(dX+dW-frameThick, dY+headerH, frameThick, dH-headerH, frameFill, null);
-    // Sill
-    rect(dX, dY+dH-frameThick*0.5, dW, frameThick*0.5, frameFill, null);
-    // Swing arc (dashed quarter circle from bottom-right)
-    const arcR = dW - frameThick*2.4;
-    path(`M ${dX+frameThick*1.2} ${dY+dH-frameThick*0.5} a ${arcR} ${arcR} 0 0 0 ${arcR} ${-arcR}`,
-         'none','#1B4F8A',1,'4 3');
-    // Push-bar handle
-    const hx = dX+dW-frameThick-8, hy1 = dY+dH*0.35, hy2 = dY+dH*0.65;
-    line(hx,hy1,hx,hy2,'#555',2.5);
-    // ADA badge
-    if (ada === 'Yes — ADA required') {
-      rect(dX+4,dY+headerH+4,34,16,'#1B4F8A',null,0,3);
-      text(dX+21,dY+headerH+15,'ADA',8,'#fff','middle','700');
-    }
-    // Dims
-    if (isConfirmation) {
-      dimLine(dX, dY+dH+30, dX+dW, dY+dH+30, width, true);
-      dimLine(dX-28, dY, dX-28, dY+dH, height, false);
-    }
-  }
-  // ── FOLDING DOOR ──────────────────────────────────────────────
-  else if (isFolding) {
-    const numPanels = 4;
-    const pW = (dW - frameThick*2) / numPanels;
-    rect(dX, dY, dW, headerH+4, frameFill, '#888', 1.5);
-    text(dX+dW/2, dY+headerH/2+4, 'OPERATOR', 8, '#fff', 'middle', '700');
-    // Jambs
-    rect(dX, dY+headerH, frameThick, dH-headerH, frameFill);
-    rect(dX+dW-frameThick, dY+headerH, frameThick, dH-headerH, frameFill);
-    // Sill
-    rect(dX, dY+dH-frameThick*0.5, dW, frameThick*0.5, frameFill);
-    // Panels with chevron fold lines
-    for (let i=0; i<numPanels; i++) {
-      const px = dX + frameThick + i*pW;
-      rect(px, dY+headerH+4, pW-2, dH-headerH-frameThick*0.5-4, glaze.fill, frameFill, 2);
-      // fold line diagonal
-      line(px+pW/2, dY+headerH+4, px+(i%2===0?pW:0), dY+dH-frameThick*0.5-4, '#90A0B0', 1, '3 2');
-    }
-    if (isConfirmation) {
-      dimLine(dX, dY+dH+30, dX+dW, dY+dH+30, width, true);
-      dimLine(dX-28, dY, dX-28, dY+dH, height, false);
-    }
-  }
-  // ── SLIDING DOOR (including All-Glass & Hermetic) ─────────────
-  else {
-    // Hermetic gasket bg
-    if (isHermetic) {
-      rect(dX-4,dY-4,dW+8,dH+8,'none','#6B8040',2,'2');
-    }
-    // Outer frame
-    rect(dX, dY, dW, dH, '#E8EEF4', frameFill, isHermetic?3:2);
-
-    // Header track box
-    rect(dX, dY, dW, headerH, frameFill, '#777', 1);
-    text(dX+dW/2, dY+headerH*0.68, isAllGlass?'HEADER TRACK':'HEADER / OPERATOR', 7.5, '#fff', 'middle', '700');
-
-    // Sill
-    rect(dX, dY+dH-frameThick*0.6, dW, frameThick*0.6, frameFill, null);
-
-    // Left & right jambs
-    const jamb = isAllGlass ? frameThick*0.5 : frameThick;
-    rect(dX, dY+headerH, jamb, dH-headerH-frameThick*0.6, frameFill, null);
-    rect(dX+dW-jamb, dY+headerH, jamb, dH-headerH-frameThick*0.6, frameFill, null);
-
-    // Panels
-    const panelAreaX = dX + jamb;
-    const panelAreaW = dW - jamb*2;
-    const panelAreaY = dY + headerH + 2;
-    const panelAreaH = dH - headerH - frameThick*0.6 - 4;
-
-    if (isBi) {
-      const halfW = panelAreaW/2;
-      // Left panel
-      rect(panelAreaX, panelAreaY, halfW-2, panelAreaH,
-           glaze.fill, glaze.stroke, isAllGlass?0.8:1.5);
-      // Right panel
-      rect(panelAreaX+halfW+2, panelAreaY, halfW-2, panelAreaH,
-           glaze.fill, glaze.stroke, isAllGlass?0.8:1.5);
-      // Center meeting stile
-      rect(panelAreaX+halfW-2, panelAreaY, 4, panelAreaH, frameFill, '#666', 1);
-      // Panel movement arrows (dashed)
-      const arrowY = panelAreaY + panelAreaH*0.5;
-      line(panelAreaX+halfW*0.15, arrowY, panelAreaX+halfW*0.5, arrowY, '#1B4F8A', 1.2, '4 2');
-      path(`M${panelAreaX+halfW*0.5},${arrowY} l-5,-4 l0,8 Z`,'#1B4F8A');
-      line(panelAreaX+halfW+halfW*0.5, arrowY, panelAreaX+halfW+halfW*0.85, arrowY, '#1B4F8A', 1.2, '4 2');
-      path(`M${panelAreaX+halfW+halfW*0.5},${arrowY} l5,-4 l0,8 Z`,'#1B4F8A');
-    } else {
-      // Single slide — one moving panel (left) + one fixed sidelight (right)
-      const moveW = panelAreaW * 0.55;
-      const fixW  = panelAreaW * 0.45;
-      // Moving panel
-      rect(panelAreaX, panelAreaY, moveW-2, panelAreaH,
-           glaze.fill, glaze.stroke, 1.5);
-      // Sidelight / fixed
-      rect(panelAreaX+moveW+2, panelAreaY, fixW-2, panelAreaH,
-           glaze.fill, '#AABBC8', 1, null,null,{'stroke-dasharray':'4 2'});
-      // Slide arrow
-      const arrowY = panelAreaY + panelAreaH*0.5;
-      line(panelAreaX+moveW*0.2, arrowY, panelAreaX+moveW*0.7, arrowY, '#1B4F8A', 1.2, '4 2');
-      path(`M${panelAreaX+moveW*0.7},${arrowY} l-5,-4 l0,8 Z`,'#1B4F8A');
-      // Fixed label
-      text(panelAreaX+moveW+fixW/2+2, panelAreaY+panelAreaH/2, 'FIXED', 8, '#90A0B0', 'middle');
-    }
-
-    // Hermetic gasket indicator
-    if (isHermetic) {
-      rect(dX+1.5,dY+1.5,dW-3,dH-3,'none','#8B6914',2,'1');
-      text(dX+dW/2, dY+dH-3, 'HERMETIC SEAL — FULL PERIMETER', 7, '#8B6914', 'middle', '700');
-    }
-
-    // Sensor dot (top center of header)
-    if (activation === 'Microwave Sensor' || activation === 'Multiple / Combo') {
-      circle(dX+dW/2, dY+headerH*0.45, 5, '#E87722', '#C86010', 1);
-      text(dX+dW/2+8, dY+headerH*0.52, '⬤ SENSOR', 6.5, '#E87722', 'start', '700');
-    }
-
-    // Battery backup badge
-    if (battery !== 'No') {
-      rect(dX+dW-52, dY+headerH+6, 46, 14, '#1B4F8A', null, 0, 2);
-      text(dX+dW-29, dY+headerH+16, 'BATT. BACKUP', 6.5, '#fff', 'middle', '700');
-    }
-
-    // ADA badge
-    if (ada === 'Yes — ADA required') {
-      rect(dX+6, dY+headerH+6, 32, 14, '#166534', null, 0, 2);
-      text(dX+22, dY+headerH+16, 'ADA', 7, '#fff', 'middle', '700');
-    }
-
-    // Dimension lines
-    if (isConfirmation || wIn) {
-      const dimY = dY+dH+28;
-      dimLine(dX, dimY, dX+dW, dimY, width || '—', true);
-    }
-    if (isConfirmation || hIn) {
-      dimLine(dX-32, dY, dX-32, dY+dH, height || '—', false);
-    }
-  }
-
-  // ── TITLE BLOCK BAR (non-confirmation) ───────────────────────
-  if (!isConfirmation) {
-    const tbY = vbH - 38;
-    rect(0, tbY, vbW, 38, '#F0F4F8', '#D0D5DD', 1);
-    line(0, tbY, vbW, tbY, '#D0D5DD', 1);
-    text(12, tbY+14, 'DOORTRONIX USA', 9, '#1B4F8A', 'start', '700');
-    text(12, tbY+28, 'doortronixusa.com', 8, '#888', 'start');
-    text(vbW/2, tbY+14, doorType, 9, '#1B4F8A', 'middle', '700');
-    text(vbW/2, tbY+28, `${panelCfg} | ${finish} | ${glazing}`, 8, '#555', 'middle');
-    const now = new Date();
-    text(vbW-12, tbY+14, now.toLocaleDateString(), 8, '#888', 'end');
-    text(vbW-12, tbY+28, 'PREVIEW ONLY', 8, '#E87722', 'end', '700');
+// ── FBO-only add-on visibility ──────────────────────────────────────
+function updateAddonVisibility() {
+  const cfg = getConfig();
+  const ar8600 = document.getElementById('addon_ar_8600');
+  if (!ar8600) return;
+  if (!cfg || !cfg.isFBO) {
+    ar8600.classList.add('disabled');
+    ar8600.classList.remove('checked');
   } else {
-    // Confirmation title block at bottom
-    const tbY = vbH - 60;
-    rect(0, tbY, vbW, 60, '#1B4F8A', null);
-    line(0, tbY, vbW, tbY, '#E87722', 2);
-    text(16, tbY+18, 'DOORTRONIX USA — CONFIRMATION DRAWING', 10, '#fff', 'start', '700');
-    text(16, tbY+32, 'Not for construction — for customer approval only', 8, '#B8CCE4', 'start');
-    text(16, tbY+46, 'Manufactured in Malakoff, Texas | Factory-Direct from our Texas Production Facility', 8, '#B8CCE4', 'start');
-    text(vbW-16, tbY+18, `${doorType}`, 10, '#E87722', 'end', '700');
-    text(vbW-16, tbY+32, `${width} W × ${height} H`, 9, '#fff', 'end', '700');
-    text(vbW-16, tbY+46, `${finish} / ${glazing}`, 8, '#B8CCE4', 'end');
+    ar8600.classList.remove('disabled');
   }
 }
 
-// ─── Update preview ───────────────────────────────────────────────
-function updatePreview() {
-  drawDoor('door-svg', 380, 320, false);
-  updateSpecSummary();
-}
+// ── Price calculation ───────────────────────────────────────────────
+function calcPrice() {
+  const cfg = getConfig();
+  const body = document.getElementById('price-body');
+  updateAddonVisibility();
 
-function updateSpecSummary() {
-  const specs = [
-    ['Door Type',   rv('doorType')],
-    ['Width',       getWidth()],
-    ['Height',      getHeight()],
-    ['Panels',      rv('panels')],
-    ['Frame Finish',rv('finish')],
-    ['Glazing',     rv('glazing')],
-    ['Activation',  rv('activation')],
-    ['ADA Mode',    rv('ada')],
-    ['Battery',     rv('battery')],
-    ['Access Ctrl', rv('accctrl')],
-  ];
-  const el = document.getElementById('spec-summary');
-  el.innerHTML = specs.map(([k,v]) =>
-    `<div class="spec-row"><span class="sk">${k}</span><span class="sv">${v||'—'}</span></div>`
-  ).join('');
-}
-
-// ─── Form submit ──────────────────────────────────────────────────
-document.getElementById('quoteForm').addEventListener('submit', async function(e) {
-  e.preventDefault();
-
-  // Basic validation
-  const required = ['f_name','f_company','f_role','f_phone','f_email','f_location','f_qty'];
-  let ok = true;
-  required.forEach(id => {
-    const el = document.getElementById(id);
-    if (!el.value.trim()) {
-      el.style.borderColor = 'var(--red)';
-      ok = false;
-    } else {
-      el.style.borderColor = '';
-    }
-  });
-  if (!fv('f_width') && !fv('f_width_custom')) {
-    document.getElementById('f_width').style.borderColor = 'var(--red)'; ok = false;
+  if (!cfg) {
+    body.innerHTML = '<div class="price-empty">Select a configuration above to see pricing.</div>';
+    return;
   }
-  if (!ok) {
-    alert('Please fill in all required fields (marked with *).');
+  if (cfg.base === null) {
+    body.innerHTML = `<div class="price-call"><div class="pc-label">ESA pricing requires a quote call</div><div class="pc-phone">(888) 453-5196</div><div style="font-size:11px;color:var(--mgray);margin-top:6px;">Mon–Fri, factory hours</div></div>`;
     return;
   }
 
-  // Build data payload
-  const data = {
-    name:        fv('f_name'),
-    company:     fv('f_company'),
-    role:        fv('f_role'),
-    phone:       fv('f_phone'),
-    email:       fv('f_email'),
-    projectName: fv('f_project'),
-    location:    fv('f_location'),
-    shipDate:    fv('f_shipdate'),
-    quantity:    fv('f_qty'),
-    doorType:    rv('doorType'),
-    width:       getWidth(),
-    height:      getHeight(),
-    panels:      rv('panels'),
-    finish:      rv('finish'),
-    glazing:     rv('glazing'),
-    activation:  rv('activation'),
-    ada:         rv('ada'),
-    battery:     rv('battery'),
-    accctrl:     rv('accctrl'),
-    insttype:    rv('insttype'),
-    notes:       fv('f_notes'),
-  };
+  let total = cfg.base;
+  const lines = [{ label: cfg.label + ' — Standard Package', amount: cfg.base }];
 
-  // ── Try Formspree submission ────────────────────────────────
-  if (FORMSPREE_ENDPOINT !== "https://formspree.io/f/YOUR_FORM_ID") {
-    try {
-      await fetch(FORMSPREE_ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify(data)
-      });
-    } catch(err) {
-      console.warn('Formspree submission failed:', err);
+  // Transom
+  if (rv('transom') === 'yes') {
+    total += cfg.transom;
+    lines.push({ label: 'Transom', amount: cfg.transom });
+  }
+
+  // Width adjustment
+  const wIn = getWidthIn();
+  if (wIn !== null) {
+    const note = document.getElementById('width-range-note');
+    if (wIn < cfg.minW) {
+      if (note) { note.textContent = `⚠ Under standard range (${cfg.minW/12}'0" min) — call us to confirm pricing`; note.className = 'size-range-note warn'; }
+    } else if (wIn > cfg.maxW) {
+      if (note) { note.textContent = `⚠ Over standard range (${cfg.maxW/12}'0" max) — call us to confirm pricing`; note.className = 'size-range-note warn'; }
+    } else {
+      if (note) { note.textContent = `✓ Within standard range`; note.className = 'size-range-note ok'; }
+    }
+  } else {
+    const note = document.getElementById('width-range-note');
+    if (note) { note.textContent = `Standard: ${cfg.minW/12}'0" to ${cfg.maxW/12}'0" frame width`; note.className = 'size-range-note'; }
+  }
+
+  // Add-ons
+  document.querySelectorAll('.addon-item.checked:not(.disabled)').forEach(el => {
+    const price = parseInt(el.dataset.price);
+    const sel = el.querySelector('.addon-qty-wrap select');
+    const qty = sel ? parseInt(sel.value) : 1;
+    const amount = price * qty;
+    total += amount;
+    const name = el.querySelector('.al').textContent;
+    lines.push({ label: name + (qty > 1 ? ` ×${qty}` : ''), amount });
+  });
+
+  // Per-unit display
+  const qty = parseInt(fv('f_qty')) || 1;
+  const grandTotal = total * qty;
+
+  // Render
+  let html = '';
+  lines.forEach(l => {
+    html += `<div class="price-line"><span class="pl">${l.label}</span><span class="pv add">+${fmt(l.amount)}</span></div>`;
+  });
+  html += '<hr class="price-divider">';
+  if (qty > 1) {
+    html += `<div class="price-line"><span class="pl">Per unit subtotal</span><span class="pv">${fmt(total)}</span></div>`;
+    html += `<div class="price-line"><span class="pl">× ${qty} openings</span><span class="pv">${fmt(grandTotal)}</span></div>`;
+  }
+  html += `<div class="price-total-row"><span class="pt-label">Estimated Total</span><span class="pt-value">${fmt(grandTotal)}</span></div>`;
+  html += `<div class="price-note">Net contractor pricing. Does not include freight, installation, or taxes. Doortronix will confirm final pricing and freight within 4 business hours.</div>`;
+  body.innerHTML = html;
+
+  // Store for confirmation
+  window._priceData = { lines, total, qty, grandTotal };
+}
+
+// ── Spec summary ────────────────────────────────────────────────────
+function updateSpecSummary() {
+  const cfg = getConfig();
+  const specs = [
+    ['Configuration', cfg ? cfg.label : '—'],
+    ['Code', cfg ? cfg.code : '—'],
+    ['Glazing', rv('glazing') || '—'],
+    ['Transom', rv('transom') === 'yes' ? 'Yes (+$250)' : 'No'],
+    ['Frame Width', getWidthStr()],
+    ['Frame Height', getHeightStr()],
+    ['Net Opening', getOpenStr() || '—'],
+    ['Quantity', fv('f_qty') || '—'],
+  ];
+  document.getElementById('spec-summary').innerHTML = specs.map(([k,v]) =>
+    `<div class="spec-row"><span class="sk">${k}</span><span class="sv">${v}</span></div>`
+  ).join('');
+}
+
+// ── SVG Drawing ─────────────────────────────────────────────────────
+function getFrameColor() {
+  return rv('glazing') === '313 Dark Bronze' ? '#6B5040' : '#B8C4D0';
+}
+function getGlazeFill() {
+  return rv('glazing') === '313 Dark Bronze'
+    ? { fill:'#D4C8BC', stroke:'#A09080' }
+    : { fill:'#E8F4FD', stroke:'#A8D4F5' };
+}
+
+function drawDoor(svgId, vW, vH, isConf) {
+  const svg = document.getElementById(svgId);
+  if (!svg) return;
+  svg.innerHTML = '';
+  const cfg = getConfig();
+  const glaze = getGlazeFill();
+  const frame = getFrameColor();
+  const hasTransom = rv('transom') === 'yes';
+  const isBi = cfg ? cfg.isBi : true;
+  const isLH = cfg && (cfg.code === 'O-SX' || cfg.code === 'O-SX-SX-O');
+  const isFBO = cfg ? cfg.isFBO : false;
+
+  const titleH = isConf ? 60 : 0;
+  const mL = 55, mR = 55, mT = isConf ? titleH+20 : 16, mB = isConf ? 70 : 44;
+  const dW = vW - mL - mR;
+  const dH = vH - mT - mB;
+  const dX = mL, dY = mT;
+  const headerH = 22, frameT = 10, sillH = 7;
+  const transomH = hasTransom ? Math.min(dH * 0.22, 48) : 0;
+  const doorH = dH - transomH;
+
+  function r(x,y,w,h,fill,stroke,sw,rx) {
+    const el = document.createElementNS('http://www.w3.org/2000/svg','rect');
+    Object.entries({x,y,width:Math.max(w,0),height:Math.max(h,0),fill:fill||'none',rx:rx||0}).forEach(([k,v])=>el.setAttribute(k,v));
+    if(stroke){el.setAttribute('stroke',stroke);el.setAttribute('stroke-width',sw||1);}
+    svg.appendChild(el); return el;
+  }
+  function l(x1,y1,x2,y2,s,sw,dash) {
+    const el = document.createElementNS('http://www.w3.org/2000/svg','line');
+    Object.entries({x1,y1,x2,y2,stroke:s||'#666','stroke-width':sw||1}).forEach(([k,v])=>el.setAttribute(k,v));
+    if(dash) el.setAttribute('stroke-dasharray',dash);
+    svg.appendChild(el);
+  }
+  function t(x,y,str,size,fill,anchor,weight) {
+    const el = document.createElementNS('http://www.w3.org/2000/svg','text');
+    Object.entries({x,y,'font-size':size||11,fill:fill||'#111','text-anchor':anchor||'middle','font-weight':weight||'normal','font-family':'Arial,sans-serif'}).forEach(([k,v])=>el.setAttribute(k,v));
+    el.textContent=str; svg.appendChild(el); return el;
+  }
+  function path(d,fill,stroke,sw,dash) {
+    const el = document.createElementNS('http://www.w3.org/2000/svg','path');
+    el.setAttribute('d',d); el.setAttribute('fill',fill||'none');
+    if(stroke){el.setAttribute('stroke',stroke);el.setAttribute('stroke-width',sw||1);}
+    if(dash) el.setAttribute('stroke-dasharray',dash);
+    svg.appendChild(el);
+  }
+  function dimLine(x1,y1,x2,y2,lbl,horiz) {
+    const aw=5,off=7;
+    if(horiz){
+      l(x1,y1,x2,y2,'#1B4F8A',0.7); l(x1,y1-off,x1,y1+off,'#1B4F8A',0.7); l(x2,y1-off,x2,y1+off,'#1B4F8A',0.7);
+      path(`M${x1},${y1}l${aw},-3l0,6Z`,'#1B4F8A'); path(`M${x2},${y1}l${-aw},-3l0,6Z`,'#1B4F8A');
+      t((x1+x2)/2,y1-5,lbl,9,'#1B4F8A','middle','700');
+    } else {
+      l(x1,y1,x2,y2,'#1B4F8A',0.7); l(x1-off,y1,x1+off,y1,'#1B4F8A',0.7); l(x1-off,y2,x1+off,y2,'#1B4F8A',0.7);
+      path(`M${x1},${y1}l-3,${aw}l6,0Z`,'#1B4F8A'); path(`M${x1},${y2}l-3,${-aw}l6,0Z`,'#1B4F8A');
+      const cx=x1-4,cy=(y1+y2)/2;
+      const el=t(cx,cy,lbl,9,'#1B4F8A','middle','700');
+      el.setAttribute('transform',`rotate(-90,${cx},${cy})`);
     }
   }
 
-  // ── Show confirmation ───────────────────────────────────────
-  showConfirmation(data);
+  // Confirmation title
+  if (isConf) {
+    r(0,0,vW,titleH,'#1B4F8A');
+    t(16,22,'DOORTRONIX USA',14,'#fff','start','700');
+    t(16,38,'Confirmation Drawing — Door Elevation',10,'#B8CCE4','start');
+    const cLabel = cfg ? cfg.label + ' (' + cfg.code + ')' : '—';
+    t(vW-14,22,cLabel,11,'#E87722','end','700');
+    t(vW-14,38,getWidthStr() + ' W × ' + getHeightStr() + ' H',10,'#fff','end','700');
+    t(vW-14,52,rv('glazing'),9,'#B8CCE4','end');
+    t(vW/2,36,'Not for construction — for approval only',9,'#7090A8','middle');
+  }
+
+  // Outer frame bg
+  r(dX, dY, dW, dH, '#E8EEF4', frame, 2);
+
+  // Header / operator
+  r(dX, dY, dW, headerH, frame, '#777', 1);
+  t(dX+dW/2, dY+headerH*0.68, 'HEADER / OPERATOR', 7, '#fff', 'middle', '700');
+
+  // Sill
+  r(dX, dY+dH-sillH, dW, sillH, frame);
+
+  // Transom strip
+  if (hasTransom) {
+    r(dX+frameT, dY+doorH-4, dW-frameT*2, transomH+4, glaze.fill, glaze.stroke, 1);
+    l(dX+frameT, dY+doorH-4, dX+dW-frameT, dY+doorH-4, frame, 3);
+    t(dX+dW/2, dY+doorH+transomH/2+6, 'TRANSOM', 7, '#888', 'middle');
+  }
+
+  // Jambs
+  r(dX, dY+headerH, frameT, dH-headerH-sillH, frame);
+  r(dX+dW-frameT, dY+headerH, frameT, dH-headerH-sillH, frame);
+
+  const pY = dY+headerH+2, pH = doorH-headerH-sillH-4;
+  const pX = dX+frameT, pW = dW-frameT*2;
+
+  if (!cfg || cfg.base === null) {
+    // ESA placeholder
+    const hw = pW/2;
+    r(pX, pY, hw-2, pH, glaze.fill, glaze.stroke, 1);
+    r(pX+hw+2, pY, hw-2, pH, glaze.fill, glaze.stroke, 1);
+    r(pX+hw-2, pY, 4, pH, frame, '#666', 1);
+    t(dX+dW/2, dY+doorH/2+6, 'ESA', 9, '#888', 'middle');
+  } else if (isBi) {
+    // Bipart
+    const sW = pW * 0.22, aW = (pW - sW*2) / 2;
+    // Left sidelight
+    r(pX, pY, sW-1, pH, glaze.fill, isFBO?frame:'#AABBC8', isFBO?1.5:1, 0);
+    if (!isFBO) l(pX,pY,pX,pY+pH,'#AABBC8',1,'3,2');
+    t(pX+sW/2, pY+pH/2+4, isFBO?'SL':'P', 7, '#888', 'middle');
+    // Left active panel
+    r(pX+sW+1, pY, aW-2, pH, glaze.fill, frame, 1.5);
+    // Right active panel
+    r(pX+sW+aW+2, pY, aW-2, pH, glaze.fill, frame, 1.5);
+    // Right sidelight
+    r(pX+pW-sW+1, pY, sW-1, pH, glaze.fill, isFBO?frame:'#AABBC8', isFBO?1.5:1, 0);
+    t(pX+pW-sW/2, pY+pH/2+4, isFBO?'SL':'P', 7, '#888', 'middle');
+    // Center interlock
+    r(pX+sW+aW-1, pY, 4, pH, frame, '#666', 1);
+    // Movement arrows
+    const aY = pY+pH*0.45;
+    l(pX+sW+aW*0.2,aY,pX+sW+aW*0.6,aY,'#1B4F8A',1,'3,2');
+    path(`M${pX+sW+aW*0.6},${aY}l-4,-3l0,6Z`,'#1B4F8A');
+    l(pX+sW+aW+aW*0.4,aY,pX+sW+aW+aW*0.8,aY,'#1B4F8A',1,'3,2');
+    path(`M${pX+sW+aW+aW*0.4},${aY}l4,-3l0,6Z`,'#1B4F8A');
+  } else {
+    // Single slide
+    const sW = pW * 0.38, aW = pW - sW;
+    if (isLH) {
+      // Fixed sidelight on left, active panel on right
+      r(pX, pY, sW-1, pH, glaze.fill, '#AABBC8', 1);
+      t(pX+sW/2, pY+pH*0.45, 'FIXED', 7, '#888', 'middle');
+      r(pX+sW+1, pY, aW-2, pH, glaze.fill, frame, 1.5);
+      const aY = pY+pH*0.45;
+      l(pX+sW+aW*0.25,aY,pX+sW+aW*0.65,aY,'#1B4F8A',1,'3,2');
+      path(`M${pX+sW+aW*0.25},${aY}l4,-3l0,6Z`,'#1B4F8A');
+    } else {
+      // Active panel on left, fixed sidelight on right
+      r(pX, pY, aW-1, pH, glaze.fill, frame, 1.5);
+      r(pX+aW+1, pY, sW-2, pH, glaze.fill, '#AABBC8', 1);
+      t(pX+aW+sW/2, pY+pH*0.45, 'FIXED', 7, '#888', 'middle');
+      const aY = pY+pH*0.45;
+      l(pX+aW*0.3,aY,pX+aW*0.7,aY,'#1B4F8A',1,'3,2');
+      path(`M${pX+aW*0.7},${aY}l-4,-3l0,6Z`,'#1B4F8A');
+    }
+  }
+
+  // Dim lines
+  if (isConf || getWidthIn()) {
+    dimLine(dX, dY+dH+24, dX+dW, dY+dH+24, getWidthStr(), true);
+  }
+  if (isConf) {
+    dimLine(dX-30, dY, dX-30, dY+dH, getHeightStr(), false);
+  }
+
+  // Bottom title bar (preview only)
+  if (!isConf) {
+    const tbY = vH - 38;
+    r(0, tbY, vW, 38, '#F0F4F8', '#D0D5DD', 1);
+    l(0, tbY, vW, tbY, '#D0D5DD', 1);
+    const cLabel = cfg ? cfg.label : 'Select Configuration';
+    t(10, tbY+14, 'DOORTRONIX USA', 8, '#1B4F8A', 'start', '700');
+    t(10, tbY+28, 'doortronixusa.com', 7, '#888', 'start');
+    t(vW/2, tbY+14, cLabel, 9, '#1B4F8A', 'middle', '700');
+    t(vW/2, tbY+28, (cfg ? cfg.code : '') + ' | ' + rv('glazing'), 7, '#555', 'middle');
+    t(vW-10, tbY+14, new Date().toLocaleDateString(), 7, '#888', 'end');
+    t(vW-10, tbY+28, 'PREVIEW ONLY', 7, '#E87722', 'end', '700');
+  } else {
+    const tbY = vH - 50;
+    r(0, tbY, vW, 50, '#1B4F8A');
+    l(0, tbY, vW, tbY, '#E87722', 2);
+    t(14, tbY+16, 'DOORTRONIX USA — CONFIRMATION DRAWING', 9, '#fff', 'start', '700');
+    t(14, tbY+29, 'Not for construction — for customer approval only', 7, '#B8CCE4', 'start');
+    t(14, tbY+42, 'Manufactured in Malakoff, Texas | Factory-Direct', 7, '#B8CCE4', 'start');
+    const cLabel2 = cfg ? cfg.label + ' | ' + rv('glazing') : '—';
+    t(vW-14, tbY+16, cLabel2, 9, '#E87722', 'end', '700');
+    t(vW-14, tbY+29, getWidthStr() + ' W × ' + getHeightStr() + ' H', 9, '#fff', 'end', '700');
+  }
+}
+
+// ── Update all ───────────────────────────────────────────────────────
+function updateAll() {
+  calcPrice();
+  updateSpecSummary();
+  drawDoor('door-svg', 400, 300, false);
+}
+
+// ── Event listeners ──────────────────────────────────────────────────
+document.getElementById('quoteForm').addEventListener('input', updateAll);
+document.getElementById('quoteForm').addEventListener('change', updateAll);
+
+// ── Form submit ──────────────────────────────────────────────────────
+document.getElementById('quoteForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const req = ['f_name','f_company','f_role','f_phone','f_email','f_location','f_qty'];
+  let ok = true;
+  req.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el.value.trim()) { el.style.borderColor='var(--red)'; ok=false; }
+    else el.style.borderColor='';
+  });
+  if (!rv('config')) { alert('Please select a door configuration.'); return; }
+  if (!ok) { alert('Please fill in all required fields marked with *.'); return; }
+
+  const cfg = getConfig();
+  const addons = [];
+  document.querySelectorAll('.addon-item.checked:not(.disabled)').forEach(el => {
+    const qty = el.querySelector('.addon-qty-wrap select');
+    addons.push(el.querySelector('.al').textContent + (qty ? ' ×' + qty.value : ''));
+  });
+
+  const pd = window._priceData;
+  const data = {
+    name: fv('f_name'), company: fv('f_company'), role: fv('f_role'),
+    phone: fv('f_phone'), email: fv('f_email'),
+    projectName: fv('f_project'), location: fv('f_location'),
+    shipDate: fv('f_shipdate'), quantity: fv('f_qty'),
+    configuration: cfg ? cfg.label + ' (' + cfg.code + ')' : rv('config'),
+    glazing: rv('glazing'), transom: rv('transom') === 'yes' ? 'Yes' : 'No',
+    frameWidth: getWidthStr(), frameHeight: getHeightStr(),
+    netOpening: getOpenStr(),
+    addons: addons.join(', ') || 'None',
+    estimatedTotal: pd ? '$' + pd.grandTotal.toLocaleString() : 'See notes',
+    notes: fv('f_notes'),
+  };
+
+  if (FORMSPREE && FORMSPREE !== "https://formspree.io/f/YOUR_FORM_ID") {
+    try {
+      await fetch(FORMSPREE, {
+        method:'POST',
+        headers:{'Content-Type':'application/json','Accept':'application/json'},
+        body: JSON.stringify(data)
+      });
+    } catch(err) { console.warn('Formspree error:', err); }
+  }
+
+  showConf(data, pd);
 });
 
-function showConfirmation(data) {
-  // Reference number
+function showConf(data, pd) {
   const ref = 'DTX-' + Date.now().toString().slice(-6);
   document.getElementById('conf-ref-num').textContent = 'Ref: ' + ref;
   document.getElementById('conf-ref-date').textContent =
     new Date().toLocaleDateString('en-US',{weekday:'short',year:'numeric',month:'short',day:'numeric'});
 
-  // Contact block
-  document.getElementById('conf-contact').innerHTML = [
-    ['Name', data.name], ['Company', data.company], ['Role', data.role],
-    ['Phone', data.phone], ['Email', data.email]
-  ].map(([k,v])=>`<div class="conf-spec-row"><span class="ck">${k}</span><span class="cv">${v||'—'}</span></div>`).join('');
+  document.getElementById('conf-contact').innerHTML =
+    [['Name',data.name],['Company',data.company],['Role',data.role],['Phone',data.phone],['Email',data.email]]
+    .map(([k,v])=>`<div class="conf-spec-row"><span class="ck">${k}</span><span class="cv">${v||'—'}</span></div>`).join('');
 
-  // Project block
-  document.getElementById('conf-project').innerHTML = [
-    ['Project', data.projectName||'—'], ['Location', data.location],
-    ['Target Ship', data.shipDate||'ASAP'], ['Quantity', data.quantity+' opening(s)'],
-    ['Install Type', data.insttype]
-  ].map(([k,v])=>`<div class="conf-spec-row"><span class="ck">${k}</span><span class="cv">${v||'—'}</span></div>`).join('');
+  document.getElementById('conf-project').innerHTML =
+    [['Project',data.projectName||'—'],['Location',data.location],['Target Ship',data.shipDate||'ASAP'],['Qty',data.quantity+' opening(s)']]
+    .map(([k,v])=>`<div class="conf-spec-row"><span class="ck">${k}</span><span class="cv">${v||'—'}</span></div>`).join('');
 
-  // Door block (2-column)
   const doorSpecs = [
-    ['Door Type', data.doorType], ['Width', data.width],
-    ['Height', data.height], ['Panels', data.panels],
-    ['Frame Finish', data.finish], ['Glazing', data.glazing],
-    ['Activation', data.activation], ['ADA Mode', data.ada],
-    ['Battery Backup', data.battery], ['Access Control', data.accctrl],
+    ['Configuration',data.configuration],['Frame Width',data.frameWidth],
+    ['Frame Height',data.frameHeight],['Net Opening',data.netOpening||'—'],
+    ['Glazing',data.glazing],['Transom',data.transom],
+    ['Add-ons',data.addons],
   ];
-  document.getElementById('conf-door').innerHTML = doorSpecs.map(([k,v])=>
-    `<div class="conf-spec-row"><span class="ck">${k}</span><span class="cv">${v||'—'}</span></div>`
-  ).join('');
+  document.getElementById('conf-door').innerHTML = doorSpecs
+    .map(([k,v])=>`<div class="conf-spec-row"><span class="ck">${k}</span><span class="cv">${v||'—'}</span></div>`).join('');
 
-  // Generate confirmation drawing
-  drawDoor('conf-svg', 760, 420, true);
+  // Price box
+  if (pd) {
+    let ph = '<h3>Price Estimate</h3>';
+    pd.lines.forEach(l => { ph += `<div class="conf-price-line"><span class="cpk">${l.label}</span><span class="cpv">+$${l.amount.toLocaleString()}</span></div>`; });
+    if (pd.qty > 1) {
+      ph += `<div class="conf-price-line"><span class="cpk">× ${pd.qty} openings</span><span class="cpv">= $${pd.grandTotal.toLocaleString()}</span></div>`;
+    }
+    ph += `<div class="conf-price-total"><span>Estimated Total</span><span>$${pd.grandTotal.toLocaleString()}</span></div>`;
+    ph += `<p style="font-size:10px;color:var(--mgray);margin-top:8px;">Net contractor pricing. Freight, installation &amp; taxes not included. Subject to final review by Doortronix.</p>`;
+    document.getElementById('conf-price-box').innerHTML = ph;
+  }
 
-  // Show overlay
+  drawDoor('conf-svg', 760, 380, true);
   document.getElementById('confirmation').style.display = 'block';
   document.getElementById('confirmation').scrollTop = 0;
 }
 
-function closeConfirmation() {
+function closeConf() {
   document.getElementById('confirmation').style.display = 'none';
 }
 
-// ─── Init ─────────────────────────────────────────────────────────
-updatePreview();
+// ── Init ─────────────────────────────────────────────────────────────
+updateAll();
 </script>
 </body>
 </html>
