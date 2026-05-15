@@ -1076,25 +1076,26 @@ function drawDoor(svgId, vW, vH, isConf) {
   // Outer frame bg
   r(dX, dY, dW, dH, '#E8EEF4', frame, 2);
 
-  // Header / operator
-  r(dX, dY, dW, headerH, frame, '#777', 1);
-  t(dX+dW/2, dY+headerH*0.68, 'HEADER / OPERATOR', 7, '#fff', 'middle', '700');
-
   // Sill
   r(dX, dY+dH-sillH, dW, sillH, frame);
 
-  // Transom strip
+  // Transom strip — sits above the header/operator
   if (hasTransom) {
-    r(dX+frameT, dY+doorH-4, dW-frameT*2, transomH+4, glaze.fill, glaze.stroke, 1);
-    l(dX+frameT, dY+doorH-4, dX+dW-frameT, dY+doorH-4, frame, 3);
-    t(dX+dW/2, dY+doorH+transomH/2+6, 'TRANSOM', 7, '#888', 'middle');
+    r(dX+frameT, dY, dW-frameT*2, transomH, glaze.fill, glaze.stroke, 1);
+    t(dX+dW/2, dY+transomH/2+4, 'TRANSOM', 7, '#888', 'middle');
+    // mullion line between transom and header
+    l(dX, dY+transomH, dX+dW, dY+transomH, frame, 3);
   }
 
-  // Jambs
-  r(dX, dY+headerH, frameT, dH-headerH-sillH, frame);
-  r(dX+dW-frameT, dY+headerH, frameT, dH-headerH-sillH, frame);
+  // Header / operator — below transom if present
+  r(dX, dY+transomH, dW, headerH, frame, '#777', 1);
+  t(dX+dW/2, dY+transomH+headerH*0.68, 'HEADER / OPERATOR', 7, '#fff', 'middle', '700');
 
-  const pY = dY+headerH+2, pH = doorH-headerH-sillH-4;
+  // Jambs
+  r(dX, dY+transomH+headerH, frameT, dH-transomH-headerH-sillH, frame);
+  r(dX+dW-frameT, dY+transomH+headerH, frameT, dH-transomH-headerH-sillH, frame);
+
+  const pY = dY+transomH+headerH+2, pH = dH-transomH-headerH-sillH-4;
   const pX = dX+frameT, pW = dW-frameT*2;
 
   if (!cfg || cfg.base === null) {
@@ -1103,7 +1104,7 @@ function drawDoor(svgId, vW, vH, isConf) {
     r(pX, pY, hw-2, pH, glaze.fill, glaze.stroke, 1);
     r(pX+hw+2, pY, hw-2, pH, glaze.fill, glaze.stroke, 1);
     r(pX+hw-2, pY, 4, pH, frame, '#666', 1);
-    t(dX+dW/2, dY+doorH/2+6, 'ESA', 9, '#888', 'middle');
+    t(dX+dW/2, pY+pH/2+4, 'ESA', 9, '#888', 'middle');
   } else if (isBi) {
     // Bipart
     const sW = pW * 0.22, aW = (pW - sW*2) / 2;
