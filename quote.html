@@ -372,9 +372,9 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
           <label>Overall Frame Height (incl. Transom)</label>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
             <div class="field">
-              <select id="f_ftthft" name="ftthFt">
+              <select id="f_ftthft" name="ftthFt" onchange="clampFtthIn()">
                 <option value="">Ft —</option>
-                <option value="7">7'</option><option value="8">8'</option>
+                <option value="7" selected>7'</option><option value="8">8'</option>
                 <option value="9">9'</option><option value="10">10'</option>
                 <option value="11">11'</option><option value="12">12'</option>
               </select>
@@ -383,7 +383,7 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
               <select id="f_ftthin" name="ftthIn">
                 <option value="0">0"</option><option value="1">1"</option><option value="2">2"</option>
                 <option value="3">3"</option><option value="4">4"</option><option value="5">5"</option>
-                <option value="6">6"</option><option value="7">7"</option><option value="8">8"</option>
+                <option value="6">6"</option><option value="7">7"</option><option value="8" selected>8"</option>
                 <option value="9">9"</option><option value="10">10"</option><option value="11">11"</option>
               </select>
             </div>
@@ -475,13 +475,13 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
         <div class="field">
           <label>Door Panel Glass Prep</label>
           <div class="chip-group">
-            <input type="radio" name="glassPrep" id="gp_quarter" value='1/4"'>
+            <input type="radio" name="glassPrep" id="gp_quarter" value='1/4"' checked>
             <label for="gp_quarter">1/4"</label>
             <input type="radio" name="glassPrep" id="gp_9_16" value='9/16"'>
             <label for="gp_9_16">9/16"</label>
             <input type="radio" name="glassPrep" id="gp_5_8" value='5/8"'>
             <label for="gp_5_8">5/8"</label>
-            <input type="radio" name="glassPrep" id="gp_1in" value='1"' checked>
+            <input type="radio" name="glassPrep" id="gp_1in" value='1"'>
             <label for="gp_1in">1"</label>
           </div>
           <span class="hint">Glass <strong>not included</strong> — frame is prepped for specified thickness.</span>
@@ -937,11 +937,31 @@ function toggleAddon(el) {
   calcPrice();
 }
 
+// ── FTTH inch clamp — when ft=7, minimum inch is 8 (7'8" = 92") ────
+function clampFtthIn() {
+  const ftSel = document.getElementById('f_ftthft');
+  const inSel = document.getElementById('f_ftthin');
+  if (!ftSel || !inSel) return;
+  const ft = parseInt(ftSel.value) || 0;
+  const MIN_IN = 8; // 7'8" = 92" minimum
+  Array.from(inSel.options).forEach(opt => {
+    const v = parseInt(opt.value);
+    opt.disabled = (ft === 7 && v < MIN_IN);
+    opt.hidden   = (ft === 7 && v < MIN_IN);
+  });
+  // If current selection is now below minimum, bump up
+  if (ft === 7 && parseInt(inSel.value) < MIN_IN) {
+    inSel.value = String(MIN_IN);
+  }
+  calcPrice();
+}
+
 // ── FTTH field visibility ───────────────────────────────────────────
 function updateFTTH() {
   const hasTransom = rv('transom') === 'yes';
   const f = document.getElementById('ftth-field');
   if (f) f.style.display = hasTransom ? '' : 'none';
+  if (hasTransom) clampFtthIn();
   const tg = document.getElementById('transom-glass-field');
   if (tg) tg.style.display = hasTransom ? '' : 'none';
   const tv = document.getElementById('transom-verticals-field');
