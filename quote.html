@@ -1185,6 +1185,8 @@ function drawDoor(svgId, vW, vH, isConf) {
   const dH = vH - mT - mB;
   const dX = mL, dY = mT;
   const headerH = 22, frameT = 16, sillH = 8;
+  // Lighter fill for panel stiles/rails — visually distinct from the darker solid jambs
+  const panelFill = '#7A9CB8';
   const transomH = hasTransom ? Math.min(dH * 0.22, 48) : 0;
   const doorH = dH - transomH;
 
@@ -1248,39 +1250,48 @@ function drawDoor(svgId, vW, vH, isConf) {
   // Transom strip — sits above the header/operator
   if (hasTransom) {
     const numV = parseInt(rv('transomV') || '0');
+    // Use frameT for all transom framing members (matches jamb thickness)
     const tx = dX + frameT, tw = dW - frameT * 2;
+    const tGlassH = transomH - frameT; // glass height — bottom frameT reserved for horizontal mullion
 
-    // Compute vertical x-positions
+    // Compute vertical mullion center x-positions
+    // Use local equivalents of pX/pW to avoid temporal dead zone
+    const _pX = dX + frameT, _pW = dW - frameT * 2;
     const vertXs = [];
     if (numV > 0) {
       if (numV === 2 && isBi) {
-        // Align with bipart panel junctions (SO/SX and SX/SO gaps)
-        const gap = 3, panW = (pW - gap * 3) / 4;
-        vertXs.push(pX + panW + gap / 2);
-        vertXs.push(pX + (panW + gap) * 3 - gap / 2);
+        const gap = 3, panW = (_pW - gap * 3) / 4;
+        vertXs.push(_pX + panW + gap / 2);
+        vertXs.push(_pX + (panW + gap) * 3 - gap / 2);
       } else {
-        // Equal divisions for all other cases
         for (let i = 1; i <= numV; i++) {
           vertXs.push(tx + tw * i / (numV + 1));
         }
       }
     }
 
-    // Draw transom lites between verticals (and frame edges)
-    const liteXs = [tx, ...vertXs, tx + tw];
-    for (let i = 0; i < liteXs.length - 1; i++) {
-      r(liteXs[i], dY, liteXs[i+1] - liteXs[i], transomH, glaze.fill, 'none', 0);
+    // Draw glass lites between vertical mullions
+    const liteEdges = [tx, ...vertXs.flatMap(vx => [vx - frameT/2, vx + frameT/2]), tx + tw];
+    for (let i = 0; i < liteEdges.length - 1; i += 2) {
+      const lx = liteEdges[i], lw = liteEdges[i+1] - liteEdges[i];
+      if (lw > 1) r(lx, dY, lw, tGlassH, glaze.fill, glaze.stroke, 0.5);
     }
-    // Outer transom border
-    r(tx, dY, tw, transomH, 'none', glaze.stroke, 1);
-    // Label in first (or only) lite
-    t(tx + tw/2, dY + transomH/2 + 4, 'TRANSOM', 7, '#888', 'middle');
-    // Draw vertical dividers
+
+    // Left and right transom jambs (frameT wide, same as door jambs)
+    r(dX, dY, frameT, transomH, frame);
+    r(dX + dW - frameT, dY, frameT, transomH, frame);
+
+    // Vertical mullions — filled rects, frameT wide (same thickness as jambs)
     vertXs.forEach(vx => {
-      l(vx, dY, vx, dY + transomH, frame, 1.5);
+      r(vx - frameT/2, dY, frameT, tGlassH, frame);
     });
-    // Mullion line between transom and header
-    l(dX, dY + transomH, dX + dW, dY + transomH, frame, 3);
+
+    // Bottom horizontal mullion — frameT tall, full width (matches jamb thickness)
+    r(dX, dY + tGlassH, dW, frameT, frame);
+
+    // TRANSOM label centred on the widest lite
+    const firstLiteW = vertXs.length > 0 ? (vertXs[0] - frameT/2) - tx : tw;
+    t(tx + firstLiteW/2, dY + tGlassH/2 + 3, 'TRANSOM', 7, '#aaa', 'middle');
   }
 
   // Header / operator — below transom if present
@@ -1298,7 +1309,7 @@ function drawDoor(svgId, vW, vH, isConf) {
   // Panel drawing helper — frame background + inset glass lite + optional diagonal glass lines
   let panels = []; // collect {x,w} for muntin overlay
   function drawP(px, py, pw, ph, strokeColor, sw, showDiag) {
-    r(px, py, pw, ph, frame, strokeColor, sw);
+    r(px, py, pw, ph, panelFill, strokeColor, sw);
     const gx = px+stileW, gy = py+topRH, gw = pw-stileW*2, gh = ph-topRH-btmRH;
     if (gw > 2 && gh > 2) {
       r(gx, gy, gw, gh, glaze.fill, 'none', 0);
@@ -1314,7 +1325,7 @@ function drawDoor(svgId, vW, vH, isConf) {
     const hw = pW/2;
     drawP(pX, pY, hw-2, pH, glaze.stroke, 1, false);
     drawP(pX+hw+2, pY, hw-2, pH, glaze.stroke, 1, false);
-    r(pX+hw-2, pY, 4, pH, frame, frame, 0);
+    r(pX+hw-2, pY, 4, pH, panelFill, panelFill, 0);
     t(dX+dW/2, pY+pH/2+4, 'ESA', 9, '#888', 'middle');
   } else if (isBi) {
     // Bipart — 4 equal panels
@@ -1327,7 +1338,7 @@ function drawDoor(svgId, vW, vH, isConf) {
     drawP(x3, pY, panW, pH, frame, 1.5, false);
     drawP(x4, pY, panW, pH, sdStroke, sdSW, isFBO);
     // Center interlock (overlapping trailing/leading stiles)
-    r(x3-gap, pY, gap, pH, frame, frame, 0);
+    r(x3-gap, pY, gap, pH, panelFill, panelFill, 0);
     // Movement arrows — left active slides left, right active slides right
     const aY = pY + topRH + (pH-topRH-btmRH)*0.48;
     l(x2+stileW+3, aY, x2+panW-stileW-3, aY, '#1B4F8A', 1.2, '5,3');
@@ -1361,7 +1372,7 @@ function drawDoor(svgId, vW, vH, isConf) {
   // Horizontal muntin — spans glass area within stiles on each panel
   if (cfg && cfg.base !== null && rv('muntin') !== 'No Muntin') {
     const mY = pY + topRH + (pH-topRH-btmRH)/2 - 1.5;
-    panels.forEach(({x, w}) => r(x+stileW, mY, w-stileW*2, 3, frame, 'none', 0));
+    panels.forEach(({x, w}) => r(x+stileW, mY, w-stileW*2, 3, panelFill, 'none', 0));
   }
 
   // Dim lines
