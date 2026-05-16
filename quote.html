@@ -339,8 +339,26 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
             <div class="cc-price">from $3,200</div>
           </label>
 
+          <div style="grid-column:1/-1; font-size:11px; font-weight:700; color:var(--blue); text-transform:uppercase; letter-spacing:.5px; padding-bottom:2px; border-bottom:1px solid var(--border); margin-top:6px; margin-bottom:2px;">Slide by Side</div>
+
+          <input type="radio" name="config" id="cfg_sbs" value="sbs">
+          <label for="cfg_sbs" class="config-card">
+            <svg class="cc-icon" width="70" height="36" viewBox="0 0 70 36">
+              <rect x="0" y="0" width="70" height="36" fill="#EEF4FB" rx="3"/>
+              <rect x="0" y="0" width="70" height="6" fill="#1B4F8A"/>
+              <rect x="4" y="6" width="19" height="28" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1.5"/>
+              <rect x="25" y="6" width="19" height="28" fill="#C8E0F8" stroke="#AABBC8" stroke-width="1"/>
+              <rect x="46" y="6" width="19" height="28" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1.5"/>
+              <text x="13" y="24" font-size="10" fill="#1B4F8A" text-anchor="middle" font-family="Arial">&#8592;</text>
+              <text x="55" y="24" font-size="10" fill="#1B4F8A" text-anchor="middle" font-family="Arial">&#8594;</text>
+            </svg>
+            <div class="cc-name">Slide by Side</div>
+            <div class="cc-code">SX-SO-SX</div>
+            <div class="cc-price" style="color:var(--mgray);">Call for pricing</div>
+          </label>
+
         </div>
-        <p style="font-size:11px;color:var(--mgray);margin-top:6px;">ESA (P-SX-SX-P) and all other configurations: call <strong>(888) 453-5196</strong>.</p>
+        <p style="font-size:11px;color:var(--mgray);margin-top:6px;">ESA, Slide by Side, and custom configurations: call <strong>(888) 453-5196</strong>.</p>
       </div>
 
       <div class="form-grid">
@@ -458,24 +476,11 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
           <span class="hint size-range-note" id="height-range-note">Standard: 7'6" to 8'0"</span>
         </div>
 
-        <!-- Net slide opening -->
+        <!-- Net slide opening — auto-calculated -->
         <div class="field full">
-          <label>Net Slide Opening (door clear width)</label>
-          <div class="ft-in-group" style="max-width:260px;">
-            <div class="field">
-              <select id="f_oft" name="openFt">
-                <option value="">Ft —</option>
-                <option value="2">2'</option><option value="3">3'</option><option value="4">4'</option>
-                <option value="5">5'</option><option value="6">6'</option><option value="7">7'</option>
-              </select>
-            </div>
-            <div class="field">
-              <select id="f_oin" name="openIn">
-                <option value="0">0"</option><option value="3">3"</option><option value="6">6"</option><option value="9">9"</option>
-              </select>
-            </div>
-          </div>
-          <span class="hint">If unsure, leave blank — we'll calculate from frame width.</span>
+          <label>Net Slide Opening (clear door width)</label>
+          <div id="net-opening-display" style="padding:9px 14px;background:#F0F4F8;border:1.5px solid var(--border);border-radius:6px;font-size:15px;font-weight:700;color:var(--blue);min-height:40px;letter-spacing:.3px;">—</div>
+          <span class="hint" id="net-opening-note">Select configuration and frame width to calculate. Equal-panel FBO/FSL only — call for unequal-panel openings.</span>
         </div>
       </div>
 
@@ -526,11 +531,22 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
           <label>Bottom Rail</label>
           <div class="chip-group">
             <input type="radio" name="bottomRail" id="br_std" value="std" checked>
-            <label for="br_std">3-1/2" (std)</label>
+            <label for="br_std">4" (std)</label>
             <input type="radio" name="bottomRail" id="br_6" value="6in">
             <label for="br_6">6" (+$80/panel)</label>
             <input type="radio" name="bottomRail" id="br_10" value="10in">
             <label for="br_10">10" (+$160/panel)</label>
+          </div>
+        </div>
+
+        <!-- Muntin -->
+        <div class="field">
+          <label>Horizontal Muntin</label>
+          <div class="chip-group">
+            <input type="radio" name="muntin" id="mt_std" value='2" Muntin (std)' checked>
+            <label for="mt_std">2" Muntin (std)</label>
+            <input type="radio" name="muntin" id="mt_none" value="No Muntin">
+            <label for="mt_none">No Muntin</label>
           </div>
         </div>
 
@@ -583,21 +599,6 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
       <p style="font-size:12px;color:var(--mgray);margin-bottom:12px;">All prices are net contractor pricing. Check items to add to your estimate.</p>
 
       <div class="addon-section-label">Hardware &amp; Locking</div>
-
-      <div id="addon_cart_bar" class="addon-item" data-price="100" data-unit="ea" onclick="toggleAddon(this)">
-        <div class="addon-check-visual"></div>
-        <div class="addon-label-wrap">
-          <div class="al">Cart Bar</div>
-          <div class="ad">Specify location in notes</div>
-        </div>
-        <div class="addon-price-tag">$100 ea</div>
-        <div class="addon-qty-wrap">
-          <label>Qty:</label>
-          <select onclick="event.stopPropagation()" onchange="calcPrice()">
-            <option>1</option><option>2</option><option>3</option><option>4</option>
-          </select>
-        </div>
-      </div>
 
       <div id="addon_key_switch" class="addon-item" data-price="50" data-unit="ea" onclick="toggleAddon(this)">
         <div class="addon-check-visual"></div>
@@ -664,6 +665,21 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
           <div class="al">Door Closer</div>
         </div>
         <div class="addon-price-tag">$330 ea</div>
+        <div class="addon-qty-wrap">
+          <label>Qty:</label>
+          <select onclick="event.stopPropagation()" onchange="calcPrice()">
+            <option>1</option><option>2</option><option>3</option><option>4</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="addon_cart_bar" class="addon-item" data-price="100" data-unit="ea" onclick="toggleAddon(this)">
+        <div class="addon-check-visual"></div>
+        <div class="addon-label-wrap">
+          <div class="al">Cart Bar</div>
+          <div class="ad">Specify location in notes</div>
+        </div>
+        <div class="addon-price-tag">$100 ea</div>
         <div class="addon-qty-wrap">
           <label>Qty:</label>
           <select onclick="event.stopPropagation()" onchange="calcPrice()">
@@ -823,6 +839,7 @@ const CONFIGS = {
   'fsl-single-rh':{ label:'FSL Single — RH',   code:'SX-O',        base:3200, transom:250, minW:78,  maxW:108, panels:1, isFBO:false, isBi:false },
   'fsl-single-lh':{ label:'FSL Single — LH',   code:'O-SX',        base:3200, transom:250, minW:78,  maxW:108, panels:1, isFBO:false, isBi:false },
   'esa':          { label:'ESA Bi-Part',        code:'P-SX-SX-P',  base:null, panels:2 },
+  'sbs':          { label:'Slide by Side',       code:'SX-SO-SX',   base:null, transom:250, minW:128, maxW:168, panels:3, isFBO:false, isBi:false, isSBS:true },
 };
 
 // ── Helpers ─────────────────────────────────────────────────────────
@@ -860,10 +877,50 @@ function getHeightStr() {
   const inStr = inches === 0 && sixteenth === 0 ? '' : inches + (sixteenth ? '-' + SIXTEENTH_LABELS[sixteenth] : '') + '"';
   return `${ft}'${inStr}`;
 }
+function fmtInches(totalIn) {
+  const whole = Math.floor(totalIn);
+  const frac = totalIn - whole;
+  const sixteenths = Math.round(frac * 16);
+  if (sixteenths === 0) return `${whole}"`;
+  if (sixteenths === 16) return `${whole + 1}"`;
+  return `${whole}-${SIXTEENTH_LABELS[sixteenths]}"`;
+}
+function calcNetOpeningIn() {
+  const cfg = getConfig();
+  if (!cfg) return null;
+  const wIn = getWidthIn();
+  if (wIn === null) return null;
+  if (cfg.isSBS) return 38 + (wIn - 128) * 0.375;   // 128"→38", 144"→44", +3/8" per inch
+  if (cfg.base === null) return null;                  // ESA — no formula
+  return cfg.isBi ? 36 + (wIn - 96) * 0.5 : 33 + (wIn - 78) * 0.5;
+}
 function getOpenStr() {
-  const ft = fv('f_oft'), inches = fv('f_oin') || '0';
-  if (!ft) return '';
-  return `${ft}'${inches === '0' ? '' : inches + '"'}`;
+  const n = calcNetOpeningIn();
+  return n !== null && n > 0 ? fmtInches(n) : '';
+}
+function updateNetOpeningDisplay() {
+  const el = document.getElementById('net-opening-display');
+  const note = document.getElementById('net-opening-note');
+  if (!el) return;
+  const cfg = getConfig();
+  const n = calcNetOpeningIn();
+  if (!cfg) {
+    el.textContent = '—';
+    if (note) note.textContent = 'Select a configuration above to calculate.';
+  } else if (cfg.base === null && !cfg.isSBS) {
+    el.textContent = '—';
+    if (note) note.textContent = 'Contact us for net opening on ESA configurations.';
+  } else if (n === null) {
+    el.textContent = '—';
+    if (note) note.textContent = 'Select frame width above to calculate.';
+  } else {
+    el.textContent = fmtInches(n);
+    if (note) {
+      if (cfg.isSBS) note.textContent = `Slide by Side formula: 38" base at 10'8", +3/8" per inch of additional frame width.`;
+      else if (cfg.isBi) note.textContent = `Bipart equal-panel formula: 36" base at 8'0", +1/2" per inch of additional frame width.`;
+      else note.textContent = `Single slide equal-panel formula: 33" base at 6'6", +1/2" per inch of additional frame width.`;
+    }
+  }
 }
 function fmt(n) { return '$' + n.toLocaleString(); }
 function inToStr(totalIn) {
@@ -912,7 +969,8 @@ function calcPrice() {
     return;
   }
   if (cfg.base === null) {
-    body.innerHTML = `<div class="price-call"><div class="pc-label">ESA pricing requires a quote call</div><div class="pc-phone">(888) 453-5196</div><div style="font-size:11px;color:var(--mgray);margin-top:6px;">Mon–Fri, factory hours</div></div>`;
+    const lbl = cfg.isSBS ? 'Slide by Side pricing requires a quote call' : 'ESA pricing requires a quote call';
+    body.innerHTML = `<div class="price-call"><div class="pc-label">${lbl}</div><div class="pc-phone">(888) 453-5196</div><div style="font-size:11px;color:var(--mgray);margin-top:6px;">Mon–Fri, factory hours</div></div>`;
     return;
   }
 
@@ -1033,7 +1091,8 @@ function updateSpecSummary() {
     ['Door Glass Prep', rv('glassPrep') || '—'],
     ...(rv('transom') === 'yes' ? [['Transom Glass Prep', rv('transomGlassPrep') || '—']] : []),
     ['Stile Width', rv('stileWidth') === 'medium' ? 'Medium 3-3/4"' : 'Narrow (std)'],
-    ['Bottom Rail', rv('bottomRail') === '6in' ? '6"' : rv('bottomRail') === '10in' ? '10"' : '3-1/2" (std)'],
+    ['Bottom Rail', rv('bottomRail') === '6in' ? '6"' : rv('bottomRail') === '10in' ? '10"' : '4" (std)'],
+    ['Horizontal Muntin', rv('muntin') || '2" Muntin (std)'],
     ['Threshold', rv('threshold') || '—'],
     ['Sensor', rv('sensor') || '—'],
     ['Transom', rv('transom') === 'yes' ? `Yes (+$250)${ftthStr ? ' — FTTH: ' + ftthStr : ''}` : 'No'],
@@ -1067,6 +1126,7 @@ function drawDoor(svgId, vW, vH, isConf) {
   const frame = getFrameColor();
   const hasTransom = rv('transom') === 'yes';
   const isBi = cfg ? cfg.isBi : true;
+  const isSBS = cfg ? !!cfg.isSBS : false;
   const isLH = cfg && (cfg.code === 'O-SX' || cfg.code === 'O-SX-SX-O');
   const isFBO = cfg ? cfg.isFBO : false;
 
@@ -1155,13 +1215,28 @@ function drawDoor(svgId, vW, vH, isConf) {
   const pY = dY+transomH+headerH+2, pH = dH-transomH-headerH-sillH-4;
   const pX = dX+frameT, pW = dW-frameT*2;
 
-  if (!cfg || cfg.base === null) {
+  if (!cfg || (cfg.base === null && !isSBS)) {
     // ESA placeholder
     const hw = pW/2;
     r(pX, pY, hw-2, pH, glaze.fill, glaze.stroke, 1);
     r(pX+hw+2, pY, hw-2, pH, glaze.fill, glaze.stroke, 1);
     r(pX+hw-2, pY, 4, pH, frame, '#666', 1);
     t(dX+dW/2, pY+pH/2+4, 'ESA', 9, '#888', 'middle');
+  } else if (isSBS) {
+    // Slide by Side — 3 equal panels: SX | SO | SX
+    const gap = 3, panW = (pW - gap * 2) / 3;
+    const x1 = pX, x2 = pX + panW + gap, x3 = pX + (panW + gap) * 2;
+    r(x1, pY, panW, pH, glaze.fill, frame, 1.5);      // Left SX (active)
+    r(x2, pY, panW, pH, glaze.fill, '#AABBC8', 1);    // Middle SO (breakout sidelight)
+    r(x3, pY, panW, pH, glaze.fill, frame, 1.5);      // Right SX (active)
+    // Movement arrows — left SX slides left, right SX slides right
+    const aY = pY + pH * 0.45;
+    l(x1 + panW*0.28, aY, x1 + panW*0.75, aY, '#1B4F8A', 1, '3,2');
+    path(`M${x1 + panW*0.28},${aY}l4,-3l0,6Z`, '#1B4F8A');
+    l(x3 + panW*0.25, aY, x3 + panW*0.72, aY, '#1B4F8A', 1, '3,2');
+    path(`M${x3 + panW*0.72},${aY}l-4,-3l0,6Z`, '#1B4F8A');
+    // Center panel label
+    t(x2 + panW/2, pY + pH * 0.52 + 4, 'SO', 8, '#888', 'middle');
   } else if (isBi) {
     // Bipart — 4 equal panels
     const gap = 3, panW = (pW - gap * 3) / 4;
@@ -1235,6 +1310,7 @@ function drawDoor(svgId, vW, vH, isConf) {
 // ── Update all ───────────────────────────────────────────────────────
 function updateAll() {
   updateFTTH();
+  updateNetOpeningDisplay();
   calcPrice();
   updateSpecSummary();
   drawDoor('door-svg', 400, 300, false);
@@ -1281,7 +1357,8 @@ document.getElementById('quoteForm').addEventListener('submit', async function(e
     configuration: cfg ? cfg.label + ' (' + cfg.code + ')' : rv('config'),
     frameFinish: rv('glazing'), doorGlassPrep: rv('glassPrep'), transomGlassPrep: rv('transomGlassPrep') || 'N/A',
     stileWidth: rv('stileWidth') === 'medium' ? 'Medium 3-3/4"' : 'Narrow (std)',
-    bottomRail: rv('bottomRail') === '6in' ? '6"' : rv('bottomRail') === '10in' ? '10"' : '3-1/2" (std)',
+    bottomRail: rv('bottomRail') === '6in' ? '6"' : rv('bottomRail') === '10in' ? '10"' : '4" (std)',
+    muntin: rv('muntin') || '2" Muntin (std)',
     threshold: rv('threshold'),
     sensor: rv('sensor'),
     transom: rv('transom') === 'yes' ? 'Yes' : 'No',
@@ -1326,6 +1403,7 @@ function showConf(data, pd) {
     ['Frame Finish',data.frameFinish],['Door Glass Prep',data.doorGlassPrep],
     ...(data.transom === 'Yes' ? [['Transom Glass Prep',data.transomGlassPrep]] : []),
     ['Stile Width',data.stileWidth],['Bottom Rail',data.bottomRail],
+    ['Horizontal Muntin',data.muntin],
     ['Threshold',data.threshold],['Sensor',data.sensor],
     ['Transom',data.transom + (data.ftth && data.ftth !== 'N/A' ? ' — FTTH: '+data.ftth : '')],
     ['Frame Width',data.frameWidth],['Frame Height',data.frameHeight],
