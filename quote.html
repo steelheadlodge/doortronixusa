@@ -515,6 +515,27 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
           </div>
         </div>
 
+        <div class="field full" id="transom-verticals-field" style="display:none;">
+          <label>Transom Verticals</label>
+          <div class="chip-group">
+            <input type="radio" name="transomV" id="tv_0" value="0" checked>
+            <label for="tv_0">None (std)</label>
+            <input type="radio" name="transomV" id="tv_1" value="1">
+            <label for="tv_1">1</label>
+            <input type="radio" name="transomV" id="tv_2" value="2">
+            <label for="tv_2">2</label>
+            <input type="radio" name="transomV" id="tv_3" value="3">
+            <label for="tv_3">3</label>
+            <input type="radio" name="transomV" id="tv_4" value="4">
+            <label for="tv_4">4</label>
+            <input type="radio" name="transomV" id="tv_5" value="5">
+            <label for="tv_5">5</label>
+            <input type="radio" name="transomV" id="tv_6" value="6">
+            <label for="tv_6">6</label>
+          </div>
+          <span class="hint">2 verticals on a bi-part align with the door panel interlocks. All others divide the transom equally.</span>
+        </div>
+
         <!-- Stile width -->
         <div class="field">
           <label>Stile Width</label>
@@ -943,6 +964,8 @@ function updateFTTH() {
   if (f) f.style.display = hasTransom ? '' : 'none';
   const tg = document.getElementById('transom-glass-field');
   if (tg) tg.style.display = hasTransom ? '' : 'none';
+  const tv = document.getElementById('transom-verticals-field');
+  if (tv) tv.style.display = hasTransom ? '' : 'none';
 }
 
 // ── FBO-only add-on visibility ──────────────────────────────────────
@@ -1089,7 +1112,7 @@ function updateSpecSummary() {
     ['Code', cfg ? cfg.code : '—'],
     ['Frame Finish', rv('glazing') || '—'],
     ['Door Glass Prep', rv('glassPrep') || '—'],
-    ...(rv('transom') === 'yes' ? [['Transom Glass Prep', rv('transomGlassPrep') || '—']] : []),
+    ...(rv('transom') === 'yes' ? [['Transom Glass Prep', rv('transomGlassPrep') || '—'], ['Transom Verticals', rv('transomV') === '0' || !rv('transomV') ? 'None' : rv('transomV')]] : []),
     ['Stile Width', rv('stileWidth') === 'medium' ? 'Medium 3-3/4"' : 'Narrow (std)'],
     ['Bottom Rail', rv('bottomRail') === '6in' ? '6"' : rv('bottomRail') === '10in' ? '10"' : '4" (std)'],
     ['Horizontal Muntin', rv('muntin') || '2" Muntin (std)'],
@@ -1198,10 +1221,40 @@ function drawDoor(svgId, vW, vH, isConf) {
 
   // Transom strip — sits above the header/operator
   if (hasTransom) {
-    r(dX+frameT, dY, dW-frameT*2, transomH, glaze.fill, glaze.stroke, 1);
-    t(dX+dW/2, dY+transomH/2+4, 'TRANSOM', 7, '#888', 'middle');
-    // mullion line between transom and header
-    l(dX, dY+transomH, dX+dW, dY+transomH, frame, 3);
+    const numV = parseInt(rv('transomV') || '0');
+    const tx = dX + frameT, tw = dW - frameT * 2;
+
+    // Compute vertical x-positions
+    const vertXs = [];
+    if (numV > 0) {
+      if (numV === 2 && isBi) {
+        // Align with bipart panel junctions (SO/SX and SX/SO gaps)
+        const gap = 3, panW = (pW - gap * 3) / 4;
+        vertXs.push(pX + panW + gap / 2);
+        vertXs.push(pX + (panW + gap) * 3 - gap / 2);
+      } else {
+        // Equal divisions for all other cases
+        for (let i = 1; i <= numV; i++) {
+          vertXs.push(tx + tw * i / (numV + 1));
+        }
+      }
+    }
+
+    // Draw transom lites between verticals (and frame edges)
+    const liteXs = [tx, ...vertXs, tx + tw];
+    for (let i = 0; i < liteXs.length - 1; i++) {
+      r(liteXs[i], dY, liteXs[i+1] - liteXs[i], transomH, glaze.fill, 'none', 0);
+    }
+    // Outer transom border
+    r(tx, dY, tw, transomH, 'none', glaze.stroke, 1);
+    // Label in first (or only) lite
+    t(tx + tw/2, dY + transomH/2 + 4, 'TRANSOM', 7, '#888', 'middle');
+    // Draw vertical dividers
+    vertXs.forEach(vx => {
+      l(vx, dY, vx, dY + transomH, frame, 1.5);
+    });
+    // Mullion line between transom and header
+    l(dX, dY + transomH, dX + dW, dY + transomH, frame, 3);
   }
 
   // Header / operator — below transom if present
@@ -1356,6 +1409,7 @@ document.getElementById('quoteForm').addEventListener('submit', async function(e
     poNumber: fv('f_po'), shipDate: fv('f_shipdate'), quantity: fv('f_qty'),
     configuration: cfg ? cfg.label + ' (' + cfg.code + ')' : rv('config'),
     frameFinish: rv('glazing'), doorGlassPrep: rv('glassPrep'), transomGlassPrep: rv('transomGlassPrep') || 'N/A',
+    transomVerticals: rv('transom') === 'yes' ? (rv('transomV') === '0' || !rv('transomV') ? 'None' : rv('transomV')) : 'N/A',
     stileWidth: rv('stileWidth') === 'medium' ? 'Medium 3-3/4"' : 'Narrow (std)',
     bottomRail: rv('bottomRail') === '6in' ? '6"' : rv('bottomRail') === '10in' ? '10"' : '4" (std)',
     muntin: rv('muntin') || '2" Muntin (std)',
@@ -1401,7 +1455,7 @@ function showConf(data, pd) {
   const doorSpecs = [
     ['Configuration',data.configuration],
     ['Frame Finish',data.frameFinish],['Door Glass Prep',data.doorGlassPrep],
-    ...(data.transom === 'Yes' ? [['Transom Glass Prep',data.transomGlassPrep]] : []),
+    ...(data.transom === 'Yes' ? [['Transom Glass Prep',data.transomGlassPrep],['Transom Verticals',data.transomVerticals]] : []),
     ['Stile Width',data.stileWidth],['Bottom Rail',data.bottomRail],
     ['Horizontal Muntin',data.muntin],
     ['Threshold',data.threshold],['Sensor',data.sensor],
