@@ -1290,6 +1290,13 @@ function drawDoor(svgId, vW, vH, isConf) {
     }
   }
 
+  // Horizontal muntin — drawn over all panels when selected
+  if (cfg && cfg.base !== null && rv('muntin') !== 'No Muntin') {
+    const mY = pY + pH / 2 - 1.5;   // centered vertically in panel area
+    const mH = 3;                     // ~2" bar at drawing scale
+    r(pX, mY, pW, mH, frame, frame, 0);
+  }
+
   // Dim lines
   if (isConf || getWidthIn()) {
     dimLine(dX, dY+dH+24, dX+dW, dY+dH+24, getWidthStr(), true);
