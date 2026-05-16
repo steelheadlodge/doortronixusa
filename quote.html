@@ -339,26 +339,8 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
             <div class="cc-price">from $3,200</div>
           </label>
 
-          <div style="grid-column:1/-1; font-size:11px; font-weight:700; color:var(--blue); text-transform:uppercase; letter-spacing:.5px; padding-bottom:2px; border-bottom:1px solid var(--border); margin-top:6px; margin-bottom:2px;">Slide by Side</div>
-
-          <input type="radio" name="config" id="cfg_sbs" value="sbs">
-          <label for="cfg_sbs" class="config-card">
-            <svg class="cc-icon" width="70" height="36" viewBox="0 0 70 36">
-              <rect x="0" y="0" width="70" height="36" fill="#EEF4FB" rx="3"/>
-              <rect x="0" y="0" width="70" height="6" fill="#1B4F8A"/>
-              <rect x="4" y="6" width="19" height="28" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1.5"/>
-              <rect x="25" y="6" width="19" height="28" fill="#C8E0F8" stroke="#AABBC8" stroke-width="1"/>
-              <rect x="46" y="6" width="19" height="28" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1.5"/>
-              <text x="13" y="24" font-size="10" fill="#1B4F8A" text-anchor="middle" font-family="Arial">&#8592;</text>
-              <text x="55" y="24" font-size="10" fill="#1B4F8A" text-anchor="middle" font-family="Arial">&#8594;</text>
-            </svg>
-            <div class="cc-name">Slide by Side</div>
-            <div class="cc-code">SX-SO-SX</div>
-            <div class="cc-price" style="color:var(--mgray);">Call for pricing</div>
-          </label>
-
         </div>
-        <p style="font-size:11px;color:var(--mgray);margin-top:6px;">ESA, Slide by Side, and custom configurations: call <strong>(888) 453-5196</strong>.</p>
+        <p style="font-size:11px;color:var(--mgray);margin-top:6px;">ESA and custom configurations: call <strong>(888) 453-5196</strong>.</p>
       </div>
 
       <div class="form-grid">
@@ -860,7 +842,6 @@ const CONFIGS = {
   'fsl-single-rh':{ label:'FSL Single — RH',   code:'SX-O',        base:3200, transom:250, minW:78,  maxW:108, panels:1, isFBO:false, isBi:false },
   'fsl-single-lh':{ label:'FSL Single — LH',   code:'O-SX',        base:3200, transom:250, minW:78,  maxW:108, panels:1, isFBO:false, isBi:false },
   'esa':          { label:'ESA Bi-Part',        code:'P-SX-SX-P',  base:null, panels:2 },
-  'sbs':          { label:'Slide by Side',       code:'SX-SO-SX',   base:null, transom:250, minW:128, maxW:168, panels:3, isFBO:false, isBi:false, isSBS:true },
 };
 
 // ── Helpers ─────────────────────────────────────────────────────────
@@ -911,7 +892,6 @@ function calcNetOpeningIn() {
   if (!cfg) return null;
   const wIn = getWidthIn();
   if (wIn === null) return null;
-  if (cfg.isSBS) return 38 + (wIn - 128) * 0.375;   // 128"→38", 144"→44", +3/8" per inch
   if (cfg.base === null) return null;                  // ESA — no formula
   return cfg.isBi ? 36 + (wIn - 96) * 0.5 : 33 + (wIn - 78) * 0.5;
 }
@@ -928,7 +908,7 @@ function updateNetOpeningDisplay() {
   if (!cfg) {
     el.textContent = '—';
     if (note) note.textContent = 'Select a configuration above to calculate.';
-  } else if (cfg.base === null && !cfg.isSBS) {
+  } else if (cfg.base === null) {
     el.textContent = '—';
     if (note) note.textContent = 'Contact us for net opening on ESA configurations.';
   } else if (n === null) {
@@ -937,8 +917,7 @@ function updateNetOpeningDisplay() {
   } else {
     el.textContent = fmtInches(n);
     if (note) {
-      if (cfg.isSBS) note.textContent = `Slide by Side formula: 38" base at 10'8", +3/8" per inch of additional frame width.`;
-      else if (cfg.isBi) note.textContent = `Bipart equal-panel formula: 36" base at 8'0", +1/2" per inch of additional frame width.`;
+      if (cfg.isBi) note.textContent = `Bipart equal-panel formula: 36" base at 8'0", +1/2" per inch of additional frame width.`;
       else note.textContent = `Single slide equal-panel formula: 33" base at 6'6", +1/2" per inch of additional frame width.`;
     }
   }
@@ -992,7 +971,7 @@ function calcPrice() {
     return;
   }
   if (cfg.base === null) {
-    const lbl = cfg.isSBS ? 'Slide by Side pricing requires a quote call' : 'ESA pricing requires a quote call';
+    const lbl = 'ESA pricing requires a quote call';
     body.innerHTML = `<div class="price-call"><div class="pc-label">${lbl}</div><div class="pc-phone">(888) 453-5196</div><div style="font-size:11px;color:var(--mgray);margin-top:6px;">Mon–Fri, factory hours</div></div>`;
     return;
   }
@@ -1149,7 +1128,6 @@ function drawDoor(svgId, vW, vH, isConf) {
   const frame = getFrameColor();
   const hasTransom = rv('transom') === 'yes';
   const isBi = cfg ? cfg.isBi : true;
-  const isSBS = cfg ? !!cfg.isSBS : false;
   const isLH = cfg && (cfg.code === 'O-SX' || cfg.code === 'O-SX-SX-O');
   const isFBO = cfg ? cfg.isFBO : false;
 
@@ -1268,28 +1246,13 @@ function drawDoor(svgId, vW, vH, isConf) {
   const pY = dY+transomH+headerH+2, pH = dH-transomH-headerH-sillH-4;
   const pX = dX+frameT, pW = dW-frameT*2;
 
-  if (!cfg || (cfg.base === null && !isSBS)) {
+  if (!cfg || cfg.base === null) {
     // ESA placeholder
     const hw = pW/2;
     r(pX, pY, hw-2, pH, glaze.fill, glaze.stroke, 1);
     r(pX+hw+2, pY, hw-2, pH, glaze.fill, glaze.stroke, 1);
     r(pX+hw-2, pY, 4, pH, frame, '#666', 1);
     t(dX+dW/2, pY+pH/2+4, 'ESA', 9, '#888', 'middle');
-  } else if (isSBS) {
-    // Slide by Side — 3 equal panels: SX | SO | SX
-    const gap = 3, panW = (pW - gap * 2) / 3;
-    const x1 = pX, x2 = pX + panW + gap, x3 = pX + (panW + gap) * 2;
-    r(x1, pY, panW, pH, glaze.fill, frame, 1.5);      // Left SX (active)
-    r(x2, pY, panW, pH, glaze.fill, '#AABBC8', 1);    // Middle SO (breakout sidelight)
-    r(x3, pY, panW, pH, glaze.fill, frame, 1.5);      // Right SX (active)
-    // Movement arrows — left SX slides left, right SX slides right
-    const aY = pY + pH * 0.45;
-    l(x1 + panW*0.28, aY, x1 + panW*0.75, aY, '#1B4F8A', 1, '3,2');
-    path(`M${x1 + panW*0.28},${aY}l4,-3l0,6Z`, '#1B4F8A');
-    l(x3 + panW*0.25, aY, x3 + panW*0.72, aY, '#1B4F8A', 1, '3,2');
-    path(`M${x3 + panW*0.72},${aY}l-4,-3l0,6Z`, '#1B4F8A');
-    // Center panel label
-    t(x2 + panW/2, pY + pH * 0.52 + 4, 'SO', 8, '#888', 'middle');
   } else if (isBi) {
     // Bipart — 4 equal panels
     const gap = 3, panW = (pW - gap * 3) / 4;
