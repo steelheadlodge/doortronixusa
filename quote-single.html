@@ -1343,25 +1343,30 @@ function drawDoor(svgId, vW, vH, isConf) {
     svg.appendChild(pin);
     panels = [{x:x1,w:panW},{x:x2,w:panW},{x:x3,w:panW},{x:x4,w:panW}];
   } else {
-    // Single slide — 2 equal panels, stiles overlap at junction (no gap)
+    // Single slide — SO narrower, SX wider → equal glass width G
     const panW = pW / 2;
+    const soW  = panW - stileW / 2;
+    const sxW  = panW + stileW / 2;
+    const G    = panW - stileW * 1.5;
     const sdStroke = isFBO ? frame : '#AABBC8', sdSW = isFBO ? 1.5 : 1;
     const aY = pY + topRH + (pH-topRH-btmRH)*0.48;
-    const jX = pX + panW; // SO/SX junction x
     if (isLH) {
-      // LH: SO left (glass to inner edge), SX right on top — equal panW
-      drawP(pX, pY, panW, pH, sdStroke, sdSW, isFBO ? 'left' : false, false, true);
-      drawP(jX, pY, panW, pH, frame, 1.5, false);
-      l(jX+stileW+3, aY, jX+panW-stileW-3, aY, '#1B4F8A', 1.2, '5,3');
+      // LH: SO left, SX right
+      const jX = pX + soW;
+      drawP(pX, pY, soW, pH, sdStroke, sdSW, isFBO ? 'left' : false, false, true);
+      drawP(jX,  pY, sxW, pH, frame, 1.5, false);
+      l(jX+stileW+3, aY, jX+sxW-stileW-3, aY, '#1B4F8A', 1.2, '5,3');
       path(`M${jX+stileW+3},${aY}l5,-3.5l0,7Z`, '#1B4F8A');
+      panels = [{x:pX+stileW, w:G}, {x:jX+stileW, w:G}];
     } else {
-      // RH: SX left on top, SO right (glass to inner edge) — equal panW
-      drawP(jX, pY, panW, pH, sdStroke, sdSW, isFBO ? 'right' : false, true, false);
-      drawP(pX, pY, panW, pH, frame, 1.5, false);
+      // RH: SX left, SO right
+      const jX = pX + sxW;
+      drawP(jX,  pY, soW, pH, sdStroke, sdSW, isFBO ? 'right' : false, true, false);
+      drawP(pX,  pY, sxW, pH, frame, 1.5, false);
       l(pX+stileW+3, aY, jX-stileW-3, aY, '#1B4F8A', 1.2, '5,3');
       path(`M${jX-stileW-3},${aY}l-5,-3.5l0,7Z`, '#1B4F8A');
+      panels = [{x:pX+stileW, w:G}, {x:jX, w:G}];
     }
-    panels = [{x:pX,w:panW},{x:jX,w:panW}];
   }
 
   // Horizontal muntin — centered when header ≤ 8'0"; fixed at 42" AFF when header > 8'0"

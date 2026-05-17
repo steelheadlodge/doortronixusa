@@ -1326,17 +1326,23 @@ function drawDoor(svgId, vW, vH, isConf) {
     t(dX+dW/2, pY+pH/2+4, 'ESA', 9, '#888', 'middle');
     panels = [{x:pX,w:hw-2},{x:pX+hw+2,w:hw-2}];
   } else if (isBi) {
-    // Bipart — 4 equal panels, stiles overlap at junctions (no gap in closed elevation)
+    // Bipart — SO narrower by stileW/2, SX wider by stileW/2 → equal glass width G for all panels
     const panW = pW / 4;
-    const x1 = pX, x2 = pX+panW, x3 = pX+panW*2, x4 = pX+panW*3;
-    // SO sidelites first (behind); glass extends to inner edge so SX stile visually overlaps
+    const soW  = panW - stileW / 2;   // SO panel width
+    const sxW  = panW + stileW / 2;   // SX panel width
+    const G    = panW - stileW * 1.5; // glass width, equal for all 4 panels
+    const x1 = pX;
+    const x2 = x1 + soW;   // left SO/SX junction
+    const x3 = x2 + sxW;   // center (= pX + 2*panW)
+    const x4 = x3 + sxW;   // right SX/SO junction (x4+soW = pX+pW)
     const sdStroke = isFBO ? frame : '#AABBC8', sdSW = isFBO ? 1.5 : 1;
-    drawP(x1, pY, panW, pH, sdStroke, sdSW, isFBO ? 'left'  : false, false, true);  // SO left
-    drawP(x4, pY, panW, pH, sdStroke, sdSW, isFBO ? 'right' : false, true,  false); // SO right
-    // SX active panels — equal width panW, drawn on top so SX stile covers SO inner stile
-    drawP(x2, pY, panW, pH, frame, 1.5, false); // SX left
-    drawP(x3, pY, panW, pH, frame, 1.5, false); // SX right
-    // Center interlock — where SX panels meet
+    // SO sidelites first (behind); glass extends to inner edge so SX stile overlaps
+    drawP(x1, pY, soW, pH, sdStroke, sdSW, isFBO ? 'left'  : false, false, true);
+    drawP(x4, pY, soW, pH, sdStroke, sdSW, isFBO ? 'right' : false, true,  false);
+    // SX active panels on top — SX stile covers SO inner edge
+    drawP(x2, pY, sxW, pH, frame, 1.5, false);
+    drawP(x3, pY, sxW, pH, frame, 1.5, false);
+    // Center interlock
     r(x3-stileW, pY, stileW*2, pH, panelFill, frame, 0.4);
     l(x3, pY, x3, pY+pH, frame, 1.2);
     // Movement arrows
@@ -1345,31 +1351,37 @@ function drawDoor(svgId, vW, vH, isConf) {
     path(`M${x2+stileW+3},${aY}l5,-3.5l0,7Z`, '#1B4F8A');
     l(x3+stileW+3, aY, x4-stileW-3, aY, '#1B4F8A', 1.2, '5,3');
     path(`M${x4-stileW-3},${aY}l-5,-3.5l0,7Z`, '#1B4F8A');
-    // Floor guide pin at center interlock
+    // Floor guide pin
     const pin = document.createElementNS('http://www.w3.org/2000/svg','circle');
     Object.entries({cx:x3, cy:pY+pH-btmRH/2, r:3, fill:'none', stroke:frame, 'stroke-width':1}).forEach(([k,v])=>pin.setAttribute(k,v));
     svg.appendChild(pin);
-    panels = [{x:x1,w:panW},{x:x2,w:panW},{x:x3,w:panW},{x:x4,w:panW}];
+    // Panels: glass coords → muntins are equal width G across all 4 panels
+    panels = [{x:x1+stileW, w:G}, {x:x2+stileW, w:G}, {x:x3+stileW, w:G}, {x:x4, w:G}];
   } else {
-    // Single slide — 2 equal panels, stiles overlap at junction (no gap)
+    // Single slide — SO narrower, SX wider → equal glass width G
     const panW = pW / 2;
+    const soW  = panW - stileW / 2;
+    const sxW  = panW + stileW / 2;
+    const G    = panW - stileW * 1.5;
     const sdStroke = isFBO ? frame : '#AABBC8', sdSW = isFBO ? 1.5 : 1;
     const aY = pY + topRH + (pH-topRH-btmRH)*0.48;
-    const jX = pX + panW; // SO/SX junction x
     if (isLH) {
-      // LH: SO left (glass to inner edge), SX right on top — equal panW
-      drawP(pX, pY, panW, pH, sdStroke, sdSW, isFBO ? 'left' : false, false, true);
-      drawP(jX, pY, panW, pH, frame, 1.5, false);
-      l(jX+stileW+3, aY, jX+panW-stileW-3, aY, '#1B4F8A', 1.2, '5,3');
+      // LH: SO left, SX right
+      const jX = pX + soW;
+      drawP(pX, pY, soW, pH, sdStroke, sdSW, isFBO ? 'left' : false, false, true);
+      drawP(jX,  pY, sxW, pH, frame, 1.5, false);
+      l(jX+stileW+3, aY, jX+sxW-stileW-3, aY, '#1B4F8A', 1.2, '5,3');
       path(`M${jX+stileW+3},${aY}l5,-3.5l0,7Z`, '#1B4F8A');
+      panels = [{x:pX+stileW, w:G}, {x:jX+stileW, w:G}];
     } else {
-      // RH: SX left on top, SO right (glass to inner edge) — equal panW
-      drawP(jX, pY, panW, pH, sdStroke, sdSW, isFBO ? 'right' : false, true, false);
-      drawP(pX, pY, panW, pH, frame, 1.5, false);
+      // RH: SX left, SO right
+      const jX = pX + sxW;
+      drawP(jX,  pY, soW, pH, sdStroke, sdSW, isFBO ? 'right' : false, true, false);
+      drawP(pX,  pY, sxW, pH, frame, 1.5, false);
       l(pX+stileW+3, aY, jX-stileW-3, aY, '#1B4F8A', 1.2, '5,3');
       path(`M${jX-stileW-3},${aY}l-5,-3.5l0,7Z`, '#1B4F8A');
+      panels = [{x:pX+stileW, w:G}, {x:jX, w:G}];
     }
-    panels = [{x:pX,w:panW},{x:jX,w:panW}];
   }
 
   // Horizontal muntin — centered when header ≤ 8'0"; fixed at 42" AFF when header > 8'0"
