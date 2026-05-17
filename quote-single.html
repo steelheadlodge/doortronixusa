@@ -1427,9 +1427,10 @@ function drawDoor(svgId, vW, vH, isConf) {
       // LH: SO left, SX right
       const jX = pX + soW;
       if (isFBO) {
-        // FBO: SX behind, SO in front
+        // FBO: SX behind, SO in front; extend sidelite inward by stileW for single clean line
         drawP(jX,  pY, sxW, pH, frame, 1.5, false);
-        drawP(pX, pY, soW, pH, sdStroke, sdSW, false, false, true);
+        drawP(pX, pY, soW+stileW, pH, sdStroke, sdSW, false, false, true);
+        l(jX+stileW, pY, jX+stileW, pY+pH, frame, 1.0);
       } else {
         // FSL: SO behind, SX in front
         drawP(pX, pY, soW, pH, sdStroke, sdSW, false, false, true);
@@ -1442,9 +1443,10 @@ function drawDoor(svgId, vW, vH, isConf) {
       // RH: SX left, SO right
       const jX = pX + sxW;
       if (isFBO) {
-        // FBO: SX behind, SO in front
+        // FBO: SX behind, SO in front; extend sidelite inward by stileW for single clean line
         drawP(pX,  pY, sxW, pH, frame, 1.5, false);
-        drawP(jX,  pY, soW, pH, sdStroke, sdSW, false, true, false);
+        drawP(jX-stileW, pY, soW+stileW, pH, sdStroke, sdSW, false, true, false);
+        l(jX-stileW, pY, jX-stileW, pY+pH, frame, 1.0);
       } else {
         // FSL: SO behind, SX in front
         drawP(jX,  pY, soW, pH, sdStroke, sdSW, false, true, false);

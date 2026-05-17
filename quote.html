@@ -1412,8 +1412,13 @@ function drawDoor(svgId, vW, vH, isConf) {
       // FBO: moving panels travel BEHIND sidelites — SX first (back), SO on top (front)
       drawP(x2, pY, sxW, pH, frame, 1.5, false);
       drawP(x3, pY, sxW, pH, frame, 1.5, false);
-      drawP(x1, pY, soW, pH, sdStroke, sdSW, false, false, true);
-      drawP(x4, pY, soW, pH, sdStroke, sdSW, false, true,  false);
+      // Extend sidelites inward by stileW so their inner edge aligns with the SX glass line —
+      // this eliminates the sidelite-edge stroke and leaves one clean grey line at x2+stileW
+      drawP(x1,         pY, soW+stileW, pH, sdStroke, sdSW, false, false, true);
+      drawP(x4-stileW,  pY, soW+stileW, pH, sdStroke, sdSW, false, true,  false);
+      // Indicator line at inner face of SX stile (breakout release point)
+      l(x2+stileW, pY, x2+stileW, pY+pH, frame, 1.0);
+      l(x4-stileW, pY, x4-stileW, pY+pH, frame, 1.0);
     } else {
       // FSL: moving panels travel IN FRONT of sidelites — SO first (back), SX on top (front)
       drawP(x1, pY, soW, pH, sdStroke, sdSW, false, false, true);
