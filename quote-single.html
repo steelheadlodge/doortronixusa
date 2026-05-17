@@ -1305,6 +1305,11 @@ function drawDoor(svgId, vW, vH, isConf) {
 
   const pY = dY+transomH+headerH+2, pH = dH-transomH-headerH-sillH-4;
   const pX = dX+frameT, pW = dW-frameT*2;
+  // Muntin Y — after pY/pH are defined
+  const _hIn = getHeightIn() || 90;
+  const muntY = _hIn > 96
+    ? (pY + pH) - (_hIn - 8.5 > 0 ? (pH / (_hIn - 8.5)) * 42 : 0) - muntH / 2
+    : pY + topRH + (pH - topRH - btmRH) / 2 - muntH / 2;
   // Panel drawing helper — frame background + inset glass lite + optional diagonal glass lines
   let panels = []; // collect {x,w} for muntin overlay
   function drawP(px, py, pw, ph, strokeColor, sw, breakoutDir, noInnerL, noInnerR) {
