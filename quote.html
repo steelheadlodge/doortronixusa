@@ -1282,8 +1282,8 @@ function drawDoor(svgId, vW, vH, isConf) {
       r(vx - frameT/2, tGlassY, frameT, tGlassH, frame);
     });
 
-    // Bottom glass stop — 1" tube at bottom of transom, sits on top of header
-    r(dX, tGlassY + tGlassH, dW, Math.max(2, sc * 1), frame);
+    // Bottom glass stop — 1" solid line at base of transom, top of header
+    l(dX, tGlassY + tGlassH, dX + dW, tGlassY + tGlassH, frame, Math.max(1, sc * 1));
 
     // TRANSOM label centred on the first (or only) lite
     const firstLiteW = vertXs.length > 0 ? (vertXs[0] - frameT/2) - tx : tw;
