@@ -1010,16 +1010,21 @@ function calcPrice() {
 
   // Stile / rail / sensor upcharges (panels = active + sidelite panels)
   const totalPanels = cfg.panels * 2;
-  if (rv('stileWidth') === 'medium') {
+  const isMediumStile = rv('stileWidth') === 'medium';
+  if (isMediumStile) {
     const amt = 180 * totalPanels;
     total += amt;
     lines.push({ label: `Medium Stiles ×${totalPanels} panels`, amount: amt });
   }
   const railVal = rv('bottomRail');
   if (railVal === '6in') {
-    const amt = 80 * totalPanels;
-    total += amt;
-    lines.push({ label: `6" Bottom Rails ×${totalPanels} panels`, amount: amt });
+    if (!isMediumStile) {
+      const amt = 80 * totalPanels;
+      total += amt;
+      lines.push({ label: `6" Bottom Rails ×${totalPanels} panels`, amount: amt });
+    } else {
+      lines.push({ label: `6" Bottom Rails ×${totalPanels} panels (incl.)`, amount: 0 });
+    }
   } else if (railVal === '10in') {
     const amt = 160 * totalPanels;
     total += amt;
