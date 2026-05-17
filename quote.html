@@ -1333,6 +1333,11 @@ function drawDoor(svgId, vW, vH, isConf) {
     // SX active panels on top — SX stile covers SO inner edge
     drawP(x2, pY, sxW, pH, frame, 1.5, false);
     drawP(x3, pY, sxW, pH, frame, 1.5, false);
+    // FBO: indicator line at inner face of SX stile (release point)
+    if (isFBO) {
+      l(x2+stileW, pY, x2+stileW, pY+pH, frame, 1.0);
+      l(x4-stileW, pY, x4-stileW, pY+pH, frame, 1.0);
+    }
     // Center interlock
     r(x3-stileW, pY, stileW*2, pH, panelFill, frame, 0.4);
     l(x3, pY, x3, pY+pH, frame, 1.2);
@@ -1361,6 +1366,7 @@ function drawDoor(svgId, vW, vH, isConf) {
       const jX = pX + soW;
       drawP(pX, pY, soW, pH, sdStroke, sdSW, isFBO ? 'left' : false, false, true);
       drawP(jX,  pY, sxW, pH, frame, 1.5, false);
+      if (isFBO) l(jX+stileW, pY, jX+stileW, pY+pH, frame, 1.0);
       l(jX+stileW+3, aY, jX+sxW-stileW-3, aY, '#1B4F8A', 1.2, '5,3');
       path(`M${jX+stileW+3},${aY}l5,-3.5l0,7Z`, '#1B4F8A');
       panels = [{x:pX+stileW, w:G}, {x:jX+stileW, w:G}];
@@ -1369,6 +1375,7 @@ function drawDoor(svgId, vW, vH, isConf) {
       const jX = pX + sxW;
       drawP(jX,  pY, soW, pH, sdStroke, sdSW, isFBO ? 'right' : false, true, false);
       drawP(pX,  pY, sxW, pH, frame, 1.5, false);
+      if (isFBO) l(jX-stileW, pY, jX-stileW, pY+pH, frame, 1.0);
       l(pX+stileW+3, aY, jX-stileW-3, aY, '#1B4F8A', 1.2, '5,3');
       path(`M${jX-stileW-3},${aY}l-5,-3.5l0,7Z`, '#1B4F8A');
       panels = [{x:pX+stileW, w:G}, {x:jX, w:G}];

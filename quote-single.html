@@ -1348,6 +1348,7 @@ function drawDoor(svgId, vW, vH, isConf) {
       const jX = pX + soW;
       drawP(pX, pY, soW, pH, sdStroke, sdSW, isFBO ? 'left' : false, false, true);
       drawP(jX,  pY, sxW, pH, frame, 1.5, false);
+      if (isFBO) l(jX+stileW, pY, jX+stileW, pY+pH, frame, 1.0);
       l(jX+stileW+3, aY, jX+sxW-stileW-3, aY, '#1B4F8A', 1.2, '5,3');
       path(`M${jX+stileW+3},${aY}l5,-3.5l0,7Z`, '#1B4F8A');
       panels = [{x:pX+stileW, w:G}, {x:jX+stileW, w:G}];
@@ -1356,6 +1357,7 @@ function drawDoor(svgId, vW, vH, isConf) {
       const jX = pX + sxW;
       drawP(jX,  pY, soW, pH, sdStroke, sdSW, isFBO ? 'right' : false, true, false);
       drawP(pX,  pY, sxW, pH, frame, 1.5, false);
+      if (isFBO) l(jX-stileW, pY, jX-stileW, pY+pH, frame, 1.0);
       l(pX+stileW+3, aY, jX-stileW-3, aY, '#1B4F8A', 1.2, '5,3');
       path(`M${jX-stileW-3},${aY}l-5,-3.5l0,7Z`, '#1B4F8A');
       panels = [{x:pX+stileW, w:G}, {x:jX, w:G}];
