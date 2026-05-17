@@ -1322,8 +1322,10 @@ function drawDoor(svgId, vW, vH, isConf) {
     drawP(x4, pY, panW, pH, sdStroke, sdSW, isFBO);
     drawP(x2, pY, panW, pH, frame, 1.5, false);
     drawP(x3, pY, panW, pH, frame, 1.5, false);
-    // SO/SX junction hairlines (two stiles meet here — SX in front of SO)
+    // SO/SX outer junctions — SX stile overlaps SO stile; show 2×stile overlap zone
+    r(x2-stileW, pY, stileW*2, pH, panelFill, frame, 0.4);
     l(x2, pY, x2, pY+pH, frame, 0.8);
+    r(x4-stileW, pY, stileW*2, pH, panelFill, frame, 0.4);
     l(x4, pY, x4, pY+pH, frame, 0.8);
     // Center interlock — both SX trailing stiles overlap; show as 2×stile zone with centerline
     r(x3-stileW, pY, stileW*2, pH, panelFill, frame, 0.4);
@@ -1344,20 +1346,23 @@ function drawDoor(svgId, vW, vH, isConf) {
     const panW = pW / 2;
     const sdStroke = isFBO ? frame : '#AABBC8', sdSW = isFBO ? 1.5 : 1;
     const aY = pY + topRH + (pH-topRH-btmRH)*0.48;
+    const jX = pX + panW; // SO/SX junction x
     if (isLH) {
       // LH: sidelite left, active panel right
       drawP(pX, pY, panW, pH, sdStroke, sdSW, isFBO);          // SO sidelite (behind)
-      drawP(pX+panW, pY, panW, pH, frame, 1.5, false);          // SX active (in front)
-      l(pX+panW, pY, pX+panW, pY+pH, frame, 0.8);               // junction hairline
-      l(pX+panW+stileW+3, aY, pX+panW+panW-stileW-3, aY, '#1B4F8A', 1.2, '5,3');
-      path(`M${pX+panW+stileW+3},${aY}l5,-3.5l0,7Z`, '#1B4F8A');
+      drawP(jX, pY, panW, pH, frame, 1.5, false);               // SX active (in front)
+      r(jX-stileW, pY, stileW*2, pH, panelFill, frame, 0.4);   // overlap zone
+      l(jX, pY, jX, pY+pH, frame, 0.8);                         // junction seam
+      l(jX+stileW+3, aY, jX+panW-stileW-3, aY, '#1B4F8A', 1.2, '5,3');
+      path(`M${jX+stileW+3},${aY}l5,-3.5l0,7Z`, '#1B4F8A');
     } else {
       // RH: active panel left, sidelite right
-      drawP(pX+panW, pY, panW, pH, sdStroke, sdSW, isFBO);      // SO sidelite (behind)
+      drawP(jX, pY, panW, pH, sdStroke, sdSW, isFBO);           // SO sidelite (behind)
       drawP(pX, pY, panW, pH, frame, 1.5, false);                // SX active (in front)
-      l(pX+panW, pY, pX+panW, pY+pH, frame, 0.8);               // junction hairline
-      l(pX+stileW+3, aY, pX+panW-stileW-3, aY, '#1B4F8A', 1.2, '5,3');
-      path(`M${pX+panW-stileW-3},${aY}l-5,-3.5l0,7Z`, '#1B4F8A');
+      r(jX-stileW, pY, stileW*2, pH, panelFill, frame, 0.4);   // overlap zone
+      l(jX, pY, jX, pY+pH, frame, 0.8);                         // junction seam
+      l(pX+stileW+3, aY, jX-stileW-3, aY, '#1B4F8A', 1.2, '5,3');
+      path(`M${jX-stileW-3},${aY}l-5,-3.5l0,7Z`, '#1B4F8A');
     }
     panels = [{x:pX,w:panW},{x:pX+panW,w:panW}];
   }
