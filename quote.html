@@ -1331,16 +1331,16 @@ function drawDoor(svgId, vW, vH, isConf) {
     const x1 = pX, x2 = pX+panW, x3 = pX+panW*2, x4 = pX+panW*3;
     // Draw sidelites first (behind), then active panels on top so SX stile overlaps SO stile
     const sdStroke = isFBO ? frame : '#AABBC8', sdSW = isFBO ? 1.5 : 1;
-    // SO sidelites drawn first (behind); < / > chevron on FBO to indicate breakout swing direction
+    // SO sidelites first (behind); inner stile zone will be covered by the extended SX panels
     drawP(x1, pY, panW, pH, sdStroke, sdSW, isFBO ? 'left'  : false, false, true);  // SO left
     drawP(x4, pY, panW, pH, sdStroke, sdSW, isFBO ? 'right' : false, true,  false); // SO right
-    // SX active panels drawn on top — their stiles are the only ones visible at junctions
-    drawP(x2, pY, panW, pH, frame, 1.5, false);
-    drawP(x3, pY, panW, pH, frame, 1.5, false);
-    // Hairlines at outer SO/SX junctions
-    l(x2, pY, x2, pY+pH, frame, 0.8);
-    l(x4, pY, x4, pY+pH, frame, 0.8);
-    // Center interlock — both SX trailing stiles overlap; show as 2×stile zone with centerline
+    // SX panels extended by stileW into the SO zone so they physically cover the SO inner stile
+    drawP(x2-stileW, pY, panW+stileW, pH, frame, 1.5, false); // SX left: starts stileW inside SO left
+    drawP(x3,        pY, panW+stileW, pH, frame, 1.5, false); // SX right: extends stileW into SO right
+    // Hairlines at outer junctions (edge of SX stile against SO glass)
+    l(x2-stileW, pY, x2-stileW, pY+pH, frame, 0.8);
+    l(x4,        pY, x4,        pY+pH, frame, 0.8);
+    // Center interlock — SX trailing stiles meet; 2×stile zone with centerline
     r(x3-stileW, pY, stileW*2, pH, panelFill, frame, 0.4);
     l(x3, pY, x3, pY+pH, frame, 1.2);
     // Movement arrows
@@ -1361,21 +1361,23 @@ function drawDoor(svgId, vW, vH, isConf) {
     const aY = pY + topRH + (pH-topRH-btmRH)*0.48;
     const jX = pX + panW; // SO/SX junction x
     if (isLH) {
-      // LH: sidelite left (SO swings left), active panel right (SX)
+      // LH: sidelite left (SO), active panel right (SX) — SX extends stileW into SO to cover inner stile
       drawP(pX, pY, panW, pH, sdStroke, sdSW, isFBO ? 'left' : false, false, true);
-      drawP(jX,  pY, panW, pH, frame, 1.5, false);
-      l(jX, pY, jX, pY+pH, frame, 0.8);
+      drawP(jX-stileW, pY, panW+stileW, pH, frame, 1.5, false);
+      l(jX-stileW, pY, jX-stileW, pY+pH, frame, 0.8);
       l(jX+stileW+3, aY, jX+panW-stileW-3, aY, '#1B4F8A', 1.2, '5,3');
       path(`M${jX+stileW+3},${aY}l5,-3.5l0,7Z`, '#1B4F8A');
     } else {
-      // RH: active panel left (SX), sidelite right (SO swings right)
-      drawP(jX,  pY, panW, pH, sdStroke, sdSW, isFBO ? 'right' : false, true, false);
-      drawP(pX,  pY, panW, pH, frame, 1.5, false);
+      // RH: active panel left (SX), sidelite right (SO) — SX extends stileW into SO to cover inner stile
+      drawP(jX, pY, panW, pH, sdStroke, sdSW, isFBO ? 'right' : false, true, false);
+      drawP(pX, pY, panW+stileW, pH, frame, 1.5, false);
       l(jX, pY, jX, pY+pH, frame, 0.8);
       l(pX+stileW+3, aY, jX-stileW-3, aY, '#1B4F8A', 1.2, '5,3');
       path(`M${jX-stileW-3},${aY}l-5,-3.5l0,7Z`, '#1B4F8A');
     }
-    panels = [{x:pX,w:panW},{x:pX+panW,w:panW}];
+    panels = isLH
+      ? [{x:pX,w:panW},{x:jX-stileW,w:panW+stileW}]
+      : [{x:pX,w:panW+stileW},{x:jX,w:panW}];
   }
 
   // Horizontal muntin — centered when header ≤ 8'0"; fixed at 42" AFF when header > 8'0"

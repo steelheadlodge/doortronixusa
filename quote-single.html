@@ -1349,21 +1349,23 @@ function drawDoor(svgId, vW, vH, isConf) {
     const aY = pY + topRH + (pH-topRH-btmRH)*0.48;
     const jX = pX + panW; // SO/SX junction x
     if (isLH) {
-      // LH: sidelite left (SO swings left), active panel right (SX)
+      // LH: sidelite left (SO), active panel right (SX) — SX extends stileW into SO to cover inner stile
       drawP(pX, pY, panW, pH, sdStroke, sdSW, isFBO ? 'left' : false, false, true);
-      drawP(jX,  pY, panW, pH, frame, 1.5, false);
-      l(jX, pY, jX, pY+pH, frame, 0.8);
+      drawP(jX-stileW, pY, panW+stileW, pH, frame, 1.5, false);
+      l(jX-stileW, pY, jX-stileW, pY+pH, frame, 0.8);
       l(jX+stileW+3, aY, jX+panW-stileW-3, aY, '#1B4F8A', 1.2, '5,3');
       path(`M${jX+stileW+3},${aY}l5,-3.5l0,7Z`, '#1B4F8A');
     } else {
-      // RH: active panel left (SX), sidelite right (SO swings right)
-      drawP(jX,  pY, panW, pH, sdStroke, sdSW, isFBO ? 'right' : false, true, false);
-      drawP(pX,  pY, panW, pH, frame, 1.5, false);
+      // RH: active panel left (SX), sidelite right (SO) — SX extends stileW into SO to cover inner stile
+      drawP(jX, pY, panW, pH, sdStroke, sdSW, isFBO ? 'right' : false, true, false);
+      drawP(pX, pY, panW+stileW, pH, frame, 1.5, false);
       l(jX, pY, jX, pY+pH, frame, 0.8);
       l(pX+stileW+3, aY, jX-stileW-3, aY, '#1B4F8A', 1.2, '5,3');
       path(`M${jX-stileW-3},${aY}l-5,-3.5l0,7Z`, '#1B4F8A');
     }
-    panels = [{x:pX,w:panW},{x:pX+panW,w:panW}];
+    panels = isLH
+      ? [{x:pX,w:panW},{x:jX-stileW,w:panW+stileW}]
+      : [{x:pX,w:panW+stileW},{x:jX,w:panW}];
   }
 
   // Horizontal muntin — centered when header ≤ 8'0"; fixed at 42" AFF when header > 8'0"
