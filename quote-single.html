@@ -1249,9 +1249,10 @@ function drawDoor(svgId, vW, vH, isConf) {
     const numV = parseInt(rv('transomV') || '0');
     // Use frameT for all transom framing members (matches jamb thickness)
     const tx = dX + frameT, tw = dW - frameT * 2;
-    // Glass height: subtract top tube AND bottom mullion (both frameT thick)
+    // Glass height: subtract top tube (frameT) and bottom 1" glass stop
     const tGlassY = dY + frameT;                    // glass starts below top header tube
-    const tGlassH = transomH - frameT * 2;          // glass height between top tube and bottom mullion
+    const glassStopH = Math.max(1.5, sc * 1);       // 1" glass stop line thickness
+    const tGlassH = transomH - frameT - glassStopH; // glass fills to just above glass stop
 
     // Compute vertical mullion center x-positions
     const _pX = dX + frameT, _pW = dW - frameT * 2;
@@ -1288,7 +1289,7 @@ function drawDoor(svgId, vW, vH, isConf) {
     });
 
     // Bottom glass stop — 1" solid line at base of transom, top of header
-    l(dX, tGlassY + tGlassH, dX + dW, tGlassY + tGlassH, frame, Math.max(1, sc * 1));
+    l(dX, tGlassY + tGlassH + glassStopH/2, dX + dW, tGlassY + tGlassH + glassStopH/2, frame, glassStopH);
 
     // TRANSOM label centred on the first (or only) lite
     const firstLiteW = vertXs.length > 0 ? (vertXs[0] - frameT/2) - tx : tw;
