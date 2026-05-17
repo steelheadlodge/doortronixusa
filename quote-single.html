@@ -739,7 +739,7 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
   <div class="preview-panel">
     <div class="preview-title">Price Estimate</div>
     <div class="price-card">
-      <div class="price-card-header">Net Contractor Price</div>
+      <div class="price-card-header" style="display:flex;justify-content:space-between;align-items:center;">Net Contractor Price<span id="price-header-total" style="font-size:16px;"></span></div>
       <div class="price-card-body" id="price-body">
         <div class="price-empty">Select a configuration above to see pricing.</div>
       </div>
@@ -977,6 +977,7 @@ function calcPrice() {
 
   if (!cfg) {
     body.innerHTML = '<div class="price-empty">Select a configuration above to see pricing.</div>';
+    const ht = document.getElementById('price-header-total'); if (ht) ht.textContent = '';
     return;
   }
   if (cfg.base === null) {
@@ -1109,6 +1110,8 @@ function calcPrice() {
   html += `<div class="price-total-row"><span class="pt-label">Estimated Total</span><span class="pt-value">${fmt(grandTotal)}</span></div>`;
   html += `<div class="price-note">Net contractor pricing. Does not include glass, freight, installation, or taxes. Doortronix will confirm final pricing and freight within 4 business hours.</div>`;
   body.innerHTML = html;
+  const headerTotal = document.getElementById('price-header-total');
+  if (headerTotal) headerTotal.textContent = fmt(grandTotal);
 
   // Store for confirmation
   window._priceData = { lines, total, qty, grandTotal };
