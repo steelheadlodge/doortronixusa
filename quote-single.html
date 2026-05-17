@@ -1287,9 +1287,11 @@ function drawDoor(svgId, vW, vH, isConf) {
   const pX = dX+frameT, pW = dW-frameT*2;
   // Panel drawing helper — frame background + inset glass lite + optional diagonal glass lines
   let panels = []; // collect {x,w} for muntin overlay
-  function drawP(px, py, pw, ph, strokeColor, sw, showDiag) {
+  function drawP(px, py, pw, ph, strokeColor, sw, showDiag, noInnerL, noInnerR) {
     r(px, py, pw, ph, panelFill, strokeColor, sw);
-    const gx = px+stileW, gy = py+topRH, gw = pw-stileW*2, gh = ph-topRH-btmRH;
+    const lIn = noInnerL ? 0 : stileW;
+    const rIn = noInnerR ? 0 : stileW;
+    const gx = px+lIn, gy = py+topRH, gw = pw-lIn-rIn, gh = ph-topRH-btmRH;
     if (gw > 2 && gh > 2) {
       r(gx, gy, gw, gh, glaze.fill, 'none', 0);
       if (showDiag) {
@@ -1340,19 +1342,17 @@ function drawDoor(svgId, vW, vH, isConf) {
     const aY = pY + topRH + (pH-topRH-btmRH)*0.48;
     const jX = pX + panW; // SO/SX junction x
     if (isLH) {
-      // LH: sidelite left, active panel right
-      drawP(pX, pY, panW, pH, sdStroke, sdSW, isFBO);          // SO sidelite (behind)
-      drawP(jX, pY, panW, pH, frame, 1.5, false);               // SX active (in front)
-      r(jX-stileW, pY, stileW*2, pH, panelFill, frame, 0.4);   // overlap zone
-      l(jX, pY, jX, pY+pH, frame, 0.8);                         // junction seam
+      // LH: sidelite left (SO), active panel right (SX)
+      drawP(pX, pY, panW, pH, sdStroke, sdSW, isFBO, false, true); // SO — no inner-right stile
+      drawP(jX,  pY, panW, pH, frame, 1.5, false);                  // SX in front
+      l(jX, pY, jX, pY+pH, frame, 0.8);
       l(jX+stileW+3, aY, jX+panW-stileW-3, aY, '#1B4F8A', 1.2, '5,3');
       path(`M${jX+stileW+3},${aY}l5,-3.5l0,7Z`, '#1B4F8A');
     } else {
-      // RH: active panel left, sidelite right
-      drawP(jX, pY, panW, pH, sdStroke, sdSW, isFBO);           // SO sidelite (behind)
-      drawP(pX, pY, panW, pH, frame, 1.5, false);                // SX active (in front)
-      r(jX-stileW, pY, stileW*2, pH, panelFill, frame, 0.4);   // overlap zone
-      l(jX, pY, jX, pY+pH, frame, 0.8);                         // junction seam
+      // RH: active panel left (SX), sidelite right (SO)
+      drawP(jX,  pY, panW, pH, sdStroke, sdSW, isFBO, true, false); // SO — no inner-left stile
+      drawP(pX,  pY, panW, pH, frame, 1.5, false);                   // SX in front
+      l(jX, pY, jX, pY+pH, frame, 0.8);
       l(pX+stileW+3, aY, jX-stileW-3, aY, '#1B4F8A', 1.2, '5,3');
       path(`M${jX-stileW-3},${aY}l-5,-3.5l0,7Z`, '#1B4F8A');
     }
