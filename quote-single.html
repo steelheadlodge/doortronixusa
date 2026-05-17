@@ -408,7 +408,7 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
         <!-- Overall Frame Height (only shown when transom selected) -->
         <div class="field" id="ftth-field" style="display:none;">
           <label>Overall Frame Height (incl. Transom)</label>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">
             <div class="field">
               <select id="f_ftthft" name="ftthFt" onchange="clampFtthIn()">
                 <option value="">Ft —</option>
@@ -423,6 +423,16 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
                 <option value="3">3"</option><option value="4">4"</option><option value="5">5"</option>
                 <option value="6">6"</option><option value="7">7"</option><option value="8" selected>8"</option>
                 <option value="9">9"</option><option value="10">10"</option><option value="11">11"</option>
+              </select>
+            </div>
+            <div class="field">
+              <select id="f_ftth16" name="ftthSixteenth">
+                <option value="0" selected>0</option>
+                <option value="1">1/16</option><option value="2">1/8</option><option value="3">3/16</option>
+                <option value="4">1/4</option><option value="5">5/16</option><option value="6">3/8</option>
+                <option value="7">7/16</option><option value="8">1/2</option><option value="9">9/16</option>
+                <option value="10">5/8</option><option value="11">11/16</option><option value="12">3/4</option>
+                <option value="13">13/16</option><option value="14">7/8</option><option value="15">15/16</option>
               </select>
             </div>
           </div>
@@ -1041,7 +1051,8 @@ function calcPrice() {
   if (rv('transom') === 'yes') {
     const ftthFt = parseInt(fv('f_ftthft')) || 0;
     const ftthIn = parseInt(fv('f_ftthin')) || 0;
-    const ftthTotal = ftthFt * 12 + ftthIn;
+    const ftth16 = parseInt(fv('f_ftth16')) || 0;
+    const ftthTotal = ftthFt * 12 + ftthIn + ftth16 / 16;
     const ftthNote = document.getElementById('ftth-range-note');
     if (ftthNote && ftthFt) {
       if (ftthTotal < 92) {
@@ -1093,7 +1104,12 @@ function calcPrice() {
 // ── Spec summary ────────────────────────────────────────────────────
 function updateSpecSummary() {
   const cfg = getConfig();
-  const ftthStr = rv('transom') === 'yes' ? (() => { const ft=fv('f_ftthft'),i=fv('f_ftthin')||'0'; return ft ? `${ft}'${i==='0'?'':i+'"'}` : '—'; })() : null;
+  const ftthStr = rv('transom') === 'yes' ? (() => {
+    const ft=fv('f_ftthft'), i=parseInt(fv('f_ftthin'))||0, s=parseInt(fv('f_ftth16'))||0;
+    if (!ft) return '—';
+    const inPart = i === 0 && s === 0 ? '' : i + (s ? '-' + SIXTEENTH_LABELS[s] : '') + '"';
+    return `${ft}'${inPart}`;
+  })() : null;
   const alarmContacts = [
     document.getElementById('ac_breakout')?.checked ? 'Monitor Breakout' : '',
     document.getElementById('ac_closed')?.checked ? 'Monitor Fully Closed' : '',
@@ -1441,8 +1457,9 @@ document.getElementById('quoteForm').addEventListener('submit', async function(e
   });
 
   const pd = window._priceData;
-  const ftthFt = fv('f_ftthft'), ftthIn = fv('f_ftthin') || '0';
-  const ftthStr2 = ftthFt ? `${ftthFt}'${ftthIn === '0' ? '' : ftthIn + '"'}` : '';
+  const ftthFt = fv('f_ftthft');
+  const ftthInV = parseInt(fv('f_ftthin')) || 0, ftth16V = parseInt(fv('f_ftth16')) || 0;
+  const ftthStr2 = ftthFt ? `${ftthFt}'${ftthInV === 0 && ftth16V === 0 ? '' : ftthInV + (ftth16V ? '-' + SIXTEENTH_LABELS[ftth16V] : '') + '"'}` : '';
   const alarmContacts2 = [
     document.getElementById('ac_breakout')?.checked ? 'Monitor Breakout' : '',
     document.getElementById('ac_closed')?.checked ? 'Monitor Fully Closed' : '',
