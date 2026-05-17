@@ -1199,25 +1199,42 @@ function drawDoor(svgId, vW, vH, isConf) {
   const isFBO = cfg ? cfg.isFBO : false;
 
   const titleH = isConf ? 60 : 0;
-  const mL = 55, mR = 55, mT = isConf ? titleH+20 : 16, mB = isConf ? 70 : 44;
-  const dW = vW - mL - mR;
-  const dH = vH - mT - mB;
-  const dX = mL, dY = mT;
-  // Scale all frame members from actual door width so proportions stay accurate
-  const nomWidth = getWidthIn() || (isBi ? 96 : 78);
-  const sc = dW / nomWidth; // pts per inch
-  const jambW   = Math.max(4,  sc * 1.75); // 1-3/4" jamb
-  const stileW  = Math.max(5,  sc * 2.5);  // 2-1/2" narrow stile
-  const topRH   = Math.max(7,  sc * 4.0);  // 4" top rail
-  const btmRH   = Math.max(7,  sc * 4.0);  // 4" bottom rail
-  const muntH   = Math.max(2,  sc * 2.0);  // 2" muntin bar
-  const sillH   = Math.max(2,  sc * 0.5);  // 1/2" threshold
-  const headerH = Math.max(18, sc * 8.0);  // 8" header/operator
-  const frameT  = jambW; // alias used in transom framing
+
+  // ── Real dimensions in inches ──────────────────────────────────────
+  const realW      = getWidthIn()  || (isBi ? 120 : 84);
+  const realFrameH = getHeightIn() || 90;  // frame height (floor to top of header)
+  const ftthFt2    = parseInt(fv('f_ftthft')) || 0;
+  const ftthIn2    = parseInt(fv('f_ftthin')) || 0;
+  const realFtth   = hasTransom && ftthFt2 ? ftthFt2 * 12 + ftthIn2 : realFrameH;
+  const realTransomIn = hasTransom ? Math.max(0, realFtth - realFrameH) : 0;
+  const realTotalH = realFtth;   // total height incl. transom
+
+  // ── Scale to fit viewBox while maintaining true aspect ratio ───────
+  const mL = isConf ? 55 : 50, mR = isConf ? 55 : 44;
+  const mT = isConf ? titleH + 20 : 20, mB = isConf ? 70 : 50;
+  const availW = vW - mL - mR;
+  const availH = vH - mT - mB;
+  const sc  = Math.min(availW / realW, availH / realTotalH); // pts per inch
+  const dW  = realW * sc;
+  const dH  = realTotalH * sc;
+  const dX  = mL + (availW - dW) / 2;
+  const dY  = mT + (availH - dH) / 2;
+
+  // ── Frame members at true scale ────────────────────────────────────
+  const jambW  = Math.max(2, sc * 1.75);  // 1-3/4" structural tube
+  const railIn = rv('bottomRail') === '10in' ? 10 : rv('bottomRail') === '6in' ? 6 : 4;
+  const stileW = Math.max(3, sc * (rv('stileWidth') === 'medium' ? 3.75 : 2.5));
+  const topRH  = Math.max(3, sc * 4.0);   // 4" top rail
+  const btmRH  = Math.max(3, sc * railIn); // bottom rail per selection
+  const muntH  = Math.max(1.5, sc * 2.0); // 2" muntin bar
+  const sillH  = Math.max(1, sc * 0.5);   // 1/2" threshold
+  const headerH = Math.max(10, sc * 8.0); // 8" header / operator box
+  const frameT  = jambW;
+
   // Panel stiles — match selected finish
   const panelFill = getPanelFill();
-  const transomH = hasTransom ? Math.min(dH * 0.22, 48) : 0;
-  const doorH = dH - transomH;
+  const transomH  = realTransomIn * sc;   // true-scale transom strip
+  const doorH     = dH - transomH;
 
   function r(x,y,w,h,fill,stroke,sw,rx) {
     const el = document.createElementNS('http://www.w3.org/2000/svg','rect');
@@ -1339,9 +1356,9 @@ function drawDoor(svgId, vW, vH, isConf) {
   const pY = dY+transomH+headerH+2, pH = dH-transomH-headerH-sillH-4;
   const pX = dX+frameT, pW = dW-frameT*2;
   // Muntin Y — after pY/pH are defined
-  const _hIn = getHeightIn() || 90;
-  const muntY = _hIn > 96
-    ? (pY + pH) - (_hIn - 8.5 > 0 ? (pH / (_hIn - 8.5)) * 42 : 0) - muntH / 2
+  // Muntin: 42" AFF for taller doors (true scale); center of panel for standard height
+  const muntY = realFrameH > 96
+    ? (pY + pH) - (42 * sc) - muntH / 2
     : pY + topRH + (pH - topRH - btmRH) / 2 - muntH / 2;
   // Panel drawing helper — frame background + inset glass lite + optional diagonal glass lines
   let panels = []; // collect {x,w} for muntin overlay
@@ -1451,12 +1468,17 @@ function drawDoor(svgId, vW, vH, isConf) {
     panels.forEach(({x, w}) => r(x, muntY, w, muntH, panelFill, frame, 0.4));
   }
 
-  // Dim lines
+  // Dim lines — width below, height on right side
   if (isConf || getWidthIn()) {
     dimLine(dX, dY+dH+24, dX+dW, dY+dH+24, getWidthStr(), true);
   }
   if (isConf) {
     dimLine(dX-30, dY, dX-30, dY+dH, getHeightStr(), false);
+  } else if (getHeightIn()) {
+    const hLabel = hasTransom && ftthFt2
+      ? getHeightStr() + ' + ' + (Math.floor(realTransomIn/12) > 0 ? Math.floor(realTransomIn/12)+"'" : '') + (realTransomIn%12 > 0 ? (realTransomIn%12)+'"' : '') + ' transom'
+      : getHeightStr();
+    dimLine(dX+dW+28, dY, dX+dW+28, dY+dH, hLabel, false);
   }
 
   // Bottom title bar (preview only)
