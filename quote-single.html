@@ -1275,8 +1275,8 @@ function drawDoor(svgId, vW, vH, isConf) {
       if (lw > 1) r(lx, tGlassY, lw, tGlassH, glaze.fill, glaze.stroke, 0.5);
     }
 
-    // Top header tube — 1-3/4" horizontal member at very top of transom
-    r(dX, dY, dW, frameT, frame);
+    // Top header tube — 1" horizontal member at very top of transom
+    r(dX, dY, dW, Math.max(2, sc * 1), frame);
 
     // Left and right transom jambs (frameT wide, full transom height)
     r(dX, dY, frameT, transomH, frame);
