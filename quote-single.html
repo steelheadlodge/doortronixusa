@@ -1430,7 +1430,6 @@ function drawDoor(svgId, vW, vH, isConf) {
         // FBO: SX behind, SO in front
         drawP(jX,  pY, sxW, pH, frame, 1.5, false);
         drawP(pX, pY, soW, pH, sdStroke, sdSW, false, false, true);
-        l(jX+stileW, pY, jX+stileW, pY+pH, frame, 1.0);
       } else {
         // FSL: SO behind, SX in front
         drawP(pX, pY, soW, pH, sdStroke, sdSW, false, false, true);
@@ -1446,7 +1445,6 @@ function drawDoor(svgId, vW, vH, isConf) {
         // FBO: SX behind, SO in front
         drawP(pX,  pY, sxW, pH, frame, 1.5, false);
         drawP(jX,  pY, soW, pH, sdStroke, sdSW, false, true, false);
-        l(jX-stileW, pY, jX-stileW, pY+pH, frame, 1.0);
       } else {
         // FSL: SO behind, SX in front
         drawP(jX,  pY, soW, pH, sdStroke, sdSW, false, true, false);

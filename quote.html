@@ -1414,9 +1414,6 @@ function drawDoor(svgId, vW, vH, isConf) {
       drawP(x3, pY, sxW, pH, frame, 1.5, false);
       drawP(x1, pY, soW, pH, sdStroke, sdSW, false, false, true);
       drawP(x4, pY, soW, pH, sdStroke, sdSW, false, true,  false);
-      // Indicator line at inner face of SX stile (release point)
-      l(x2+stileW, pY, x2+stileW, pY+pH, frame, 1.0);
-      l(x4-stileW, pY, x4-stileW, pY+pH, frame, 1.0);
     } else {
       // FSL: moving panels travel IN FRONT of sidelites — SO first (back), SX on top (front)
       drawP(x1, pY, soW, pH, sdStroke, sdSW, false, false, true);
