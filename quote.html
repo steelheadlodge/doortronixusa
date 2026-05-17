@@ -729,6 +729,12 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
       </div>
 
     </form>
+
+    <!-- Sticky price bar — always visible at bottom of form panel -->
+    <div id="sticky-price-bar" style="position:sticky;bottom:0;background:var(--blue);color:#fff;padding:10px 20px;display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:700;border-top:2px solid var(--dblue);z-index:10;">
+      <span>Net Contractor Price</span>
+      <span id="sticky-price-total" style="font-size:18px;">—</span>
+    </div>
   </div><!-- /form-panel -->
 
   <!-- ══ PREVIEW PANEL ══ -->
@@ -973,6 +979,7 @@ function calcPrice() {
   if (!cfg) {
     body.innerHTML = '<div class="price-empty">Select a configuration above to see pricing.</div>';
     const ht = document.getElementById('price-header-total'); if (ht) ht.textContent = '';
+    const st = document.getElementById('sticky-price-total'); if (st) st.textContent = '—';
     return;
   }
   if (cfg.base === null) {
@@ -1107,6 +1114,8 @@ function calcPrice() {
   body.innerHTML = html;
   const headerTotal = document.getElementById('price-header-total');
   if (headerTotal) headerTotal.textContent = fmt(grandTotal);
+  const stickyTotal = document.getElementById('sticky-price-total');
+  if (stickyTotal) stickyTotal.textContent = fmt(grandTotal);
 
   // Store for confirmation
   window._priceData = { lines, total, qty, grandTotal };
