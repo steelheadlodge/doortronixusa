@@ -1174,11 +1174,6 @@ function drawDoor(svgId, vW, vH, isConf) {
   const topRH   = Math.max(7,  sc * 4.0);  // 4" top rail
   const btmRH   = Math.max(7,  sc * 4.0);  // 4" bottom rail
   const muntH   = Math.max(2,  sc * 2.0);  // 2" muntin bar
-  // Muntin Y — calculated once, used for both muntin and arrow placement
-  const _hIn = getHeightIn() || 90;
-  const muntY = _hIn > 96
-    ? (pY + pH) - (_hIn - 8.5 > 0 ? (pH / (_hIn - 8.5)) * 42 : 0) - muntH / 2
-    : pY + topRH + (pH - topRH - btmRH) / 2 - muntH / 2;
   const sillH   = Math.max(2,  sc * 0.5);  // 1/2" threshold
   const headerH = Math.max(18, sc * 8.0);  // 8" header/operator
   const frameT  = jambW; // alias used in transom framing
@@ -1305,6 +1300,11 @@ function drawDoor(svgId, vW, vH, isConf) {
 
   const pY = dY+transomH+headerH+2, pH = dH-transomH-headerH-sillH-4;
   const pX = dX+frameT, pW = dW-frameT*2;
+  // Muntin Y — after pY/pH are defined
+  const _hIn = getHeightIn() || 90;
+  const muntY = _hIn > 96
+    ? (pY + pH) - (_hIn - 8.5 > 0 ? (pH / (_hIn - 8.5)) * 42 : 0) - muntH / 2
+    : pY + topRH + (pH - topRH - btmRH) / 2 - muntH / 2;
   // Panel drawing helper — frame background + inset glass lite + optional diagonal glass lines
   let panels = []; // collect {x,w} for muntin overlay
   // noInnerL / noInnerR: suppress stile inset on that side so glass extends to panel edge
