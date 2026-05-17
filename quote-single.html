@@ -1374,6 +1374,11 @@ function drawDoor(svgId, vW, vH, isConf) {
     if (gw > 2 && gh > 2) {
       r(gx, gy, gw, gh, glaze.fill, 'none', 0);
     }
+    // Re-draw stile and rail areas over glass to seal corners cleanly (no anti-alias bleed)
+    if (lIn > 0) r(px, py, lIn, ph, panelFill, 'none', 0);
+    if (rIn > 0) r(px+pw-rIn, py, rIn, ph, panelFill, 'none', 0);
+    r(px, py, pw, topRH, panelFill, 'none', 0);
+    r(px, py+ph-btmRH, pw, btmRH, panelFill, 'none', 0);
   }
 
   if (!cfg) {
