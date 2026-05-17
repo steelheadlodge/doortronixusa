@@ -908,7 +908,6 @@ function toggleAddon(el) {
   } else {
     _checkedAddons.delete(el.id);
   }
-  console.log('[toggleAddon] id:', el.id, '| checked:', el.classList.contains('checked'), '| Set:', [..._checkedAddons]);
   calcPrice();
 }
 
@@ -969,7 +968,6 @@ function calcPrice() {
   const body = document.getElementById('price-body');
   try {
   const cfg = getConfig();
-  console.log('[calcPrice] cfg:', cfg?.label || 'null', '| transom:', rv('transom'), '| addons:', [..._checkedAddons]);
   updateAddonVisibility();
 
   if (!cfg) {
@@ -1595,8 +1593,8 @@ function closeConf() {
 }
 
 // ── Init ─────────────────────────────────────────────────────────────
-// Default to FSL Bi-Part on first load
-const _defaultCfg = document.querySelector('input[name="config"][value="fsl-bi"]');
+// Default to FBO Bi-Part on first load
+const _defaultCfg = document.querySelector('input[name="config"][value="fbo-bi"]');
 if (_defaultCfg) _defaultCfg.checked = true;
 updateAll();
 </script>
