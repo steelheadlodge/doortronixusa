@@ -1216,7 +1216,7 @@ function drawDoor(svgId, vW, vH, isConf) {
 
   // ── Scale to fit viewBox while maintaining true aspect ratio ───────
   const mL = isConf ? 55 : 50, mR = isConf ? 55 : 44;
-  const mT = isConf ? titleH + 20 : 20, mB = isConf ? 70 : 62;
+  const mT = isConf ? titleH + 20 : 20, mB = isConf ? 70 : 80;
   const availW = vW - mL - mR;
   const availH = vH - mT - mB;
   const sc  = Math.min(availW / realW, availH / realTotalH);
@@ -1466,7 +1466,8 @@ function drawDoor(svgId, vW, vH, isConf) {
     const hLabel = hasTransom && ftthFt2
       ? getHeightStr() + ' + ' + (Math.floor(realTransomIn/12) > 0 ? Math.floor(realTransomIn/12)+"'" : '') + (realTransomIn%12 > 0 ? (realTransomIn%12)+'"' : '') + ' transom'
       : getHeightStr();
-    dimLine(dX+dW+28, dY, dX+dW+28, dY+dH, hLabel, false);
+    const hDimX = Math.min(dX + dW + 28, vW - 14);
+    dimLine(hDimX, dY, hDimX, dY+dH, hLabel, false);
   }
 
   // Bottom title bar (preview only)
