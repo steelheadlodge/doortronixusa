@@ -1120,12 +1120,16 @@ function updateSpecSummary() {
 }
 
 // ── SVG Drawing ─────────────────────────────────────────────────────
+function isDarkBronze() { return rv('glazing') === '313 Dark Bronze'; }
 function getFrameColor() {
-  return rv('glazing') === '313 Dark Bronze' ? '#6B5040' : '#B8C4D0';
+  return isDarkBronze() ? '#3D2710' : '#B8C4D0';
+}
+function getPanelFill() {
+  return isDarkBronze() ? '#4A3018' : '#7A9CB8';
 }
 function getGlazeFill() {
-  return rv('glazing') === '313 Dark Bronze'
-    ? { fill:'#D4C8BC', stroke:'#A09080' }
+  return isDarkBronze()
+    ? { fill:'#C8B8A0', stroke:'#8A7060' }
     : { fill:'#E8F4FD', stroke:'#A8D4F5' };
 }
 
@@ -1157,8 +1161,8 @@ function drawDoor(svgId, vW, vH, isConf) {
   const sillH   = Math.max(2,  sc * 0.5);  // 1/2" threshold
   const headerH = Math.max(18, sc * 8.0);  // 8" header/operator
   const frameT  = jambW; // alias used in transom framing
-  // Panel stiles lighter than solid jambs
-  const panelFill = '#7A9CB8';
+  // Panel stiles — match selected finish
+  const panelFill = getPanelFill();
   const transomH = hasTransom ? Math.min(dH * 0.22, 48) : 0;
   const doorH = dH - transomH;
 
@@ -1333,7 +1337,7 @@ function drawDoor(svgId, vW, vH, isConf) {
     r(x3-stileW, pY, stileW*2, pH, panelFill, frame, 0.4);
     l(x3, pY, x3, pY+pH, frame, 1.2);
     // Movement arrows
-    const aY = pY + topRH + (pH-topRH-btmRH)*0.48;
+    const aY = pY + topRH + (pH-topRH-btmRH)*0.30;
     l(x2+stileW+3, aY, x3-stileW-3, aY, '#1B4F8A', 1.2, '5,3');
     path(`M${x2+stileW+3},${aY}l5,-3.5l0,7Z`, '#1B4F8A');
     l(x3+stileW+3, aY, x4-stileW-3, aY, '#1B4F8A', 1.2, '5,3');
@@ -1351,7 +1355,7 @@ function drawDoor(svgId, vW, vH, isConf) {
     const sxW  = panW + stileW / 2;
     const G    = panW - stileW * 1.5;
     const sdStroke = isFBO ? frame : '#AABBC8', sdSW = isFBO ? 1.5 : 1;
-    const aY = pY + topRH + (pH-topRH-btmRH)*0.48;
+    const aY = pY + topRH + (pH-topRH-btmRH)*0.30;
     if (isLH) {
       // LH: SO left, SX right
       const jX = pX + soW;
