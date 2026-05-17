@@ -657,13 +657,13 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
         </div>
       </div>
 
-      <div id="addon_cart_bar" class="addon-item" data-price="100" data-unit="ea" onclick="toggleAddon(this)">
+      <div id="addon_cart_bar" class="addon-item" data-price="50" data-unit="ea" onclick="toggleAddon(this)">
         <div class="addon-check-visual"></div>
         <div class="addon-label-wrap">
           <div class="al">Cart Bar</div>
           <div class="ad">Specify location in notes</div>
         </div>
-        <div class="addon-price-tag">$100 ea</div>
+        <div class="addon-price-tag">$50 ea</div>
         <div class="addon-qty-wrap">
           <label>Qty:</label>
           <select onclick="event.stopPropagation()" onchange="calcPrice()">
@@ -1068,15 +1068,20 @@ function calcPrice() {
     }
   }
 
-  // Add-ons
-  document.querySelectorAll('.addon-item.checked:not(.disabled)').forEach(el => {
-    const price = parseInt(el.dataset.price);
+  // Add-ons — iterate explicitly over each known addon ID
+  ['addon_key_switch','addon_electric_lock','addon_lock_indicator','addon_ar_paddle',
+   'addon_ar_8600','addon_door_closer','addon_cart_bar','addon_muntin_2in',
+   'addon_mullion_transom','addon_battery','addon_nose_casters'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el || !el.classList.contains('checked') || el.classList.contains('disabled')) return;
+    const price = parseInt(el.dataset.price) || 0;
     const sel = el.querySelector('.addon-qty-wrap select');
-    const qty = sel ? parseInt(sel.value) : 1;
+    const qty = sel ? (parseInt(sel.value) || 1) : 1;
     const amount = price * qty;
     total += amount;
-    const name = el.querySelector('.al').textContent;
-    lines.push({ label: name + (qty > 1 ? ` ×${qty}` : ''), amount });
+    const nameEl = el.querySelector('.al');
+    const name = nameEl ? nameEl.textContent.trim() : id;
+    lines.push({ label: name + (qty > 1 ? ' \xd7' + qty : ''), amount });
   });
 
   // Per-unit display
@@ -1470,9 +1475,14 @@ document.getElementById('quoteForm').addEventListener('submit', async function(e
 
   const cfg = getConfig();
   const addons = [];
-  document.querySelectorAll('.addon-item.checked:not(.disabled)').forEach(el => {
+  ['addon_key_switch','addon_electric_lock','addon_lock_indicator','addon_ar_paddle',
+   'addon_ar_8600','addon_door_closer','addon_cart_bar','addon_muntin_2in',
+   'addon_mullion_transom','addon_battery','addon_nose_casters'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el || !el.classList.contains('checked') || el.classList.contains('disabled')) return;
     const qty = el.querySelector('.addon-qty-wrap select');
-    addons.push(el.querySelector('.al').textContent + (qty ? ' ×' + qty.value : ''));
+    const nameEl = el.querySelector('.al');
+    addons.push((nameEl ? nameEl.textContent.trim() : id) + (qty ? ' \xd7' + qty.value : ''));
   });
 
   const pd = window._priceData;
