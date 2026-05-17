@@ -166,6 +166,11 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
   .layout { grid-template-columns:1fr; }
   .preview-panel { position:static; height:auto; }
   .config-grid { grid-template-columns:repeat(2,1fr); }
+  #form-price-section { display:none !important; }
+}
+@media (min-width:961px) {
+  #form-price-section { display:block; }
+  .preview-price-section { display:none; }
 }
 @media (max-width:600px) {
   .form-grid { grid-template-columns:1fr; }
@@ -726,6 +731,17 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
         <textarea name="notes" id="f_notes" placeholder="Access control requirements, lead-lined panels, unusual site conditions, installation type (new construction / retrofit), emergency egress requirements, or anything else we should know..."></textarea>
       </div>
 
+      <!-- Desktop price breakdown (hidden on mobile — preview panel handles it there) -->
+      <div id="form-price-section">
+        <div class="section-header">⑥ Price Estimate</div>
+        <div class="price-card">
+          <div class="price-card-header" style="display:flex;justify-content:space-between;align-items:center;">Net Contractor Price<span id="form-price-header-total" style="font-size:16px;"></span></div>
+          <div class="price-card-body" id="form-price-body">
+            <div class="price-empty">Select a configuration above to see pricing.</div>
+          </div>
+        </div>
+      </div>
+
       <!-- Submit -->
       <div class="submit-section">
         <p>Prices shown are net contractor pricing and do not include glass, freight, installation, or applicable taxes. Doortronix will confirm your quote with exact freight within 4 business hours. All quotes are obligation-free.</p>
@@ -743,11 +759,13 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
 
   <!-- ══ PREVIEW PANEL ══ -->
   <div class="preview-panel">
-    <div class="preview-title">Price Estimate</div>
-    <div class="price-card">
-      <div class="price-card-header" style="display:flex;justify-content:space-between;align-items:center;">Net Contractor Price<span id="price-header-total" style="font-size:16px;"></span></div>
-      <div class="price-card-body" id="price-body">
-        <div class="price-empty">Select a configuration above to see pricing.</div>
+    <div class="preview-price-section">
+      <div class="preview-title">Price Estimate</div>
+      <div class="price-card">
+        <div class="price-card-header" style="display:flex;justify-content:space-between;align-items:center;">Net Contractor Price<span id="price-header-total" style="font-size:16px;"></span></div>
+        <div class="price-card-body" id="price-body">
+          <div class="price-empty">Select a configuration above to see pricing.</div>
+        </div>
       </div>
     </div>
 
@@ -1126,6 +1144,10 @@ function calcPrice() {
   if (headerTotal) headerTotal.textContent = fmt(grandTotal);
   const stickyTotal = document.getElementById('sticky-price-total');
   if (stickyTotal) stickyTotal.textContent = fmt(grandTotal);
+  const formBody = document.getElementById('form-price-body');
+  if (formBody) formBody.innerHTML = html;
+  const formHeaderTotal = document.getElementById('form-price-header-total');
+  if (formHeaderTotal) formHeaderTotal.textContent = fmt(grandTotal);
 
   // Store for confirmation
   window._priceData = { lines, total, qty, grandTotal };
