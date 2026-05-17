@@ -1329,26 +1329,22 @@ function drawDoor(svgId, vW, vH, isConf) {
     // Bipart — 4 equal panels, stiles overlap at junctions (no gap in closed elevation)
     const panW = pW / 4;
     const x1 = pX, x2 = pX+panW, x3 = pX+panW*2, x4 = pX+panW*3;
-    // Draw sidelites first (behind), then active panels on top so SX stile overlaps SO stile
+    // SO sidelites first (behind); glass extends to inner edge so SX stile visually overlaps
     const sdStroke = isFBO ? frame : '#AABBC8', sdSW = isFBO ? 1.5 : 1;
-    // SO sidelites first (behind); inner stile zone will be covered by the extended SX panels
     drawP(x1, pY, panW, pH, sdStroke, sdSW, isFBO ? 'left'  : false, false, true);  // SO left
     drawP(x4, pY, panW, pH, sdStroke, sdSW, isFBO ? 'right' : false, true,  false); // SO right
-    // SX panels extended by stileW into the SO zone so they physically cover the SO inner stile
-    drawP(x2-stileW, pY, panW+stileW, pH, frame, 1.5, false); // SX left: starts stileW inside SO left
-    drawP(x3,        pY, panW+stileW, pH, frame, 1.5, false); // SX right: extends stileW into SO right
-    // Hairlines at outer junctions (edge of SX stile against SO glass)
-    l(x2-stileW, pY, x2-stileW, pY+pH, frame, 0.8);
-    l(x4,        pY, x4,        pY+pH, frame, 0.8);
-    // Center interlock — SX trailing stiles meet; 2×stile zone with centerline
+    // SX active panels — equal width panW, drawn on top so SX stile covers SO inner stile
+    drawP(x2, pY, panW, pH, frame, 1.5, false); // SX left
+    drawP(x3, pY, panW, pH, frame, 1.5, false); // SX right
+    // Center interlock — where SX panels meet
     r(x3-stileW, pY, stileW*2, pH, panelFill, frame, 0.4);
     l(x3, pY, x3, pY+pH, frame, 1.2);
     // Movement arrows
     const aY = pY + topRH + (pH-topRH-btmRH)*0.48;
-    l(x2+stileW+3, aY, x2+panW-stileW-3, aY, '#1B4F8A', 1.2, '5,3');
+    l(x2+stileW+3, aY, x3-stileW-3, aY, '#1B4F8A', 1.2, '5,3');
     path(`M${x2+stileW+3},${aY}l5,-3.5l0,7Z`, '#1B4F8A');
-    l(x3+stileW+3, aY, x3+panW-stileW-3, aY, '#1B4F8A', 1.2, '5,3');
-    path(`M${x3+panW-stileW-3},${aY}l-5,-3.5l0,7Z`, '#1B4F8A');
+    l(x3+stileW+3, aY, x4-stileW-3, aY, '#1B4F8A', 1.2, '5,3');
+    path(`M${x4-stileW-3},${aY}l-5,-3.5l0,7Z`, '#1B4F8A');
     // Floor guide pin at center interlock
     const pin = document.createElementNS('http://www.w3.org/2000/svg','circle');
     Object.entries({cx:x3, cy:pY+pH-btmRH/2, r:3, fill:'none', stroke:frame, 'stroke-width':1}).forEach(([k,v])=>pin.setAttribute(k,v));
@@ -1361,23 +1357,19 @@ function drawDoor(svgId, vW, vH, isConf) {
     const aY = pY + topRH + (pH-topRH-btmRH)*0.48;
     const jX = pX + panW; // SO/SX junction x
     if (isLH) {
-      // LH: sidelite left (SO), active panel right (SX) — SX extends stileW into SO to cover inner stile
+      // LH: SO left (glass to inner edge), SX right on top — equal panW
       drawP(pX, pY, panW, pH, sdStroke, sdSW, isFBO ? 'left' : false, false, true);
-      drawP(jX-stileW, pY, panW+stileW, pH, frame, 1.5, false);
-      l(jX-stileW, pY, jX-stileW, pY+pH, frame, 0.8);
+      drawP(jX, pY, panW, pH, frame, 1.5, false);
       l(jX+stileW+3, aY, jX+panW-stileW-3, aY, '#1B4F8A', 1.2, '5,3');
       path(`M${jX+stileW+3},${aY}l5,-3.5l0,7Z`, '#1B4F8A');
     } else {
-      // RH: active panel left (SX), sidelite right (SO) — SX extends stileW into SO to cover inner stile
+      // RH: SX left on top, SO right (glass to inner edge) — equal panW
       drawP(jX, pY, panW, pH, sdStroke, sdSW, isFBO ? 'right' : false, true, false);
-      drawP(pX, pY, panW+stileW, pH, frame, 1.5, false);
-      l(jX, pY, jX, pY+pH, frame, 0.8);
+      drawP(pX, pY, panW, pH, frame, 1.5, false);
       l(pX+stileW+3, aY, jX-stileW-3, aY, '#1B4F8A', 1.2, '5,3');
       path(`M${jX-stileW-3},${aY}l-5,-3.5l0,7Z`, '#1B4F8A');
     }
-    panels = isLH
-      ? [{x:pX,w:panW},{x:jX-stileW,w:panW+stileW}]
-      : [{x:pX,w:panW+stileW},{x:jX,w:panW}];
+    panels = [{x:pX,w:panW},{x:jX,w:panW}];
   }
 
   // Horizontal muntin — centered when header ≤ 8'0"; fixed at 42" AFF when header > 8'0"
@@ -1393,7 +1385,7 @@ function drawDoor(svgId, vW, vH, isConf) {
       // Center muntin in glass area between top and bottom rails
       mY = pY + topRH + (pH - topRH - btmRH) / 2 - muntH / 2;
     }
-    panels.forEach(({x, w}) => r(x+stileW, mY, w-stileW*2, muntH, panelFill, frame, 0.4));
+    panels.forEach(({x, w}) => r(x, mY, w, muntH, panelFill, frame, 0.4));
   }
 
   // Dim lines
