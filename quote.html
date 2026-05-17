@@ -549,8 +549,8 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
           <div class="chip-group">
             <input type="radio" name="sensor" id="sn_std" value="Standard Optex (incl.)" checked>
             <label for="sn_std">Standard (incl.)</label>
-            <input type="radio" name="sensor" id="sn_optex" value="Optex OA-203">
-            <label for="sn_optex">Optex OA-203 (+$220)</label>
+            <input type="radio" name="sensor" id="sn_optex" value="Optex i-oneXT">
+            <label for="sn_optex">Optex i-oneXT (+$220)</label>
             <input type="radio" name="sensor" id="sn_bea" value="BEA Wizard">
             <label for="sn_bea">BEA Wizard (+$130)</label>
           </div>
@@ -1003,8 +1003,8 @@ function calcPrice() {
     lines.push({ label: `10" Bottom Rails ×${totalPanels} panels`, amount: amt });
   }
   const sensorVal = rv('sensor');
-  if (sensorVal === 'Optex OA-203') {
-    total += 220; lines.push({ label: 'Optex OA-203 Sensor', amount: 220 });
+  if (sensorVal === 'Optex i-oneXT') {
+    total += 220; lines.push({ label: 'Optex i-oneXT Sensor', amount: 220 });
   } else if (sensorVal === 'BEA Wizard') {
     total += 130; lines.push({ label: 'BEA Wizard Sensor', amount: 130 });
   }
@@ -1121,7 +1121,7 @@ function updateSpecSummary() {
     ['Bottom Rail', rv('bottomRail') === '6in' ? '6"' : rv('bottomRail') === '10in' ? '10"' : '4" (std)'],
     ['Horizontal Muntin', rv('muntin') || '2" Muntin (std)'],
     ['Threshold', rv('threshold') || '—'],
-    ['Sensor', rv('sensor') || '—'],
+    ['Sensor', (['Optex i-oneXT','BEA Wizard'].includes(rv('sensor'))) ? rv('sensor') : '—'],
     ['Transom', rv('transom') === 'yes' ? `Yes (+$250)${ftthStr ? ' — FTTH: ' + ftthStr : ''}` : 'No'],
     ['Frame Width', getWidthStr()],
     [rv('transom') === 'yes' ? 'Header Height (FTTH)' : 'Frame Height', getHeightStr()],
@@ -1449,6 +1449,10 @@ function drawDoor(svgId, vW, vH, isConf) {
 
 // ── Update all ───────────────────────────────────────────────────────
 function updateAll() {
+  // Auto-select 6" bottom rail when medium stile is chosen
+  if (rv('stileWidth') === 'medium' && rv('bottomRail') === 'std') {
+    document.getElementById('br_6').checked = true;
+  }
   updateFTTH();
   updateNetOpeningDisplay();
   calcPrice();
@@ -1502,7 +1506,7 @@ document.getElementById('quoteForm').addEventListener('submit', async function(e
     bottomRail: rv('bottomRail') === '6in' ? '6"' : rv('bottomRail') === '10in' ? '10"' : '4" (std)',
     muntin: rv('muntin') || '2" Muntin (std)',
     threshold: rv('threshold'),
-    sensor: rv('sensor'),
+    sensor: (['Optex i-oneXT','BEA Wizard'].includes(rv('sensor'))) ? rv('sensor') : 'Standard Optex (incl.)',
     transom: rv('transom') === 'yes' ? 'Yes' : 'No',
     ftth: ftthStr2 || 'N/A',
     frameWidth: getWidthStr(), frameHeight: getHeightStr(),
