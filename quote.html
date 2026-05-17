@@ -1291,19 +1291,6 @@ function drawDoor(svgId, vW, vH, isConf) {
     const gx = px+lIn, gy = py+topRH, gw = pw-lIn-rIn, gh = ph-topRH-btmRH;
     if (gw > 2 && gh > 2) {
       r(gx, gy, gw, gh, glaze.fill, 'none', 0);
-      if (breakoutDir) {
-        const cx = gx + gw / 2, cy = gy + gh / 2;
-        const s = Math.min(gw * 0.38, gh * 0.28);
-        if (breakoutDir === 'right') {
-          // > tip points right
-          l(cx - s * 0.5, cy - s, cx + s, cy, '#7A9CB8', 1.4);
-          l(cx + s, cy, cx - s * 0.5, cy + s, '#7A9CB8', 1.4);
-        } else {
-          // < tip points left
-          l(cx + s * 0.5, cy - s, cx - s, cy, '#7A9CB8', 1.4);
-          l(cx - s, cy, cx + s * 0.5, cy + s, '#7A9CB8', 1.4);
-        }
-      }
     }
   }
 
