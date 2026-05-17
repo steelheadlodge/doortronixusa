@@ -1349,16 +1349,21 @@ function drawDoor(svgId, vW, vH, isConf) {
     const x3 = x2 + sxW;   // center (= pX + 2*panW)
     const x4 = x3 + sxW;   // right SX/SO junction (x4+soW = pX+pW)
     const sdStroke = isFBO ? frame : '#AABBC8', sdSW = isFBO ? 1.5 : 1;
-    // SO sidelites first (behind); glass extends to inner edge so SX stile overlaps
-    drawP(x1, pY, soW, pH, sdStroke, sdSW, isFBO ? 'left'  : false, false, true);
-    drawP(x4, pY, soW, pH, sdStroke, sdSW, isFBO ? 'right' : false, true,  false);
-    // SX active panels on top — SX stile covers SO inner edge
-    drawP(x2, pY, sxW, pH, frame, 1.5, false);
-    drawP(x3, pY, sxW, pH, frame, 1.5, false);
-    // FBO: indicator line at inner face of SX stile (release point)
     if (isFBO) {
+      // FBO: moving panels travel BEHIND sidelites — SX first (back), SO on top (front)
+      drawP(x2, pY, sxW, pH, frame, 1.5, false);
+      drawP(x3, pY, sxW, pH, frame, 1.5, false);
+      drawP(x1, pY, soW, pH, sdStroke, sdSW, false, false, true);
+      drawP(x4, pY, soW, pH, sdStroke, sdSW, false, true,  false);
+      // Indicator line at inner face of SX stile (release point)
       l(x2+stileW, pY, x2+stileW, pY+pH, frame, 1.0);
       l(x4-stileW, pY, x4-stileW, pY+pH, frame, 1.0);
+    } else {
+      // FSL: moving panels travel IN FRONT of sidelites — SO first (back), SX on top (front)
+      drawP(x1, pY, soW, pH, sdStroke, sdSW, false, false, true);
+      drawP(x4, pY, soW, pH, sdStroke, sdSW, false, true,  false);
+      drawP(x2, pY, sxW, pH, frame, 1.5, false);
+      drawP(x3, pY, sxW, pH, frame, 1.5, false);
     }
     // Center interlock
     r(x3-stileW, pY, stileW*2, pH, panelFill, frame, 0.4);
