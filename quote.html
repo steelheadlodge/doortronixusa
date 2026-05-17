@@ -1550,6 +1550,9 @@ function closeConf() {
 }
 
 // ── Init ─────────────────────────────────────────────────────────────
+// Default to FSL Bi-Part on first load
+const _defaultCfg = document.querySelector('input[name="config"][value="fsl-bi"]');
+if (_defaultCfg) _defaultCfg.checked = true;
 updateAll();
 </script>
 </body>

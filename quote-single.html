@@ -1537,6 +1537,9 @@ function closeConf() {
 }
 
 // ── Init ─────────────────────────────────────────────────────────────
+// Default to FSL Single RH on first load
+const _defaultCfg = document.querySelector('input[name="config"][value="fsl-single-rh"]');
+if (_defaultCfg) _defaultCfg.checked = true;
 updateAll();
 </script>
 </body>
