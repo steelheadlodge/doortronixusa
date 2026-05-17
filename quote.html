@@ -1291,13 +1291,13 @@ function drawDoor(svgId, vW, vH, isConf) {
     t(tx + firstLiteW/2, tGlassY + tGlassH/2 + 3, 'TRANSOM', 7, '#aaa', 'middle');
   }
 
-  // Header / operator — below transom if present
-  r(dX, dY+transomH, dW, headerH, frame, '#777', 1);
+  // Header / operator — inset between jambs
+  r(dX+frameT, dY+transomH, dW-frameT*2, headerH, frame, '#777', 1);
   t(dX+dW/2, dY+transomH+headerH*0.68, 'HEADER / OPERATOR', 7, '#fff', 'middle', '700');
 
-  // Jambs
-  r(dX, dY+transomH+headerH, frameT, dH-transomH-headerH-sillH, frame);
-  r(dX+dW-frameT, dY+transomH+headerH, frameT, dH-transomH-headerH-sillH, frame);
+  // Jambs — full height from top of header through door panel zone
+  r(dX, dY+transomH, frameT, dH-transomH-sillH, frame);
+  r(dX+dW-frameT, dY+transomH, frameT, dH-transomH-sillH, frame);
 
   const pY = dY+transomH+headerH+2, pH = dH-transomH-headerH-sillH-4;
   const pX = dX+frameT, pW = dW-frameT*2;
