@@ -1287,16 +1287,23 @@ function drawDoor(svgId, vW, vH, isConf) {
   const pX = dX+frameT, pW = dW-frameT*2;
   // Panel drawing helper — frame background + inset glass lite + optional diagonal glass lines
   let panels = []; // collect {x,w} for muntin overlay
-  function drawP(px, py, pw, ph, strokeColor, sw, showDiag, noInnerL, noInnerR) {
+  function drawP(px, py, pw, ph, strokeColor, sw, breakoutDir, noInnerL, noInnerR) {
     r(px, py, pw, ph, panelFill, strokeColor, sw);
     const lIn = noInnerL ? 0 : stileW;
     const rIn = noInnerR ? 0 : stileW;
     const gx = px+lIn, gy = py+topRH, gw = pw-lIn-rIn, gh = ph-topRH-btmRH;
     if (gw > 2 && gh > 2) {
       r(gx, gy, gw, gh, glaze.fill, 'none', 0);
-      if (showDiag) {
-        l(gx, gy, gx+gw, gy+gh, '#AABBC8', 0.8);
-        l(gx+gw, gy, gx, gy+gh, '#AABBC8', 0.8);
+      if (breakoutDir) {
+        const cx = gx + gw / 2, cy = gy + gh / 2;
+        const s = Math.min(gw * 0.38, gh * 0.28);
+        if (breakoutDir === 'right') {
+          l(cx - s * 0.5, cy - s, cx + s, cy, '#7A9CB8', 1.4);
+          l(cx + s, cy, cx - s * 0.5, cy + s, '#7A9CB8', 1.4);
+        } else {
+          l(cx + s * 0.5, cy - s, cx - s, cy, '#7A9CB8', 1.4);
+          l(cx - s, cy, cx + s * 0.5, cy + s, '#7A9CB8', 1.4);
+        }
       }
     }
   }
@@ -1342,16 +1349,16 @@ function drawDoor(svgId, vW, vH, isConf) {
     const aY = pY + topRH + (pH-topRH-btmRH)*0.48;
     const jX = pX + panW; // SO/SX junction x
     if (isLH) {
-      // LH: sidelite left (SO), active panel right (SX)
-      drawP(pX, pY, panW, pH, sdStroke, sdSW, isFBO, false, true); // SO — no inner-right stile
-      drawP(jX,  pY, panW, pH, frame, 1.5, false);                  // SX in front
+      // LH: sidelite left (SO swings left), active panel right (SX)
+      drawP(pX, pY, panW, pH, sdStroke, sdSW, isFBO ? 'left' : false, false, true);
+      drawP(jX,  pY, panW, pH, frame, 1.5, false);
       l(jX, pY, jX, pY+pH, frame, 0.8);
       l(jX+stileW+3, aY, jX+panW-stileW-3, aY, '#1B4F8A', 1.2, '5,3');
       path(`M${jX+stileW+3},${aY}l5,-3.5l0,7Z`, '#1B4F8A');
     } else {
-      // RH: active panel left (SX), sidelite right (SO)
-      drawP(jX,  pY, panW, pH, sdStroke, sdSW, isFBO, true, false); // SO — no inner-left stile
-      drawP(pX,  pY, panW, pH, frame, 1.5, false);                   // SX in front
+      // RH: active panel left (SX), sidelite right (SO swings right)
+      drawP(jX,  pY, panW, pH, sdStroke, sdSW, isFBO ? 'right' : false, true, false);
+      drawP(pX,  pY, panW, pH, frame, 1.5, false);
       l(jX, pY, jX, pY+pH, frame, 0.8);
       l(pX+stileW+3, aY, jX-stileW-3, aY, '#1B4F8A', 1.2, '5,3');
       path(`M${jX-stileW-3},${aY}l-5,-3.5l0,7Z`, '#1B4F8A');
