@@ -915,6 +915,11 @@ function toggleAddon(el) {
   el.classList.toggle('checked');
   if (el.classList.contains('checked')) {
     _checkedAddons.add(el.id);
+    // Auto-set qty to 2 for Adams Rite 8600 (one per panel)
+    if (el.id === 'addon_ar_8600') {
+      const s = el.querySelector('.addon-qty-wrap select');
+      if (s) s.value = '2';
+    }
   } else {
     _checkedAddons.delete(el.id);
   }
