@@ -77,6 +77,9 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
 .addon-item:hover { border-color:var(--blue); }
 .addon-item.checked { border-color:var(--orange); background:#FFF8F3; }
 .addon-item.disabled { opacity:.4; cursor:not-allowed; }
+.addon-item.required-addon { cursor:default; }
+.addon-item.required-addon .addon-check-visual { background:var(--blue); border-color:var(--blue); }
+.addon-item.required-addon .addon-check-visual::after { opacity:1; }
 .addon-check { display:none; }
 .addon-label-wrap { flex:1; }
 .addon-label-wrap .al { font-size:12px; font-weight:600; color:#111; }
@@ -628,21 +631,7 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
         </div>
       </div>
 
-      <div id="addon_door_closer" class="addon-item" data-price="330" data-unit="ea" onclick="toggleAddon(this)">
-        <div class="addon-check-visual"></div>
-        <div class="addon-label-wrap">
-          <div class="al">Door Closer</div>
-        </div>
-        <div class="addon-price-tag">$330 ea</div>
-        <div class="addon-qty-wrap">
-          <label>Qty:</label>
-          <select onclick="event.stopPropagation()" onchange="calcPrice()">
-            <option>1</option><option>2</option><option>3</option><option>4</option>
-          </select>
-        </div>
-      </div>
-
-      <div id="addon_cart_bar" class="addon-item" data-price="50" data-unit="ea" onclick="toggleAddon(this)">
+<div id="addon_cart_bar" class="addon-item" data-price="50" data-unit="ea" onclick="toggleAddon(this)">
         <div class="addon-check-visual"></div>
         <div class="addon-label-wrap">
           <div class="al">Cart Bar</div>
@@ -715,10 +704,15 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
         <div class="addon-check-visual"></div>
         <div class="addon-label-wrap">
           <div class="al">Nose Casters</div>
-          <div class="ad">Required for door openings over 97-1/2"</div>
+          <div class="ad" id="nose-casters-desc">Required for bi-part openings over 14'</div>
         </div>
-        <div class="addon-price-tag">$200</div>
-        <div class="addon-qty-wrap"></div>
+        <div class="addon-price-tag">$200 ea</div>
+        <div class="addon-qty-wrap">
+          <label>Qty:</label>
+          <select id="nose-casters-qty" onclick="event.stopPropagation()" onchange="calcPrice()">
+            <option>1</option><option>2</option>
+          </select>
+        </div>
       </div>
 
       <!-- Notes -->
@@ -926,6 +920,7 @@ function inToStr(totalIn) {
 // ── Add-on toggle ───────────────────────────────────────────────────
 function toggleAddon(el) {
   if (el.classList.contains('disabled')) return;
+  if (el.classList.contains('required-addon')) return;
   el.classList.toggle('checked');
   if (el.classList.contains('checked')) {
     _checkedAddons.add(el.id);
@@ -1499,11 +1494,32 @@ function drawDoor(svgId, vW, vH, isConf) {
 }
 
 // ── Update all ───────────────────────────────────────────────────────
+// ── Nose caster auto-require for bi-part > 14ft wide ────────────────
+function updateNoseCasters() {
+  const el = document.getElementById('addon_nose_casters');
+  const qtySel = document.getElementById('nose-casters-qty');
+  if (!el || !qtySel) return;
+  const wFt = parseInt(fv('f_wft')) || 0;
+  const wIn = parseInt(fv('f_win')) || 0;
+  const totalIn = wFt * 12 + wIn;
+  const required = totalIn > 168; // over 14'0"
+  if (required) {
+    el.classList.add('checked', 'required-addon');
+    _checkedAddons.add('addon_nose_casters');
+    qtySel.value = '2';
+  } else {
+    el.classList.remove('required-addon');
+    // Only auto-deselect if it was required (not manually checked by user at smaller width)
+    // We leave user's manual selection intact when dropping below threshold
+  }
+}
+
 function updateAll() {
   // Auto-select 6" bottom rail when medium stile is chosen
   if (rv('stileWidth') === 'medium' && rv('bottomRail') === 'std') {
     document.getElementById('br_6').checked = true;
   }
+  updateNoseCasters();
   updateFTTH();
   updateNetOpeningDisplay();
   calcPrice();
