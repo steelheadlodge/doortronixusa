@@ -480,17 +480,17 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
             <input type="radio" name="transomV" id="tv_0" value="0" checked>
             <label for="tv_0">None (std)</label>
             <input type="radio" name="transomV" id="tv_1" value="1">
-            <label for="tv_1">1</label>
+            <label for="tv_1">1 (+$50)</label>
             <input type="radio" name="transomV" id="tv_2" value="2">
-            <label for="tv_2">2</label>
+            <label for="tv_2">2 (+$100)</label>
             <input type="radio" name="transomV" id="tv_3" value="3">
-            <label for="tv_3">3</label>
+            <label for="tv_3">3 (+$150)</label>
             <input type="radio" name="transomV" id="tv_4" value="4">
-            <label for="tv_4">4</label>
+            <label for="tv_4">4 (+$200)</label>
             <input type="radio" name="transomV" id="tv_5" value="5">
-            <label for="tv_5">5</label>
+            <label for="tv_5">5 (+$250)</label>
             <input type="radio" name="transomV" id="tv_6" value="6">
-            <label for="tv_6">6</label>
+            <label for="tv_6">6 (+$300)</label>
           </div>
           <span class="hint">2 verticals on a bi-part align with the door panel interlocks. All others divide the transom equally.</span>
         </div>
@@ -551,28 +551,12 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
             <label for="sn_std">Standard (incl.)</label>
             <input type="radio" name="sensor" id="sn_optex" value="Optex i-oneXT">
             <label for="sn_optex">Optex i-oneXT (+$220)</label>
-            <input type="radio" name="sensor" id="sn_bea" value="BEA Wizard">
-            <label for="sn_bea">BEA Wizard (+$130)</label>
+            <input type="radio" name="sensor" id="sn_bea" value="BEA IXIO">
+            <label for="sn_bea">BEA IXIO (+$280)</label>
           </div>
         </div>
       </div>
 
-      <!-- Alarm Contacts -->
-      <div class="addon-section-label">Alarm Contacts / Monitoring</div>
-      <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px;">
-        <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;border:1.5px solid var(--border);border-radius:20px;padding:5px 12px;user-select:none;" id="ac_breakout_lbl">
-          <input type="checkbox" name="alarmBreakout" id="ac_breakout" style="accent-color:var(--blue);">Monitor Breakout
-        </label>
-        <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;border:1.5px solid var(--border);border-radius:20px;padding:5px 12px;user-select:none;" id="ac_closed_lbl">
-          <input type="checkbox" name="alarmClosed" id="ac_closed" style="accent-color:var(--blue);">Monitor Fully Closed
-        </label>
-        <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;border:1.5px solid var(--border);border-radius:20px;padding:5px 12px;user-select:none;" id="ac_open_lbl">
-          <input type="checkbox" name="alarmOpen" id="ac_open" style="accent-color:var(--blue);">Monitor Fully Open
-        </label>
-        <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;border:1.5px solid var(--border);border-radius:20px;padding:5px 12px;user-select:none;">
-          <input type="checkbox" name="alarmLock" id="ac_lock" style="accent-color:var(--blue);">Monitor Electric Lock
-        </label>
-      </div>
 
       <!-- ── HARDWARE & OPTIONS ── -->
       <div class="section-header">⑤ Hardware &amp; Options</div>
@@ -701,6 +685,16 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
       </div>
 
       <div class="addon-section-label">Safety &amp; Electrical</div>
+
+      <div id="addon_alarm_contacts" class="addon-item" data-price="150" data-unit="ea" onclick="toggleAddon(this)">
+        <div class="addon-check-visual"></div>
+        <div class="addon-label-wrap">
+          <div class="al">Alarm Contacts</div>
+          <div class="ad">Monitor Breakout + Door Position — both included</div>
+        </div>
+        <div class="addon-price-tag">$150</div>
+        <div class="addon-qty-wrap"></div>
+      </div>
 
       <div id="addon_battery" class="addon-item" data-price="2200" data-unit="ea" onclick="toggleAddon(this)">
         <div class="addon-check-visual"></div>
@@ -983,6 +977,12 @@ function calcPrice() {
   if (rv('transom') === 'yes') {
     total += cfg.transom;
     lines.push({ label: 'Transom', amount: cfg.transom });
+    const numV = parseInt(rv('transomV')) || 0;
+    if (numV > 0) {
+      const vAmt = numV * 50;
+      total += vAmt;
+      lines.push({ label: `Transom Verticals ×${numV}`, amount: vAmt });
+    }
   }
 
   // Stile / rail / sensor upcharges (panels = active + sidelite panels)
@@ -1005,8 +1005,8 @@ function calcPrice() {
   const sensorVal = rv('sensor');
   if (sensorVal === 'Optex i-oneXT') {
     total += 220; lines.push({ label: 'Optex i-oneXT Sensor', amount: 220 });
-  } else if (sensorVal === 'BEA Wizard') {
-    total += 130; lines.push({ label: 'BEA Wizard Sensor', amount: 130 });
+  } else if (sensorVal === 'BEA IXIO') {
+    total += 280; lines.push({ label: 'BEA IXIO Sensor', amount: 280 });
   }
 
   // Width adjustment
@@ -1066,7 +1066,7 @@ function calcPrice() {
   // Add-ons — iterate explicitly over each known addon ID
   ['addon_key_switch','addon_electric_lock','addon_lock_indicator','addon_ar_paddle',
    'addon_ar_8600','addon_door_closer','addon_cart_bar','addon_muntin_2in',
-   'addon_mullion_transom','addon_battery','addon_nose_casters'].forEach(id => {
+   'addon_mullion_transom','addon_alarm_contacts','addon_battery','addon_nose_casters'].forEach(id => {
     const el = document.getElementById(id);
     if (!el || !el.classList.contains('checked') || el.classList.contains('disabled')) return;
     const price = parseInt(el.dataset.price) || 0;
@@ -1110,12 +1110,9 @@ function updateSpecSummary() {
     const inPart = i === 0 && s === 0 ? '' : i + (s ? '-' + SIXTEENTH_LABELS[s] : '') + '"';
     return `${ft}'${inPart}`;
   })() : null;
-  const alarmContacts = [
-    document.getElementById('ac_breakout')?.checked ? 'Monitor Breakout' : '',
-    document.getElementById('ac_closed')?.checked ? 'Monitor Fully Closed' : '',
-    document.getElementById('ac_open')?.checked ? 'Monitor Fully Open' : '',
-    document.getElementById('ac_lock')?.checked ? 'Monitor Electric Lock' : '',
-  ].filter(Boolean).join(', ') || 'None';
+  const alarmContactsEl = document.getElementById('addon_alarm_contacts');
+  const alarmContacts = alarmContactsEl && alarmContactsEl.classList.contains('checked')
+    ? 'Monitor Breakout + Door Position (+$150)' : 'None';
   const specs = [
     ['Configuration', cfg ? cfg.label : '—'],
     ['Code', cfg ? cfg.code : '—'],
@@ -1126,7 +1123,7 @@ function updateSpecSummary() {
     ['Bottom Rail', rv('bottomRail') === '6in' ? '6"' : rv('bottomRail') === '10in' ? '10"' : '4" (std)'],
     ['Horizontal Muntin', rv('muntin') || '2" Muntin (std)'],
     ['Threshold', rv('threshold') || '—'],
-    ['Sensor', (['Optex i-oneXT','BEA Wizard'].includes(rv('sensor'))) ? rv('sensor') : '—'],
+    ['Sensor', (['Optex i-oneXT','BEA IXIO'].includes(rv('sensor'))) ? rv('sensor') : '—'],
     ['Transom', rv('transom') === 'yes' ? `Yes (+$250)${ftthStr ? ' — FTTH: ' + ftthStr : ''}` : 'No'],
     ['Frame Width', getWidthStr()],
     [rv('transom') === 'yes' ? 'Header Height (FTTH)' : 'Frame Height', getHeightStr()],
@@ -1486,7 +1483,7 @@ document.getElementById('quoteForm').addEventListener('submit', async function(e
   const addons = [];
   ['addon_key_switch','addon_electric_lock','addon_lock_indicator','addon_ar_paddle',
    'addon_ar_8600','addon_door_closer','addon_cart_bar','addon_muntin_2in',
-   'addon_mullion_transom','addon_battery','addon_nose_casters'].forEach(id => {
+   'addon_mullion_transom','addon_alarm_contacts','addon_battery','addon_nose_casters'].forEach(id => {
     const el = document.getElementById(id);
     if (!el || !el.classList.contains('checked') || el.classList.contains('disabled')) return;
     const qty = el.querySelector('.addon-qty-wrap select');
@@ -1498,12 +1495,9 @@ document.getElementById('quoteForm').addEventListener('submit', async function(e
   const ftthFt = fv('f_ftthft');
   const ftthInV = parseInt(fv('f_ftthin')) || 0, ftth16V = parseInt(fv('f_ftth16')) || 0;
   const ftthStr2 = ftthFt ? `${ftthFt}'${ftthInV === 0 && ftth16V === 0 ? '' : ftthInV + (ftth16V ? '-' + SIXTEENTH_LABELS[ftth16V] : '') + '"'}` : '';
-  const alarmContacts2 = [
-    document.getElementById('ac_breakout')?.checked ? 'Monitor Breakout' : '',
-    document.getElementById('ac_closed')?.checked ? 'Monitor Fully Closed' : '',
-    document.getElementById('ac_open')?.checked ? 'Monitor Fully Open' : '',
-    document.getElementById('ac_lock')?.checked ? 'Monitor Electric Lock' : '',
-  ].filter(Boolean).join(', ') || 'None';
+  const alarmContactsEl2 = document.getElementById('addon_alarm_contacts');
+  const alarmContacts2 = alarmContactsEl2 && alarmContactsEl2.classList.contains('checked')
+    ? 'Monitor Breakout + Door Position' : 'None';
   const data = {
     name: fv('f_name'), company: fv('f_company'), role: fv('f_role'),
     phone: fv('f_phone'), email: fv('f_email'),
@@ -1516,7 +1510,7 @@ document.getElementById('quoteForm').addEventListener('submit', async function(e
     bottomRail: rv('bottomRail') === '6in' ? '6"' : rv('bottomRail') === '10in' ? '10"' : '4" (std)',
     muntin: rv('muntin') || '2" Muntin (std)',
     threshold: rv('threshold'),
-    sensor: (['Optex i-oneXT','BEA Wizard'].includes(rv('sensor'))) ? rv('sensor') : 'Standard Optex (incl.)',
+    sensor: (['Optex i-oneXT','BEA IXIO'].includes(rv('sensor'))) ? rv('sensor') : 'Standard Optex (incl.)',
     transom: rv('transom') === 'yes' ? 'Yes' : 'No',
     ftth: ftthStr2 || 'N/A',
     frameWidth: getWidthStr(), frameHeight: getHeightStr(),
