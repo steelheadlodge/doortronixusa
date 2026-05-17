@@ -1357,9 +1357,19 @@ function drawDoor(svgId, vW, vH, isConf) {
     panels = [{x:pX,w:panW},{x:pX+panW,w:panW}];
   }
 
-  // Horizontal muntin — spans glass area within stiles on each panel
+  // Horizontal muntin — centered when header ≤ 8'0"; fixed at 42" AFF when header > 8'0"
   if (panels.length > 0 && rv('muntin') !== 'No Muntin') {
-    const mY = pY + topRH + (pH-topRH-btmRH)/2 - muntH/2;
+    const hIn = getHeightIn() || 90;
+    let mY;
+    if (hIn > 96) {
+      // 42" from bottom of door panel — scale height using panel pixel height vs actual panel inches
+      const panelInches = hIn - 8.5; // subtract 8" header + 0.5" sill
+      const scH = pH / panelInches;  // pts per inch (vertical)
+      mY = (pY + pH) - (42 * scH) - muntH / 2;
+    } else {
+      // Center muntin in glass area between top and bottom rails
+      mY = pY + topRH + (pH - topRH - btmRH) / 2 - muntH / 2;
+    }
     panels.forEach(({x, w}) => r(x+stileW, mY, w-stileW*2, muntH, panelFill, frame, 0.4));
   }
 
