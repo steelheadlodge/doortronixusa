@@ -917,6 +917,7 @@ function toggleAddon(el) {
 }
 
 // ── FTTH inch clamp — when ft=7, minimum inch is 8 (7'8" = 92") ────
+// NOTE: does NOT call calcPrice — callers (updateAll/updateFTTH) handle that
 function clampFtthIn() {
   const ftSel = document.getElementById('f_ftthft');
   const inSel = document.getElementById('f_ftthin');
@@ -932,7 +933,6 @@ function clampFtthIn() {
   if (ft === 7 && parseInt(inSel.value) < MIN_IN) {
     inSel.value = String(MIN_IN);
   }
-  calcPrice();
 }
 
 // ── FTTH field visibility ───────────────────────────────────────────
@@ -970,8 +970,9 @@ function updateAddonVisibility() {
 
 // ── Price calculation ───────────────────────────────────────────────
 function calcPrice() {
-  const cfg = getConfig();
   const body = document.getElementById('price-body');
+  try {
+  const cfg = getConfig();
   updateAddonVisibility();
 
   if (!cfg) {
@@ -1111,6 +1112,9 @@ function calcPrice() {
 
   // Store for confirmation
   window._priceData = { lines, total, qty, grandTotal };
+  } catch(e) {
+    if (body) body.innerHTML = `<div class="price-empty" style="color:red;">Price error: ${e.message}</div>`;
+  }
 }
 
 // ── Spec summary ────────────────────────────────────────────────────
