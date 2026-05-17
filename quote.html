@@ -804,6 +804,9 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
 <script>
 const FORMSPREE = "https://formspree.io/f/mykorzwy";
 
+// ── Addon state (JS-authoritative, not CSS-derived) ──────────────────
+const _checkedAddons = new Set();
+
 // ── Pricing data ────────────────────────────────────────────────────
 const CONFIGS = {
   'fbo-bi': { label:'FBO Bi-Part',  code:'SO-SX-SX-SO', base:3900, transom:250, minW:96, maxW:168, panels:2, isFBO:true,  isBi:true },
@@ -900,6 +903,11 @@ function inToStr(totalIn) {
 function toggleAddon(el) {
   if (el.classList.contains('disabled')) return;
   el.classList.toggle('checked');
+  if (el.classList.contains('checked')) {
+    _checkedAddons.add(el.id);
+  } else {
+    _checkedAddons.delete(el.id);
+  }
   calcPrice();
 }
 
@@ -949,6 +957,7 @@ function updateAddonVisibility() {
   if (!cfg || !cfg.isFBO) {
     ar8600.classList.add('disabled');
     ar8600.classList.remove('checked');
+    _checkedAddons.delete('addon_ar_8600');
   } else {
     ar8600.classList.remove('disabled');
   }
@@ -1063,12 +1072,10 @@ function calcPrice() {
     }
   }
 
-  // Add-ons — iterate explicitly over each known addon ID
-  ['addon_key_switch','addon_electric_lock','addon_lock_indicator','addon_ar_paddle',
-   'addon_ar_8600','addon_door_closer','addon_cart_bar','addon_muntin_2in',
-   'addon_mullion_transom','addon_alarm_contacts','addon_battery','addon_nose_casters'].forEach(id => {
+  // Add-ons — read from authoritative JS Set (not CSS classes)
+  _checkedAddons.forEach(id => {
     const el = document.getElementById(id);
-    if (!el || !el.classList.contains('checked') || el.classList.contains('disabled')) return;
+    if (!el || el.classList.contains('disabled')) return;
     const price = parseInt(el.dataset.price) || 0;
     const sel = el.querySelector('.addon-qty-wrap select');
     const qty = sel ? (parseInt(sel.value) || 1) : 1;
@@ -1110,8 +1117,7 @@ function updateSpecSummary() {
     const inPart = i === 0 && s === 0 ? '' : i + (s ? '-' + SIXTEENTH_LABELS[s] : '') + '"';
     return `${ft}'${inPart}`;
   })() : null;
-  const alarmContactsEl = document.getElementById('addon_alarm_contacts');
-  const alarmContacts = alarmContactsEl && alarmContactsEl.classList.contains('checked')
+  const alarmContacts = _checkedAddons.has('addon_alarm_contacts')
     ? 'Monitor Breakout + Door Position (+$150)' : 'None';
   const specs = [
     ['Configuration', cfg ? cfg.label : '—'],
@@ -1481,11 +1487,9 @@ document.getElementById('quoteForm').addEventListener('submit', async function(e
 
   const cfg = getConfig();
   const addons = [];
-  ['addon_key_switch','addon_electric_lock','addon_lock_indicator','addon_ar_paddle',
-   'addon_ar_8600','addon_door_closer','addon_cart_bar','addon_muntin_2in',
-   'addon_mullion_transom','addon_alarm_contacts','addon_battery','addon_nose_casters'].forEach(id => {
+  _checkedAddons.forEach(id => {
     const el = document.getElementById(id);
-    if (!el || !el.classList.contains('checked') || el.classList.contains('disabled')) return;
+    if (!el || el.classList.contains('disabled')) return;
     const qty = el.querySelector('.addon-qty-wrap select');
     const nameEl = el.querySelector('.al');
     addons.push((nameEl ? nameEl.textContent.trim() : id) + (qty ? ' \xd7' + qty.value : ''));
@@ -1495,8 +1499,7 @@ document.getElementById('quoteForm').addEventListener('submit', async function(e
   const ftthFt = fv('f_ftthft');
   const ftthInV = parseInt(fv('f_ftthin')) || 0, ftth16V = parseInt(fv('f_ftth16')) || 0;
   const ftthStr2 = ftthFt ? `${ftthFt}'${ftthInV === 0 && ftth16V === 0 ? '' : ftthInV + (ftth16V ? '-' + SIXTEENTH_LABELS[ftth16V] : '') + '"'}` : '';
-  const alarmContactsEl2 = document.getElementById('addon_alarm_contacts');
-  const alarmContacts2 = alarmContactsEl2 && alarmContactsEl2.classList.contains('checked')
+  const alarmContacts2 = _checkedAddons.has('addon_alarm_contacts')
     ? 'Monitor Breakout + Door Position' : 'None';
   const data = {
     name: fv('f_name'), company: fv('f_company'), role: fv('f_role'),
