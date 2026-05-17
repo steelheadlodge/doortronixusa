@@ -913,6 +913,7 @@ function toggleAddon(el) {
   } else {
     _checkedAddons.delete(el.id);
   }
+  console.log('[toggleAddon] id:', el.id, '| checked:', el.classList.contains('checked'), '| Set:', [..._checkedAddons]);
   calcPrice();
 }
 
@@ -973,6 +974,7 @@ function calcPrice() {
   const body = document.getElementById('price-body');
   try {
   const cfg = getConfig();
+  console.log('[calcPrice] cfg:', cfg?.label || 'null', '| transom:', rv('transom'), '| addons:', [..._checkedAddons]);
   updateAddonVisibility();
 
   if (!cfg) {
