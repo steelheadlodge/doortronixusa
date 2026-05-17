@@ -1299,14 +1299,13 @@ function drawDoor(svgId, vW, vH, isConf) {
     }
   }
 
-  if (!cfg || cfg.base === null) {
-    // ESA placeholder
-    const hw = pW/2;
-    drawP(pX, pY, hw-2, pH, glaze.stroke, 1, false);
-    drawP(pX+hw+2, pY, hw-2, pH, glaze.stroke, 1, false);
-    r(pX+hw-2, pY, 4, pH, panelFill, panelFill, 0);
-    t(dX+dW/2, pY+pH/2+4, 'ESA', 9, '#888', 'middle');
-    panels = [{x:pX,w:hw-2},{x:pX+hw+2,w:hw-2}];
+  if (!cfg) {
+    // No config selected — show a single-slide silhouette as default
+    const hw = pW / 2;
+    drawP(pX, pY, hw, pH, '#B8C4D0', 1, false);
+    drawP(pX+hw, pY, hw, pH, '#B8C4D0', 1, false);
+    t(dX+dW/2, pY+pH/2+4, 'Select a Configuration', 9, '#aaa', 'middle');
+    panels = [{x:pX,w:hw},{x:pX+hw,w:hw}];
   } else if (isBi) {
     // Bipart — 4 equal panels, stiles overlap at junctions (no gap in closed elevation)
     const panW = pW / 4;

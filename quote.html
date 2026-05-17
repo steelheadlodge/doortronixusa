@@ -1294,7 +1294,17 @@ function drawDoor(svgId, vW, vH, isConf) {
     }
   }
 
-  if (!cfg || cfg.base === null) {
+  if (!cfg) {
+    // No config selected — show a bipart silhouette as default
+    const panW = pW / 4;
+    const x1 = pX, x2 = pX+panW, x3 = pX+panW*2, x4 = pX+panW*3;
+    drawP(x1, pY, panW, pH, '#B8C4D0', 1, false);
+    drawP(x4, pY, panW, pH, '#B8C4D0', 1, false);
+    drawP(x2, pY, panW, pH, '#B8C4D0', 1, false);
+    drawP(x3, pY, panW, pH, '#B8C4D0', 1, false);
+    t(dX+dW/2, pY+pH/2+4, 'Select a Configuration', 9, '#aaa', 'middle');
+    panels = [{x:x1,w:panW},{x:x2,w:panW},{x:x3,w:panW},{x:x4,w:panW}];
+  } else if (cfg.base === null) {
     // ESA placeholder
     const hw = pW/2;
     drawP(pX, pY, hw-2, pH, glaze.stroke, 1, false);
