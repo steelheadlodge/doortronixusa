@@ -1211,7 +1211,7 @@ function drawDoor(svgId, vW, vH, isConf) {
 
   // ── Scale to fit viewBox while maintaining true aspect ratio ───────
   const mL = isConf ? 55 : 50, mR = isConf ? 55 : 44;
-  const mT = isConf ? titleH + 20 : 20, mB = isConf ? 70 : 50;
+  const mT = isConf ? titleH + 20 : 20, mB = isConf ? 70 : 62;
   const availW = vW - mL - mR;
   const availH = vH - mT - mB;
   const sc  = Math.min(availW / realW, availH / realTotalH); // pts per inch
@@ -1468,13 +1468,11 @@ function drawDoor(svgId, vW, vH, isConf) {
     panels.forEach(({x, w}) => r(x, muntY, w, muntH, panelFill, frame, 0.4));
   }
 
-  // Dim lines — width below, height on right side
-  if (isConf || getWidthIn()) {
-    dimLine(dX, dY+dH+24, dX+dW, dY+dH+24, getWidthStr(), true);
-  }
+  // Dim lines — width below door, height on right side
+  dimLine(dX, dY+dH+26, dX+dW, dY+dH+26, getWidthStr(), true);
   if (isConf) {
     dimLine(dX-30, dY, dX-30, dY+dH, getHeightStr(), false);
-  } else if (getHeightIn()) {
+  } else {
     const hLabel = hasTransom && ftthFt2
       ? getHeightStr() + ' + ' + (Math.floor(realTransomIn/12) > 0 ? Math.floor(realTransomIn/12)+"'" : '') + (realTransomIn%12 > 0 ? (realTransomIn%12)+'"' : '') + ' transom'
       : getHeightStr();
