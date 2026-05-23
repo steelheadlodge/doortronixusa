@@ -1,5 +1,5 @@
 import { WebView } from 'react-native-webview';
-import { StyleSheet, SafeAreaView } from 'react-native';
+import { StyleSheet, SafeAreaView, Linking } from 'react-native';
 
 export default function HomeScreen() {
   return (
@@ -7,6 +7,14 @@ export default function HomeScreen() {
       <WebView
         source={{ uri: 'https://tunedtv.com' }}
         style={styles.webview}
+        setSupportMultipleWindows={false}
+        onShouldStartLoadWithRequest={(request) => {
+          if (request.url.includes('tunedtv.com')) {
+            return true;
+          }
+          Linking.openURL(request.url);
+          return false;
+        }}
       />
     </SafeAreaView>
   );
