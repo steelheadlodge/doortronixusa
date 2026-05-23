@@ -1,9 +1,12 @@
 import { WebView } from 'react-native-webview';
-import { StyleSheet, SafeAreaView, Linking } from 'react-native';
+import { StyleSheet, View, Linking } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { BottomTabInset } from '@/constants/theme';
 
 export default function HomeScreen() {
+  const insets = useSafeAreaInsets();
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={[styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom + BottomTabInset }]}>
       <WebView
         source={{ uri: 'https://tunedtv.com' }}
         style={styles.webview}
@@ -16,7 +19,7 @@ export default function HomeScreen() {
           return false;
         }}
       />
-    </SafeAreaView>
+    </View>
   );
 }
 
