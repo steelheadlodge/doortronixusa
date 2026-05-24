@@ -10,7 +10,7 @@
     "ios": {
       "bundleIdentifier": "com.tunedtv.app",
       "supportsTablet": true,
-      "usesAppleSignIn": true,
+      "usesAppleSignIn": false,
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
@@ -27,8 +27,7 @@
     },
     "plugins": [
       "expo-router",
-      "expo-web-browser",
-      "expo-apple-authentication"
+      "expo-web-browser"
     ],
     "extra": {
       "eas": {

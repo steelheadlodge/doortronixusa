@@ -1,15 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
-  Platform,
-  ActivityIndicator,
 } from 'react-native';
-import * as AppleAuthentication from 'expo-apple-authentication';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { supabase } from '../lib/supabase';
 
 interface NativeSignInProps {
   onSignInSuccess: (accessToken: string, refreshToken: string) => void;
@@ -18,48 +14,6 @@ interface NativeSignInProps {
 
 export default function NativeSignIn({ onSignInSuccess, onSkipToEmail }: NativeSignInProps) {
   const insets = useSafeAreaInsets();
-  const [appleAvailable, setAppleAvailable] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (Platform.OS === 'ios') {
-      AppleAuthentication.isAvailableAsync().then(setAppleAvailable);
-    }
-  }, []);
-
-  async function handleAppleSignIn() {
-    try {
-      setLoading(true);
-      setError(null);
-      
-      const credential = await AppleAuthentication.signInAsync({
-        requestedScopes: [
-          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
-          AppleAuthentication.AppleAuthenticationScope.EMAIL,
-        ],
-      });
-
-      if (credential.identityToken) {
-        const { data, error: authError } = await supabase.auth.signInWithIdToken({
-          provider: 'apple',
-          token: credential.identityToken,
-        });
-
-        if (authError) {
-          setError(authError.message);
-        } else if (data.session) {
-          onSignInSuccess(data.session.access_token, data.session.refresh_token);
-        }
-      }
-    } catch (e: any) {
-      if (e.code !== 'ERR_REQUEST_CANCELED') {
-        setError(e.message || 'Apple Sign-In failed');
-      }
-    } finally {
-      setLoading(false);
-    }
-  }
 
   return (
     <View style={[styles.container, { paddingTop: insets.top + 40, paddingBottom: insets.bottom + 20 }]}>
@@ -69,30 +23,9 @@ export default function NativeSignIn({ onSignInSuccess, onSkipToEmail }: NativeS
       </View>
 
       <View style={styles.buttonsContainer}>
-        {appleAvailable ? (
-          <AppleAuthentication.AppleAuthenticationButton
-            buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
-            buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.WHITE}
-            cornerRadius={12}
-            style={styles.appleButton}
-            onPress={handleAppleSignIn}
-          />
-        ) : null}
-        
-        {loading ? <ActivityIndicator style={styles.loader} color="#fff" /> : null}
-
-        {error ? <Text style={styles.errorText}>{error}</Text> : null}
-
-        <View style={styles.divider}>
-          <View style={styles.dividerLine} />
-          <Text style={styles.dividerText}>or</Text>
-          <View style={styles.dividerLine} />
-        </View>
-
         <TouchableOpacity
           style={styles.emailButton}
           onPress={onSkipToEmail}
-          disabled={loading}
         >
           <Text style={styles.emailText}>Continue with Email</Text>
         </TouchableOpacity>
