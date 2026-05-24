@@ -9,10 +9,7 @@ import {
 } from 'react-native';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import {
-  signInWithApple,
-  isAppleSignInAvailable,
-} from '../lib/nativeAuth';
+import { supabase } from '../lib/supabase';
 
 interface NativeSignInProps {
   onSignInSuccess: (accessToken: string, refreshToken: string) => void;
@@ -22,36 +19,47 @@ interface NativeSignInProps {
 export default function NativeSignIn({ onSignInSuccess, onSkipToEmail }: NativeSignInProps) {
   const insets = useSafeAreaInsets();
   const [appleAvailable, setAppleAvailable] = useState(false);
-  const [loading, setLoading] = useState<'apple' | 'google' | null>(null);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    checkAppleAvailability();
+    if (Platform.OS === 'ios') {
+      AppleAuthentication.isAvailableAsync().then(setAppleAvailable);
+    }
   }, []);
 
-  async function checkAppleAvailability() {
-    const available = await isAppleSignInAvailable();
-    setAppleAvailable(available);
-  }
-
   async function handleAppleSignIn() {
-    setLoading('apple');
-    setError(null);
-    
-    const { session, error: authError } = await signInWithApple();
-    
-    setLoading(null);
-    
-    if (authError) {
-      setError(authError.message || 'Apple Sign-In failed');
-      return;
-    }
-    
-    if (session) {
-      onSignInSuccess(session.access_token, session.refresh_token);
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const credential = await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
+      });
+
+      if (credential.identityToken) {
+        const { data, error: authError } = await supabase.auth.signInWithIdToken({
+          provider: 'apple',
+          token: credential.identityToken,
+        });
+
+        if (authError) {
+          setError(authError.message);
+        } else if (data.session) {
+          onSignInSuccess(data.session.access_token, data.session.refresh_token);
+        }
+      }
+    } catch (e: any) {
+      if (e.code !== 'ERR_REQUEST_CANCELED') {
+        setError(e.message || 'Apple Sign-In failed');
+      }
+    } finally {
+      setLoading(false);
     }
   }
-
 
   return (
     <View style={[styles.container, { paddingTop: insets.top + 40, paddingBottom: insets.bottom + 20 }]}>
@@ -61,7 +69,7 @@ export default function NativeSignIn({ onSignInSuccess, onSkipToEmail }: NativeS
       </View>
 
       <View style={styles.buttonsContainer}>
-        {appleAvailable && (
+        {appleAvailable ? (
           <AppleAuthentication.AppleAuthenticationButton
             buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
             buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.WHITE}
@@ -69,14 +77,11 @@ export default function NativeSignIn({ onSignInSuccess, onSkipToEmail }: NativeS
             style={styles.appleButton}
             onPress={handleAppleSignIn}
           />
-        )}
-        {loading === 'apple' && (
-          <ActivityIndicator style={styles.loader} color="#fff" />
-        )}
+        ) : null}
+        
+        {loading ? <ActivityIndicator style={styles.loader} color="#fff" /> : null}
 
-        {error && (
-          <Text style={styles.errorText}>{error}</Text>
-        )}
+        {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
         <View style={styles.divider}>
           <View style={styles.dividerLine} />
@@ -87,7 +92,7 @@ export default function NativeSignIn({ onSignInSuccess, onSkipToEmail }: NativeS
         <TouchableOpacity
           style={styles.emailButton}
           onPress={onSkipToEmail}
-          disabled={loading !== null}
+          disabled={loading}
         >
           <Text style={styles.emailText}>Continue with Email</Text>
         </TouchableOpacity>
