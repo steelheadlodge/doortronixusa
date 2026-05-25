@@ -19,12 +19,21 @@ function isSupabaseOAuthStart(url: string) {
   return url.includes('supabase.co/auth/v1/authorize');
 }
 
-function isOAuthProviderUrl(url: string) {
+function isLovableOAuthUrl(url: string) {
+  return url.includes('oauth.lovable.app');
+}
+
+function isSocialOAuthUrl(url: string) {
   return (
+    isSupabaseOAuthStart(url) ||
+    isLovableOAuthUrl(url) ||
     url.includes('accounts.google.com') ||
-    url.includes('appleid.apple.com') ||
-    url.includes('supabase.co/auth/v1/')
+    url.includes('appleid.apple.com')
   );
+}
+
+function isOAuthProviderUrl(url: string) {
+  return isSocialOAuthUrl(url) || url.includes('supabase.co/auth/v1/');
 }
 
 function isOAuthCallback(url: string) {
@@ -36,6 +45,26 @@ function isOAuthCallback(url: string) {
 
 function isAllowedInWebView(url: string) {
   return url.includes('tunedtv.com') && !isOAuthCallback(url);
+}
+
+function getSocialProviderFromUrl(url: string): 'apple' | 'google' | null {
+  try {
+    const parsed = new URL(url);
+    const provider = parsed.searchParams.get('provider');
+    if (provider === 'apple' || provider === 'google') {
+      return provider;
+    }
+  } catch {
+    // ignore malformed URLs
+  }
+
+  if (url.includes('appleid.apple.com') || url.includes('provider=apple')) {
+    return 'apple';
+  }
+  if (url.includes('accounts.google.com') || url.includes('provider=google')) {
+    return 'google';
+  }
+  return null;
 }
 
 function withSupabaseRedirect(url: string) {
@@ -117,6 +146,7 @@ export default function HomeScreen() {
   const webViewRef = useRef<WebView>(null);
   const authSessionOpen = useRef(false);
   const nativeAuthInProgress = useRef(false);
+  const pendingNativeProvider = useRef<'apple' | 'google' | null>(null);
   const [authInProgress, setAuthInProgress] = useState(false);
   const [webUri, setWebUri] = useState('https://tunedtv.com');
 
@@ -150,7 +180,9 @@ export default function HomeScreen() {
         return;
       }
       nativeAuthInProgress.current = true;
+      pendingNativeProvider.current = provider;
       setAuthInProgress(true);
+      stopWebViewOAuth();
 
       try {
         const result = await signInNatively(provider);
@@ -163,14 +195,37 @@ export default function HomeScreen() {
         webViewRef.current?.injectJavaScript(buildAuthCancelledScript());
       } finally {
         nativeAuthInProgress.current = false;
+        pendingNativeProvider.current = null;
         setAuthInProgress(false);
       }
     },
-    [completeNativeAuthInWebView]
+    [completeNativeAuthInWebView, stopWebViewOAuth]
+  );
+
+  const interceptIosSocialOAuth = useCallback(
+    (url: string) => {
+      if (Platform.OS !== 'ios' || !isSocialOAuthUrl(url)) {
+        return false;
+      }
+
+      stopWebViewOAuth();
+      const provider =
+        getSocialProviderFromUrl(url) ?? pendingNativeProvider.current ?? null;
+
+      if (provider && !nativeAuthInProgress.current) {
+        handleNativeAuthRequest(provider);
+      }
+
+      return true;
+    },
+    [handleNativeAuthRequest, stopWebViewOAuth]
   );
 
   const handleOAuth = useCallback(
     async (url: string) => {
+      if (Platform.OS === 'ios' && interceptIosSocialOAuth(url)) {
+        return;
+      }
       if (authSessionOpen.current || nativeAuthInProgress.current) {
         return;
       }
@@ -196,7 +251,7 @@ export default function HomeScreen() {
         setAuthInProgress(false);
       }
     },
-    [completeOAuthInWebView, stopWebViewOAuth]
+    [completeOAuthInWebView, interceptIosSocialOAuth, stopWebViewOAuth]
   );
 
   useEffect(() => {
@@ -209,6 +264,9 @@ export default function HomeScreen() {
   }, [completeOAuthInWebView]);
 
   function handleExternalUrl(url: string) {
+    if (Platform.OS === 'ios' && interceptIosSocialOAuth(url)) {
+      return;
+    }
     if (isOAuthProviderUrl(url)) {
       if (isSupabaseOAuthStart(url)) {
         handleOAuth(url);
@@ -234,6 +292,7 @@ export default function HomeScreen() {
           }
           const request = parseWebAuthRequest(event.nativeEvent.data);
           if (request) {
+            pendingNativeProvider.current = request.provider;
             handleNativeAuthRequest(request.provider);
           }
         }}
@@ -242,6 +301,10 @@ export default function HomeScreen() {
 
           if (isOAuthCallback(url)) {
             setWebUri('https://tunedtv.com/');
+            return;
+          }
+
+          if (Platform.OS === 'ios' && interceptIosSocialOAuth(url)) {
             return;
           }
 
@@ -264,6 +327,10 @@ export default function HomeScreen() {
 
           if (isOAuthCallback(url)) {
             return true;
+          }
+
+          if (Platform.OS === 'ios' && interceptIosSocialOAuth(url)) {
+            return false;
           }
 
           if (isOAuthProviderUrl(url)) {
