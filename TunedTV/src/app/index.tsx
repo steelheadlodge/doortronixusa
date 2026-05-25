@@ -6,8 +6,10 @@ import * as WebBrowser from 'expo-web-browser';
 
 WebBrowser.maybeCompleteAuthSession();
 
-const OAUTH_REDIRECT = 'tunedtv://auth/callback';
-const WEB_OAUTH_CALLBACK = 'https://tunedtv.com/~oauth/callback';
+// Supabase/Lovable only allow https redirect URLs — not tunedtv://
+const SUPABASE_REDIRECT = 'https://tunedtv.com/~oauth/callback';
+// iOS auth session listens for this after the web callback page bridges tokens back
+const APP_OAUTH_REDIRECT = 'tunedtv://auth/callback';
 const SUPABASE_STORAGE_KEY = 'sb-pbjxfitpjocaooxxafri-auth-token';
 
 function isSupabaseOAuthStart(url: string) {
@@ -33,9 +35,9 @@ function isAllowedInWebView(url: string) {
   return url.includes('tunedtv.com') && !isOAuthCallback(url);
 }
 
-function withNativeRedirect(url: string) {
+function withSupabaseRedirect(url: string) {
   const parsed = new URL(url);
-  parsed.searchParams.set('redirect_to', OAUTH_REDIRECT);
+  parsed.searchParams.set('redirect_to', SUPABASE_REDIRECT);
   return parsed.toString();
 }
 
@@ -57,7 +59,7 @@ function authTailFromNativeUrl(nativeUrl: string) {
 }
 
 function toWebCallbackUrl(nativeUrl: string) {
-  return `${WEB_OAUTH_CALLBACK}${authTailFromNativeUrl(nativeUrl)}`;
+  return `${SUPABASE_REDIRECT}${authTailFromNativeUrl(nativeUrl)}`;
 }
 
 function parseAuthParams(url: string) {
@@ -98,36 +100,6 @@ function buildSessionInjection(params: Record<string, string>) {
   `;
 }
 
-// Force Supabase OAuth to redirect back into the native app (runs before page JS).
-const IOS_OAUTH_PATCH = `
-(function () {
-  if (!/TunedTV-iOS/i.test(navigator.userAgent)) return;
-  var REDIRECT = ${JSON.stringify(OAUTH_REDIRECT)};
-  function patchUrl(url) {
-    if (!url || url.indexOf('supabase.co/auth/v1/authorize') === -1) return url;
-    try {
-      var parsed = new URL(url, window.location.href);
-      parsed.searchParams.set('redirect_to', REDIRECT);
-      return parsed.toString();
-    } catch (e) {
-      return url;
-    }
-  }
-  var assign = window.location.assign.bind(window.location);
-  window.location.assign = function (url) { return assign(patchUrl(url)); };
-  var replace = window.location.replace.bind(window.location);
-  window.location.replace = function (url) { return replace(patchUrl(url)); };
-  document.addEventListener('click', function (event) {
-    var el = event.target && event.target.closest ? event.target.closest('a[href]') : null;
-    if (!el) return;
-    var href = el.getAttribute('href');
-    var next = patchUrl(href);
-    if (next && next !== href) el.setAttribute('href', next);
-  }, true);
-})();
-true;
-`;
-
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const webViewRef = useRef<WebView>(null);
@@ -158,10 +130,10 @@ export default function HomeScreen() {
       setAuthInProgress(true);
       stopWebViewOAuth();
 
-      const authUrl = withNativeRedirect(url);
+      const authUrl = withSupabaseRedirect(url);
 
       try {
-        const result = await WebBrowser.openAuthSessionAsync(authUrl, OAUTH_REDIRECT, {
+        const result = await WebBrowser.openAuthSessionAsync(authUrl, APP_OAUTH_REDIRECT, {
           preferEphemeralSession: false,
           showInRecents: false,
         });
@@ -169,12 +141,7 @@ export default function HomeScreen() {
         if (result.type === 'success' && result.url) {
           completeAuthInWebView(result.url);
         } else {
-          const initialUrl = await Linking.getInitialURL();
-          if (initialUrl?.startsWith(OAUTH_REDIRECT)) {
-            completeAuthInWebView(initialUrl);
-          } else {
-            webViewRef.current?.reload();
-          }
+          webViewRef.current?.reload();
         }
       } finally {
         authSessionOpen.current = false;
@@ -186,7 +153,7 @@ export default function HomeScreen() {
 
   useEffect(() => {
     const subscription = Linking.addEventListener('url', ({ url }) => {
-      if (url.startsWith(OAUTH_REDIRECT)) {
+      if (url.startsWith(APP_OAUTH_REDIRECT)) {
         completeAuthInWebView(url);
       }
     });
@@ -213,7 +180,6 @@ export default function HomeScreen() {
         sharedCookiesEnabled
         thirdPartyCookiesEnabled
         setSupportMultipleWindows={false}
-        injectedJavaScriptBeforeContentLoaded={Platform.OS === 'ios' ? IOS_OAUTH_PATCH : undefined}
         onNavigationStateChange={(navState) => {
           const { url } = navState;
 
