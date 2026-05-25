@@ -6,11 +6,8 @@ import * as WebBrowser from 'expo-web-browser';
 
 WebBrowser.maybeCompleteAuthSession();
 
-// Supabase/Lovable only allow https redirect URLs — not tunedtv://
 const SUPABASE_REDIRECT = 'https://tunedtv.com/~oauth/callback';
-// iOS auth session listens for this after the web callback page bridges tokens back
 const APP_OAUTH_REDIRECT = 'tunedtv://auth/callback';
-const SUPABASE_STORAGE_KEY = 'sb-pbjxfitpjocaooxxafri-auth-token';
 
 function isSupabaseOAuthStart(url: string) {
   return url.includes('supabase.co/auth/v1/authorize');
@@ -72,29 +69,38 @@ function parseAuthParams(url: string) {
   return Object.fromEntries(new URLSearchParams(paramString));
 }
 
-function buildSessionInjection(params: Record<string, string>) {
+function buildNativeAuthBridgeScript(params: Record<string, string>, resultUrl: string) {
   if (!params.access_token) {
     return null;
   }
-  const expiresIn = Number.parseInt(params.expires_in ?? '3600', 10);
+
   const session = {
     access_token: params.access_token,
     refresh_token: params.refresh_token ?? '',
-    expires_in: expiresIn,
-    expires_at: Math.floor(Date.now() / 1000) + expiresIn,
-    token_type: params.token_type ?? 'bearer',
-    provider_token: params.provider_token,
-    provider_refresh_token: params.provider_refresh_token,
   };
+  const fallback = toWebCallbackUrl(resultUrl);
+
   return `
     (function () {
-      try {
-        localStorage.setItem(
-          ${JSON.stringify(SUPABASE_STORAGE_KEY)},
-          ${JSON.stringify(JSON.stringify(session))}
-        );
-      } catch (e) {}
-      window.location.replace('https://tunedtv.com/');
+      var session = ${JSON.stringify(session)};
+      var fallback = ${JSON.stringify(fallback)};
+      var attempts = 0;
+      function done() {
+        window.location.replace('https://tunedtv.com/');
+      }
+      function tryBridge() {
+        var bridge = window.__tunedtvNativeAuth;
+        if (bridge && bridge.setSession) {
+          bridge.setSession(session).then(function () { done(); }).catch(function () { done(); });
+          return;
+        }
+        if (attempts++ < 30) {
+          setTimeout(tryBridge, 100);
+          return;
+        }
+        window.location.replace(fallback);
+      }
+      tryBridge();
     })();
     true;
   `;
@@ -113,10 +119,10 @@ export default function HomeScreen() {
 
   const completeAuthInWebView = useCallback((resultUrl: string) => {
     const params = parseAuthParams(resultUrl);
-    const sessionScript = buildSessionInjection(params);
+    const bridgeScript = buildNativeAuthBridgeScript(params, resultUrl);
 
-    if (sessionScript) {
-      webViewRef.current?.injectJavaScript(sessionScript);
+    if (bridgeScript) {
+      webViewRef.current?.injectJavaScript(bridgeScript);
       return;
     }
 
