@@ -64,11 +64,11 @@ export async function signInNatively(provider: NativeAuthProvider): Promise<Nati
         nonce: rawNonce,
       };
     } catch (error) {
-      if (
-        error instanceof Error &&
-        'code' in error &&
-        error.code === 'ERR_REQUEST_CANCELED'
-      ) {
+      const code =
+        error && typeof error === 'object' && 'code' in error
+          ? String((error as { code: string }).code)
+          : '';
+      if (code.includes('CANCELED') || code.includes('CANCELLED')) {
         return null;
       }
       throw error;

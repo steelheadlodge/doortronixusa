@@ -47,6 +47,45 @@ export type WebAuthRequest = {
   requestId?: string;
 };
 
+// Block web OAuth navigations on iOS — native SDK handles Apple/Google instead.
+export const IOS_AUTH_GUARD = `
+(function () {
+  if (!/TunedTV-iOS/i.test(navigator.userAgent)) return;
+  function providerFromUrl(url) {
+    if (!url) return null;
+    if (url.indexOf('provider=apple') !== -1 || url.indexOf('appleid.apple.com') !== -1) return 'apple';
+    if (url.indexOf('provider=google') !== -1 || url.indexOf('accounts.google.com') !== -1) return 'google';
+    return null;
+  }
+  function isBlockedOAuthUrl(url) {
+    return url && (
+      url.indexOf('oauth.lovable.app') !== -1 ||
+      url.indexOf('supabase.co/auth/v1/authorize') !== -1 ||
+      url.indexOf('appleid.apple.com') !== -1 ||
+      url.indexOf('accounts.google.com') !== -1
+    );
+  }
+  function requestNative(provider) {
+    if (window.ReactNativeWebView && provider) {
+      window.ReactNativeWebView.postMessage(JSON.stringify({
+        type: 'tunedtv:auth:request',
+        provider: provider
+      }));
+    }
+  }
+  function guardUrl(url) {
+    if (!isBlockedOAuthUrl(url)) return url;
+    requestNative(providerFromUrl(url));
+    return 'https://tunedtv.com/';
+  }
+  var assign = window.location.assign.bind(window.location);
+  var replace = window.location.replace.bind(window.location);
+  window.location.assign = function (url) { return assign(guardUrl(url)); };
+  window.location.replace = function (url) { return replace(guardUrl(url)); };
+})();
+true;
+`;
+
 export function parseWebAuthRequest(raw: string): WebAuthRequest | null {
   try {
     const message = JSON.parse(raw) as WebAuthRequest;

@@ -7,13 +7,14 @@ import { configureNativeAuth, signInNatively } from '@/lib/nativeAuth';
 import {
   buildAuthCancelledScript,
   buildSignInWithIdTokenScript,
+  IOS_AUTH_GUARD,
   parseWebAuthRequest,
 } from '@/lib/nativeAuthBridge';
 
 WebBrowser.maybeCompleteAuthSession();
 
-const SUPABASE_REDIRECT = 'https://tunedtv.com/~oauth/callback';
 const APP_OAUTH_REDIRECT = 'tunedtv://auth/callback';
+const SUPABASE_REDIRECT = 'https://tunedtv.com/~oauth/callback';
 
 function isSupabaseOAuthStart(url: string) {
   return url.includes('supabase.co/auth/v1/authorize');
@@ -32,10 +33,6 @@ function isSocialOAuthUrl(url: string) {
   );
 }
 
-function isOAuthProviderUrl(url: string) {
-  return isSocialOAuthUrl(url) || url.includes('supabase.co/auth/v1/');
-}
-
 function isOAuthCallback(url: string) {
   return (
     url.includes('tunedtv.com') &&
@@ -49,15 +46,13 @@ function isAllowedInWebView(url: string) {
 
 function getSocialProviderFromUrl(url: string): 'apple' | 'google' | null {
   try {
-    const parsed = new URL(url);
-    const provider = parsed.searchParams.get('provider');
+    const provider = new URL(url).searchParams.get('provider');
     if (provider === 'apple' || provider === 'google') {
       return provider;
     }
   } catch {
-    // ignore malformed URLs
+    // ignore
   }
-
   if (url.includes('appleid.apple.com') || url.includes('provider=apple')) {
     return 'apple';
   }
@@ -65,12 +60,6 @@ function getSocialProviderFromUrl(url: string): 'apple' | 'google' | null {
     return 'google';
   }
   return null;
-}
-
-function withSupabaseRedirect(url: string) {
-  const parsed = new URL(url);
-  parsed.searchParams.set('redirect_to', SUPABASE_REDIRECT);
-  return parsed.toString();
 }
 
 function authTailFromNativeUrl(nativeUrl: string) {
@@ -108,31 +97,24 @@ function buildSetSessionScript(params: Record<string, string>, resultUrl: string
   if (!params.access_token) {
     return null;
   }
-
   const session = {
     access_token: params.access_token,
     refresh_token: params.refresh_token ?? '',
   };
   const fallback = toWebCallbackUrl(resultUrl);
-
   return `
     (function () {
       var session = ${JSON.stringify(session)};
       var fallback = ${JSON.stringify(fallback)};
       var attempts = 0;
-      function done() {
-        window.location.replace('https://tunedtv.com/');
-      }
+      function done() { window.location.replace('https://tunedtv.com/'); }
       function tryBridge() {
         var bridge = window.__tunedtvNativeAuth;
         if (bridge && bridge.setSession) {
-          bridge.setSession(session).then(function () { done(); }).catch(function () { done(); });
+          bridge.setSession(session).then(done).catch(done);
           return;
         }
-        if (attempts++ < 30) {
-          setTimeout(tryBridge, 100);
-          return;
-        }
+        if (attempts++ < 30) { setTimeout(tryBridge, 100); return; }
         window.location.replace(fallback);
       }
       tryBridge();
@@ -144,7 +126,6 @@ function buildSetSessionScript(params: Record<string, string>, resultUrl: string
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const webViewRef = useRef<WebView>(null);
-  const authSessionOpen = useRef(false);
   const nativeAuthInProgress = useRef(false);
   const pendingNativeProvider = useRef<'apple' | 'google' | null>(null);
   const [authInProgress, setAuthInProgress] = useState(false);
@@ -161,12 +142,10 @@ export default function HomeScreen() {
   const completeOAuthInWebView = useCallback((resultUrl: string) => {
     const params = parseAuthParams(resultUrl);
     const sessionScript = buildSetSessionScript(params, resultUrl);
-
     if (sessionScript) {
       webViewRef.current?.injectJavaScript(sessionScript);
       return;
     }
-
     setWebUri(toWebCallbackUrl(resultUrl));
   }, []);
 
@@ -207,51 +186,14 @@ export default function HomeScreen() {
       if (Platform.OS !== 'ios' || !isSocialOAuthUrl(url)) {
         return false;
       }
-
       stopWebViewOAuth();
-      const provider =
-        getSocialProviderFromUrl(url) ?? pendingNativeProvider.current ?? null;
-
+      const provider = getSocialProviderFromUrl(url) ?? pendingNativeProvider.current;
       if (provider && !nativeAuthInProgress.current) {
         handleNativeAuthRequest(provider);
       }
-
       return true;
     },
     [handleNativeAuthRequest, stopWebViewOAuth]
-  );
-
-  const handleOAuth = useCallback(
-    async (url: string) => {
-      if (Platform.OS === 'ios' && interceptIosSocialOAuth(url)) {
-        return;
-      }
-      if (authSessionOpen.current || nativeAuthInProgress.current) {
-        return;
-      }
-      authSessionOpen.current = true;
-      setAuthInProgress(true);
-      stopWebViewOAuth();
-
-      const authUrl = withSupabaseRedirect(url);
-
-      try {
-        const result = await WebBrowser.openAuthSessionAsync(authUrl, APP_OAUTH_REDIRECT, {
-          preferEphemeralSession: false,
-          showInRecents: false,
-        });
-
-        if (result.type === 'success' && result.url) {
-          completeOAuthInWebView(result.url);
-        } else {
-          webViewRef.current?.reload();
-        }
-      } finally {
-        authSessionOpen.current = false;
-        setAuthInProgress(false);
-      }
-    },
-    [completeOAuthInWebView, interceptIosSocialOAuth, stopWebViewOAuth]
   );
 
   useEffect(() => {
@@ -263,19 +205,6 @@ export default function HomeScreen() {
     return () => subscription.remove();
   }, [completeOAuthInWebView]);
 
-  function handleExternalUrl(url: string) {
-    if (Platform.OS === 'ios' && interceptIosSocialOAuth(url)) {
-      return;
-    }
-    if (isOAuthProviderUrl(url)) {
-      if (isSupabaseOAuthStart(url)) {
-        handleOAuth(url);
-      }
-      return;
-    }
-    Linking.openURL(url);
-  }
-
   return (
     <View style={[styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
       <WebView
@@ -286,6 +215,7 @@ export default function HomeScreen() {
         sharedCookiesEnabled
         thirdPartyCookiesEnabled
         setSupportMultipleWindows={false}
+        injectedJavaScriptBeforeContentLoaded={Platform.OS === 'ios' ? IOS_AUTH_GUARD : undefined}
         onMessage={(event) => {
           if (Platform.OS !== 'ios') {
             return;
@@ -298,21 +228,12 @@ export default function HomeScreen() {
         }}
         onNavigationStateChange={(navState) => {
           const { url } = navState;
-
           if (isOAuthCallback(url)) {
             setWebUri('https://tunedtv.com/');
             return;
           }
-
-          if (Platform.OS === 'ios' && interceptIosSocialOAuth(url)) {
-            return;
-          }
-
-          if (isOAuthProviderUrl(url)) {
-            stopWebViewOAuth();
-            if (isSupabaseOAuthStart(url) && !authSessionOpen.current && !nativeAuthInProgress.current) {
-              handleOAuth(url);
-            }
+          if (Platform.OS === 'ios') {
+            interceptIosSocialOAuth(url);
           }
         }}
         onShouldStartLoadWithRequest={(request) => {
@@ -320,27 +241,15 @@ export default function HomeScreen() {
           if (isTopFrame === false) {
             return true;
           }
-
-          if (isAllowedInWebView(url)) {
+          if (isAllowedInWebView(url) || isOAuthCallback(url)) {
             return true;
           }
-
-          if (isOAuthCallback(url)) {
-            return true;
-          }
-
           if (Platform.OS === 'ios' && interceptIosSocialOAuth(url)) {
             return false;
           }
-
-          if (isOAuthProviderUrl(url)) {
-            if (isSupabaseOAuthStart(url) && !nativeAuthInProgress.current) {
-              handleOAuth(url);
-            }
-            return false;
+          if (url.startsWith('http')) {
+            Linking.openURL(url);
           }
-
-          handleExternalUrl(url);
           return false;
         }}
       />
