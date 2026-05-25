@@ -91,6 +91,38 @@ export const IOS_AUTH_GUARD = `
 true;
 `;
 
+// Prevent horizontal drift, zoom, and rubber-band overscroll in the WebView shell.
+export const IOS_VIEWPORT_LOCK = `
+(function () {
+  if (!/TunedTV-iOS/i.test(navigator.userAgent)) return;
+  function lockViewport() {
+    var meta = document.querySelector('meta[name="viewport"]');
+    if (!meta) {
+      meta = document.createElement('meta');
+      meta.setAttribute('name', 'viewport');
+      document.documentElement.appendChild(meta);
+    }
+    meta.setAttribute(
+      'content',
+      'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover'
+    );
+    if (!document.getElementById('tunedtv-native-lock')) {
+      var style = document.createElement('style');
+      style.id = 'tunedtv-native-lock';
+      style.textContent =
+        'html, body { overflow-x: hidden !important; width: 100% !important; max-width: 100% !important; overscroll-behavior-x: none; }';
+      document.documentElement.appendChild(style);
+    }
+  }
+  lockViewport();
+  document.addEventListener('DOMContentLoaded', lockViewport);
+})();
+true;
+`;
+
+export const IOS_WEBVIEW_INJECT =
+  IOS_AUTH_GUARD + '\n' + IOS_VIEWPORT_LOCK;
+
 export function parseWebAuthRequest(raw: string): WebAuthRequest | null {
   try {
     const message = JSON.parse(raw) as WebAuthRequest;

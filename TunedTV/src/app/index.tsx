@@ -7,7 +7,7 @@ import { configureNativeAuth, signInNatively } from '@/lib/nativeAuth';
 import {
   buildAuthCancelledScript,
   buildSignInWithIdTokenScript,
-  IOS_AUTH_GUARD,
+  IOS_WEBVIEW_INJECT,
   parseWebAuthRequest,
 } from '@/lib/nativeAuthBridge';
 
@@ -206,7 +206,7 @@ export default function HomeScreen() {
   }, [completeOAuthInWebView]);
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
       <WebView
         ref={webViewRef}
         userAgent={Platform.OS === 'ios' ? 'TunedTV-iOS/1.0' : 'TunedTV-Android/1.0'}
@@ -215,7 +215,13 @@ export default function HomeScreen() {
         sharedCookiesEnabled
         thirdPartyCookiesEnabled
         setSupportMultipleWindows={false}
-        injectedJavaScriptBeforeContentLoaded={Platform.OS === 'ios' ? IOS_AUTH_GUARD : undefined}
+        bounces={false}
+        showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
+        automaticallyAdjustContentInsets={false}
+        contentInsetAdjustmentBehavior="never"
+        scalesPageToFit={false}
+        injectedJavaScriptBeforeContentLoaded={Platform.OS === 'ios' ? IOS_WEBVIEW_INJECT : undefined}
         onMessage={(event) => {
           if (Platform.OS !== 'ios') {
             return;
@@ -266,6 +272,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#000',
+    overflow: 'hidden',
   },
   webview: {
     flex: 1,
