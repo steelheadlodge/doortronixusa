@@ -1,12 +1,15 @@
 import { WebView } from 'react-native-webview';
 import { StyleSheet, View, Linking, Platform, ActivityIndicator } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as WebBrowser from 'expo-web-browser';
 
 WebBrowser.maybeCompleteAuthSession();
 
-const OAUTH_REDIRECT = 'https://tunedtv.com';
+// HTTPS redirects don't return to the app on iOS (needs Associated Domains).
+// Custom scheme lets ASWebAuthenticationSession hand tokens back to the app.
+const OAUTH_REDIRECT = 'tunedtv://auth/callback';
+const WEB_OAUTH_CALLBACK = 'https://tunedtv.com/~oauth/callback';
 
 function isSupabaseOAuthStart(url: string) {
   return url.includes('supabase.co/auth/v1/authorize');
@@ -31,44 +34,74 @@ function isAllowedInWebView(url: string) {
   return url.includes('tunedtv.com') && !isOAuthCallback(url);
 }
 
+function withNativeRedirect(url: string) {
+  const parsed = new URL(url);
+  parsed.searchParams.set('redirect_to', OAUTH_REDIRECT);
+  return parsed.toString();
+}
+
+function toWebCallbackUrl(nativeUrl: string) {
+  const hashIndex = nativeUrl.indexOf('#');
+  if (hashIndex !== -1) {
+    return `${WEB_OAUTH_CALLBACK}${nativeUrl.slice(hashIndex)}`;
+  }
+  const queryIndex = nativeUrl.indexOf('?');
+  if (queryIndex !== -1) {
+    return `${WEB_OAUTH_CALLBACK}${nativeUrl.slice(queryIndex)}`;
+  }
+  return WEB_OAUTH_CALLBACK;
+}
+
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const webViewRef = useRef<WebView>(null);
   const authSessionOpen = useRef(false);
-  const pendingOAuthUrl = useRef<string | null>(null);
   const [authInProgress, setAuthInProgress] = useState(false);
 
   function stopWebViewOAuth() {
     webViewRef.current?.stopLoading();
   }
 
+  function completeAuthInWebView(resultUrl: string) {
+    const webUrl = toWebCallbackUrl(resultUrl);
+    webViewRef.current?.injectJavaScript(
+      `window.location.replace(${JSON.stringify(webUrl)}); true;`
+    );
+  }
+
   async function handleOAuth(url: string) {
     if (authSessionOpen.current) return;
     authSessionOpen.current = true;
-    pendingOAuthUrl.current = url;
     setAuthInProgress(true);
     stopWebViewOAuth();
 
+    const authUrl = withNativeRedirect(url);
+
     try {
-      const result = await WebBrowser.openAuthSessionAsync(url, OAUTH_REDIRECT, {
+      const result = await WebBrowser.openAuthSessionAsync(authUrl, OAUTH_REDIRECT, {
         preferEphemeralSession: false,
         showInRecents: false,
       });
 
       if (result.type === 'success' && result.url) {
-        webViewRef.current?.injectJavaScript(
-          `window.location.replace(${JSON.stringify(result.url)}); true;`
-        );
+        completeAuthInWebView(result.url);
       } else {
-        // Shared cookies from the auth session should still apply after reload.
         webViewRef.current?.reload();
       }
     } finally {
       authSessionOpen.current = false;
-      pendingOAuthUrl.current = null;
       setAuthInProgress(false);
     }
   }
+
+  useEffect(() => {
+    const subscription = Linking.addEventListener('url', ({ url }) => {
+      if (url.startsWith(OAUTH_REDIRECT)) {
+        completeAuthInWebView(url);
+      }
+    });
+    return () => subscription.remove();
+  }, []);
 
   function handleExternalUrl(url: string) {
     if (isOAuthProviderUrl(url)) {
@@ -98,7 +131,6 @@ export default function HomeScreen() {
             return;
           }
 
-          // Catch OAuth navigations that slip past onShouldStartLoadWithRequest.
           if (isOAuthProviderUrl(url)) {
             stopWebViewOAuth();
             if (isSupabaseOAuthStart(url) && !authSessionOpen.current) {
@@ -117,7 +149,6 @@ export default function HomeScreen() {
             return true;
           }
 
-          // Never load Google/Apple/Supabase auth inside the WebView — Google blocks it.
           if (isOAuthProviderUrl(url)) {
             if (isSupabaseOAuthStart(url)) {
               handleOAuth(url);
