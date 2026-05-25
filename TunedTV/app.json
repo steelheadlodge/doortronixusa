@@ -10,7 +10,7 @@
     "ios": {
       "bundleIdentifier": "com.tunedtv.app",
       "supportsTablet": true,
-      "usesAppleSignIn": false,
+      "usesAppleSignIn": true,
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
@@ -27,7 +27,14 @@
     },
     "plugins": [
       "expo-router",
-      "expo-web-browser"
+      "expo-web-browser",
+      "expo-apple-authentication",
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.585609408161-7clkl3840gq1j05k9pc2jl36mcumsi60"
+        }
+      ]
     ],
     "extra": {
       "eas": {

@@ -3,6 +3,12 @@ import { StyleSheet, View, Linking, Platform, ActivityIndicator } from 'react-na
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import * as WebBrowser from 'expo-web-browser';
+import { configureNativeAuth, signInNatively } from '@/lib/nativeAuth';
+import {
+  buildAuthCancelledScript,
+  buildSignInWithIdTokenScript,
+  parseWebAuthRequest,
+} from '@/lib/nativeAuthBridge';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -69,7 +75,7 @@ function parseAuthParams(url: string) {
   return Object.fromEntries(new URLSearchParams(paramString));
 }
 
-function buildNativeAuthBridgeScript(params: Record<string, string>, resultUrl: string) {
+function buildSetSessionScript(params: Record<string, string>, resultUrl: string) {
   if (!params.access_token) {
     return null;
   }
@@ -110,28 +116,64 @@ export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const webViewRef = useRef<WebView>(null);
   const authSessionOpen = useRef(false);
+  const nativeAuthInProgress = useRef(false);
   const [authInProgress, setAuthInProgress] = useState(false);
   const [webUri, setWebUri] = useState('https://tunedtv.com');
+
+  useEffect(() => {
+    configureNativeAuth();
+  }, []);
 
   const stopWebViewOAuth = useCallback(() => {
     webViewRef.current?.stopLoading();
   }, []);
 
-  const completeAuthInWebView = useCallback((resultUrl: string) => {
+  const completeOAuthInWebView = useCallback((resultUrl: string) => {
     const params = parseAuthParams(resultUrl);
-    const bridgeScript = buildNativeAuthBridgeScript(params, resultUrl);
+    const sessionScript = buildSetSessionScript(params, resultUrl);
 
-    if (bridgeScript) {
-      webViewRef.current?.injectJavaScript(bridgeScript);
+    if (sessionScript) {
+      webViewRef.current?.injectJavaScript(sessionScript);
       return;
     }
 
     setWebUri(toWebCallbackUrl(resultUrl));
   }, []);
 
+  const completeNativeAuthInWebView = useCallback((result: NonNullable<Awaited<ReturnType<typeof signInNatively>>>) => {
+    webViewRef.current?.injectJavaScript(buildSignInWithIdTokenScript(result));
+  }, []);
+
+  const handleNativeAuthRequest = useCallback(
+    async (provider: 'google' | 'apple') => {
+      if (nativeAuthInProgress.current) {
+        return;
+      }
+      nativeAuthInProgress.current = true;
+      setAuthInProgress(true);
+
+      try {
+        const result = await signInNatively(provider);
+        if (result) {
+          completeNativeAuthInWebView(result);
+        } else {
+          webViewRef.current?.injectJavaScript(buildAuthCancelledScript());
+        }
+      } catch {
+        webViewRef.current?.injectJavaScript(buildAuthCancelledScript());
+      } finally {
+        nativeAuthInProgress.current = false;
+        setAuthInProgress(false);
+      }
+    },
+    [completeNativeAuthInWebView]
+  );
+
   const handleOAuth = useCallback(
     async (url: string) => {
-      if (authSessionOpen.current) return;
+      if (authSessionOpen.current || nativeAuthInProgress.current) {
+        return;
+      }
       authSessionOpen.current = true;
       setAuthInProgress(true);
       stopWebViewOAuth();
@@ -145,7 +187,7 @@ export default function HomeScreen() {
         });
 
         if (result.type === 'success' && result.url) {
-          completeAuthInWebView(result.url);
+          completeOAuthInWebView(result.url);
         } else {
           webViewRef.current?.reload();
         }
@@ -154,17 +196,17 @@ export default function HomeScreen() {
         setAuthInProgress(false);
       }
     },
-    [completeAuthInWebView, stopWebViewOAuth]
+    [completeOAuthInWebView, stopWebViewOAuth]
   );
 
   useEffect(() => {
     const subscription = Linking.addEventListener('url', ({ url }) => {
       if (url.startsWith(APP_OAUTH_REDIRECT)) {
-        completeAuthInWebView(url);
+        completeOAuthInWebView(url);
       }
     });
     return () => subscription.remove();
-  }, [completeAuthInWebView]);
+  }, [completeOAuthInWebView]);
 
   function handleExternalUrl(url: string) {
     if (isOAuthProviderUrl(url)) {
@@ -186,6 +228,15 @@ export default function HomeScreen() {
         sharedCookiesEnabled
         thirdPartyCookiesEnabled
         setSupportMultipleWindows={false}
+        onMessage={(event) => {
+          if (Platform.OS !== 'ios') {
+            return;
+          }
+          const request = parseWebAuthRequest(event.nativeEvent.data);
+          if (request) {
+            handleNativeAuthRequest(request.provider);
+          }
+        }}
         onNavigationStateChange={(navState) => {
           const { url } = navState;
 
@@ -196,7 +247,7 @@ export default function HomeScreen() {
 
           if (isOAuthProviderUrl(url)) {
             stopWebViewOAuth();
-            if (isSupabaseOAuthStart(url) && !authSessionOpen.current) {
+            if (isSupabaseOAuthStart(url) && !authSessionOpen.current && !nativeAuthInProgress.current) {
               handleOAuth(url);
             }
           }
@@ -216,7 +267,7 @@ export default function HomeScreen() {
           }
 
           if (isOAuthProviderUrl(url)) {
-            if (isSupabaseOAuthStart(url)) {
+            if (isSupabaseOAuthStart(url) && !nativeAuthInProgress.current) {
               handleOAuth(url);
             }
             return false;
