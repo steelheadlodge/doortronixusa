@@ -6,14 +6,10 @@ import * as WebBrowser from 'expo-web-browser';
 
 WebBrowser.maybeCompleteAuthSession();
 
-function isOAuthUrl(url: string) {
-  return (
-    url.includes('appleid.apple.com') ||
-    url.includes('accounts.google.com') ||
-    url.includes('oauth.lovable.app') ||
-    url.includes('/~oauth/') ||
-    url.includes('supabase.co/auth/v1/authorize')
-  );
+// Only open the auth sheet at the start of Supabase OAuth.
+// Intercepting accounts.google.com separately breaks the flow (blank page).
+function isSupabaseOAuthStart(url: string) {
+  return url.includes('supabase.co/auth/v1/authorize');
 }
 
 function isOAuthCallback(url: string) {
@@ -23,11 +19,24 @@ function isOAuthCallback(url: string) {
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const webViewRef = useRef<WebView>(null);
+  const authSessionOpen = useRef(false);
 
   async function handleOAuth(url: string) {
-    const result = await WebBrowser.openAuthSessionAsync(url, 'https://tunedtv.com');
-    if (result.type === 'success' || result.type === 'dismiss') {
-      webViewRef.current?.reload();
+    if (authSessionOpen.current) return;
+    authSessionOpen.current = true;
+    try {
+      const result = await WebBrowser.openAuthSessionAsync(url, 'https://tunedtv.com', {
+        preferEphemeralSession: false,
+      });
+      if (result.type === 'success' && result.url) {
+        webViewRef.current?.injectJavaScript(
+          `window.location.replace(${JSON.stringify(result.url)}); true;`
+        );
+      } else {
+        webViewRef.current?.reload();
+      }
+    } finally {
+      authSessionOpen.current = false;
     }
   }
 
@@ -47,10 +56,10 @@ export default function HomeScreen() {
           }
         }}
         onShouldStartLoadWithRequest={(request) => {
-          if (request.url.includes('tunedtv.com') && !isOAuthUrl(request.url)) {
+          if (request.url.includes('tunedtv.com')) {
             return true;
           }
-          if (isOAuthUrl(request.url)) {
+          if (isSupabaseOAuthStart(request.url)) {
             handleOAuth(request.url);
             return false;
           }
