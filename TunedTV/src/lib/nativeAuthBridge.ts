@@ -10,21 +10,26 @@ export function buildSignInWithIdTokenScript(result: NativeAuthResult) {
     (function () {
       var payload = ${JSON.stringify(payload)};
       var attempts = 0;
-      function done() {
-        window.location.replace('https://tunedtv.com/');
+      function finish(bridgeResult) {
+        window.dispatchEvent(new CustomEvent('tunedtv:auth:result', { detail: bridgeResult || { ok: false } }));
+        if (bridgeResult && bridgeResult.ok) {
+          window.dispatchEvent(new CustomEvent('tunedtv:auth:success'));
+          window.location.replace('https://tunedtv.com/profile');
+          return;
+        }
+        window.dispatchEvent(new CustomEvent('tunedtv:auth:cancelled'));
       }
       function tryBridge() {
         var bridge = window.__tunedtvNativeAuth;
         if (bridge && bridge.signInWithIdToken) {
-          bridge.signInWithIdToken(payload).then(function (r) {
-            if (r && r.ok) done();
-          }).catch(function () {});
+          bridge.signInWithIdToken(payload).then(finish).catch(function () { finish({ ok: false }); });
           return;
         }
         if (attempts++ < 30) {
           setTimeout(tryBridge, 100);
           return;
         }
+        finish({ ok: false, error: 'Native auth bridge not ready' });
       }
       tryBridge();
     })();
