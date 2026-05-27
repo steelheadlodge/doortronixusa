@@ -1,5 +1,5 @@
 import { WebView } from 'react-native-webview';
-import { StyleSheet, View, Linking, Platform, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, Linking, Platform, ActivityIndicator, Alert } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -9,12 +9,17 @@ import {
   buildSignInWithIdTokenScript,
   IOS_WEBVIEW_INJECT,
   parseWebAuthRequest,
+  parseWebAuthResult,
 } from '@/lib/nativeAuthBridge';
 
 WebBrowser.maybeCompleteAuthSession();
 
 const APP_OAUTH_REDIRECT = 'tunedtv://auth/callback';
 const SUPABASE_REDIRECT = 'https://tunedtv.com/~oauth/callback';
+/** Max wait for web bridge after native Apple/Google returns a token. */
+const AUTH_BRIDGE_TIMEOUT_MS = 20_000;
+/** Max wait for the full native sign-in flow (Face ID, account picker, etc.). */
+const AUTH_FLOW_TIMEOUT_MS = 120_000;
 
 function isSupabaseOAuthStart(url: string) {
   return url.includes('supabase.co/auth/v1/authorize');
@@ -128,8 +133,22 @@ export default function HomeScreen() {
   const webViewRef = useRef<WebView>(null);
   const nativeAuthInProgress = useRef(false);
   const pendingNativeProvider = useRef<'apple' | 'google' | null>(null);
+  const pendingAuthSuccess = useRef(false);
+  const authBridgeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const authFlowTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [authInProgress, setAuthInProgress] = useState(false);
   const [webUri, setWebUri] = useState('https://tunedtv.com');
+
+  const clearAuthTimeouts = useCallback(() => {
+    if (authBridgeTimeoutRef.current) {
+      clearTimeout(authBridgeTimeoutRef.current);
+      authBridgeTimeoutRef.current = null;
+    }
+    if (authFlowTimeoutRef.current) {
+      clearTimeout(authFlowTimeoutRef.current);
+      authFlowTimeoutRef.current = null;
+    }
+  }, []);
 
   useEffect(() => {
     configureNativeAuth();
@@ -149,9 +168,46 @@ export default function HomeScreen() {
     setWebUri(toWebCallbackUrl(resultUrl));
   }, []);
 
-  const completeNativeAuthInWebView = useCallback((result: NonNullable<Awaited<ReturnType<typeof signInNatively>>>) => {
-    webViewRef.current?.injectJavaScript(buildSignInWithIdTokenScript(result));
-  }, []);
+  const finishNativeAuth = useCallback(
+    (error?: string) => {
+      clearAuthTimeouts();
+      nativeAuthInProgress.current = false;
+      pendingNativeProvider.current = null;
+      pendingAuthSuccess.current = false;
+      setAuthInProgress(false);
+      if (error) {
+        Alert.alert('Sign in failed', error);
+      }
+    },
+    [clearAuthTimeouts]
+  );
+
+  const scheduleBridgeTimeout = useCallback(() => {
+    if (authBridgeTimeoutRef.current) {
+      clearTimeout(authBridgeTimeoutRef.current);
+    }
+    authBridgeTimeoutRef.current = setTimeout(() => {
+      authBridgeTimeoutRef.current = null;
+      if (!nativeAuthInProgress.current) {
+        return;
+      }
+      finishNativeAuth(
+        'Sign-in timed out waiting for the app to finish. Close the app and try again.'
+      );
+      webViewRef.current?.injectJavaScript(
+        buildAuthCancelledScript('Sign-in timed out. Please try again.')
+      );
+    }, AUTH_BRIDGE_TIMEOUT_MS);
+  }, [finishNativeAuth]);
+
+  const completeNativeAuthInWebView = useCallback(
+    (result: NonNullable<Awaited<ReturnType<typeof signInNatively>>>) => {
+      pendingAuthSuccess.current = true;
+      webViewRef.current?.injectJavaScript(buildSignInWithIdTokenScript(result));
+      scheduleBridgeTimeout();
+    },
+    [scheduleBridgeTimeout]
+  );
 
   const handleNativeAuthRequest = useCallback(
     async (provider: 'google' | 'apple') => {
@@ -163,22 +219,33 @@ export default function HomeScreen() {
       setAuthInProgress(true);
       stopWebViewOAuth();
 
+      if (authFlowTimeoutRef.current) {
+        clearTimeout(authFlowTimeoutRef.current);
+      }
+      authFlowTimeoutRef.current = setTimeout(() => {
+        authFlowTimeoutRef.current = null;
+        if (!nativeAuthInProgress.current) {
+          return;
+        }
+        finishNativeAuth('Sign-in timed out. Please try again.');
+        webViewRef.current?.injectJavaScript(buildAuthCancelledScript('Sign-in timed out'));
+      }, AUTH_FLOW_TIMEOUT_MS);
+
       try {
         const result = await signInNatively(provider);
         if (result) {
           completeNativeAuthInWebView(result);
-        } else {
-          webViewRef.current?.injectJavaScript(buildAuthCancelledScript());
+          return;
         }
-      } catch {
+        finishNativeAuth();
         webViewRef.current?.injectJavaScript(buildAuthCancelledScript());
-      } finally {
-        nativeAuthInProgress.current = false;
-        pendingNativeProvider.current = null;
-        setAuthInProgress(false);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Native sign-in failed';
+        finishNativeAuth(message);
+        webViewRef.current?.injectJavaScript(buildAuthCancelledScript(message));
       }
     },
-    [completeNativeAuthInWebView, stopWebViewOAuth]
+    [completeNativeAuthInWebView, finishNativeAuth, stopWebViewOAuth]
   );
 
   const interceptIosSocialOAuth = useCallback(
@@ -226,7 +293,17 @@ export default function HomeScreen() {
           if (Platform.OS !== 'ios') {
             return;
           }
-          const request = parseWebAuthRequest(event.nativeEvent.data);
+          const raw = event.nativeEvent.data;
+          const authResult = parseWebAuthResult(raw);
+          if (authResult) {
+            if (authResult.ok) {
+              finishNativeAuth();
+              return;
+            }
+            finishNativeAuth(authResult.error ?? 'Sign-in failed');
+            return;
+          }
+          const request = parseWebAuthRequest(raw);
           if (request) {
             pendingNativeProvider.current = request.provider;
             handleNativeAuthRequest(request.provider);
@@ -234,8 +311,17 @@ export default function HomeScreen() {
         }}
         onNavigationStateChange={(navState) => {
           const { url } = navState;
+          if (
+            nativeAuthInProgress.current &&
+            url.includes('tunedtv.com') &&
+            !url.includes('/login')
+          ) {
+            finishNativeAuth();
+          } else if (pendingAuthSuccess.current && !url.includes('/login')) {
+            finishNativeAuth();
+          }
           if (isOAuthCallback(url)) {
-            setWebUri('https://tunedtv.com/');
+            completeOAuthInWebView(url);
             return;
           }
           if (Platform.OS === 'ios') {
@@ -243,8 +329,12 @@ export default function HomeScreen() {
           }
         }}
         onShouldStartLoadWithRequest={(request) => {
-          const { url, isTopFrame } = request;
-          if (isTopFrame === false) {
+          const { url } = request;
+          if (Platform.OS === 'ios' && isSocialOAuthUrl(url)) {
+            interceptIosSocialOAuth(url);
+            return false;
+          }
+          if (request.isTopFrame === false) {
             return true;
           }
           if (isAllowedInWebView(url) || isOAuthCallback(url)) {

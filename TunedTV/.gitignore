@@ -28,6 +28,11 @@ yarn-error.*
 
 # macOS
 .DS_Store
+
+# Local build artifacts and scratch
+releases/
+.tmp-tuned-main.js
+.tmp_pillow/
 *.pem
 
 # local env files

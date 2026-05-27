@@ -5,6 +5,7 @@ import {
   isCancelledResponse,
   isSuccessResponse,
 } from '@react-native-google-signin/google-signin';
+import { getJwtNonceClaim } from './jwt';
 
 const GOOGLE_IOS_CLIENT_ID =
   '585609408161-7clkl3840gq1j05k9pc2jl36mcumsi60.apps.googleusercontent.com';
@@ -13,9 +14,11 @@ const GOOGLE_WEB_CLIENT_ID =
 
 export type NativeAuthProvider = 'apple' | 'google';
 
-export type NativeAuthResult =
-  | { provider: 'apple'; token: string; nonce: string }
-  | { provider: 'google'; token: string };
+export type NativeAuthResult = {
+  provider: NativeAuthProvider;
+  token: string;
+  nonce?: string;
+};
 
 let configured = false;
 
@@ -26,8 +29,18 @@ export function configureNativeAuth() {
   GoogleSignin.configure({
     iosClientId: GOOGLE_IOS_CLIENT_ID,
     webClientId: GOOGLE_WEB_CLIENT_ID,
+    offlineAccess: false,
   });
   configured = true;
+}
+
+async function createNoncePair() {
+  const rawNonce = Crypto.randomUUID();
+  const hashedNonce = await Crypto.digestStringAsync(
+    Crypto.CryptoDigestAlgorithm.SHA256,
+    rawNonce
+  );
+  return { rawNonce, hashedNonce };
 }
 
 export async function signInNatively(provider: NativeAuthProvider): Promise<NativeAuthResult | null> {
@@ -39,11 +52,7 @@ export async function signInNatively(provider: NativeAuthProvider): Promise<Nati
       throw new Error('Sign in with Apple is not available on this device');
     }
 
-    const rawNonce = Crypto.randomUUID();
-    const hashedNonce = await Crypto.digestStringAsync(
-      Crypto.CryptoDigestAlgorithm.SHA256,
-      rawNonce
-    );
+    const { rawNonce, hashedNonce } = await createNoncePair();
 
     try {
       const credential = await AppleAuthentication.signInAsync({
@@ -75,7 +84,12 @@ export async function signInNatively(provider: NativeAuthProvider): Promise<Nati
     }
   }
 
-  const response = await GoogleSignin.signIn();
+  const { rawNonce, hashedNonce } = await createNoncePair();
+
+  await GoogleSignin.signOut().catch(() => undefined);
+  const response = await GoogleSignin.signIn({ nonce: hashedNonce } as Parameters<
+    typeof GoogleSignin.signIn
+  >[0]);
   if (isCancelledResponse(response)) {
     return null;
   }
@@ -83,10 +97,25 @@ export async function signInNatively(provider: NativeAuthProvider): Promise<Nati
     throw new Error('Google sign-in failed');
   }
 
-  const idToken = response.data.idToken;
+  let idToken = response.data.idToken;
+  if (!idToken) {
+    const tokens = await GoogleSignin.getTokens();
+    idToken = tokens.idToken;
+  }
   if (!idToken) {
     throw new Error('Google sign-in did not return an ID token');
   }
 
-  return { provider: 'google', token: idToken };
+  const tokenNonce = getJwtNonceClaim(idToken);
+  if (!tokenNonce) {
+    return { provider: 'google', token: idToken };
+  }
+
+  if (tokenNonce !== hashedNonce) {
+    throw new Error(
+      'Google sign-in nonce mismatch — install the latest app build and try again'
+    );
+  }
+
+  return { provider: 'google', token: idToken, nonce: rawNonce };
 }

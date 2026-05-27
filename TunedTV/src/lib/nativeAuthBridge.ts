@@ -1,10 +1,13 @@
 import type { NativeAuthResult } from './nativeAuth';
 
 export function buildSignInWithIdTokenScript(result: NativeAuthResult) {
-  const payload =
-    result.provider === 'apple'
-      ? { provider: 'apple', token: result.token, nonce: result.nonce }
-      : { provider: 'google', token: result.token };
+  const payload: { provider: NativeAuthResult['provider']; token: string; nonce?: string } = {
+    provider: result.provider,
+    token: result.token,
+  };
+  if (result.nonce) {
+    payload.nonce = result.nonce;
+  }
 
   return `
     (function () {
@@ -14,18 +17,35 @@ export function buildSignInWithIdTokenScript(result: NativeAuthResult) {
         window.dispatchEvent(new CustomEvent('tunedtv:auth:result', { detail: bridgeResult || { ok: false } }));
         if (bridgeResult && bridgeResult.ok) {
           window.dispatchEvent(new CustomEvent('tunedtv:auth:success'));
-          window.location.replace('https://tunedtv.com/profile');
+          if (window.ReactNativeWebView) {
+            window.ReactNativeWebView.postMessage(JSON.stringify({
+              type: 'tunedtv:auth:result',
+              ok: true
+            }));
+          }
+          window.location.replace('https://tunedtv.com/');
           return;
         }
-        window.dispatchEvent(new CustomEvent('tunedtv:auth:cancelled'));
+        if (window.ReactNativeWebView) {
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            type: 'tunedtv:auth:result',
+            ok: false,
+            error: bridgeResult && bridgeResult.error
+          }));
+        }
+        window.dispatchEvent(new CustomEvent('tunedtv:auth:cancelled', {
+          detail: { error: (bridgeResult && bridgeResult.error) || 'Sign-in failed' }
+        }));
       }
       function tryBridge() {
         var bridge = window.__tunedtvNativeAuth;
         if (bridge && bridge.signInWithIdToken) {
-          bridge.signInWithIdToken(payload).then(finish).catch(function () { finish({ ok: false }); });
+          bridge.signInWithIdToken(payload).then(finish).catch(function (err) {
+            finish({ ok: false, error: (err && err.message) || 'signInWithIdToken failed' });
+          });
           return;
         }
-        if (attempts++ < 30) {
+        if (attempts++ < 50) {
           setTimeout(tryBridge, 100);
           return;
         }
@@ -37,10 +57,12 @@ export function buildSignInWithIdTokenScript(result: NativeAuthResult) {
   `;
 }
 
-export function buildAuthCancelledScript() {
+export function buildAuthCancelledScript(error?: string) {
   return `
     (function () {
-      window.dispatchEvent(new CustomEvent('tunedtv:auth:cancelled'));
+      window.dispatchEvent(new CustomEvent('tunedtv:auth:cancelled', {
+        detail: { error: ${JSON.stringify(error ?? 'Sign in cancelled')} }
+      }));
     })();
     true;
   `;
@@ -50,6 +72,12 @@ export type WebAuthRequest = {
   type: 'tunedtv:auth:request';
   provider: 'google' | 'apple';
   requestId?: string;
+};
+
+export type WebAuthResult = {
+  type: 'tunedtv:auth:result';
+  ok: boolean;
+  error?: string;
 };
 
 // Block web OAuth navigations on iOS — native SDK handles Apple/Google instead.
@@ -87,6 +115,38 @@ export const IOS_AUTH_GUARD = `
   var replace = window.location.replace.bind(window.location);
   window.location.assign = function (url) { return assign(guardUrl(url)); };
   window.location.replace = function (url) { return replace(guardUrl(url)); };
+  try {
+    var hrefDescriptor = Object.getOwnPropertyDescriptor(Location.prototype, 'href');
+    if (hrefDescriptor && hrefDescriptor.set) {
+      Object.defineProperty(window.location, 'href', {
+        configurable: true,
+        enumerable: true,
+        get: hrefDescriptor.get
+          ? function () { return hrefDescriptor.get.call(window.location); }
+          : undefined,
+        set: function (url) { hrefDescriptor.set.call(window.location, guardUrl(String(url))); }
+      });
+    }
+  } catch (e) {}
+  var open = window.open;
+  window.open = function (url) {
+    if (url && isBlockedOAuthUrl(String(url))) {
+      requestNative(providerFromUrl(String(url)));
+      return null;
+    }
+    return open.apply(window, arguments);
+  };
+  document.addEventListener('click', function (event) {
+    var target = event.target;
+    if (!target || !target.closest) return;
+    var link = target.closest('a[href]');
+    if (!link) return;
+    var href = link.getAttribute('href');
+    if (!href || !isBlockedOAuthUrl(href)) return;
+    event.preventDefault();
+    event.stopPropagation();
+    requestNative(providerFromUrl(href));
+  }, true);
 })();
 true;
 `;
@@ -127,6 +187,18 @@ export function parseWebAuthRequest(raw: string): WebAuthRequest | null {
   try {
     const message = JSON.parse(raw) as WebAuthRequest;
     if (message.type === 'tunedtv:auth:request' && (message.provider === 'google' || message.provider === 'apple')) {
+      return message;
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
+
+export function parseWebAuthResult(raw: string): WebAuthResult | null {
+  try {
+    const message = JSON.parse(raw) as WebAuthResult;
+    if (message.type === 'tunedtv:auth:result' && typeof message.ok === 'boolean') {
       return message;
     }
   } catch {
