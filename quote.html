@@ -747,8 +747,8 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
 
     <div class="preview-title">Live Door Preview</div>
     <div id="drawing-wrap">
-      <svg id="door-svg" viewBox="0 0 840 380" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-height:36vh;display:block;"></svg>
-      <svg id="plan-svg" viewBox="0 0 840 442" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-height:42vh;display:block;"></svg>
+      <svg id="door-svg" viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;"></svg>
+      <svg id="plan-svg" viewBox="0 0 600 340" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;"></svg>
       <div id="plan-footer" style="padding:10px 14px 6px;display:flex;justify-content:center;gap:20px;align-items:center;font-family:Arial,sans-serif;border-top:1px solid #E5EAF0;">
         <span id="pf-config" style="color:#1B4F8A;font-weight:700;font-size:12px;"></span>
         <span id="pf-dims" style="color:#555;font-size:12px;"></span>
@@ -1527,7 +1527,8 @@ function drawPlanView() {
   const svg = document.getElementById('plan-svg');
   if (!svg) return;
   svg.innerHTML = '';
-  const vW = 840, vH = 442;
+  const vW = 600;
+  let vH = 340;
   svg.setAttribute('viewBox', `0 0 ${vW} ${vH}`);
   const cfg = getConfig();
   if (!cfg) return;
@@ -1725,6 +1726,8 @@ function drawPlanView() {
     if (isFBO) noseArc(openX + openW, yFixed, pos.rhFixed, yFixed, openX + openW, yFixed + fixedPanelLen, 0, fixedPanelLen);
   }
 
+  vH = Math.ceil(yBreakFootLbl + 16);
+  svg.setAttribute('viewBox', `0 0 ${vW} ${vH}`);
   t(vW/2, yBreakFootLbl,
     isFBO ? ('FBO — All ' + numPanels + ' panels pivot open for full emergency egress')
           : ('FSL — Only sliding (SX) panels break out; fixed panels (O) do not'),
@@ -1767,7 +1770,7 @@ function updateAll() {
   updateNetOpeningDisplay();
   calcPrice();
   updateSpecSummary();
-  drawDoor('door-svg', 840, 380, false);
+  drawDoor('door-svg', 600, 300, false);
   drawPlanView();
 }
 
