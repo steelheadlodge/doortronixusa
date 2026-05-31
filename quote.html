@@ -747,8 +747,8 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
 
     <div class="preview-title">Live Door Preview</div>
     <div id="drawing-wrap">
-      <svg id="door-svg" viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;"></svg>
-      <svg id="plan-svg" viewBox="0 0 600 340" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;"></svg>
+      <svg id="door-svg" viewBox="0 0 600 300" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;"></svg>
+      <svg id="plan-svg" viewBox="0 0 600 340" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;"></svg>
       <div id="plan-footer" style="padding:10px 14px 6px;display:flex;justify-content:center;gap:20px;align-items:center;font-family:Arial,sans-serif;border-top:1px solid #E5EAF0;">
         <span id="pf-config" style="color:#1B4F8A;font-weight:700;font-size:12px;"></span>
         <span id="pf-dims" style="color:#555;font-size:12px;"></span>
@@ -1221,7 +1221,7 @@ function drawDoor(svgId, vW, vH, isConf) {
 
   // ── Scale to fit viewBox while maintaining true aspect ratio ───────
   const mL = isConf ? 55 : 110, mR = isConf ? 55 : 90;
-  const mT = isConf ? titleH + 20 : 20, mB = isConf ? 70 : 80;
+  const mT = isConf ? titleH + 20 : 36, mB = isConf ? 70 : 80;
   const availW = vW - mL - mR;
   let sc, dW, dH, dX, dY;
   if (!isConf) {
