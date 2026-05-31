@@ -845,8 +845,8 @@ function getWidthStr() {
   if (!ft) return '—';
   const inches = parseInt(fv('f_win')) || 0;
   const sixteenth = parseInt(fv('f_w16')) || 0;
-  const inStr = inches === 0 && sixteenth === 0 ? '' : inches + (sixteenth ? '-' + SIXTEENTH_LABELS[sixteenth] : '') + '"';
-  return `${ft}'${inStr}`;
+  const inStr = inches + (sixteenth ? '-' + SIXTEENTH_LABELS[sixteenth] : '') + '"';
+  return `${ft}'-${inStr}`;
 }
 const SIXTEENTH_LABELS = ['','1/16','1/8','3/16','1/4','5/16','3/8','7/16','1/2','9/16','5/8','11/16','3/4','13/16','7/8','15/16'];
 function getHeightIn() {
@@ -860,8 +860,8 @@ function getHeightStr() {
   const ft = fv('f_hft');
   const inches = parseInt(fv('f_hin')) || 0;
   const sixteenth = parseInt(fv('f_h16')) || 0;
-  const inStr = inches === 0 && sixteenth === 0 ? '' : inches + (sixteenth ? '-' + SIXTEENTH_LABELS[sixteenth] : '') + '"';
-  return `${ft}'${inStr}`;
+  const inStr = inches + (sixteenth ? '-' + SIXTEENTH_LABELS[sixteenth] : '') + '"';
+  return `${ft}'-${inStr}`;
 }
 function fmtInches(totalIn) {
   const whole = Math.floor(totalIn);
@@ -1221,7 +1221,7 @@ function drawDoor(svgId, vW, vH, isConf) {
 
   // ── Scale to fit viewBox while maintaining true aspect ratio ───────
   const mL = isConf ? 55 : 110, mR = isConf ? 55 : 90;
-  const mT = isConf ? titleH + 20 : 36, mB = isConf ? 70 : 80;
+  const mT = isConf ? titleH + 20 : 36, mB = isConf ? 70 : 100;
   const availW = vW - mL - mR;
   let sc, dW, dH, dX, dY;
   if (!isConf) {
