@@ -1386,6 +1386,27 @@ function drawDoor(svgId, vW, vH, isConf) {
   let panels = []; // collect {x,w} for muntin overlay
   // noInnerL / noInnerR: suppress stile inset on that side so glass extends to panel edge
   // breakoutDir: 'left' draws < chevron, 'right' draws > chevron (FBO sidelite breakout indicator)
+
+  // Hollow polygon arrow drawn in the top lite of the moving panel
+  function liteArrow(cx, cy, availW, availH, pointsRight) {
+    const aw = Math.min(availW * 0.55, availW - 4);
+    const ah = Math.min(availH * 0.5, availH - 4);
+    const ax = cx - aw / 2, ay = cy - ah / 2;
+    const bodyW = aw * 0.62, neckH = ah * 0.52;
+    const ny1 = cy - neckH / 2, ny2 = cy + neckH / 2;
+    let d;
+    if (pointsRight) {
+      d = `M${ax},${ny1} L${ax+bodyW},${ny1} L${ax+bodyW},${ay} L${ax+aw},${cy} L${ax+bodyW},${ay+ah} L${ax+bodyW},${ny2} L${ax},${ny2} Z`;
+    } else {
+      d = `M${ax+aw},${ny1} L${ax+aw-bodyW},${ny1} L${ax+aw-bodyW},${ay} L${ax},${cy} L${ax+aw-bodyW},${ay+ah} L${ax+aw-bodyW},${ny2} L${ax+aw},${ny2} Z`;
+    }
+    path(d, 'rgba(27,79,138,0.15)', '#1B4F8A', 1.5);
+  }
+  const hasMuntin = rv('muntin') !== 'No Muntin';
+  const topLiteBottom = hasMuntin ? muntY : pY + pH - btmRH;
+  const topLiteCY  = (pY + topRH + topLiteBottom) / 2;
+  const topLiteH   = topLiteBottom - (pY + topRH);
+
   function drawP(px, py, pw, ph, strokeColor, sw, breakoutDir, noInnerL, noInnerR) {
     r(px, py, pw, ph, panelFill, strokeColor, sw);
     const lIn = noInnerL ? 0 : stileW;
@@ -1449,12 +1470,9 @@ function drawDoor(svgId, vW, vH, isConf) {
     // Center interlock
     r(x3-stileW, pY, stileW*2, pH, panelFill, frame, 0.4);
     l(x3, pY, x3, pY+pH, frame, 1.2);
-    // Movement arrows
-    const aY = muntY - 8;
-    l(x2+stileW+3, aY, x3-stileW-3, aY, '#1B4F8A', 1.2, '5,3');
-    path(`M${x2+stileW+3},${aY}l5,-3.5l0,7Z`, '#1B4F8A');
-    l(x3+stileW+3, aY, x4-stileW-3, aY, '#1B4F8A', 1.2, '5,3');
-    path(`M${x4-stileW-3},${aY}l-5,-3.5l0,7Z`, '#1B4F8A');
+    // Movement arrows — hollow chevron in top lite of each SX panel
+    liteArrow(x2 + stileW + G/2, topLiteCY, G, topLiteH, false);
+    liteArrow(x3 + stileW + G/2, topLiteCY, G, topLiteH, true);
     // Floor guide pin
     const pin = document.createElementNS('http://www.w3.org/2000/svg','circle');
     Object.entries({cx:x3, cy:pY+pH-btmRH/2, r:3, fill:'none', stroke:frame, 'stroke-width':1}).forEach(([k,v])=>pin.setAttribute(k,v));
@@ -1475,8 +1493,7 @@ function drawDoor(svgId, vW, vH, isConf) {
       drawP(pX, pY, soW, pH, sdStroke, sdSW, isFBO ? 'left' : false, false, true);
       drawP(jX,  pY, sxW, pH, frame, 1.5, false);
       if (isFBO) l(jX+stileW, pY, jX+stileW, pY+pH, frame, 1.0);
-      l(jX+stileW+3, aY, jX+sxW-stileW-3, aY, '#1B4F8A', 1.2, '5,3');
-      path(`M${jX+stileW+3},${aY}l5,-3.5l0,7Z`, '#1B4F8A');
+      liteArrow(jX + stileW + G/2, topLiteCY, G, topLiteH, true);
       panels = [{x:pX+stileW, w:G}, {x:jX+stileW, w:G}];
     } else {
       // RH: SX left, SO right
@@ -1484,8 +1501,7 @@ function drawDoor(svgId, vW, vH, isConf) {
       drawP(jX,  pY, soW, pH, sdStroke, sdSW, isFBO ? 'right' : false, true, false);
       drawP(pX,  pY, sxW, pH, frame, 1.5, false);
       if (isFBO) l(jX-stileW, pY, jX-stileW, pY+pH, frame, 1.0);
-      l(pX+stileW+3, aY, jX-stileW-3, aY, '#1B4F8A', 1.2, '5,3');
-      path(`M${jX-stileW-3},${aY}l-5,-3.5l0,7Z`, '#1B4F8A');
+      liteArrow(pX + stileW + G/2, topLiteCY, G, topLiteH, false);
       panels = [{x:pX+stileW, w:G}, {x:jX, w:G}];
     }
   }
