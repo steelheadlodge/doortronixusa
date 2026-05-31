@@ -1,0 +1,1432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Order Confirmation — Doortronix USA</title>
+<style>
+*, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+body { font-family:Arial, Helvetica, sans-serif; font-size:14px; background:#F0F4F8; color:#111; min-height:100vh; }
+
+:root {
+  --blue:#1B4F8A; --dblue:#163F6E; --orange:#E87722;
+  --lgray:#F2F4F7; --mgray:#6B7280; --border:#D0D5DD;
+  --white:#FFFFFF; --green:#166534; --lgreen:#DCFCE7;
+  --red:#DC2626; --amber:#92400E; --lamber:#FEF3C7;
+}
+
+/* ── Top bar ── */
+.topbar { background:var(--blue); color:#fff; padding:14px 28px;
+  display:flex; align-items:center; justify-content:space-between;
+  box-shadow:0 2px 8px rgba(0,0,0,.25); position:sticky; top:0; z-index:100; }
+.topbar .brand { font-size:20px; font-weight:700; letter-spacing:.5px; }
+.topbar .brand span { color:var(--orange); }
+.topbar .sub { font-size:12px; color:#B8CCE4; }
+.topbar .tagline { font-size:12px; color:#B8CCE4; text-align:right; }
+
+/* ── Doc shell ── */
+.shell { max-width:980px; margin:0 auto; padding:24px 20px 60px; }
+
+/* ── Doc header ── */
+.doc-head { background:#fff; border:1px solid var(--border); border-top:4px solid var(--blue);
+  padding:24px 28px; margin-bottom:18px; border-radius:6px;
+  box-shadow:0 2px 6px rgba(0,0,0,.04); }
+.doc-title { font-size:24px; font-weight:800; color:var(--blue); letter-spacing:.5px; margin-bottom:4px; }
+.doc-sub   { font-size:13px; color:var(--mgray); }
+.doc-meta  { display:grid; grid-template-columns:1fr 1fr 1fr; gap:18px; margin-top:18px;
+  padding-top:18px; border-top:1px solid var(--lgray); }
+.doc-meta .item { font-size:11px; color:var(--mgray); text-transform:uppercase; letter-spacing:.5px; }
+.doc-meta .val  { font-size:15px; color:#111; font-weight:700; margin-top:3px; }
+
+/* Status banner */
+.status-banner { display:inline-block; padding:6px 14px; border-radius:20px;
+  font-size:11px; font-weight:700; letter-spacing:.5px; text-transform:uppercase;
+  margin-bottom:12px; }
+.status-pending { background:var(--lamber); color:var(--amber); }
+.status-signed  { background:var(--lgreen); color:var(--green); }
+.status-error   { background:#FEE2E2; color:#991B1B; }
+
+/* ── Section cards ── */
+.card { background:#fff; border:1px solid var(--border); border-radius:6px;
+  margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,.03); overflow:hidden; }
+.card-head { background:var(--lgray); padding:11px 20px; border-bottom:1px solid var(--border);
+  font-size:11px; text-transform:uppercase; letter-spacing:.7px; color:var(--blue); font-weight:700; }
+.card-body { padding:20px 24px; }
+
+/* Spec row */
+.spec-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px 22px; }
+.spec-row { display:flex; justify-content:space-between; padding:7px 0;
+  border-bottom:1px dashed #EEE; font-size:13px; gap:14px; }
+.spec-row:last-child { border-bottom:none; }
+.spec-row .k { color:var(--mgray); flex-shrink:0; }
+.spec-row .v { color:#111; font-weight:600; text-align:right; word-break:break-word; }
+
+/* Drawing area */
+.drawing-wrap { background:#fff; padding:0; }
+.drawing-wrap svg { width:100%; height:auto; display:block; }
+
+/* Pricing box */
+.price-line { display:flex; justify-content:space-between; padding:7px 0;
+  border-bottom:1px dashed #EEE; font-size:13px; }
+.price-line:last-child { border-bottom:none; }
+.price-line .pk { color:#111; }
+.price-line .pv { color:#111; font-weight:600; font-variant-numeric:tabular-nums; }
+.price-subtotal { padding:9px 0; border-top:2px solid #ddd; margin-top:6px;
+  display:flex; justify-content:space-between; font-size:14px; font-weight:700; }
+.price-total { background:var(--blue); color:#fff; padding:14px 18px; margin:14px -24px -20px;
+  display:flex; justify-content:space-between; align-items:center;
+  font-size:17px; font-weight:700; letter-spacing:.3px; }
+.price-total .pv { color:var(--orange); font-size:22px; font-variant-numeric:tabular-nums; }
+
+.deposit-callout { background:var(--lamber); color:var(--amber);
+  padding:14px 18px; border-radius:4px; margin-top:14px;
+  display:flex; justify-content:space-between; align-items:center;
+  font-size:13px; }
+.deposit-callout .label { font-weight:700; }
+.deposit-callout .amount { font-size:18px; font-weight:800; font-variant-numeric:tabular-nums; }
+
+.terms-list { font-size:12px; color:var(--mgray); line-height:1.7; padding:0 0 0 18px; }
+.terms-list li { margin-bottom:3px; }
+
+/* Notes */
+.notes-box { background:#FFFBEB; border:1px solid #FDE68A; padding:14px 18px; border-radius:4px;
+  font-size:13px; color:#78350F; white-space:pre-wrap; line-height:1.6; }
+
+/* ── Approval section ── */
+.approve-card { border:2px solid var(--orange); }
+.approve-card .card-head { background:var(--orange); color:#fff; }
+
+.attest { background:#FFF7ED; border:1px solid #FED7AA; padding:16px 18px;
+  border-radius:4px; margin-bottom:16px; font-size:13px; line-height:1.65; color:#7C2D12; }
+.attest .req { display:flex; gap:10px; margin-top:12px; }
+.attest input[type=checkbox] { width:18px; height:18px; flex-shrink:0; margin-top:1px;
+  accent-color:var(--orange); cursor:pointer; }
+.attest label { cursor:pointer; user-select:none; font-weight:600; color:#451A03; }
+
+.signer-fields { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; }
+.signer-fields .full { grid-column:1/-1; }
+.field-label { display:block; font-size:11px; text-transform:uppercase; letter-spacing:.5px;
+  color:var(--mgray); margin-bottom:4px; font-weight:700; }
+.field-input { width:100%; padding:9px 12px; border:1px solid var(--border); border-radius:4px;
+  font-size:14px; font-family:inherit; background:#fff; }
+.field-input:focus { outline:none; border-color:var(--blue); box-shadow:0 0 0 3px rgba(27,79,138,.1); }
+.field-input.err { border-color:var(--red); background:#FEF2F2; }
+
+.sig-wrap { border:2px dashed var(--border); border-radius:6px; background:#FAFBFC;
+  position:relative; touch-action:none; }
+.sig-wrap.signed { border-color:var(--green); background:#fff; border-style:solid; }
+.sig-canvas { display:block; width:100%; height:180px; cursor:crosshair; touch-action:none; }
+.sig-placeholder { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  color:#BBB; font-size:14px; pointer-events:none; font-style:italic; }
+.sig-wrap.signed .sig-placeholder { display:none; }
+.sig-toolbar { display:flex; justify-content:space-between; align-items:center;
+  padding:8px 14px; background:#F8FAFC; border-top:1px solid var(--border);
+  border-radius:0 0 6px 6px; font-size:12px; color:var(--mgray); }
+.sig-toolbar button { background:none; border:none; color:var(--blue); cursor:pointer;
+  font-size:12px; padding:4px 10px; font-family:inherit; }
+.sig-toolbar button:hover { text-decoration:underline; }
+.sig-toolbar .hint { font-size:11px; }
+
+/* Submit */
+.btn-approve { width:100%; padding:18px; background:var(--orange); color:#fff;
+  border:none; border-radius:6px; font-size:16px; font-weight:800;
+  cursor:pointer; transition:all .15s; letter-spacing:.5px;
+  margin-top:18px; text-transform:uppercase; }
+.btn-approve:hover:not(:disabled) { background:#CF6A1A; transform:translateY(-1px);
+  box-shadow:0 4px 12px rgba(232,119,34,.3); }
+.btn-approve:disabled { background:#CBD5E1; cursor:not-allowed; }
+.btn-approve.loading { background:#666; pointer-events:none; }
+
+/* Empty / error states */
+.center-msg { background:#fff; padding:50px 30px; text-align:center; border-radius:8px;
+  border:1px solid var(--border); }
+.center-msg h2 { color:var(--blue); margin-bottom:10px; }
+.center-msg p  { color:var(--mgray); max-width:520px; margin:0 auto 8px; line-height:1.6; }
+.preview-actions { margin-top:20px; }
+.preview-btn { background:var(--blue); color:#fff; border:none; padding:10px 22px;
+  border-radius:4px; cursor:pointer; font-size:13px; font-weight:700; }
+
+/* Success screen */
+.success-screen { display:none; background:#fff; border:2px solid var(--green);
+  padding:40px 30px; border-radius:8px; text-align:center; }
+.success-screen .check { font-size:48px; color:var(--green); margin-bottom:14px; }
+.success-screen h2 { color:var(--green); margin-bottom:8px; }
+.success-screen p  { color:var(--mgray); margin-bottom:6px; max-width:540px; margin-left:auto; margin-right:auto; }
+.success-ref { background:var(--lgreen); color:var(--green); padding:8px 18px;
+  border-radius:20px; font-weight:700; display:inline-block; margin-top:14px; letter-spacing:.5px; }
+.success-actions { margin-top:24px; }
+.success-actions button { margin:0 6px; padding:10px 22px; border:none; border-radius:4px;
+  font-size:13px; font-weight:700; cursor:pointer; }
+.btn-print { background:var(--blue); color:#fff; }
+.btn-secondary { background:var(--lgray); color:#111; border:1px solid var(--border)!important; }
+
+/* Footer */
+.doc-foot { margin-top:30px; padding:24px 0; text-align:center;
+  font-size:11px; color:var(--mgray); border-top:1px solid var(--border); }
+
+/* Print */
+@media print {
+  .topbar, .approve-card, .preview-actions, .success-actions, .doc-foot { display:none!important; }
+  body { background:#fff; }
+  .shell { max-width:100%; padding:0; }
+  .card, .doc-head { box-shadow:none; page-break-inside:avoid; }
+  .success-screen { border:none; padding:0; }
+}
+
+/* Responsive */
+@media (max-width:720px) {
+  .topbar { flex-direction:column; gap:6px; padding:12px 16px; text-align:center; }
+  .topbar .tagline { text-align:center; }
+  .doc-meta { grid-template-columns:1fr; gap:14px; }
+  .spec-grid { grid-template-columns:1fr; }
+  .signer-fields { grid-template-columns:1fr; }
+  .price-total { font-size:15px; }
+  .price-total .pv { font-size:18px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Top bar -->
+<div class="topbar">
+  <div>
+    <div class="brand">Doortronix<span>USA</span></div>
+    <div class="sub">Manufactured in Malakoff, Texas</div>
+  </div>
+  <div>
+    <div class="tagline"><strong>(888) 453-5196</strong></div>
+    <div class="tagline">orders@doortronixusa.com</div>
+  </div>
+</div>
+
+<div class="shell" id="shell">
+
+  <!-- No-data state -->
+  <div class="center-msg" id="empty-state">
+    <h2>Order Confirmation</h2>
+    <p>This page is opened from a personalized link sent by Doortronix USA after your quote has been reviewed.</p>
+    <p>If you received an order confirmation email, please use the link in that email to open your order for review and approval.</p>
+    <p style="margin-top:16px;"><strong>Need help?</strong> Call <a href="tel:+18884535196">(888) 453-5196</a> or email <a href="mailto:orders@doortronixusa.com">orders@doortronixusa.com</a></p>
+    <div class="preview-actions">
+      <button class="preview-btn" onclick="loadSample()">Load Sample Order (Preview)</button>
+      <button class="preview-btn" onclick="loadSample('fsl-bi')">Preview FSL Bi-Part</button>
+      <button class="preview-btn" onclick="loadSample('fbo-single-lh')">Preview FBO Single LH</button>
+      <button class="preview-btn" onclick="loadSample('fbo-single-rh')">Preview FBO Single RH</button>
+      <button class="preview-btn" onclick="loadSample('fsl-single-lh')">Preview FSL Single LH</button>
+      <button class="preview-btn" onclick="loadSample('fsl-single-rh')">Preview FSL Single RH</button>
+    </div>
+  </div>
+
+  <!-- Order content (hidden until data loaded) -->
+  <div id="order-content" style="display:none;">
+
+    <!-- Document header -->
+    <div class="doc-head">
+      <span class="status-banner status-pending" id="status-banner">Pending Customer Approval</span>
+      <div class="doc-title">Order Confirmation</div>
+      <div class="doc-sub">This is a binding order confirmation. Please review every line carefully. Your signature below authorizes Doortronix to begin fabrication.</div>
+      <div class="doc-meta">
+        <div>
+          <div class="item">Reference</div>
+          <div class="val" id="ref-num">DTX-—</div>
+        </div>
+        <div>
+          <div class="item">Issued</div>
+          <div class="val" id="issued-date">—</div>
+        </div>
+        <div>
+          <div class="item">Quoted Lead Time</div>
+          <div class="val" id="lead-time">—</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Customer & Project -->
+    <div class="card">
+      <div class="card-head">Customer &amp; Project</div>
+      <div class="card-body">
+        <div class="spec-grid" id="customer-grid"></div>
+      </div>
+    </div>
+
+    <!-- Door specs + drawing combined -->
+    <div class="card">
+      <div class="card-head">Door System — Approved Specification</div>
+      <div class="card-body">
+        <div class="spec-grid" id="door-grid"></div>
+      </div>
+      <div class="drawing-wrap">
+        <svg id="door-svg" viewBox="0 0 840 420" preserveAspectRatio="xMidYMid meet"></svg>
+      </div>
+      <div class="drawing-wrap">
+        <svg id="plan-svg" viewBox="0 0 840 480" preserveAspectRatio="xMidYMid meet"></svg>
+      </div>
+    </div>
+
+    <!-- Add-ons -->
+    <div class="card" id="addons-card">
+      <div class="card-head">Add-Ons &amp; Options</div>
+      <div class="card-body" id="addons-body"></div>
+    </div>
+
+    <!-- Pricing -->
+    <div class="card">
+      <div class="card-head">Pricing — Final</div>
+      <div class="card-body">
+        <div id="price-lines"></div>
+        <div class="price-total">
+          <span>Order Total</span>
+          <span class="pv" id="grand-total">$—</span>
+        </div>
+        <div class="deposit-callout" id="deposit-callout" style="display:none;">
+          <span class="label">Deposit due to begin fabrication</span>
+          <span class="amount" id="deposit-amount">—</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Terms -->
+    <div class="card">
+      <div class="card-head">Lead Time, Freight &amp; Terms</div>
+      <div class="card-body">
+        <ul class="terms-list" id="terms-list"></ul>
+      </div>
+    </div>
+
+    <!-- Notes -->
+    <div class="card" id="notes-card" style="display:none;">
+      <div class="card-head">Special Instructions / Notes</div>
+      <div class="card-body">
+        <div class="notes-box" id="notes-box"></div>
+      </div>
+    </div>
+
+    <!-- Approval -->
+    <div class="card approve-card" id="approve-card">
+      <div class="card-head">Customer Approval &amp; Signature</div>
+      <div class="card-body">
+
+        <div class="attest">
+          <strong>Read carefully before signing.</strong> By signing below, I confirm that:
+          <ul style="margin:8px 0 8px 22px; line-height:1.65;">
+            <li>I am authorized to approve this order on behalf of the customer listed above.</li>
+            <li>All dimensions, finishes, glass, hardware, and configuration above are correct and final.</li>
+            <li>I authorize Doortronix to begin fabrication on receipt of this signed confirmation and the deposit shown above.</li>
+            <li>Changes requested after fabrication starts may incur re-engineering, restocking, or freight fees.</li>
+            <li>Standard lead times are quoted in business days from receipt of signed confirmation and cleared deposit.</li>
+          </ul>
+          <div class="req">
+            <input type="checkbox" id="attest-check">
+            <label for="attest-check">I have read and agree to the terms above. The specifications shown are correct.</label>
+          </div>
+        </div>
+
+        <div class="signer-fields">
+          <div>
+            <label class="field-label" for="signer-name">Your Full Name *</label>
+            <input type="text" class="field-input" id="signer-name" placeholder="First and last name" autocomplete="name">
+          </div>
+          <div>
+            <label class="field-label" for="signer-title">Title / Role *</label>
+            <input type="text" class="field-input" id="signer-title" placeholder="e.g. Project Manager" autocomplete="organization-title">
+          </div>
+          <div class="full">
+            <label class="field-label">Signature *</label>
+            <div class="sig-wrap" id="sig-wrap">
+              <canvas class="sig-canvas" id="sig-canvas"></canvas>
+              <div class="sig-placeholder" id="sig-placeholder">Sign here with mouse, finger, or stylus</div>
+              <div class="sig-toolbar">
+                <span class="hint">Signed on <span id="sig-date">—</span></span>
+                <button type="button" onclick="clearSig()">Clear signature</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button type="button" class="btn-approve" id="btn-approve" onclick="submitApproval()" disabled>
+          Approve &amp; Authorize Fabrication →
+        </button>
+      </div>
+    </div>
+
+  </div><!-- /#order-content -->
+
+  <!-- Success screen -->
+  <div class="success-screen" id="success-screen">
+    <div class="check">✓</div>
+    <h2>Order Approved</h2>
+    <p>Your signed order confirmation has been transmitted to Doortronix.</p>
+    <p>You will receive an email copy for your records within a few minutes, along with a deposit invoice.</p>
+    <p>Fabrication will begin once the deposit clears. <strong>Lead time starts from that date.</strong></p>
+    <div class="success-ref" id="success-ref">DTX-—</div>
+    <div class="success-actions">
+      <button class="btn-print" onclick="window.print()">Print / Save PDF Copy</button>
+    </div>
+  </div>
+
+  <div class="doc-foot">
+    Doortronix USA · Manufactured in Malakoff, Texas · (888) 453-5196 · doortronixusa.com<br>
+    This document constitutes a binding agreement upon electronic signature pursuant to the E-SIGN Act (15 U.S.C. 7001) and applicable state UETA.
+  </div>
+
+</div><!-- /.shell -->
+
+<script>
+// ════════════════════════════════════════════════════════════════════════
+//  ORDER CONFIRMATION — Doortronix USA
+//  Receives order data via ?d=<base64-json> URL parameter
+//  Sales generates the link from quote data + firm pricing → emails customer
+//  Customer reviews → signs → submits → fabrication authorized
+// ════════════════════════════════════════════════════════════════════════
+
+// ── Submission endpoint — different from quote form to separate signed orders ──
+const FORMSPREE = "https://formspree.io/f/mykorzwy";  // TODO: dedicated endpoint
+const SIXTEENTH_LABELS = ['','1/16','1/8','3/16','1/4','5/16','3/8','7/16','1/2','9/16','5/8','11/16','3/4','13/16','7/8','15/16'];
+
+const CONFIGS = {
+  'fbo-single-rh': { label:'FBO Single — RH', code:'SX-SO',       isFBO:true,  isBi:false },
+  'fbo-single-lh': { label:'FBO Single — LH', code:'SO-SX',       isFBO:true,  isBi:false },
+  'fsl-single-rh': { label:'FSL Single — RH', code:'SX-O',        isFBO:false, isBi:false },
+  'fsl-single-lh': { label:'FSL Single — LH', code:'O-SX',        isFBO:false, isBi:false },
+  'fbo-bi':        { label:'FBO Bi-Part',     code:'SO-SX-SX-SO', isFBO:true,  isBi:true  },
+  'fsl-bi':        { label:'FSL Bi-Part',     code:'O-SX-SX-O',   isFBO:false, isBi:true  },
+};
+
+// Current order state — populated from URL or sample
+let ORDER = null;
+
+// ── Encode / decode helpers (URL-safe base64) ───────────────────────────
+function encodeOrder(obj) {
+  const json = JSON.stringify(obj);
+  return btoa(unescape(encodeURIComponent(json))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+}
+function decodeOrder(str) {
+  const b64 = str.replace(/-/g,'+').replace(/_/g,'/');
+  const pad = b64.length % 4 ? '='.repeat(4 - b64.length % 4) : '';
+  const json = decodeURIComponent(escape(atob(b64 + pad)));
+  return JSON.parse(json);
+}
+
+// ── Load from URL ───────────────────────────────────────────────────────
+function loadFromURL() {
+  const params = new URLSearchParams(location.search);
+  const d = params.get('d');
+  if (!d) return false;
+  try {
+    ORDER = decodeOrder(d);
+    return true;
+  } catch (err) {
+    console.error('Failed to decode order data:', err);
+    document.getElementById('empty-state').innerHTML =
+      '<h2 style="color:#DC2626;">Invalid Order Link</h2>'
+      + '<p>The order link you used appears to be corrupted or incomplete.</p>'
+      + '<p>Please contact us at <a href="tel:+18884535196">(888) 453-5196</a> to receive a new link.</p>';
+    return false;
+  }
+}
+
+// ── Sample order for previewing ─────────────────────────────────────────
+function loadSample(configKey) {
+  ORDER = JSON.parse(JSON.stringify(SAMPLE_ORDER));
+  if (configKey) ORDER.door.configKey = configKey;
+  renderOrder();
+}
+
+const SAMPLE_ORDER = {
+  ref: 'DTX-' + Date.now().toString().slice(-6),
+  issuedDate: new Date().toISOString().slice(0,10),
+  leadTime: '3–4 weeks from cleared deposit',
+
+  customer: {
+    name: 'Adam Mannino',
+    company: 'Mannino Glass Co.',
+    role: 'Project Manager',
+    phone: '(555) 123-4567',
+    email: 'sample@example.com',
+  },
+  project: {
+    name: 'Walgreens Renovation — Tyler Plaza',
+    location: 'Tyler, TX',
+    po: 'PO-24819',
+    targetShip: '2026-07-15',
+    quantity: 1,
+  },
+
+  door: {
+    configKey: 'fbo-bi',
+    frameFinish: 'Clear Anodized',
+    doorGlassPrep: '1/4" Tempered',
+    transom: false,
+    transomGlassPrep: null,
+    transomVerticals: 0,
+    ftthFt: 0, ftthIn: 0,
+    stileWidth: 'medium',                 // 'narrow' | 'medium'
+    bottomRail: '6in',                    // 'std' | '6in' | '10in'
+    muntin: '2" Muntin (std)',
+    threshold: 'No Center Threshold',
+    sensor: 'Standard Optex (incl.)',
+    alarmContacts: 'None',
+
+    widthFt: 10, widthIn: 0, width16: 0,
+    heightFt: 7, heightIn: 6, height16: 0,
+    netOpening: '4\'-0"',
+  },
+
+  addons: [
+    { name: 'Adams Rite 8600 Hookbolt Lock', qty: 2 },
+    { name: 'Battery Backup (UPS)', qty: 1 },
+  ],
+
+  pricing: {
+    lines: [
+      { label: 'FBO Bi-Part Base (SO-SX-SX-SO)', amount: 3900 },
+      { label: 'Medium Stile (3-3/4")', amount: 250 },
+      { label: '6" Bottom Rail', amount: 180 },
+      { label: 'Adams Rite 8600 Hookbolt Lock (×2)', amount: 640 },
+      { label: 'Battery Backup (UPS)', amount: 425 },
+    ],
+    unitTotal: 5395,
+    qty: 1,
+    grandTotal: 5395,
+    depositPct: 50,
+    depositAmount: 2698,
+    currency: 'USD',
+  },
+
+  terms: [
+    'Lead time of 3–4 weeks begins from cleared deposit payment, not signed confirmation date.',
+    'Freight not included. Estimate of $850 will be quoted at ship time based on destination.',
+    'Glass is supplied by others (FBO/FSL configurations). Door system ships ready for glaziers.',
+    'Electrical: 120 VAC, 15A dedicated circuit required at site — by others.',
+    'Title transfers and risk of loss passes to buyer at our shipping dock.',
+    'Standard 1-year limited warranty against defects in materials and workmanship.',
+  ],
+
+  notes: 'Coordinate ship date with site GC (Acme Construction). Site contact: Tom Riley (903) 555-0199.',
+};
+
+// ── Render order to DOM ─────────────────────────────────────────────────
+function renderOrder() {
+  if (!ORDER) return;
+
+  document.getElementById('empty-state').style.display = 'none';
+  document.getElementById('order-content').style.display = 'block';
+
+  // Header
+  document.getElementById('ref-num').textContent = ORDER.ref || 'DTX-—';
+  document.getElementById('issued-date').textContent = formatDate(ORDER.issuedDate);
+  document.getElementById('lead-time').textContent = ORDER.leadTime || '—';
+
+  // Customer & project
+  const c = ORDER.customer || {}, p = ORDER.project || {};
+  document.getElementById('customer-grid').innerHTML = [
+    ['Name', c.name],
+    ['Company', c.company],
+    ['Role', c.role],
+    ['Phone', c.phone],
+    ['Email', c.email],
+    ['Project', p.name],
+    ['Location', p.location],
+    ['PO #', p.po],
+    ['Target Ship', formatDate(p.targetShip)],
+    ['Quantity', (p.quantity || 1) + ' opening(s)'],
+  ].map(([k,v]) => specRow(k,v)).join('');
+
+  // Door specs
+  const d = ORDER.door || {};
+  const cfg = CONFIGS[d.configKey];
+  const configLabel = cfg ? cfg.label + ' (' + cfg.code + ')' : (d.configLabel || '—');
+  const stileLabel = d.stileWidth === 'medium' ? 'Medium 3-3/4"' : 'Narrow (std)';
+  const railLabel = d.bottomRail === '6in' ? '6"' : d.bottomRail === '10in' ? '10"' : '4" (std)';
+
+  const doorSpecs = [
+    ['Configuration', configLabel],
+    ['Frame Finish', d.frameFinish],
+    ['Door Glass Prep', d.doorGlassPrep],
+    ['Stile Width', stileLabel],
+    ['Bottom Rail', railLabel],
+    ['Horizontal Muntin', d.muntin],
+    ['Threshold', d.threshold],
+    ['Sensor', d.sensor],
+    ['Frame Width', getWidthStr()],
+    ['Frame Height', d.transom ? getFTTHStr() + ' (FTTH)' : getHeightStr()],
+    ['Net Opening', getClearOpeningStr() || d.netOpening],
+    ['Alarm Contacts', d.alarmContacts],
+  ];
+  if (d.transom) {
+    doorSpecs.splice(3, 0,
+      ['Transom Glass Prep', d.transomGlassPrep || '—'],
+      ['Transom Verticals', d.transomVerticals || '0']);
+  }
+  document.getElementById('door-grid').innerHTML = doorSpecs
+    .filter(([,v]) => v !== undefined && v !== null && v !== '')
+    .map(([k,v]) => specRow(k,v)).join('');
+
+  // Add-ons
+  const addons = ORDER.addons || [];
+  const addonsCard = document.getElementById('addons-card');
+  if (addons.length === 0) {
+    addonsCard.style.display = 'none';
+  } else {
+    document.getElementById('addons-body').innerHTML =
+      '<div class="spec-grid">' +
+      addons.map(a => specRow(a.name, a.qty > 1 ? '× ' + a.qty : '✓ Included')).join('') +
+      '</div>';
+  }
+
+  // Pricing
+  const pr = ORDER.pricing || {};
+  const lines = pr.lines || [];
+  document.getElementById('price-lines').innerHTML = lines.map(l =>
+    `<div class="price-line"><span class="pk">${escHtml(l.label)}</span><span class="pv">$${fmtNum(l.amount)}</span></div>`
+  ).join('') + (pr.qty > 1 ? `<div class="price-subtotal"><span>× ${pr.qty} openings</span><span>$${fmtNum(pr.grandTotal)}</span></div>` : '');
+  document.getElementById('grand-total').textContent = '$' + fmtNum(pr.grandTotal || 0);
+
+  // Deposit
+  if (pr.depositAmount) {
+    document.getElementById('deposit-callout').style.display = 'flex';
+    document.getElementById('deposit-amount').textContent =
+      '$' + fmtNum(pr.depositAmount) + (pr.depositPct ? '  (' + pr.depositPct + '%)' : '');
+  }
+
+  // Terms
+  const terms = ORDER.terms || [];
+  document.getElementById('terms-list').innerHTML = terms.map(t => `<li>${escHtml(t)}</li>`).join('');
+
+  // Notes
+  if (ORDER.notes && ORDER.notes.trim()) {
+    document.getElementById('notes-card').style.display = 'block';
+    document.getElementById('notes-box').textContent = ORDER.notes;
+  }
+
+  // Drawings — elevation + plan view
+  drawDoor();
+  drawPlanView();
+
+  // Init signature pad after layout
+  setTimeout(initSigPad, 0);
+}
+
+function specRow(k, v) {
+  return `<div class="spec-row"><span class="k">${escHtml(k)}</span><span class="v">${escHtml(v || '—')}</span></div>`;
+}
+function escHtml(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c =>
+    ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function fmtNum(n) { return Number(n || 0).toLocaleString('en-US'); }
+function formatDate(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso + (iso.length === 10 ? 'T12:00:00' : ''));
+  if (isNaN(d)) return iso;
+  return d.toLocaleDateString('en-US', { weekday:'short', year:'numeric', month:'short', day:'numeric' });
+}
+
+// ── Dimension helpers ───────────────────────────────────────────────────
+function getWidthIn() {
+  const d = ORDER.door;
+  const ft = parseInt(d.widthFt); if (!ft) return null;
+  return ft*12 + (parseInt(d.widthIn) || 0) + (parseInt(d.width16) || 0)/16;
+}
+function getHeightIn() {
+  const d = ORDER.door;
+  const ft = parseInt(d.heightFt); if (!ft) return null;
+  return ft*12 + (parseInt(d.heightIn) || 0) + (parseInt(d.height16) || 0)/16;
+}
+function getFTTHIn() {
+  const d = ORDER.door;
+  return (parseInt(d.ftthFt) || 0) * 12 + (parseInt(d.ftthIn) || 0);
+}
+function getWidthStr() {
+  const d = ORDER.door;
+  const ft = d.widthFt; if (!ft) return '—';
+  const i = parseInt(d.widthIn) || 0, s = parseInt(d.width16) || 0;
+  const inStr = i === 0 && s === 0 ? '' : i + (s ? '-' + SIXTEENTH_LABELS[s] : '') + '"';
+  return `${ft}'${inStr}`;
+}
+function getHeightStr() {
+  const d = ORDER.door;
+  const ft = d.heightFt; if (!ft) return '—';
+  const i = parseInt(d.heightIn) || 0, s = parseInt(d.height16) || 0;
+  const inStr = i === 0 && s === 0 ? '' : i + (s ? '-' + SIXTEENTH_LABELS[s] : '') + '"';
+  return `${ft}'${inStr}`;
+}
+function getFTTHStr() {
+  const d = ORDER.door;
+  const ft = parseInt(d.ftthFt) || 0;
+  if (!ft) return getHeightStr();
+  const i = parseInt(d.ftthIn) || 0;
+  return `${ft}'${i ? i + '"' : ''}`;
+}
+// Clear door opening (slide open) — cut-sheet formula; NOT full breakout opening
+function calcClearOpeningIn() {
+  const d = ORDER.door;
+  const cfg = CONFIGS[d.configKey];
+  const wIn = getWidthIn();
+  if (!cfg || wIn === null) return null;
+  return cfg.isBi ? 36 + (wIn - 96) * 0.5 : 33 + (wIn - 78) * 0.5;
+}
+function getClearOpeningStr() {
+  const n = calcClearOpeningIn();
+  if (n === null || n <= 0) return ORDER.door.netOpening || '';
+  const ft = Math.floor(n / 12);
+  const rem = Math.round(n - ft * 12);
+  return rem === 0 ? `${ft}'-0"` : `${ft}'-${rem}"`;
+}
+function getStileW(sc) {
+  const d = ORDER.door;
+  return Math.max(3, sc * (d.stileWidth === 'medium' ? 3.75 : 2.5));
+}
+
+// ── Shared scale between elevation and plan view (set by drawDoor) ─────
+let _doorScale = null;
+
+// ── Drawing colors based on finish ──────────────────────────────────────
+function isDarkBronze() { return ORDER.door.frameFinish === '313 Dark Bronze'; }
+function getFrameColor() { return isDarkBronze() ? '#3D2710' : '#B8C4D0'; }
+function getPanelFill()  { return isDarkBronze() ? '#4A3018' : '#7A9CB8'; }
+function getGlazeFill() {
+  return isDarkBronze()
+    ? { fill:'#C8B8A0', stroke:'#8A7060' }
+    : { fill:'#E8F4FD', stroke:'#A8D4F5' };
+}
+
+// ════════════════════════════════════════════════════════════════════════
+//  SVG drawing — adapted from quote-single.html drawDoor(isConf=true)
+//  Reads from ORDER object instead of form fields
+// ════════════════════════════════════════════════════════════════════════
+function drawDoor() {
+  const svg = document.getElementById('door-svg');
+  if (!svg) return;
+  svg.innerHTML = '';
+  const vW = 840, vH = 420;
+  const d = ORDER.door;
+  const cfg = CONFIGS[d.configKey];
+  if (!cfg) return;
+
+  const glaze = getGlazeFill();
+  const frame = getFrameColor();
+  const hasTransom = !!d.transom;
+  const isBi = cfg.isBi;
+  const isLH = cfg.code === 'O-SX' || cfg.code === 'SO-SX' || cfg.code === 'O-SX-SX-O';
+  const isFBO = cfg.isFBO;
+
+  const titleH = 72;                     // header (40) + "EXTERIOR ELEVATION" (~32)
+  const widthDimGap = 32;                // space from door bottom to width dim line
+  const realW      = getWidthIn()  || (isBi ? 120 : 84);
+  const realFrameH = getHeightIn() || 90;
+  const realFtth   = hasTransom && d.ftthFt ? getFTTHIn() : realFrameH;
+  const realTransomIn = hasTransom ? Math.max(0, realFtth - realFrameH) : 0;
+  const realTotalH = realFtth;
+
+  const mL = 60, mR = 60, mT = titleH + 20;
+  // Bottom margin: width dim gap + label/tick clearance below door
+  const mB = widthDimGap + 26;
+  const availW = vW - mL - mR, availH = vH - mT - mB;
+  const sc  = Math.min(availW / realW, availH / realTotalH);
+  const dW  = realW * sc, dH = realTotalH * sc;
+  const dX  = mL + (availW - dW) / 2;
+  const dY  = mT + (availH - dH) / 2;
+  const widthDimY = dY + dH + widthDimGap;
+
+  const jambW   = Math.max(2, sc * 1.75);
+  const railIn  = d.bottomRail === '10in' ? 10 : d.bottomRail === '6in' ? 6 : 4;
+  const stileW  = getStileW(sc);
+  const topRH   = Math.max(3, sc * 4.0);
+  const btmRH   = Math.max(3, sc * railIn);
+  const muntH   = Math.max(1.5, sc * 2.0);
+  const sillH   = Math.max(1, sc * 0.5);
+  const headerH = Math.max(10, sc * 8.0);
+  const frameT  = jambW;
+  const panelFill = getPanelFill();
+  const transomH  = realTransomIn * sc;
+
+  function r(x,y,w,h,fill,stroke,sw,rx) {
+    const el = document.createElementNS('http://www.w3.org/2000/svg','rect');
+    Object.entries({x,y,width:Math.max(w,0),height:Math.max(h,0),fill:fill||'none',rx:rx||0}).forEach(([k,v])=>el.setAttribute(k,v));
+    if(stroke){el.setAttribute('stroke',stroke);el.setAttribute('stroke-width',sw||1);}
+    svg.appendChild(el); return el;
+  }
+  function l(x1,y1,x2,y2,s,sw,dash) {
+    const el = document.createElementNS('http://www.w3.org/2000/svg','line');
+    Object.entries({x1,y1,x2,y2,stroke:s||'#666','stroke-width':sw||1}).forEach(([k,v])=>el.setAttribute(k,v));
+    if(dash) el.setAttribute('stroke-dasharray',dash);
+    svg.appendChild(el);
+  }
+  function t(x,y,str,size,fill,anchor,weight) {
+    const el = document.createElementNS('http://www.w3.org/2000/svg','text');
+    Object.entries({x,y,'font-size':size||11,fill:fill||'#111','text-anchor':anchor||'middle','font-weight':weight||'normal','font-family':'Arial,sans-serif'}).forEach(([k,v])=>el.setAttribute(k,v));
+    el.textContent = str; svg.appendChild(el); return el;
+  }
+  function path(dStr,fill,stroke,sw,dash) {
+    const el = document.createElementNS('http://www.w3.org/2000/svg','path');
+    el.setAttribute('d',dStr); el.setAttribute('fill',fill||'none');
+    if(stroke){el.setAttribute('stroke',stroke);el.setAttribute('stroke-width',sw||1);}
+    if(dash) el.setAttribute('stroke-dasharray',dash);
+    svg.appendChild(el);
+  }
+  function dimLine(x1,y1,x2,y2,lbl,horiz) {
+    const aw=5, off=7;
+    if (horiz) {
+      l(x1,y1,x2,y2,'#1B4F8A',0.7);
+      l(x1,y1-off,x1,y1+off,'#1B4F8A',0.7); l(x2,y1-off,x2,y1+off,'#1B4F8A',0.7);
+      path(`M${x1},${y1}l${aw},-3l0,6Z`,'#1B4F8A'); path(`M${x2},${y1}l${-aw},-3l0,6Z`,'#1B4F8A');
+      t((x1+x2)/2, y1-8, lbl, 10, '#1B4F8A','middle','700');
+    } else {
+      l(x1,y1,x2,y2,'#1B4F8A',0.7);
+      l(x1-off,y1,x1+off,y1,'#1B4F8A',0.7); l(x1-off,y2,x1+off,y2,'#1B4F8A',0.7);
+      path(`M${x1},${y1}l-3,${aw}l6,0Z`,'#1B4F8A'); path(`M${x1},${y2}l-3,${-aw}l6,0Z`,'#1B4F8A');
+      const cx=x1-4, cy=(y1+y2)/2;
+      const el = t(cx, cy, lbl, 10, '#1B4F8A','middle','700');
+      el.setAttribute('transform',`rotate(-90,${cx},${cy})`);
+    }
+  }
+
+  // Top branded header bar
+  r(0, 0, vW, 40, '#1B4F8A');
+  t(16, 18, 'DOORTRONIX USA', 14, '#fff', 'start', '700');
+  t(16, 33, 'ORDER CONFIRMATION DRAWING', 9, '#B8CCE4', 'start', '700');
+  t(vW-14, 18, cfg.label + ' (' + cfg.code + ')', 11, '#E87722', 'end', '700');
+  t(vW-14, 33, getWidthStr() + ' W × ' + (hasTransom ? getFTTHStr() : getHeightStr()) + ' H  |  ' + (d.frameFinish || ''), 9, '#fff', 'end');
+
+  // Section title "EXTERIOR ELEVATION" — black on white, like the cut sheet
+  t(vW/2, 60, 'EXTERIOR ELEVATION', 13, '#111', 'middle', '700');
+  l(vW/2 - 90, 64, vW/2 + 90, 64, '#1B4F8A', 1);
+
+  // Outer frame
+  r(dX, dY, dW, dH, '#E8EEF4', frame, 2);
+  // Sill
+  r(dX, dY+dH-sillH, dW, sillH, frame);
+
+  // Transom
+  if (hasTransom) {
+    const numV = parseInt(d.transomVerticals) || 0;
+    const tx = dX + frameT, tw = dW - frameT * 2;
+    const tGlassY = dY + frameT;
+    const glassStopH = Math.max(1.5, sc * 1);
+    const tGlassH = transomH - frameT - glassStopH;
+    const _pX = dX + frameT, _pW = dW - frameT * 2;
+    const vertXs = [];
+    if (numV > 0) {
+      if (numV === 2 && isBi) {
+        const gap = 3, panW2 = (_pW - gap * 3) / 4;
+        vertXs.push(_pX + panW2 + gap / 2);
+        vertXs.push(_pX + (panW2 + gap) * 3 - gap / 2);
+      } else {
+        for (let i = 1; i <= numV; i++) vertXs.push(tx + tw * i / (numV + 1));
+      }
+    }
+    const liteEdges = [tx, ...vertXs.flatMap(vx => [vx - frameT/2, vx + frameT/2]), tx + tw];
+    for (let i = 0; i < liteEdges.length - 1; i += 2) {
+      const lx = liteEdges[i], lw = liteEdges[i+1] - liteEdges[i];
+      if (lw > 1) r(lx, tGlassY, lw, tGlassH, glaze.fill, glaze.stroke, 0.5);
+    }
+    r(dX, dY, dW, frameT, frame);
+    r(dX, dY, frameT, transomH, frame);
+    r(dX + dW - frameT, dY, frameT, transomH, frame);
+    vertXs.forEach(vx => r(vx - frameT/2, tGlassY, frameT, tGlassH, frame));
+    l(dX, tGlassY + tGlassH + glassStopH/2, dX + dW, tGlassY + tGlassH + glassStopH/2, frame, glassStopH);
+    const firstLiteW = vertXs.length > 0 ? (vertXs[0] - frameT/2) - tx : tw;
+    t(tx + firstLiteW/2, tGlassY + tGlassH/2 + 3, 'TRANSOM', 8, '#aaa', 'middle');
+  }
+
+  // Header
+  r(dX+frameT, dY+transomH, dW-frameT*2, headerH, frame, '#777', 1);
+  t(dX+dW/2, dY+transomH+headerH*0.68, 'HEADER / OPERATOR', 8, '#fff', 'middle', '700');
+
+  // Jambs
+  r(dX, dY+transomH, frameT, dH-transomH-sillH, frame);
+  r(dX+dW-frameT, dY+transomH, frameT, dH-transomH-sillH, frame);
+
+  // Panel zone
+  const pY = dY+transomH+headerH+2, pH = dH-transomH-headerH-sillH-4;
+  const pX = dX+frameT, pW = dW-frameT*2;
+  const muntY = realFrameH > 96
+    ? (pY + pH) - (42 * sc) - muntH / 2
+    : pY + topRH + (pH - topRH - btmRH) / 2 - muntH / 2;
+
+  let panels = [];
+  let junctionFace = null; // { x, y1, y2 } — drawn after muntins
+  function glassRect(px, pw, noInnerL, noInnerR) {
+    const lIn = noInnerL ? 0 : stileW;
+    const rIn = noInnerR ? 0 : stileW;
+    return { x: px + lIn, w: pw - lIn - rIn };
+  }
+  function drawP(px, py, pw, ph, strokeColor, sw, breakoutDir, noInnerL, noInnerR) {
+    r(px, py, pw, ph, panelFill, strokeColor, sw);
+    const lIn = noInnerL ? 0 : stileW;
+    const rIn = noInnerR ? 0 : stileW;
+    const gx = px+lIn, gy = py+topRH, gw = pw-lIn-rIn, gh = ph-topRH-btmRH;
+    if (gw > 2 && gh > 2) r(gx, gy, gw, gh, glaze.fill, 'none', 0);
+    if (lIn > 0) r(px, py, lIn, ph, panelFill, 'none', 0);
+    if (rIn > 0) r(px+pw-rIn, py, rIn, ph, panelFill, 'none', 0);
+    r(px, py, pw, topRH, panelFill, 'none', 0);
+    r(px, py+ph-btmRH, pw, btmRH, panelFill, 'none', 0);
+  }
+
+  if (isBi) {
+    const panW = pW / 4;
+    const soW  = panW - stileW / 2;
+    const sxW  = panW + stileW / 2;
+    const G    = panW - stileW * 1.5;
+    const x1 = pX;
+    const x2 = x1 + soW;
+    const x3 = x2 + sxW;
+    const x4 = x3 + sxW;
+    const sdStroke = isFBO ? frame : '#AABBC8', sdSW = isFBO ? 1.5 : 1;
+    const biStY = pY + topRH;
+    const biStH = pH - topRH - btmRH;
+    if (isFBO) {
+      drawP(x2, pY, sxW, pH, frame, 1.5, false, true, false);
+      drawP(x3, pY, sxW, pH, frame, 1.5, false, false, true);
+      drawP(x1, pY, soW, pH, sdStroke, sdSW, false, false, true);
+      drawP(x4, pY, soW, pH, sdStroke, sdSW, false, true, false);
+      // Fill outer overlap stile zones + blank artifact lines in rail zones
+      r(x2,           biStY, stileW, biStH, panelFill, 'none', 0);
+      r(x2 - 1,       pY,              stileW + 2, topRH,  panelFill, 'none', 0);
+      r(x2 - 1,       pY + pH - btmRH, stileW + 2, btmRH,  panelFill, 'none', 0);
+      r(x4 - stileW,     biStY, stileW, biStH, panelFill, 'none', 0);
+      r(x4 - stileW - 1, pY,              stileW + 2, topRH,  panelFill, 'none', 0);
+      r(x4 - stileW - 1, pY + pH - btmRH, stileW + 2, btmRH,  panelFill, 'none', 0);
+      // SO in front at both outer junctions — face lines in rail zones only
+      l(x2 + stileW, biStY - stileW, x2 + stileW, biStY,          frame, 1.5);
+      l(x2 + stileW, biStY + biStH,  x2 + stileW, pY + pH,        frame, 1.5);
+      l(x4 - stileW, biStY - stileW, x4 - stileW, biStY,          frame, 1.5);
+      l(x4 - stileW, biStY + biStH,  x4 - stileW, pY + pH,        frame, 1.5);
+    } else {
+      drawP(x1, pY, soW, pH, sdStroke, sdSW, false, false, true);
+      drawP(x4, pY, soW, pH, sdStroke, sdSW, false, true, false);
+      drawP(x2, pY, sxW, pH, frame, 1.5, false);
+      drawP(x3, pY, sxW, pH, frame, 1.5, false);
+    }
+    r(x3 - stileW, pY, stileW * 2, pH, panelFill, frame, 0.4);
+    l(x3, pY, x3, pY + pH, frame, 1.2);
+    const aY = muntY - 8;
+    l(x2 + stileW + 3, aY, x3 - stileW - 3, aY, '#1B4F8A', 1.2, '5,3');
+    path(`M${x2 + stileW + 3},${aY}l5,-3.5l0,7Z`, '#1B4F8A');
+    l(x3 + stileW + 3, aY, x4 - stileW - 3, aY, '#1B4F8A', 1.2, '5,3');
+    path(`M${x4 - stileW - 3},${aY}l-5,-3.5l0,7Z`, '#1B4F8A');
+    panels = [{ x: x1 + stileW, w: G }, { x: x2 + stileW, w: G }, { x: x3 + stileW, w: G }, { x: x4, w: G }];
+  } else {
+    // Single slide — fixed narrower, SX wider → equal glass width G between stiles
+    const panW = pW / 2;
+    const soW  = panW - stileW / 2;
+    const sxW  = panW + stileW / 2;
+    const G    = panW - stileW * 1.5;
+    const sdStroke = isFBO ? frame : '#AABBC8', sdSW = isFBO ? 1.5 : 1;
+    const aY = muntY - 8;
+    const meetX = pX + panW;
+    const stY = pY + topRH;
+    const stH = pH - topRH - btmRH;
+    // Junction overlap — fill between rails; front-panel face on correct side
+    function drawJunctionStile() {
+      // Fill stile zone between rails
+      r(meetX - stileW / 2, stY, stileW, stH, panelFill, 'none', 0);
+      // Blank the panel-edge artifact through top and bottom rail zones
+      r(meetX - stileW / 2 - 1, pY, stileW + 2, topRH, panelFill, 'none', 0);
+      r(meetX - stileW / 2 - 1, pY + pH - btmRH, stileW + 2, btmRH, panelFill, 'none', 0);
+      // Record face line segments (in rail zones, not glass zone)
+      const faceOnRight = isFBO ? isLH : !isLH;
+      const fX = faceOnRight ? meetX + stileW / 2 : meetX - stileW / 2;
+      junctionFace = { x: fX, stY, stH };
+    }
+    if (isLH) {
+      const jX = pX + soW;
+      if (isFBO) {
+        drawP(jX, pY, sxW, pH, frame, 1.5, false, true, false);
+        drawP(pX, pY, soW, pH, sdStroke, sdSW, false, false, true);
+        drawJunctionStile();
+        r(pX, stY, stileW, stH, panelFill, 'none', 0);
+      } else {
+        drawP(pX, pY, soW, pH, sdStroke, sdSW, false, false, true);
+        drawP(jX, pY, sxW, pH, frame, 1.5, false, true, false);
+        drawJunctionStile();
+      }
+      l(jX + stileW + 3, aY, jX + sxW - stileW - 3, aY, '#1B4F8A', 1.2, '5,3');
+      path(`M${jX + stileW + 3},${aY}l5,-3.5l0,7Z`, '#1B4F8A');
+      panels = [{ x: pX + stileW, w: G }, { x: jX + stileW, w: G }];
+    } else {
+      const jX = pX + sxW;
+      if (isFBO) {
+        drawP(pX, pY, sxW, pH, frame, 1.5, false, false, true);
+        drawP(jX, pY, soW, pH, sdStroke, sdSW, false, true, false);
+        drawJunctionStile();
+        r(jX + soW - stileW, stY, stileW, stH, panelFill, 'none', 0);
+      } else {
+        drawP(jX, pY, soW, pH, sdStroke, sdSW, false, true, false);
+        drawP(pX, pY, sxW, pH, frame, 1.5, false, false, true);
+        drawJunctionStile();
+      }
+      l(pX + stileW + 3, aY, jX - stileW - 3, aY, '#1B4F8A', 1.2, '5,3');
+      path(`M${jX - stileW - 3},${aY}l-5,-3.5l0,7Z`, '#1B4F8A');
+      panels = [{ x: pX + stileW, w: G }, { x: jX, w: G }];
+    }
+  }
+
+  if (panels.length > 0 && d.muntin && d.muntin !== 'No Muntin') {
+    panels.forEach(({x, w}) => r(x, muntY, w, muntH, panelFill, frame, 0.4));
+  }
+
+  // Junction face line: two short segments in the rail zones (not the glass zone)
+  if (junctionFace) {
+    const { x: jfX, stY: jfStY, stH: jfStH } = junctionFace;
+    l(jfX, jfStY - stileW, jfX, jfStY,           frame, 1.5); // top rail
+    l(jfX, jfStY + jfStH,  jfX, jfStY + jfStH + btmRH, frame, 1.5); // bottom rail
+  }
+
+  // Dim lines — width below the door, height on left
+  dimLine(dX, widthDimY, dX+dW, widthDimY, getWidthStr(), true);
+  dimLine(dX-32, dY, dX-32, dY+dH, hasTransom ? getFTTHStr() : getHeightStr(), false);
+
+  // Share horizontal scale with plan view so they line up
+  _doorScale = { dX, dW, sc, vW };
+}
+
+// ════════════════════════════════════════════════════════════════════════
+//  PLAN VIEW — top-down operation diagram (cut-sheet style)
+//  - Width-aligned with elevation: frame outer = dX/dW; panels in opening inside jambs
+//  - FBO: SO front track, SX back track (SO-SX-SX-SO)
+//  - FSL: O back track, SX front track (O-SX-SX-O); only SX break out
+// ════════════════════════════════════════════════════════════════════════
+function drawPlanView() {
+  const svg = document.getElementById('plan-svg');
+  if (!svg) return;
+  svg.innerHTML = '';
+  const vW = 840, vH = 480;
+  svg.setAttribute('viewBox', `0 0 ${vW} ${vH}`);
+  const d = ORDER.door;
+  const cfg = CONFIGS[d.configKey];
+  if (!cfg) return;
+  if (!_doorScale) return;
+
+  const frame = getFrameColor();
+  const panelFill = getPanelFill();
+  const isBi = cfg.isBi;
+  const isLH = cfg.code === 'O-SX' || cfg.code === 'SO-SX' || cfg.code === 'O-SX-SX-O';
+  const isFBO = cfg.isFBO;
+
+  const frameX = _doorScale.dX;   // outer frame left — matches elevation
+  const frameW = _doorScale.dW;   // outer frame width — matches elevation dim
+  const sc     = _doorScale.sc;
+  const jambW  = Math.max(2, sc * 1.75);
+  const openX  = frameX + jambW;  // panel opening left (inside jambs)
+  const openW  = frameW - jambW * 2;
+
+  // Panel depth in plan = 1-3/4" at same scale as elevation width
+  const panH  = Math.max(2, sc * 1.75);
+  const trackSep = panH;          // back track → front track offset (1-3/4")
+
+  function r(x,y,w,h,fill,stroke,sw,rx) {
+    const el = document.createElementNS('http://www.w3.org/2000/svg','rect');
+    Object.entries({x,y,width:Math.max(w,0),height:Math.max(h,0),fill:fill||'none',rx:rx||0}).forEach(([k,v])=>el.setAttribute(k,v));
+    if(stroke){el.setAttribute('stroke',stroke);el.setAttribute('stroke-width',sw||1);}
+    svg.appendChild(el); return el;
+  }
+  function l(x1,y1,x2,y2,s,sw,dash) {
+    const el = document.createElementNS('http://www.w3.org/2000/svg','line');
+    Object.entries({x1,y1,x2,y2,stroke:s||'#666','stroke-width':sw||1}).forEach(([k,v])=>el.setAttribute(k,v));
+    if(dash) el.setAttribute('stroke-dasharray',dash);
+    svg.appendChild(el);
+  }
+  function t(x,y,str,size,fill,anchor,weight) {
+    const el = document.createElementNS('http://www.w3.org/2000/svg','text');
+    Object.entries({x,y,'font-size':size||11,fill:fill||'#111','text-anchor':anchor||'middle','font-weight':weight||'normal','font-family':'Arial,sans-serif'}).forEach(([k,v])=>el.setAttribute(k,v));
+    el.textContent = str; svg.appendChild(el); return el;
+  }
+  function path(dStr,fill,stroke,sw,dash) {
+    const el = document.createElementNS('http://www.w3.org/2000/svg','path');
+    el.setAttribute('d',dStr); el.setAttribute('fill',fill||'none');
+    if(stroke){el.setAttribute('stroke',stroke);el.setAttribute('stroke-width',sw||1);}
+    if(dash) el.setAttribute('stroke-dasharray',dash);
+    svg.appendChild(el);
+  }
+  function dimLine(x1,y1,x2,y2,lbl) {
+    const aw=5, off=6;
+    l(x1,y1,x2,y2,'#1B4F8A',0.7);
+    l(x1,y1-off,x1,y1+off,'#1B4F8A',0.7); l(x2,y1-off,x2,y1+off,'#1B4F8A',0.7);
+    path(`M${x1},${y1}l${aw},-3l0,6Z`,'#1B4F8A'); path(`M${x2},${y1}l${-aw},-3l0,6Z`,'#1B4F8A');
+    t((x1+x2)/2, y1-4, lbl, 10, '#1B4F8A','middle','700');
+  }
+  function inlineArrow(centerX, y, color, pointsLeft) {
+    color = color || '#1B4F8A';
+    const lineLen = 16, headSize = 6, half = lineLen / 2;
+    const startX = centerX - half, endX = centerX + half;
+    if (pointsLeft) {
+      l(endX, y, startX, y, color, 1.4);
+      path(`M${startX},${y} L${startX + headSize},${y - 3.5} L${startX + headSize},${y + 3.5} Z`, color);
+    } else {
+      l(startX, y, endX, y, color, 1.4);
+      path(`M${endX},${y} L${endX - headSize},${y - 3.5} L${endX - headSize},${y + 3.5} Z`, color);
+    }
+  }
+
+  t(vW/2, 22, 'PLAN', 13, '#111', 'middle', '700');
+  l(vW/2 - 32, 26, vW/2 + 32, 26, '#1B4F8A', 1);
+
+  const stileW = getStileW(sc);
+  const halfStile = stileW / 2;     // each panel extends halfStile → overlap zone = full stileW
+  const numPanels = isBi ? 4 : 2;
+  const eqW = openW / numPanels;
+  const panelLen = eqW + halfStile; // bipart panel length in plan
+  let fixedPanelLen, sxPanelLen;
+  if (isBi) {
+    fixedPanelLen = panelLen;
+    sxPanelLen = panelLen;
+  } else {
+    // Single plan — both panels lengthened halfStile at junction (overlap = stileW: 2-1/2" or 3-3/4")
+    fixedPanelLen = eqW + halfStile;
+    sxPanelLen = eqW + halfStile;
+  }
+  const openInset = sc * 3;        // SX stops 3" short of fully open to jamb
+  const meetX = openX + openW / 2; // center mullion where SX panels meet
+  const stateLblX = frameX - 14;
+
+  const fixedLbl = isFBO ? 'SO' : 'O';
+
+  // Closed positions — fixed/SX overlap by stileW at junction (matches elevation)
+  const pos = {
+    biLeftFixed:  openX,
+    biLeftSX:     meetX - panelLen,
+    biRightSX:    meetX,
+    biRightFixed: openX + eqW * 3 - halfStile,
+    lhFixed:      openX,
+    lhSX:         openX + openW - sxPanelLen,
+    rhSX:         openX,
+    rhFixed:      openX + eqW - halfStile,
+  };
+
+  // Plan depth: interior (back) at top, exterior (front) at bottom (+Y)
+  const yBack  = (y) => y;
+  const yFront = (y) => y + trackSep;
+  // FBO: fixed front / slide back  |  FSL: fixed back / slide front
+  const yFixedTrack = (y) => isFBO ? yFront(y) : yBack(y);
+  const ySlideTrack = (y) => isFBO ? yBack(y)  : yFront(y);
+  const yStateLbl   = (y) => y + trackSep / 2 + panH / 2 + 3;
+
+  function drawPlanPanel(x, y, w, label, isSO) {
+    const stroke = (isSO && !isFBO) ? '#7E96AE' : frame;
+    const sw = (isSO && !isFBO) ? 1.2 : 1.6;
+    r(x + 0.5, y, w - 1, panH, panelFill, stroke, sw);
+    if (w > 28 && panH >= 7) {
+      t(x + w/2, y + panH/2 + 3, label, Math.min(9.5, panH + 1), '#fff', 'middle', '700');
+    }
+  }
+
+  // Jamb profile in plan: 1-3/4" × 4-1/2" — outer faces align with elevation frame
+  const jambDepth = Math.max(4, sc * 4.5);
+
+  function jambMarks(yBase) {
+    const trackDepth = trackSep + panH;
+    const jambY = yBase - (jambDepth - trackDepth) / 2;
+    r(frameX,              jambY, jambW, jambDepth, frame, '#94A3B8', 0.9);
+    r(frameX + frameW - jambW, jambY, jambW, jambDepth, frame, '#94A3B8', 0.9);
+  }
+
+  // ── CLOSED ──────────────────────────────────────────────────────────
+  const yClosedBase = 56;
+  t(stateLblX, yStateLbl(yClosedBase), 'Closed', 11, '#1B4F8A', 'end', '700');
+  jambMarks(yClosedBase);
+
+  if (isBi) {
+    drawPlanPanel(pos.biLeftFixed,  yFixedTrack(yClosedBase), panelLen, fixedLbl, true);
+    drawPlanPanel(pos.biLeftSX,     ySlideTrack(yClosedBase), panelLen, 'SX', false);
+    drawPlanPanel(pos.biRightSX,    ySlideTrack(yClosedBase), panelLen, 'SX', false);
+    drawPlanPanel(pos.biRightFixed, yFixedTrack(yClosedBase), panelLen, fixedLbl, true);
+    inlineArrow(pos.biLeftSX + panelLen / 2,  ySlideTrack(yClosedBase) - 5, '#1B4F8A', true);
+    inlineArrow(pos.biRightSX + panelLen / 2, ySlideTrack(yClosedBase) - 5, '#1B4F8A', false);
+  } else if (isLH) {
+    drawPlanPanel(pos.lhFixed, yFixedTrack(yClosedBase), fixedPanelLen, fixedLbl, true);
+    drawPlanPanel(pos.lhSX,    ySlideTrack(yClosedBase), sxPanelLen, 'SX', false);
+    inlineArrow(pos.lhSX + sxPanelLen / 2, ySlideTrack(yClosedBase) - 5, '#1B4F8A', true);
+  } else {
+    drawPlanPanel(pos.rhSX,    ySlideTrack(yClosedBase), sxPanelLen, 'SX', false);
+    drawPlanPanel(pos.rhFixed, yFixedTrack(yClosedBase), fixedPanelLen, fixedLbl, true);
+    inlineArrow(pos.rhSX + sxPanelLen / 2, ySlideTrack(yClosedBase) - 5, '#1B4F8A', false);
+  }
+
+  // ── OPEN — SX stops 3" short of fully open; fixed panels stay at jambs ─
+  const yOpenBase = yFront(yClosedBase) + panH + 34;
+  const yOpenDim  = ySlideTrack(yOpenBase) + panH + 14;
+  t(stateLblX, yStateLbl(yOpenBase), 'Open', 11, '#1B4F8A', 'end', '700');
+  jambMarks(yOpenBase);
+
+  if (isBi) {
+    const leftSxX  = openX + openInset;
+    const rightSxX = pos.biRightFixed - openInset;
+    drawPlanPanel(pos.biLeftFixed,  yFixedTrack(yOpenBase), panelLen, fixedLbl, true);
+    drawPlanPanel(leftSxX,          ySlideTrack(yOpenBase), panelLen, 'SX', false);
+    drawPlanPanel(rightSxX,         ySlideTrack(yOpenBase), panelLen, 'SX', false);
+    drawPlanPanel(pos.biRightFixed, yFixedTrack(yOpenBase), panelLen, fixedLbl, true);
+    dimLine(leftSxX + panelLen, yOpenDim, rightSxX, yOpenDim,
+            'Clear Door Opening: ' + getClearOpeningStr());
+  } else if (isLH) {
+    const sxOpenX = openX + openInset;
+    drawPlanPanel(pos.lhFixed, yFixedTrack(yOpenBase), fixedPanelLen, fixedLbl, true);
+    drawPlanPanel(sxOpenX,   ySlideTrack(yOpenBase), sxPanelLen, 'SX', false);
+    dimLine(sxOpenX + sxPanelLen, yOpenDim, openX + openW, yOpenDim,
+            'Clear Door Opening: ' + getClearOpeningStr());
+  } else {
+    const sxOpenX = openX + openW - sxPanelLen - openInset;
+    drawPlanPanel(sxOpenX,   ySlideTrack(yOpenBase), sxPanelLen, 'SX', false);
+    drawPlanPanel(pos.rhFixed, yFixedTrack(yOpenBase), fixedPanelLen, fixedLbl, true);
+    dimLine(openX, yOpenDim, sxOpenX, yOpenDim,
+            'Clear Door Opening: ' + getClearOpeningStr());
+  }
+
+  // ── BREAKAWAY — footprints + SX nose arcs (fixed panels: FBO only) ───
+  const yBreakBase = yFront(yOpenBase) + panH + 36;
+  const swingR = isBi ? panelLen : Math.max(fixedPanelLen, sxPanelLen);
+  const yBreakFootLbl = ySlideTrack(yBreakBase) + panH + swingR + 20;
+  t(stateLblX, yStateLbl(yBreakBase), 'Breakaway', 11, '#1B4F8A', 'end', '700');
+  jambMarks(yBreakBase);
+
+  if (isBi) {
+    drawPlanPanel(pos.biLeftFixed,  yFixedTrack(yBreakBase), panelLen, fixedLbl, true);
+    drawPlanPanel(pos.biLeftSX,     ySlideTrack(yBreakBase), panelLen, 'SX', false);
+    drawPlanPanel(pos.biRightSX,    ySlideTrack(yBreakBase), panelLen, 'SX', false);
+    drawPlanPanel(pos.biRightFixed, yFixedTrack(yBreakBase), panelLen, fixedLbl, true);
+  } else if (isLH) {
+    drawPlanPanel(pos.lhFixed, yFixedTrack(yBreakBase), fixedPanelLen, fixedLbl, true);
+    drawPlanPanel(pos.lhSX,    ySlideTrack(yBreakBase), sxPanelLen, 'SX', false);
+  } else {
+    drawPlanPanel(pos.rhSX,    ySlideTrack(yBreakBase), sxPanelLen, 'SX', false);
+    drawPlanPanel(pos.rhFixed, yFixedTrack(yBreakBase), fixedPanelLen, fixedLbl, true);
+  }
+
+  // Nose arc (dotted quarter-circle) + vertical swung line from hinge at panel edge
+  function noseArc(hx, hy, nxRest, nyRest, nxOut, nyOut, sweep, radius) {
+    const r = radius != null ? radius : swingR;
+    path(`M ${nxRest} ${nyRest} A ${r} ${r} 0 0 ${sweep} ${nxOut} ${nyOut}`,
+         'none', '#1B4F8A', 1.3, '4,4');
+    l(hx, hy, hx, hy + r, frame, 1.4);
+  }
+
+  if (isBi) {
+    const yFixed = yFixedTrack(yBreakBase) + panH / 2;
+    const ySlide = ySlideTrack(yBreakBase) + panH / 2;
+    const leftSxHeel  = pos.biLeftSX;
+    const leftSxNose  = pos.biLeftSX + panelLen;
+    const rightSxHeel = pos.biRightSX + panelLen;
+    const rightSxNose = pos.biRightSX;
+    if (isFBO) noseArc(frameX, yFixed, pos.biLeftFixed + panelLen, yFixed, frameX, yFixed + swingR, 1);
+    noseArc(leftSxHeel, ySlide, leftSxNose, ySlide, leftSxHeel, ySlide + swingR, 1);
+    noseArc(rightSxHeel, ySlide, rightSxNose, ySlide, rightSxHeel, ySlide + swingR, 0);
+    if (isFBO) noseArc(frameX + frameW, yFixed, pos.biRightFixed, yFixed, frameX + frameW, yFixed + swingR, 0);
+  } else if (isLH) {
+    const yFixed = yFixedTrack(yBreakBase) + panH / 2;
+    const ySlide = ySlideTrack(yBreakBase) + panH / 2;
+    if (isFBO) noseArc(openX, yFixed, pos.lhFixed + fixedPanelLen, yFixed, openX, yFixed + fixedPanelLen, 1, fixedPanelLen);
+    noseArc(pos.lhSX, ySlide, pos.lhSX + sxPanelLen, ySlide, pos.lhSX, ySlide + sxPanelLen, 1, sxPanelLen);
+  } else {
+    const yFixed = yFixedTrack(yBreakBase) + panH / 2;
+    const ySlide = ySlideTrack(yBreakBase) + panH / 2;
+    noseArc(pos.rhSX + sxPanelLen, ySlide, pos.rhSX, ySlide, pos.rhSX + sxPanelLen, ySlide + sxPanelLen, 0, sxPanelLen);
+    if (isFBO) noseArc(openX + openW, yFixed, pos.rhFixed, yFixed, openX + openW, yFixed + fixedPanelLen, 0, fixedPanelLen);
+  }
+
+  const capX = 22;
+  const capY = (yBreakBase + yBreakFootLbl) / 2;
+  const capEl = t(capX, capY,
+    isFBO ? 'Panels Can Breakout From Any Position Of Travel'
+          : 'SX Panels Can Breakout From Any Position Of Travel',
+    9, '#1B4F8A', 'middle', '700');
+  capEl.setAttribute('transform', `rotate(-90 ${capX} ${capY})`);
+
+  t(vW/2, yBreakFootLbl,
+    isFBO ? ('FBO — All ' + numPanels + ' panels pivot open for full emergency egress')
+          : ('FSL — Only sliding (SX) panels break out; fixed panels (O) do not'),
+    9.5, '#666', 'middle', '700');
+
+  const footY = vH - 38;
+  r(0, footY, vW, 38, '#1B4F8A');
+  l(0, footY, vW, footY, '#E87722', 2);
+  t(14, footY+15, 'DOORTRONIX USA — ORDER CONFIRMATION DRAWING', 10, '#fff', 'start', '700');
+  t(14, footY+29, 'Ref: ' + (ORDER.ref || '—') + '  |  ' + formatDate(ORDER.issuedDate) + '  |  Malakoff, TX  |  (888) 453-5196', 8, '#B8CCE4', 'start');
+  t(vW-14, footY+15, cfg.label + ' (' + cfg.code + ')  |  ' + (d.frameFinish || ''), 10, '#E87722', 'end', '700');
+  t(vW-14, footY+29, getWidthStr() + ' W × ' + (d.transom ? getFTTHStr() : getHeightStr()) + ' H', 9, '#fff', 'end', '700');
+}
+
+// ════════════════════════════════════════════════════════════════════════
+//  Signature pad — minimal, no external dependency
+// ════════════════════════════════════════════════════════════════════════
+let sigCanvas, sigCtx, sigDrawing = false, sigHasInk = false, sigSignedAt = null;
+
+function initSigPad() {
+  sigCanvas = document.getElementById('sig-canvas');
+  if (!sigCanvas) return;
+
+  // Match canvas internal resolution to displayed size for sharp signature
+  const dpr = window.devicePixelRatio || 1;
+  const rect = sigCanvas.getBoundingClientRect();
+  sigCanvas.width = rect.width * dpr;
+  sigCanvas.height = rect.height * dpr;
+  sigCtx = sigCanvas.getContext('2d');
+  sigCtx.scale(dpr, dpr);
+  sigCtx.lineWidth = 2.2;
+  sigCtx.lineCap = 'round';
+  sigCtx.lineJoin = 'round';
+  sigCtx.strokeStyle = '#0F172A';
+
+  const start = e => {
+    sigDrawing = true;
+    const { x, y } = sigPoint(e);
+    sigCtx.beginPath();
+    sigCtx.moveTo(x, y);
+    e.preventDefault();
+  };
+  const move = e => {
+    if (!sigDrawing) return;
+    const { x, y } = sigPoint(e);
+    sigCtx.lineTo(x, y);
+    sigCtx.stroke();
+    if (!sigHasInk) {
+      sigHasInk = true;
+      sigSignedAt = new Date();
+      document.getElementById('sig-wrap').classList.add('signed');
+      document.getElementById('sig-date').textContent =
+        sigSignedAt.toLocaleString('en-US', { dateStyle:'medium', timeStyle:'short' });
+      checkApproveBtn();
+    }
+    e.preventDefault();
+  };
+  const end = () => { sigDrawing = false; };
+
+  sigCanvas.addEventListener('mousedown', start);
+  sigCanvas.addEventListener('mousemove', move);
+  sigCanvas.addEventListener('mouseup', end);
+  sigCanvas.addEventListener('mouseleave', end);
+  sigCanvas.addEventListener('touchstart', start, { passive:false });
+  sigCanvas.addEventListener('touchmove', move, { passive:false });
+  sigCanvas.addEventListener('touchend', end);
+
+  // Watch attestation + signer fields
+  document.getElementById('attest-check').addEventListener('change', checkApproveBtn);
+  document.getElementById('signer-name').addEventListener('input', checkApproveBtn);
+  document.getElementById('signer-title').addEventListener('input', checkApproveBtn);
+}
+
+function sigPoint(e) {
+  const rect = sigCanvas.getBoundingClientRect();
+  const touch = e.touches ? e.touches[0] : e;
+  return {
+    x: touch.clientX - rect.left,
+    y: touch.clientY - rect.top,
+  };
+}
+
+function clearSig() {
+  if (!sigCtx) return;
+  const dpr = window.devicePixelRatio || 1;
+  sigCtx.clearRect(0, 0, sigCanvas.width / dpr, sigCanvas.height / dpr);
+  sigHasInk = false;
+  sigSignedAt = null;
+  document.getElementById('sig-wrap').classList.remove('signed');
+  document.getElementById('sig-date').textContent = '—';
+  checkApproveBtn();
+}
+
+function checkApproveBtn() {
+  const ok =
+    document.getElementById('attest-check').checked &&
+    document.getElementById('signer-name').value.trim().length > 0 &&
+    document.getElementById('signer-title').value.trim().length > 0 &&
+    sigHasInk;
+  document.getElementById('btn-approve').disabled = !ok;
+}
+
+// ════════════════════════════════════════════════════════════════════════
+//  Submit approval
+// ════════════════════════════════════════════════════════════════════════
+async function submitApproval() {
+  const name = document.getElementById('signer-name').value.trim();
+  const title = document.getElementById('signer-title').value.trim();
+  const attested = document.getElementById('attest-check').checked;
+
+  if (!name || !title || !attested || !sigHasInk) {
+    alert('Please complete all required fields, accept the terms, and sign before submitting.');
+    return;
+  }
+
+  const btn = document.getElementById('btn-approve');
+  btn.classList.add('loading');
+  btn.textContent = 'Submitting…';
+
+  const sigDataUrl = sigCanvas.toDataURL('image/png');
+  const payload = {
+    _subject: `SIGNED Order Confirmation — ${ORDER.ref}`,
+    ref: ORDER.ref,
+    issuedDate: ORDER.issuedDate,
+    signedAt: new Date().toISOString(),
+    signedBy: name,
+    signedByTitle: title,
+    attestationAccepted: attested,
+    customer: ORDER.customer,
+    project: ORDER.project,
+    door: ORDER.door,
+    addons: ORDER.addons,
+    pricing: ORDER.pricing,
+    notes: ORDER.notes,
+    signatureImage: sigDataUrl,
+    userAgent: navigator.userAgent,
+    pageUrl: location.href.split('?')[0],
+  };
+
+  if (FORMSPREE && !FORMSPREE.includes('YOUR_FORM_ID')) {
+    try {
+      await fetch(FORMSPREE, {
+        method: 'POST',
+        headers: { 'Content-Type':'application/json', 'Accept':'application/json' },
+        body: JSON.stringify(payload),
+      });
+    } catch (err) {
+      console.warn('Submit error:', err);
+    }
+  }
+
+  showSuccess();
+}
+
+function showSuccess() {
+  document.getElementById('order-content').style.display = 'none';
+  document.getElementById('success-screen').style.display = 'block';
+  document.getElementById('success-ref').textContent = ORDER.ref;
+  // Update status banner for any printout
+  const banner = document.getElementById('status-banner');
+  if (banner) { banner.className = 'status-banner status-signed'; banner.textContent = 'Signed & Authorized'; }
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+
+// ════════════════════════════════════════════════════════════════════════
+//  Boot
+// ════════════════════════════════════════════════════════════════════════
+if (loadFromURL()) {
+  renderOrder();
+} else {
+  const preview = new URLSearchParams(location.search).get('preview');
+  if (preview && CONFIGS[preview]) loadSample(preview);
+}
+
+// Re-render drawing on resize for crisp SVG
+window.addEventListener('resize', () => {
+  if (ORDER) {
+    // Re-init signature pad too — canvas needs resize
+    if (sigCanvas) {
+      const data = sigHasInk ? sigCanvas.toDataURL() : null;
+      initSigPad();
+      if (data) {
+        const img = new Image();
+        img.onload = () => sigCtx.drawImage(img, 0, 0, sigCanvas.clientWidth, sigCanvas.clientHeight);
+        img.src = data;
+      }
+    }
+    drawDoor();
+    drawPlanView();
+  }
+});
+
+// Expose for console debugging
+window._encodeOrder = encodeOrder;
+window._sample = SAMPLE_ORDER;
+</script>
+</body>
+</html>

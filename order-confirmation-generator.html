@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generate Order Confirmation — Doortronix (Internal)</title>
+<style>
+* { box-sizing:border-box; margin:0; padding:0; }
+body { font-family:Arial, Helvetica, sans-serif; font-size:14px;
+  background:#F0F4F8; color:#111; min-height:100vh; padding:20px; }
+
+:root {
+  --blue:#1B4F8A; --dblue:#163F6E; --orange:#E87722;
+  --lgray:#F2F4F7; --mgray:#6B7280; --border:#D0D5DD;
+  --green:#166534; --lgreen:#DCFCE7; --red:#DC2626;
+}
+
+.shell { max-width:1040px; margin:0 auto; }
+
+.head { background:var(--blue); color:#fff; padding:18px 24px; border-radius:6px 6px 0 0;
+  display:flex; justify-content:space-between; align-items:center; }
+.head .title { font-size:18px; font-weight:700; }
+.head .subtitle { font-size:11px; color:#FED7AA; margin-top:2px; letter-spacing:.5px; text-transform:uppercase; }
+.head .links a { color:#fff; font-size:12px; margin-left:14px; text-decoration:none; }
+.head .links a:hover { text-decoration:underline; }
+
+.warn-banner { background:#FEF3C7; color:#92400E; padding:10px 24px; border:1px solid #FDE68A;
+  font-size:12px; text-align:center; }
+
+.card { background:#fff; border:1px solid var(--border); border-radius:0; margin:0;
+  border-top:none; }
+.card:last-of-type { border-radius:0 0 6px 6px; }
+.card-head { background:var(--lgray); padding:10px 24px; border-bottom:1px solid var(--border);
+  font-size:11px; text-transform:uppercase; letter-spacing:.7px; color:var(--blue); font-weight:700;
+  display:flex; justify-content:space-between; align-items:center; }
+.card-body { padding:18px 24px; }
+
+label { display:block; font-size:11px; text-transform:uppercase; letter-spacing:.5px;
+  color:var(--mgray); margin-bottom:4px; font-weight:700; }
+input[type=text], input[type=email], input[type=tel], input[type=date],
+input[type=number], select, textarea {
+  width:100%; padding:7px 10px; border:1px solid var(--border); border-radius:4px;
+  font-size:13px; font-family:inherit; background:#fff;
+}
+input:focus, select:focus, textarea:focus { outline:none; border-color:var(--blue);
+  box-shadow:0 0 0 2px rgba(27,79,138,.12); }
+textarea { resize:vertical; min-height:60px; }
+
+.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:12px 14px; }
+.grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px 14px; }
+.grid-4 { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:12px 14px; }
+.grid-5 { display:grid; grid-template-columns:1fr 1fr 1fr 1fr 1fr; gap:12px 14px; }
+.full { grid-column:1/-1; }
+.row { margin-bottom:12px; }
+.row:last-child { margin-bottom:0; }
+
+.dim-row { display:grid; grid-template-columns:60px 50px 70px; gap:6px; align-items:center; }
+.dim-row .unit { font-size:11px; color:var(--mgray); }
+
+.lineitem { display:grid; grid-template-columns:1fr 120px 32px; gap:8px; margin-bottom:6px; align-items:center; }
+.btn-row-add { background:none; border:1px dashed var(--border); padding:6px 12px;
+  color:var(--blue); cursor:pointer; font-size:12px; font-weight:600; border-radius:4px; width:100%; margin-top:6px; }
+.btn-row-add:hover { background:#F8FAFC; border-color:var(--blue); }
+.btn-row-del { background:#FEE2E2; color:#991B1B; border:none; cursor:pointer;
+  font-size:18px; font-weight:700; border-radius:4px; padding:0; }
+.btn-row-del:hover { background:#FECACA; }
+
+.hint { font-size:11px; color:var(--mgray); margin-top:3px; }
+
+/* Output */
+.output-card { background:#fff; border:2px solid var(--green); border-radius:6px;
+  margin-top:16px; overflow:hidden; }
+.output-head { background:var(--green); color:#fff; padding:10px 20px; font-weight:700;
+  display:flex; justify-content:space-between; }
+.output-body { padding:18px 24px; }
+.url-box { background:#F8FAFC; border:1px solid var(--border); padding:12px;
+  border-radius:4px; font-family:'Menlo','Monaco','Consolas',monospace; font-size:11px;
+  word-break:break-all; white-space:pre-wrap; max-height:120px; overflow-y:auto; }
+.url-box.short { max-height:48px; }
+
+.action-row { display:flex; gap:8px; margin-top:14px; flex-wrap:wrap; }
+.btn { padding:10px 18px; border:none; border-radius:4px; font-size:13px; font-weight:700;
+  cursor:pointer; font-family:inherit; }
+.btn-primary { background:var(--blue); color:#fff; }
+.btn-primary:hover { background:var(--dblue); }
+.btn-orange { background:var(--orange); color:#fff; }
+.btn-orange:hover { background:#CF6A1A; }
+.btn-secondary { background:var(--lgray); color:#111; border:1px solid var(--border); }
+.btn-secondary:hover { background:#E2E8F0; }
+.btn-large { padding:14px 26px; font-size:15px; }
+
+.email-template { display:none; background:#F8FAFC; border:1px solid var(--border);
+  padding:14px; border-radius:4px; margin-top:14px; font-size:13px; white-space:pre-wrap;
+  line-height:1.6; font-family:'Menlo','Monaco','Consolas',monospace; }
+
+/* JSON viewer */
+.json-toggle { font-size:11px; color:var(--blue); cursor:pointer; text-decoration:underline; }
+.json-box { display:none; background:#1E293B; color:#E2E8F0; padding:14px;
+  border-radius:4px; margin-top:10px; font-family:'Menlo','Monaco','Consolas',monospace;
+  font-size:11px; max-height:300px; overflow:auto; white-space:pre; }
+
+.copied-flash { display:inline-block; margin-left:8px; color:var(--green); font-size:11px; font-weight:700; }
+
+@media (max-width:780px) {
+  .grid-2, .grid-3, .grid-4, .grid-5 { grid-template-columns:1fr; }
+  .dim-row { grid-template-columns:1fr 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <div class="head">
+    <div>
+      <div class="title">Order Confirmation Generator</div>
+      <div class="subtitle">Internal Sales Tool — Doortronix</div>
+    </div>
+    <div class="links">
+      <a href="quote.html" target="_blank">Quote (Bipart) →</a>
+      <a href="quote-single.html" target="_blank">Quote (Single) →</a>
+      <a href="order-confirmation.html?d=" target="_blank" id="preview-link">Preview Customer Page →</a>
+    </div>
+  </div>
+
+  <div class="warn-banner">
+    <strong>Internal use only.</strong> Fill in the firm pricing and terms, generate a URL,
+    then email it to the customer. The link contains all order data — anyone with it can sign.
+  </div>
+
+  <!-- Reference -->
+  <div class="card">
+    <div class="card-head">Order Reference</div>
+    <div class="card-body">
+      <div class="grid-3">
+        <div><label>Reference Number</label>
+          <input type="text" id="g_ref" placeholder="DTX-XXXXXX">
+          <div class="hint">Auto-generated; edit if continuing existing quote.</div>
+        </div>
+        <div><label>Issue Date</label><input type="date" id="g_issued"></div>
+        <div><label>Quoted Lead Time</label><input type="text" id="g_lead" placeholder="3–4 weeks from cleared deposit"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Customer -->
+  <div class="card">
+    <div class="card-head">Customer</div>
+    <div class="card-body">
+      <div class="grid-2">
+        <div><label>Full Name *</label><input type="text" id="g_name"></div>
+        <div><label>Company *</label><input type="text" id="g_company"></div>
+        <div><label>Role / Title</label><input type="text" id="g_role"></div>
+        <div><label>Phone *</label><input type="tel" id="g_phone"></div>
+        <div class="full"><label>Email *</label><input type="email" id="g_email"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Project -->
+  <div class="card">
+    <div class="card-head">Project</div>
+    <div class="card-body">
+      <div class="grid-2">
+        <div><label>Project Name</label><input type="text" id="g_proj_name"></div>
+        <div><label>Location (City, State)</label><input type="text" id="g_proj_loc"></div>
+        <div><label>PO # / Job #</label><input type="text" id="g_proj_po"></div>
+        <div><label>Target Ship Date</label><input type="date" id="g_proj_ship"></div>
+        <div><label>Quantity (openings) *</label><input type="number" id="g_proj_qty" value="1" min="1"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Door spec -->
+  <div class="card">
+    <div class="card-head">Door Specification</div>
+    <div class="card-body">
+
+      <div class="grid-2 row">
+        <div><label>Configuration *</label>
+          <select id="g_config">
+            <option value="">— Select —</option>
+            <option value="fbo-bi">FBO Bi-Part (SO-SX-SX-SO)</option>
+            <option value="fsl-bi">FSL Bi-Part (O-SX-SX-O)</option>
+            <option value="fbo-single-rh">FBO Single — RH (SX-SO)</option>
+            <option value="fbo-single-lh">FBO Single — LH (SO-SX)</option>
+            <option value="fsl-single-rh">FSL Single — RH (SX-O)</option>
+            <option value="fsl-single-lh">FSL Single — LH (O-SX)</option>
+          </select>
+        </div>
+        <div><label>Frame Finish</label>
+          <select id="g_finish">
+            <option>Clear Anodized</option>
+            <option>Dark Bronze Anodized</option>
+            <option>Black Anodized</option>
+            <option>313 Dark Bronze</option>
+            <option>Custom Paint</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid-3 row">
+        <div><label>Door Glass Prep</label>
+          <select id="g_dglass">
+            <option>1/4" Tempered</option>
+            <option>1" Insulated</option>
+            <option>By Others</option>
+          </select>
+        </div>
+        <div><label>Stile Width</label>
+          <select id="g_stile">
+            <option value="narrow">Narrow (std)</option>
+            <option value="medium">Medium 3-3/4"</option>
+          </select>
+        </div>
+        <div><label>Bottom Rail</label>
+          <select id="g_rail">
+            <option value="std">4" (std)</option>
+            <option value="6in">6"</option>
+            <option value="10in">10"</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid-3 row">
+        <div><label>Horizontal Muntin</label>
+          <select id="g_muntin">
+            <option>2" Muntin (std)</option>
+            <option>3" Muntin</option>
+            <option>No Muntin</option>
+          </select>
+        </div>
+        <div><label>Threshold</label>
+          <select id="g_thresh">
+            <option>No Center Threshold</option>
+            <option>Center Threshold</option>
+            <option>ADA Compliant Threshold</option>
+          </select>
+        </div>
+        <div><label>Sensor</label>
+          <select id="g_sensor">
+            <option>Standard Optex (incl.)</option>
+            <option>Optex i-oneXT</option>
+            <option>BEA IXIO</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid-2 row">
+        <div><label>Frame Width *</label>
+          <div class="dim-row">
+            <input type="number" id="g_wft" placeholder="ft" min="0"><span class="unit">ft</span>
+            <input type="number" id="g_win" placeholder="in" min="0" max="11"><span class="unit">in</span>
+          </div>
+        </div>
+        <div><label>Frame Height *</label>
+          <div class="dim-row">
+            <input type="number" id="g_hft" placeholder="ft" min="0"><span class="unit">ft</span>
+            <input type="number" id="g_hin" placeholder="in" min="0" max="11"><span class="unit">in</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-3 row">
+        <div><label><input type="checkbox" id="g_transom" style="width:auto;margin-right:6px;"> Has Transom</label></div>
+        <div id="g_ftth_wrap" style="display:none;"><label>FTTH (header height)</label>
+          <div class="dim-row">
+            <input type="number" id="g_ftth_ft" placeholder="ft" min="0"><span class="unit">ft</span>
+            <input type="number" id="g_ftth_in" placeholder="in" min="0" max="11"><span class="unit">in</span>
+          </div>
+        </div>
+        <div><label>Net Opening</label><input type="text" id="g_netopen" placeholder='e.g. 4&apos;-8"'></div>
+      </div>
+
+      <div class="row">
+        <label>Alarm Contacts</label>
+        <select id="g_alarm">
+          <option>None</option>
+          <option>Monitor Breakout</option>
+          <option>Monitor Door Position</option>
+          <option>Monitor Breakout + Door Position</option>
+        </select>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Add-ons -->
+  <div class="card">
+    <div class="card-head">
+      <span>Add-Ons</span>
+      <button class="btn-row-add" style="width:auto;padding:4px 10px;margin:0;" onclick="addAddonRow()">+ Add</button>
+    </div>
+    <div class="card-body">
+      <div id="g_addons"></div>
+    </div>
+  </div>
+
+  <!-- Pricing -->
+  <div class="card">
+    <div class="card-head">
+      <span>Pricing — Firm</span>
+      <button class="btn-row-add" style="width:auto;padding:4px 10px;margin:0;" onclick="addPriceLine()">+ Add Line</button>
+    </div>
+    <div class="card-body">
+      <div id="g_price_lines"></div>
+      <div class="grid-3" style="margin-top:14px; padding-top:14px; border-top:1px solid var(--border);">
+        <div><label>Grand Total (USD)</label><input type="number" id="g_grand" step="0.01"></div>
+        <div><label>Deposit %</label><input type="number" id="g_dep_pct" value="50" min="0" max="100"></div>
+        <div><label>Deposit Amount</label><input type="number" id="g_dep_amt" step="0.01"></div>
+      </div>
+      <div class="hint" style="margin-top:8px;">Tip: leave Grand Total blank to auto-sum lines × quantity. Deposit amount auto-calculates from %.</div>
+    </div>
+  </div>
+
+  <!-- Terms -->
+  <div class="card">
+    <div class="card-head">Terms (one per line)</div>
+    <div class="card-body">
+      <textarea id="g_terms" rows="6">Lead time begins from cleared deposit payment, not signed confirmation date.
+Freight not included — estimated at ship time based on destination.
+Glass supplied by others on FBO/FSL configurations.
+Electrical: 120 VAC, 15A dedicated circuit at site — by others.
+Title transfers and risk of loss passes to buyer at our shipping dock.
+Standard 1-year limited warranty against defects in materials and workmanship.</textarea>
+    </div>
+  </div>
+
+  <!-- Notes -->
+  <div class="card">
+    <div class="card-head">Special Instructions / Notes (optional)</div>
+    <div class="card-body">
+      <textarea id="g_notes" rows="3" placeholder="Any custom notes that should appear on the customer's confirmation page."></textarea>
+    </div>
+  </div>
+
+  <!-- Generated output -->
+  <div class="output-card">
+    <div class="output-head">
+      <span>Generated Confirmation Link</span>
+      <span class="json-toggle" onclick="toggleJson()" style="color:#fff;">Show JSON</span>
+    </div>
+    <div class="output-body">
+      <label>Customer-facing URL</label>
+      <div class="url-box" id="g_url">— fill in required fields and click Generate —</div>
+      <div class="action-row">
+        <button class="btn btn-orange btn-large" onclick="generate()">Generate URL</button>
+        <button class="btn btn-primary" onclick="copyUrl()">Copy URL</button>
+        <button class="btn btn-secondary" onclick="openPreview()">Open Customer Page →</button>
+        <button class="btn btn-secondary" onclick="showEmail()">Show Email Template</button>
+        <span class="copied-flash" id="copied-flash"></span>
+      </div>
+
+      <div class="email-template" id="email-template"></div>
+      <div class="json-box" id="json-box"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── Auto-fill defaults on load ──
+function todayISO() { return new Date().toISOString().slice(0,10); }
+function genRef() { return 'DTX-' + Date.now().toString().slice(-6); }
+
+document.getElementById('g_ref').value = genRef();
+document.getElementById('g_issued').value = todayISO();
+document.getElementById('g_lead').value = '3–4 weeks from cleared deposit';
+
+// ── Transom toggle ──
+document.getElementById('g_transom').addEventListener('change', e => {
+  document.getElementById('g_ftth_wrap').style.display = e.target.checked ? '' : 'none';
+});
+
+// ── Add-on rows ──
+function addAddonRow(name='', qty=1) {
+  const wrap = document.getElementById('g_addons');
+  const div = document.createElement('div');
+  div.className = 'lineitem';
+  div.innerHTML =
+    `<input type="text" placeholder="e.g. Adams Rite 8600 Hookbolt Lock" value="${escAttr(name)}">
+     <input type="number" placeholder="Qty" value="${qty}" min="1">
+     <button type="button" class="btn-row-del" onclick="this.parentElement.remove()">×</button>`;
+  wrap.appendChild(div);
+}
+
+// ── Price line rows ──
+function addPriceLine(label='', amount='') {
+  const wrap = document.getElementById('g_price_lines');
+  const div = document.createElement('div');
+  div.className = 'lineitem';
+  div.innerHTML =
+    `<input type="text" placeholder="Line item description" value="${escAttr(label)}">
+     <input type="number" placeholder="0.00" step="0.01" value="${amount}" oninput="autoSum()">
+     <button type="button" class="btn-row-del" onclick="this.parentElement.remove(); autoSum();">×</button>`;
+  wrap.appendChild(div);
+}
+function autoSum() {
+  const grandEl = document.getElementById('g_grand');
+  if (grandEl.dataset.manual === '1') return;
+  let sum = 0;
+  document.querySelectorAll('#g_price_lines .lineitem').forEach(row => {
+    sum += parseFloat(row.children[1].value) || 0;
+  });
+  const qty = parseInt(document.getElementById('g_proj_qty').value) || 1;
+  grandEl.value = (sum * qty).toFixed(2);
+  syncDeposit();
+}
+document.getElementById('g_grand').addEventListener('input', function(){
+  this.dataset.manual = '1';
+  syncDeposit();
+});
+document.getElementById('g_proj_qty').addEventListener('input', autoSum);
+document.getElementById('g_dep_pct').addEventListener('input', syncDeposit);
+document.getElementById('g_dep_amt').addEventListener('input', function(){ this.dataset.manual='1'; });
+function syncDeposit() {
+  const amtEl = document.getElementById('g_dep_amt');
+  if (amtEl.dataset.manual === '1') return;
+  const grand = parseFloat(document.getElementById('g_grand').value) || 0;
+  const pct = parseFloat(document.getElementById('g_dep_pct').value) || 0;
+  amtEl.value = (grand * pct / 100).toFixed(2);
+}
+
+// Seed with one empty row each
+addPriceLine();
+addAddonRow();
+
+function escAttr(s) { return String(s||'').replace(/"/g,'&quot;'); }
+
+// ── Build order object from form ──
+function buildOrder() {
+  const cfg = document.getElementById('g_config').value;
+  const transom = document.getElementById('g_transom').checked;
+
+  const door = {
+    configKey: cfg,
+    frameFinish: document.getElementById('g_finish').value,
+    doorGlassPrep: document.getElementById('g_dglass').value,
+    transom: transom,
+    transomGlassPrep: null,
+    transomVerticals: 0,
+    ftthFt: transom ? (parseInt(document.getElementById('g_ftth_ft').value) || 0) : 0,
+    ftthIn: transom ? (parseInt(document.getElementById('g_ftth_in').value) || 0) : 0,
+    stileWidth: document.getElementById('g_stile').value,
+    bottomRail: document.getElementById('g_rail').value,
+    muntin: document.getElementById('g_muntin').value,
+    threshold: document.getElementById('g_thresh').value,
+    sensor: document.getElementById('g_sensor').value,
+    alarmContacts: document.getElementById('g_alarm').value,
+    widthFt: parseInt(document.getElementById('g_wft').value) || 0,
+    widthIn: parseInt(document.getElementById('g_win').value) || 0,
+    width16: 0,
+    heightFt: parseInt(document.getElementById('g_hft').value) || 0,
+    heightIn: parseInt(document.getElementById('g_hin').value) || 0,
+    height16: 0,
+    netOpening: document.getElementById('g_netopen').value || '',
+  };
+
+  const addons = [];
+  document.querySelectorAll('#g_addons .lineitem').forEach(row => {
+    const n = row.children[0].value.trim();
+    if (n) addons.push({ name: n, qty: parseInt(row.children[1].value) || 1 });
+  });
+
+  const lines = [];
+  document.querySelectorAll('#g_price_lines .lineitem').forEach(row => {
+    const lbl = row.children[0].value.trim();
+    const amt = parseFloat(row.children[1].value) || 0;
+    if (lbl && amt) lines.push({ label: lbl, amount: Math.round(amt * 100) / 100 });
+  });
+
+  const qty = parseInt(document.getElementById('g_proj_qty').value) || 1;
+  const grand = parseFloat(document.getElementById('g_grand').value) || 0;
+  const depPct = parseFloat(document.getElementById('g_dep_pct').value) || 0;
+  const depAmt = parseFloat(document.getElementById('g_dep_amt').value) || 0;
+
+  const pricing = {
+    lines,
+    unitTotal: qty > 0 ? Math.round((grand / qty) * 100) / 100 : grand,
+    qty,
+    grandTotal: grand,
+    depositPct: depPct,
+    depositAmount: depAmt,
+    currency: 'USD',
+  };
+
+  const terms = document.getElementById('g_terms').value.split('\n').map(s => s.trim()).filter(Boolean);
+
+  return {
+    ref: document.getElementById('g_ref').value.trim() || genRef(),
+    issuedDate: document.getElementById('g_issued').value || todayISO(),
+    leadTime: document.getElementById('g_lead').value.trim() || '3–4 weeks from cleared deposit',
+    customer: {
+      name: document.getElementById('g_name').value.trim(),
+      company: document.getElementById('g_company').value.trim(),
+      role: document.getElementById('g_role').value.trim(),
+      phone: document.getElementById('g_phone').value.trim(),
+      email: document.getElementById('g_email').value.trim(),
+    },
+    project: {
+      name: document.getElementById('g_proj_name').value.trim(),
+      location: document.getElementById('g_proj_loc').value.trim(),
+      po: document.getElementById('g_proj_po').value.trim(),
+      targetShip: document.getElementById('g_proj_ship').value,
+      quantity: qty,
+    },
+    door,
+    addons,
+    pricing,
+    terms,
+    notes: document.getElementById('g_notes').value.trim(),
+  };
+}
+
+function validate(order) {
+  const errs = [];
+  if (!order.customer.name) errs.push('Customer name required');
+  if (!order.customer.email) errs.push('Customer email required');
+  if (!order.customer.phone) errs.push('Customer phone required');
+  if (!order.customer.company) errs.push('Customer company required');
+  if (!order.door.configKey) errs.push('Door configuration required');
+  if (!order.door.widthFt) errs.push('Frame width required');
+  if (!order.door.heightFt) errs.push('Frame height required');
+  if (!order.pricing.grandTotal) errs.push('Grand total required');
+  return errs;
+}
+
+// ── Encode helpers (must match order-confirmation.html) ──
+function encodeOrder(obj) {
+  const json = JSON.stringify(obj);
+  return btoa(unescape(encodeURIComponent(json))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+}
+
+let _lastUrl = '';
+function generate() {
+  const order = buildOrder();
+  const errs = validate(order);
+  if (errs.length) {
+    alert('Please fix the following:\n\n• ' + errs.join('\n• '));
+    return;
+  }
+  const encoded = encodeOrder(order);
+  const base = location.origin + location.pathname.replace(/[^/]+$/, '') + 'order-confirmation.html';
+  _lastUrl = base + '?d=' + encoded;
+  document.getElementById('g_url').textContent = _lastUrl;
+  document.getElementById('json-box').textContent = JSON.stringify(order, null, 2);
+  document.getElementById('preview-link').href = _lastUrl;
+}
+
+function copyUrl() {
+  if (!_lastUrl) { alert('Click Generate URL first.'); return; }
+  navigator.clipboard.writeText(_lastUrl).then(() => {
+    const flash = document.getElementById('copied-flash');
+    flash.textContent = '✓ Copied to clipboard';
+    setTimeout(() => flash.textContent = '', 2500);
+  });
+}
+
+function openPreview() {
+  if (!_lastUrl) { alert('Click Generate URL first.'); return; }
+  window.open(_lastUrl, '_blank');
+}
+
+function toggleJson() {
+  const box = document.getElementById('json-box');
+  box.style.display = box.style.display === 'block' ? 'none' : 'block';
+}
+
+function showEmail() {
+  if (!_lastUrl) { alert('Click Generate URL first.'); return; }
+  const order = buildOrder();
+  const c = order.customer, p = order.project;
+  const tmpl = `Subject: Doortronix Order Confirmation — Ready for Your Approval (${order.ref})
+
+Hi ${c.name.split(' ')[0] || c.name},
+
+Thank you for your order with Doortronix USA. Your order confirmation is ready for review and approval.
+
+Project: ${p.name || '(no project name)'}
+Reference: ${order.ref}
+Total: $${order.pricing.grandTotal.toLocaleString()} USD${order.pricing.depositAmount ? `\nDeposit due to begin fabrication: $${order.pricing.depositAmount.toLocaleString()} USD` : ''}
+
+Please review every detail carefully — dimensions, finish, hardware, glass, and pricing — at the link below. When you're satisfied, sign and authorize fabrication directly on the page:
+
+${_lastUrl}
+
+Once signed, we will send a deposit invoice. ${order.leadTime ? 'Lead time of ' + order.leadTime + ' starts from cleared deposit.' : ''}
+
+Questions or changes? Call (888) 453-5196 or reply to this email.
+
+Thank you,
+Doortronix USA
+Manufactured in Malakoff, Texas
+(888) 453-5196 | doortronixusa.com`;
+  const box = document.getElementById('email-template');
+  box.textContent = tmpl;
+  box.style.display = box.style.display === 'block' ? 'none' : 'block';
+}
+</script>
+</body>
+</html>
