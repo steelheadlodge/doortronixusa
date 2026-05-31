@@ -1390,8 +1390,9 @@ function drawDoor(svgId, vW, vH, isConf) {
 
   // Hollow polygon arrow drawn in the top lite of the moving panel
   function liteArrow(cx, cy, availW, availH, pointsRight) {
-    const aw = Math.min(availW * 0.50, 42);
-    const ah = Math.min(aw * 0.60, availH * 0.30); // scales with width; capped so tall doors don't stretch it
+    const ratio = 0.42; // locked aspect ratio — shape never changes
+    const s = Math.min(availW * 0.45, (availH * 0.22) / ratio);
+    const aw = s, ah = s * ratio;
     const ax = cx - aw / 2, ay = cy - ah / 2;
     const bodyW = aw * 0.52, neckH = ah * 0.40;
     const ny1 = cy - neckH / 2, ny2 = cy + neckH / 2;
