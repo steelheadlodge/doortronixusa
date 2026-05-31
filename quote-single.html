@@ -1650,7 +1650,7 @@ function drawPlanView() {
 
   // ── OPEN ──
   const yOpenBase = yFront(yClosedBase) + panH + 34;
-  const yOpenDim  = ySlideTrack(yOpenBase) + panH + 14;
+  const yOpenDim  = ySlideTrack(yOpenBase) + panH + 32;
   t(stateLblX, yStateLbl(yOpenBase), 'Open', 16, '#1B4F8A', 'end', '700');
   jambMarks(yOpenBase);
   if (isBi) {
@@ -1674,7 +1674,7 @@ function drawPlanView() {
   }
 
   // ── BREAKAWAY ──
-  const yBreakBase = yFront(yOpenBase) + panH + 36;
+  const yBreakBase = yFront(yOpenBase) + panH + 56;
   const swingR = isBi ? panelLen : Math.max(fixedPanelLen, sxPanelLen);
   const yBreakFootLbl = ySlideTrack(yBreakBase) + panH + swingR + 20;
   t(stateLblX, yStateLbl(yBreakBase), 'Breakaway', 16, '#1B4F8A', 'end', '700');
