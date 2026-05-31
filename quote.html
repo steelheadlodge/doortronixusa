@@ -747,11 +747,7 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
 
     <div class="preview-title">Live Door Preview</div>
     <div id="drawing-wrap">
-      <svg id="door-svg" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg"></svg>
-    </div>
-
-    <div class="preview-title">Plan View</div>
-    <div id="plan-wrap" style="background:#fff;border:1px solid #D0D5DD;border-radius:6px;overflow:hidden;">
+      <svg id="door-svg" viewBox="0 0 840 420" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;"></svg>
       <svg id="plan-svg" viewBox="0 0 840 480" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;"></svg>
     </div>
 
@@ -1781,7 +1777,7 @@ function updateAll() {
   updateNetOpeningDisplay();
   calcPrice();
   updateSpecSummary();
-  drawDoor('door-svg', 400, 300, false);
+  drawDoor('door-svg', 840, 420, false);
   drawPlanView();
 }
 
