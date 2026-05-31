@@ -1228,12 +1228,23 @@ function drawDoor(svgId, vW, vH, isConf) {
   const mL = isConf ? 55 : 50, mR = isConf ? 55 : 44;
   const mT = isConf ? titleH + 20 : 20, mB = isConf ? 70 : 80;
   const availW = vW - mL - mR;
-  const availH = vH - mT - mB;
-  const sc  = Math.min(availW / realW, availH / realTotalH);
-  const dW  = realW * sc;
-  const dH  = realTotalH * sc;
-  const dX  = mL + (availW - dW) / 2;
-  const dY  = mT + (availH - dH) / 2;
+  let sc, dW, dH, dX, dY;
+  if (!isConf) {
+    sc = availW / realW;
+    dW = realW * sc;
+    dH = realTotalH * sc;
+    vH = Math.ceil(mT + dH + mB);
+    svg.setAttribute('viewBox', `0 0 ${vW} ${vH}`);
+    dX = mL + (availW - dW) / 2;
+    dY = mT;
+  } else {
+    const availH = vH - mT - mB;
+    sc = Math.min(availW / realW, availH / realTotalH);
+    dW = realW * sc;
+    dH = realTotalH * sc;
+    dX = mL + (availW - dW) / 2;
+    dY = mT + (availH - dH) / 2;
+  }
 
   // ── Frame members at true scale ────────────────────────────────────
   const jambW  = Math.max(2, sc * 1.75);
