@@ -1364,7 +1364,19 @@ async function submitApproval() {
     project: ORDER.project,
     door: ORDER.door,
     addons: ORDER.addons,
-    pricing: ORDER.pricing,
+    pricing: (() => {
+      const pr = ORDER.pricing || {};
+      const fmt = n => '$' + Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      return {
+        lines: (pr.lines || []).map(l => ({ label: l.label, amount: fmt(l.amount) })),
+        unitTotal:     fmt(pr.unitTotal),
+        qty:           pr.qty || 1,
+        grandTotal:    fmt(pr.grandTotal),
+        deposit:       (pr.depositPct || 50) + '% — ' + fmt(pr.depositAmount),
+        balanceDue:    fmt((pr.grandTotal || 0) - (pr.depositAmount || 0)),
+        currency:      pr.currency || 'USD',
+      };
+    })(),
     notes: ORDER.notes,
     signatureCaptured: sigDataUrl ? 'Yes — view in Formspree dashboard' : 'No',
     userAgent: navigator.userAgent,
