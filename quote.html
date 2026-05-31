@@ -1287,12 +1287,12 @@ function drawDoor(svgId, vW, vH, isConf) {
     if(horiz){
       l(x1,y1,x2,y2,'#1B4F8A',0.7); l(x1,y1-off,x1,y1+off,'#1B4F8A',0.7); l(x2,y1-off,x2,y1+off,'#1B4F8A',0.7);
       path(`M${x1},${y1}l${aw},-3l0,6Z`,'#1B4F8A'); path(`M${x2},${y1}l${-aw},-3l0,6Z`,'#1B4F8A');
-      t((x1+x2)/2,y1-6,lbl,12,'#1B4F8A','middle','700');
+      t((x1+x2)/2,y1-8,lbl,18,'#1B4F8A','middle','700');
     } else {
       l(x1,y1,x2,y2,'#1B4F8A',0.7); l(x1-off,y1,x1+off,y1,'#1B4F8A',0.7); l(x1-off,y2,x1+off,y2,'#1B4F8A',0.7);
       path(`M${x1},${y1}l-3,${aw}l6,0Z`,'#1B4F8A'); path(`M${x1},${y2}l-3,${-aw}l6,0Z`,'#1B4F8A');
       const cx=x1-4,cy=(y1+y2)/2;
-      const el=t(cx,cy,lbl,12,'#1B4F8A','middle','700');
+      const el=t(cx,cy,lbl,18,'#1B4F8A','middle','700');
       el.setAttribute('transform',`rotate(-90,${cx},${cy})`);
     }
   }
@@ -1578,7 +1578,7 @@ function drawPlanView() {
     l(x1,y1,x2,y2,'#1B4F8A',0.7);
     l(x1,y1-off,x1,y1+off,'#1B4F8A',0.7); l(x2,y1-off,x2,y1+off,'#1B4F8A',0.7);
     path(`M${x1},${y1}l${aw},-3l0,6Z`,'#1B4F8A'); path(`M${x2},${y1}l${-aw},-3l0,6Z`,'#1B4F8A');
-    t((x1+x2)/2, y1-5, lbl, 13, '#1B4F8A','middle','700');
+    t((x1+x2)/2, y1-7, lbl, 18, '#1B4F8A','middle','700');
   }
   function inlineArrow(centerX, y, color, pointsLeft) {
     color = color || '#1B4F8A';
@@ -1626,7 +1626,7 @@ function drawPlanView() {
     const stroke = (isSO && !isFBO) ? '#7E96AE' : frame;
     const sw = (isSO && !isFBO) ? 1.2 : 1.6;
     r(x + 0.5, y, w - 1, panH, panelFill, stroke, sw);
-    if (w > 28 && panH >= 7) t(x + w/2, y + panH/2 + 3, label, Math.min(9.5, panH + 1), '#fff', 'middle', '700');
+    if (w > 28 && panH >= 7) t(x + w/2, y + panH/2 + 4, label, Math.min(14, panH + 2), '#fff', 'middle', '700');
   }
 
   const jambDepth = Math.max(4, sc * 4.5);
@@ -1639,7 +1639,7 @@ function drawPlanView() {
 
   // ── CLOSED ──
   const yClosedBase = 36;
-  t(stateLblX, yStateLbl(yClosedBase), 'Closed', 11, '#1B4F8A', 'end', '700');
+  t(stateLblX, yStateLbl(yClosedBase), 'Closed', 16, '#1B4F8A', 'end', '700');
   jambMarks(yClosedBase);
   if (isBi) {
     drawPlanPanel(pos.biLeftFixed,  yFixedTrack(yClosedBase), panelLen, fixedLbl, true);
@@ -1661,7 +1661,7 @@ function drawPlanView() {
   // ── OPEN ──
   const yOpenBase = yFront(yClosedBase) + panH + 34;
   const yOpenDim  = ySlideTrack(yOpenBase) + panH + 14;
-  t(stateLblX, yStateLbl(yOpenBase), 'Open', 11, '#1B4F8A', 'end', '700');
+  t(stateLblX, yStateLbl(yOpenBase), 'Open', 16, '#1B4F8A', 'end', '700');
   jambMarks(yOpenBase);
   if (isBi) {
     const leftSxX  = openX + openInset;
@@ -1687,7 +1687,7 @@ function drawPlanView() {
   const yBreakBase = yFront(yOpenBase) + panH + 36;
   const swingR = isBi ? panelLen : Math.max(fixedPanelLen, sxPanelLen);
   const yBreakFootLbl = ySlideTrack(yBreakBase) + panH + swingR + 20;
-  t(stateLblX, yStateLbl(yBreakBase), 'Breakaway', 11, '#1B4F8A', 'end', '700');
+  t(stateLblX, yStateLbl(yBreakBase), 'Breakaway', 16, '#1B4F8A', 'end', '700');
   jambMarks(yBreakBase);
   if (isBi) {
     drawPlanPanel(pos.biLeftFixed,  yFixedTrack(yBreakBase), panelLen, fixedLbl, true);
@@ -1731,7 +1731,7 @@ function drawPlanView() {
   t(vW/2, yBreakFootLbl,
     isFBO ? ('FBO — All ' + numPanels + ' panels pivot open for full emergency egress')
           : ('FSL — Only sliding (SX) panels break out; fixed panels (O) do not'),
-    9.5, '#666', 'middle', '700');
+    14, '#666', 'middle', '700');
 
   const pfConfig = document.getElementById('pf-config');
   const pfDims   = document.getElementById('pf-dims');
