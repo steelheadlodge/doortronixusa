@@ -105,7 +105,7 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
 .preview-panel { background:var(--lgray); padding:20px 18px; position:sticky; top:56px; height:calc(100vh - 56px); overflow-y:auto; display:flex; flex-direction:column; justify-content:center; gap:14px; }
 .preview-title { font-size:12px; font-weight:700; color:var(--blue); text-transform:uppercase; letter-spacing:.6px; display:flex; align-items:center; gap:8px; }
 .preview-title::after { content:""; flex:1; height:2px; background:var(--blue); opacity:.2; }
-#drawing-wrap { background:#fff; border:1.5px solid var(--border); border-radius:10px; padding:24px 32px 16px; box-shadow:0 2px 8px rgba(0,0,0,.06); max-height:calc(100vh - 180px); overflow:hidden; display:flex; flex-direction:column; }
+#drawing-wrap { background:#fff; border:1.5px solid var(--border); border-radius:10px; padding:24px 32px 16px; box-shadow:0 2px 8px rgba(0,0,0,.06); }
 #door-svg { width:100%; height:auto; display:block; }
 
 /* ── Price card ── */
@@ -751,8 +751,8 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
 
     <div class="preview-title">Live Door Preview</div>
     <div id="drawing-wrap">
-      <svg id="door-svg" viewBox="0 0 840 380" xmlns="http://www.w3.org/2000/svg" style="width:100%;flex:1 1 0;min-height:0;display:block;"></svg>
-      <svg id="plan-svg" viewBox="0 0 840 442" xmlns="http://www.w3.org/2000/svg" style="width:100%;flex:1 1 0;min-height:0;display:block;"></svg>
+      <svg id="door-svg" viewBox="0 0 840 380" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-height:36vh;display:block;"></svg>
+      <svg id="plan-svg" viewBox="0 0 840 442" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-height:42vh;display:block;"></svg>
       <div id="plan-footer" style="padding:10px 14px 6px;display:flex;justify-content:center;gap:20px;align-items:center;font-family:Arial,sans-serif;border-top:1px solid #E5EAF0;">
         <span id="pf-config" style="color:#1B4F8A;font-weight:700;font-size:12px;"></span>
         <span id="pf-dims" style="color:#555;font-size:12px;"></span>
