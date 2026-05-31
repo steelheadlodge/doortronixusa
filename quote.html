@@ -1670,23 +1670,23 @@ function drawPlanView() {
     drawPlanPanel(leftSxX,          ySlideTrack(yOpenBase), panelLen, 'SX', false);
     drawPlanPanel(rightSxX,         ySlideTrack(yOpenBase), panelLen, 'SX', false);
     drawPlanPanel(pos.biRightFixed, yFixedTrack(yOpenBase), panelLen, fixedLbl, true);
-    dimLine(leftSxX + panelLen, yOpenDim, rightSxX, yOpenDim, 'Clear Door Opening: ' + getOpenStr());
+    dimLine(leftSxX + panelLen, yOpenDim, rightSxX, yOpenDim, getOpenStr());
   } else if (isLH) {
     const sxOpenX = openX + openInset;
     drawPlanPanel(pos.lhFixed, yFixedTrack(yOpenBase), fixedPanelLen, fixedLbl, true);
     drawPlanPanel(sxOpenX, ySlideTrack(yOpenBase), sxPanelLen, 'SX', false);
-    dimLine(sxOpenX + sxPanelLen, yOpenDim, openX + openW, yOpenDim, 'Clear Door Opening: ' + getOpenStr());
+    dimLine(sxOpenX + sxPanelLen, yOpenDim, openX + openW, yOpenDim, getOpenStr());
   } else {
     const sxOpenX = openX + openW - sxPanelLen - openInset;
     drawPlanPanel(sxOpenX,   ySlideTrack(yOpenBase), sxPanelLen, 'SX', false);
     drawPlanPanel(pos.rhFixed, yFixedTrack(yOpenBase), fixedPanelLen, fixedLbl, true);
-    dimLine(openX, yOpenDim, sxOpenX, yOpenDim, 'Clear Door Opening: ' + getOpenStr());
+    dimLine(openX, yOpenDim, sxOpenX, yOpenDim, getOpenStr());
   }
 
   // ── BREAKAWAY ──
   const yBreakBase = yFront(yOpenBase) + panH + 56;
   const swingR = isBi ? panelLen : Math.max(fixedPanelLen, sxPanelLen);
-  const yBreakFootLbl = ySlideTrack(yBreakBase) + panH + swingR + 20;
+  const yBreakFootLbl = ySlideTrack(yBreakBase) + panH + swingR + 40;
   t(stateLblX, yStateLbl(yBreakBase), 'Breakaway', 16, '#1B4F8A', 'end', '700');
   jambMarks(yBreakBase);
   if (isBi) {
