@@ -1629,6 +1629,21 @@ function drawPlanView() {
     if (w > 28 && panH >= 7) t(x + w/2, y + panH/2 + 4, label, Math.min(14, panH + 2), '#fff', 'middle', '700');
   }
 
+  function panelArrow(x, y, w, pointsRight) {
+    const cx = x + w / 2, cy = y + panH / 2;
+    const aw = Math.min(w * 0.52, 38), ah = panH * 0.72;
+    const ax = cx - aw / 2, ay = cy - ah / 2;
+    const bodyW = aw * 0.62, neckH = ah * 0.42;
+    const ny1 = cy - neckH / 2, ny2 = cy + neckH / 2;
+    let d;
+    if (pointsRight) {
+      d = `M${ax},${ny1} L${ax+bodyW},${ny1} L${ax+bodyW},${ay} L${ax+aw},${cy} L${ax+bodyW},${ay+ah} L${ax+bodyW},${ny2} L${ax},${ny2} Z`;
+    } else {
+      d = `M${ax+aw},${ny1} L${ax+aw-bodyW},${ny1} L${ax+aw-bodyW},${ay} L${ax},${cy} L${ax+aw-bodyW},${ay+ah} L${ax+aw-bodyW},${ny2} L${ax+aw},${ny2} Z`;
+    }
+    path(d, 'rgba(27,79,138,0.18)', '#1B4F8A', 1.4);
+  }
+
   const jambDepth = Math.max(4, sc * 4.5);
   function jambMarks(yBase) {
     const trackDepth = trackSep + panH;
@@ -1646,16 +1661,16 @@ function drawPlanView() {
     drawPlanPanel(pos.biLeftSX,     ySlideTrack(yClosedBase), panelLen, 'SX', false);
     drawPlanPanel(pos.biRightSX,    ySlideTrack(yClosedBase), panelLen, 'SX', false);
     drawPlanPanel(pos.biRightFixed, yFixedTrack(yClosedBase), panelLen, fixedLbl, true);
-    inlineArrow(pos.biLeftSX + panelLen / 2,  ySlideTrack(yClosedBase) - 5, '#1B4F8A', true);
-    inlineArrow(pos.biRightSX + panelLen / 2, ySlideTrack(yClosedBase) - 5, '#1B4F8A', false);
+    panelArrow(pos.biLeftSX,  ySlideTrack(yClosedBase), panelLen, false);
+    panelArrow(pos.biRightSX, ySlideTrack(yClosedBase), panelLen, true);
   } else if (isLH) {
     drawPlanPanel(pos.lhFixed, yFixedTrack(yClosedBase), fixedPanelLen, fixedLbl, true);
     drawPlanPanel(pos.lhSX,    ySlideTrack(yClosedBase), sxPanelLen, 'SX', false);
-    inlineArrow(pos.lhSX + sxPanelLen / 2, ySlideTrack(yClosedBase) - 5, '#1B4F8A', true);
+    panelArrow(pos.lhSX, ySlideTrack(yClosedBase), sxPanelLen, false);
   } else {
     drawPlanPanel(pos.rhSX,    ySlideTrack(yClosedBase), sxPanelLen, 'SX', false);
     drawPlanPanel(pos.rhFixed, yFixedTrack(yClosedBase), fixedPanelLen, fixedLbl, true);
-    inlineArrow(pos.rhSX + sxPanelLen / 2, ySlideTrack(yClosedBase) - 5, '#1B4F8A', false);
+    panelArrow(pos.rhSX, ySlideTrack(yClosedBase), sxPanelLen, true);
   }
 
   // ── OPEN ──
