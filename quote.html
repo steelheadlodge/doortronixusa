@@ -1392,7 +1392,7 @@ function drawDoor(svgId, vW, vH, isConf) {
     const aw = Math.min(availW * 0.50, 42);
     const ah = Math.min(availH * 0.42, availH - 4);
     const ax = cx - aw / 2, ay = cy - ah / 2;
-    const bodyW = aw * 0.62, neckH = ah * 0.52;
+    const bodyW = aw * 0.52, neckH = ah * 0.40;
     const ny1 = cy - neckH / 2, ny2 = cy + neckH / 2;
     let d;
     if (pointsRight) {
@@ -1400,7 +1400,7 @@ function drawDoor(svgId, vW, vH, isConf) {
     } else {
       d = `M${ax+aw},${ny1} L${ax+aw-bodyW},${ny1} L${ax+aw-bodyW},${ay} L${ax},${cy} L${ax+aw-bodyW},${ay+ah} L${ax+aw-bodyW},${ny2} L${ax+aw},${ny2} Z`;
     }
-    path(d, 'rgba(27,79,138,0.15)', '#1B4F8A', 1.5);
+    path(d, 'rgba(27,79,138,0.18)', '#1B4F8A', 1.8);
   }
   const hasMuntin = rv('muntin') !== 'No Muntin';
   const topLiteBottom = hasMuntin ? muntY : pY + pH - btmRH;
