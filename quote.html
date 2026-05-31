@@ -1220,7 +1220,7 @@ function drawDoor(svgId, vW, vH, isConf) {
   const realTotalH = realFtth;   // total height incl. transom
 
   // ── Scale to fit viewBox while maintaining true aspect ratio ───────
-  const mL = isConf ? 55 : 50, mR = isConf ? 55 : 44;
+  const mL = isConf ? 55 : 75, mR = isConf ? 55 : 55;
   const mT = isConf ? titleH + 20 : 20, mB = isConf ? 70 : 80;
   const availW = vW - mL - mR;
   let sc, dW, dH, dX, dY;
