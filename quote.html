@@ -1390,15 +1390,15 @@ function drawDoor(svgId, vW, vH, isConf) {
   // Hollow polygon arrow drawn in the top lite of the moving panel
   function liteArrow(cx, cy, availW, availH, pointsRight) {
     const aw = Math.min(availW * 0.50, 42); // scale with glass width only
-    const ah = aw * 0.37;                   // height is ALWAYS 37% of width — shape locked forever
+    const ah = aw * 0.42;                   // height is ALWAYS 42% of width — shape locked forever
     const ax = cx - aw / 2, ay = cy - ah / 2;
-    const bodyW = aw * 0.52, neckH = ah * 0.40;
+    const bodyW = aw * 0.55, neckH = ah * 0.35, notchD = aw * 0.12;
     const ny1 = cy - neckH / 2, ny2 = cy + neckH / 2;
     let d;
     if (pointsRight) {
-      d = `M${ax},${ny1} L${ax+bodyW},${ny1} L${ax+bodyW},${ay} L${ax+aw},${cy} L${ax+bodyW},${ay+ah} L${ax+bodyW},${ny2} L${ax},${ny2} Z`;
+      d = `M${ax},${ny1} L${ax+bodyW},${ny1} L${ax+bodyW},${ay} L${ax+aw},${cy} L${ax+bodyW},${ay+ah} L${ax+bodyW},${ny2} L${ax},${ny2} L${ax+notchD},${cy} Z`;
     } else {
-      d = `M${ax+aw},${ny1} L${ax+aw-bodyW},${ny1} L${ax+aw-bodyW},${ay} L${ax},${cy} L${ax+aw-bodyW},${ay+ah} L${ax+aw-bodyW},${ny2} L${ax+aw},${ny2} Z`;
+      d = `M${ax+aw},${ny1} L${ax+aw-bodyW},${ny1} L${ax+aw-bodyW},${ay} L${ax},${cy} L${ax+aw-bodyW},${ay+ah} L${ax+aw-bodyW},${ny2} L${ax+aw},${ny2} L${ax+aw-notchD},${cy} Z`;
     }
     path(d, 'rgba(27,79,138,0.18)', '#1B4F8A', 1.8);
   }
