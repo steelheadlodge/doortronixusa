@@ -1366,7 +1366,7 @@ async function submitApproval() {
     addons: ORDER.addons,
     pricing: ORDER.pricing,
     notes: ORDER.notes,
-    signatureImage: sigDataUrl,
+    signatureCaptured: sigDataUrl ? 'Yes — view in Formspree dashboard' : 'No',
     userAgent: navigator.userAgent,
     pageUrl: location.href.split('?')[0],
   };
