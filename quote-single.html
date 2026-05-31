@@ -1390,9 +1390,8 @@ function drawDoor(svgId, vW, vH, isConf) {
 
   // Hollow polygon arrow drawn in the top lite of the moving panel
   function liteArrow(cx, cy, availW, availH, pointsRight) {
-    const ratio = 0.42; // locked aspect ratio — shape never changes
-    const s = Math.min(availW * 0.45, (availH * 0.22) / ratio);
-    const aw = s, ah = s * ratio;
+    const aw = Math.min(availW * 0.50, 42); // scale with glass width only
+    const ah = aw * 0.37;                   // height is ALWAYS 37% of width — shape locked forever
     const ax = cx - aw / 2, ay = cy - ah / 2;
     const bodyW = aw * 0.52, neckH = ah * 0.40;
     const ny1 = cy - neckH / 2, ny2 = cy + neckH / 2;
