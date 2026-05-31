@@ -1725,12 +1725,6 @@ function drawPlanView() {
     if (isFBO) noseArc(openX + openW, yFixed, pos.rhFixed, yFixed, openX + openW, yFixed + fixedPanelLen, 0, fixedPanelLen);
   }
 
-  const capX = 22, capY = (yBreakBase + yBreakFootLbl) / 2;
-  const capEl = t(capX, capY,
-    isFBO ? 'Panels Can Breakout From Any Position Of Travel'
-          : 'SX Panels Can Breakout From Any Position Of Travel',
-    9, '#1B4F8A', 'middle', '700');
-  capEl.setAttribute('transform', `rotate(-90 ${capX} ${capY})`);
   t(vW/2, yBreakFootLbl,
     isFBO ? ('FBO — All ' + numPanels + ' panels pivot open for full emergency egress')
           : ('FSL — Only sliding (SX) panels break out; fixed panels (O) do not'),
