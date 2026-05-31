@@ -751,7 +751,8 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
 
     <div class="preview-title">Live Door Preview</div>
     <div id="drawing-wrap">
-      <svg id="door-svg" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg"></svg>
+      <svg id="door-svg" viewBox="0 0 840 380" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;"></svg>
+      <svg id="plan-svg" viewBox="0 0 840 480" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;"></svg>
     </div>
 
     <div class="spec-card">
@@ -822,6 +823,11 @@ const CONFIGS = {
   'fsl-single-rh': { label:'FSL Single — RH', code:'SX-O',  base:3200, transom:250, minW:78, maxW:108, panels:1, isFBO:false, isBi:false },
   'fsl-single-lh': { label:'FSL Single — LH', code:'O-SX',  base:3200, transom:250, minW:78, maxW:108, panels:1, isFBO:false, isBi:false },
 };
+
+let _doorScale = null;
+function getStileW(sc) {
+  return Math.max(3, sc * (rv('stileWidth') === 'medium' ? 3.75 : 2.5));
+}
 
 // ── Helpers ─────────────────────────────────────────────────────────
 function fv(id) { const e=document.getElementById(id); return e?e.value.trim():''; }
@@ -1477,16 +1483,7 @@ function drawDoor(svgId, vW, vH, isConf) {
 
   // Bottom title bar (preview only)
   if (!isConf) {
-    const tbY = vH - 38;
-    r(0, tbY, vW, 38, '#F0F4F8', '#D0D5DD', 1);
-    l(0, tbY, vW, tbY, '#D0D5DD', 1);
-    const cLabel = cfg ? cfg.label : 'Select Configuration';
-    t(10, tbY+14, 'DOORTRONIX USA', 8, '#1B4F8A', 'start', '700');
-    t(10, tbY+28, 'doortronixusa.com', 7, '#888', 'start');
-    t(vW/2, tbY+14, cLabel, 9, '#1B4F8A', 'middle', '700');
-    t(vW/2, tbY+28, (cfg ? cfg.code : '') + ' | ' + rv('glazing'), 7, '#555', 'middle');
-    t(vW-10, tbY+14, new Date().toLocaleDateString(), 7, '#888', 'end');
-    t(vW-10, tbY+28, 'PREVIEW ONLY', 7, '#E87722', 'end', '700');
+    _doorScale = { dX, dW, sc, vW };
   } else {
     const tbY = vH - 50;
     r(0, tbY, vW, 50, '#1B4F8A');
@@ -1498,6 +1495,234 @@ function drawDoor(svgId, vW, vH, isConf) {
     t(vW-14, tbY+16, cLabel2, 9, '#E87722', 'end', '700');
     t(vW-14, tbY+29, getWidthStr() + ' W × ' + getHeightStr() + ' H', 9, '#fff', 'end', '700');
   }
+}
+
+// ── Plan view ────────────────────────────────────────────────────────
+function drawPlanView() {
+  const svg = document.getElementById('plan-svg');
+  if (!svg) return;
+  svg.innerHTML = '';
+  const vW = 840, vH = 480;
+  svg.setAttribute('viewBox', `0 0 ${vW} ${vH}`);
+  const cfg = getConfig();
+  if (!cfg) return;
+  if (!_doorScale) return;
+
+  const frame = getFrameColor();
+  const panelFill = getPanelFill();
+  const isBi = cfg.isBi;
+  const isLH = cfg.code === 'O-SX' || cfg.code === 'SO-SX' || cfg.code === 'O-SX-SX-O';
+  const isFBO = cfg.isFBO;
+
+  const frameX = _doorScale.dX;
+  const frameW = _doorScale.dW;
+  const sc     = _doorScale.sc;
+  const jambW  = Math.max(2, sc * 1.75);
+  const openX  = frameX + jambW;
+  const openW  = frameW - jambW * 2;
+  const panH   = Math.max(2, sc * 1.75);
+  const trackSep = panH;
+
+  function r(x,y,w,h,fill,stroke,sw,rx) {
+    const el = document.createElementNS('http://www.w3.org/2000/svg','rect');
+    Object.entries({x,y,width:Math.max(w,0),height:Math.max(h,0),fill:fill||'none',rx:rx||0}).forEach(([k,v])=>el.setAttribute(k,v));
+    if(stroke){el.setAttribute('stroke',stroke);el.setAttribute('stroke-width',sw||1);}
+    svg.appendChild(el); return el;
+  }
+  function l(x1,y1,x2,y2,s,sw,dash) {
+    const el = document.createElementNS('http://www.w3.org/2000/svg','line');
+    Object.entries({x1,y1,x2,y2,stroke:s||'#666','stroke-width':sw||1}).forEach(([k,v])=>el.setAttribute(k,v));
+    if(dash) el.setAttribute('stroke-dasharray',dash);
+    svg.appendChild(el);
+  }
+  function t(x,y,str,size,fill,anchor,weight) {
+    const el = document.createElementNS('http://www.w3.org/2000/svg','text');
+    Object.entries({x,y,'font-size':size||11,fill:fill||'#111','text-anchor':anchor||'middle','font-weight':weight||'normal','font-family':'Arial,sans-serif'}).forEach(([k,v])=>el.setAttribute(k,v));
+    el.textContent = str; svg.appendChild(el); return el;
+  }
+  function path(dStr,fill,stroke,sw,dash) {
+    const el = document.createElementNS('http://www.w3.org/2000/svg','path');
+    el.setAttribute('d',dStr); el.setAttribute('fill',fill||'none');
+    if(stroke){el.setAttribute('stroke',stroke);el.setAttribute('stroke-width',sw||1);}
+    if(dash) el.setAttribute('stroke-dasharray',dash);
+    svg.appendChild(el);
+  }
+  function dimLine(x1,y1,x2,y2,lbl) {
+    const aw=5, off=6;
+    l(x1,y1,x2,y2,'#1B4F8A',0.7);
+    l(x1,y1-off,x1,y1+off,'#1B4F8A',0.7); l(x2,y1-off,x2,y1+off,'#1B4F8A',0.7);
+    path(`M${x1},${y1}l${aw},-3l0,6Z`,'#1B4F8A'); path(`M${x2},${y1}l${-aw},-3l0,6Z`,'#1B4F8A');
+    t((x1+x2)/2, y1-4, lbl, 10, '#1B4F8A','middle','700');
+  }
+  function inlineArrow(centerX, y, color, pointsLeft) {
+    color = color || '#1B4F8A';
+    const lineLen = 16, headSize = 6, half = lineLen / 2;
+    const startX = centerX - half, endX = centerX + half;
+    if (pointsLeft) {
+      l(endX, y, startX, y, color, 1.4);
+      path(`M${startX},${y} L${startX + headSize},${y - 3.5} L${startX + headSize},${y + 3.5} Z`, color);
+    } else {
+      l(startX, y, endX, y, color, 1.4);
+      path(`M${endX},${y} L${endX - headSize},${y - 3.5} L${endX - headSize},${y + 3.5} Z`, color);
+    }
+  }
+
+  t(vW/2, 22, 'PLAN', 13, '#111', 'middle', '700');
+  l(vW/2 - 32, 26, vW/2 + 32, 26, '#1B4F8A', 1);
+
+  const stileW = getStileW(sc);
+  const halfStile = stileW / 2;
+  const numPanels = isBi ? 4 : 2;
+  const eqW = openW / numPanels;
+  const panelLen = eqW + halfStile;
+  const fixedPanelLen = eqW + halfStile;
+  const sxPanelLen    = eqW + halfStile;
+  const openInset = sc * 3;
+  const meetX = openX + openW / 2;
+  const stateLblX = frameX - 14;
+  const fixedLbl = isFBO ? 'SO' : 'O';
+
+  const pos = {
+    biLeftFixed:  openX,
+    biLeftSX:     meetX - panelLen,
+    biRightSX:    meetX,
+    biRightFixed: openX + eqW * 3 - halfStile,
+    lhFixed:      openX,
+    lhSX:         openX + openW - sxPanelLen,
+    rhSX:         openX,
+    rhFixed:      openX + eqW - halfStile,
+  };
+
+  const yBack  = (y) => y;
+  const yFront = (y) => y + trackSep;
+  const yFixedTrack = (y) => isFBO ? yFront(y) : yBack(y);
+  const ySlideTrack = (y) => isFBO ? yBack(y)  : yFront(y);
+  const yStateLbl   = (y) => y + trackSep / 2 + panH / 2 + 3;
+
+  function drawPlanPanel(x, y, w, label, isSO) {
+    const stroke = (isSO && !isFBO) ? '#7E96AE' : frame;
+    const sw = (isSO && !isFBO) ? 1.2 : 1.6;
+    r(x + 0.5, y, w - 1, panH, panelFill, stroke, sw);
+    if (w > 28 && panH >= 7) t(x + w/2, y + panH/2 + 3, label, Math.min(9.5, panH + 1), '#fff', 'middle', '700');
+  }
+
+  const jambDepth = Math.max(4, sc * 4.5);
+  function jambMarks(yBase) {
+    const trackDepth = trackSep + panH;
+    const jambY = yBase - (jambDepth - trackDepth) / 2;
+    r(frameX,                    jambY, jambW, jambDepth, frame, '#94A3B8', 0.9);
+    r(frameX + frameW - jambW,   jambY, jambW, jambDepth, frame, '#94A3B8', 0.9);
+  }
+
+  // ── CLOSED ──
+  const yClosedBase = 56;
+  t(stateLblX, yStateLbl(yClosedBase), 'Closed', 11, '#1B4F8A', 'end', '700');
+  jambMarks(yClosedBase);
+  if (isBi) {
+    drawPlanPanel(pos.biLeftFixed,  yFixedTrack(yClosedBase), panelLen, fixedLbl, true);
+    drawPlanPanel(pos.biLeftSX,     ySlideTrack(yClosedBase), panelLen, 'SX', false);
+    drawPlanPanel(pos.biRightSX,    ySlideTrack(yClosedBase), panelLen, 'SX', false);
+    drawPlanPanel(pos.biRightFixed, yFixedTrack(yClosedBase), panelLen, fixedLbl, true);
+    inlineArrow(pos.biLeftSX + panelLen / 2,  ySlideTrack(yClosedBase) - 5, '#1B4F8A', true);
+    inlineArrow(pos.biRightSX + panelLen / 2, ySlideTrack(yClosedBase) - 5, '#1B4F8A', false);
+  } else if (isLH) {
+    drawPlanPanel(pos.lhFixed, yFixedTrack(yClosedBase), fixedPanelLen, fixedLbl, true);
+    drawPlanPanel(pos.lhSX,    ySlideTrack(yClosedBase), sxPanelLen, 'SX', false);
+    inlineArrow(pos.lhSX + sxPanelLen / 2, ySlideTrack(yClosedBase) - 5, '#1B4F8A', true);
+  } else {
+    drawPlanPanel(pos.rhSX,    ySlideTrack(yClosedBase), sxPanelLen, 'SX', false);
+    drawPlanPanel(pos.rhFixed, yFixedTrack(yClosedBase), fixedPanelLen, fixedLbl, true);
+    inlineArrow(pos.rhSX + sxPanelLen / 2, ySlideTrack(yClosedBase) - 5, '#1B4F8A', false);
+  }
+
+  // ── OPEN ──
+  const yOpenBase = yFront(yClosedBase) + panH + 34;
+  const yOpenDim  = ySlideTrack(yOpenBase) + panH + 14;
+  t(stateLblX, yStateLbl(yOpenBase), 'Open', 11, '#1B4F8A', 'end', '700');
+  jambMarks(yOpenBase);
+  if (isBi) {
+    const leftSxX  = openX + openInset;
+    const rightSxX = pos.biRightFixed - openInset;
+    drawPlanPanel(pos.biLeftFixed,  yFixedTrack(yOpenBase), panelLen, fixedLbl, true);
+    drawPlanPanel(leftSxX,          ySlideTrack(yOpenBase), panelLen, 'SX', false);
+    drawPlanPanel(rightSxX,         ySlideTrack(yOpenBase), panelLen, 'SX', false);
+    drawPlanPanel(pos.biRightFixed, yFixedTrack(yOpenBase), panelLen, fixedLbl, true);
+    dimLine(leftSxX + panelLen, yOpenDim, rightSxX, yOpenDim, 'Clear Door Opening: ' + getOpenStr());
+  } else if (isLH) {
+    const sxOpenX = openX + openInset;
+    drawPlanPanel(pos.lhFixed, yFixedTrack(yOpenBase), fixedPanelLen, fixedLbl, true);
+    drawPlanPanel(sxOpenX, ySlideTrack(yOpenBase), sxPanelLen, 'SX', false);
+    dimLine(sxOpenX + sxPanelLen, yOpenDim, openX + openW, yOpenDim, 'Clear Door Opening: ' + getOpenStr());
+  } else {
+    const sxOpenX = openX + openW - sxPanelLen - openInset;
+    drawPlanPanel(sxOpenX,   ySlideTrack(yOpenBase), sxPanelLen, 'SX', false);
+    drawPlanPanel(pos.rhFixed, yFixedTrack(yOpenBase), fixedPanelLen, fixedLbl, true);
+    dimLine(openX, yOpenDim, sxOpenX, yOpenDim, 'Clear Door Opening: ' + getOpenStr());
+  }
+
+  // ── BREAKAWAY ──
+  const yBreakBase = yFront(yOpenBase) + panH + 36;
+  const swingR = isBi ? panelLen : Math.max(fixedPanelLen, sxPanelLen);
+  const yBreakFootLbl = ySlideTrack(yBreakBase) + panH + swingR + 20;
+  t(stateLblX, yStateLbl(yBreakBase), 'Breakaway', 11, '#1B4F8A', 'end', '700');
+  jambMarks(yBreakBase);
+  if (isBi) {
+    drawPlanPanel(pos.biLeftFixed,  yFixedTrack(yBreakBase), panelLen, fixedLbl, true);
+    drawPlanPanel(pos.biLeftSX,     ySlideTrack(yBreakBase), panelLen, 'SX', false);
+    drawPlanPanel(pos.biRightSX,    ySlideTrack(yBreakBase), panelLen, 'SX', false);
+    drawPlanPanel(pos.biRightFixed, yFixedTrack(yBreakBase), panelLen, fixedLbl, true);
+  } else if (isLH) {
+    drawPlanPanel(pos.lhFixed, yFixedTrack(yBreakBase), fixedPanelLen, fixedLbl, true);
+    drawPlanPanel(pos.lhSX,    ySlideTrack(yBreakBase), sxPanelLen, 'SX', false);
+  } else {
+    drawPlanPanel(pos.rhSX,    ySlideTrack(yBreakBase), sxPanelLen, 'SX', false);
+    drawPlanPanel(pos.rhFixed, yFixedTrack(yBreakBase), fixedPanelLen, fixedLbl, true);
+  }
+
+  function noseArc(hx, hy, nxRest, nyRest, nxOut, nyOut, sweep, radius) {
+    const r2 = radius != null ? radius : swingR;
+    path(`M ${nxRest} ${nyRest} A ${r2} ${r2} 0 0 ${sweep} ${nxOut} ${nyOut}`, 'none', '#1B4F8A', 1.3, '4,4');
+    l(hx, hy, hx, hy + r2, frame, 1.4);
+  }
+  if (isBi) {
+    const yFixed = yFixedTrack(yBreakBase) + panH / 2;
+    const ySlide = ySlideTrack(yBreakBase) + panH / 2;
+    if (isFBO) noseArc(frameX, yFixed, pos.biLeftFixed + panelLen, yFixed, frameX, yFixed + swingR, 1);
+    noseArc(pos.biLeftSX,             ySlide, pos.biLeftSX + panelLen, ySlide, pos.biLeftSX,             ySlide + swingR, 1);
+    noseArc(pos.biRightSX + panelLen, ySlide, pos.biRightSX,           ySlide, pos.biRightSX + panelLen, ySlide + swingR, 0);
+    if (isFBO) noseArc(frameX + frameW, yFixed, pos.biRightFixed, yFixed, frameX + frameW, yFixed + swingR, 0);
+  } else if (isLH) {
+    const yFixed = yFixedTrack(yBreakBase) + panH / 2;
+    const ySlide = ySlideTrack(yBreakBase) + panH / 2;
+    if (isFBO) noseArc(openX, yFixed, pos.lhFixed + fixedPanelLen, yFixed, openX, yFixed + fixedPanelLen, 1, fixedPanelLen);
+    noseArc(pos.lhSX, ySlide, pos.lhSX + sxPanelLen, ySlide, pos.lhSX, ySlide + sxPanelLen, 1, sxPanelLen);
+  } else {
+    const yFixed = yFixedTrack(yBreakBase) + panH / 2;
+    const ySlide = ySlideTrack(yBreakBase) + panH / 2;
+    noseArc(pos.rhSX + sxPanelLen, ySlide, pos.rhSX, ySlide, pos.rhSX + sxPanelLen, ySlide + sxPanelLen, 0, sxPanelLen);
+    if (isFBO) noseArc(openX + openW, yFixed, pos.rhFixed, yFixed, openX + openW, yFixed + fixedPanelLen, 0, fixedPanelLen);
+  }
+
+  const capX = 22, capY = (yBreakBase + yBreakFootLbl) / 2;
+  const capEl = t(capX, capY,
+    isFBO ? 'Panels Can Breakout From Any Position Of Travel'
+          : 'SX Panels Can Breakout From Any Position Of Travel',
+    9, '#1B4F8A', 'middle', '700');
+  capEl.setAttribute('transform', `rotate(-90 ${capX} ${capY})`);
+  t(vW/2, yBreakFootLbl,
+    isFBO ? ('FBO — All ' + numPanels + ' panels pivot open for full emergency egress')
+          : ('FSL — Only sliding (SX) panels break out; fixed panels (O) do not'),
+    9.5, '#666', 'middle', '700');
+
+  // Footer
+  const footY = vH - 38;
+  r(0, footY, vW, 38, '#F0F4F8', '#D0D5DD', 1);
+  l(0, footY, vW, footY, '#D0D5DD', 1);
+  t(14, footY+14, 'DOORTRONIX USA', 8, '#1B4F8A', 'start', '700');
+  t(14, footY+28, 'doortronixusa.com', 7, '#888', 'start');
+  t(vW/2, footY+14, cfg.label + ' (' + cfg.code + ')', 9, '#1B4F8A', 'middle', '700');
+  t(vW/2, footY+28, getWidthStr() + ' W × ' + getHeightStr() + ' H', 8, '#555', 'middle');
+  t(vW-14, footY+14, 'PREVIEW ONLY', 7, '#E87722', 'end', '700');
 }
 
 // ── Update all ───────────────────────────────────────────────────────
@@ -1529,7 +1754,8 @@ function updateAll() {
   updateNetOpeningDisplay();
   calcPrice();
   updateSpecSummary();
-  drawDoor('door-svg', 400, 300, false);
+  drawDoor('door-svg', 840, 380, false);
+  drawPlanView();
 }
 
 // ── Event listeners ──────────────────────────────────────────────────
