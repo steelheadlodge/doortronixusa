@@ -748,7 +748,13 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
     <div class="preview-title">Live Door Preview</div>
     <div id="drawing-wrap">
       <svg id="door-svg" viewBox="0 0 840 380" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;"></svg>
-      <svg id="plan-svg" viewBox="0 0 840 480" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;"></svg>
+      <svg id="plan-svg" viewBox="0 0 840 442" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;"></svg>
+    </div>
+    <div id="plan-footer" style="background:#F0F4F8;border:1px solid #D0D5DD;border-top:none;border-radius:0 0 10px 10px;padding:7px 14px;display:flex;justify-content:space-between;align-items:center;font-family:Arial,sans-serif;font-size:11px;">
+      <span style="color:#1B4F8A;font-weight:700;">DOORTRONIX USA</span>
+      <span id="pf-config" style="color:#1B4F8A;font-weight:700;"></span>
+      <span id="pf-dims" style="color:#555;"></span>
+      <span style="color:#E87722;font-weight:700;">PREVIEW ONLY</span>
     </div>
 
     <div class="spec-card">
@@ -1514,7 +1520,7 @@ function drawPlanView() {
   const svg = document.getElementById('plan-svg');
   if (!svg) return;
   svg.innerHTML = '';
-  const vW = 840, vH = 480;
+  const vW = 840, vH = 442;
   svg.setAttribute('viewBox', `0 0 ${vW} ${vH}`);
   const cfg = getConfig();
   if (!cfg) return;
@@ -1579,9 +1585,6 @@ function drawPlanView() {
     }
   }
 
-  t(vW/2, 22, 'PLAN', 13, '#111', 'middle', '700');
-  l(vW/2 - 32, 26, vW/2 + 32, 26, '#1B4F8A', 1);
-
   const stileW = getStileW(sc);
   const halfStile = stileW / 2;
   const numPanels = isBi ? 4 : 2;
@@ -1627,7 +1630,7 @@ function drawPlanView() {
   }
 
   // ── CLOSED ──
-  const yClosedBase = 56;
+  const yClosedBase = 36;
   t(stateLblX, yStateLbl(yClosedBase), 'Closed', 11, '#1B4F8A', 'end', '700');
   jambMarks(yClosedBase);
   if (isBi) {
@@ -1726,15 +1729,10 @@ function drawPlanView() {
           : ('FSL — Only sliding (SX) panels break out; fixed panels (O) do not'),
     9.5, '#666', 'middle', '700');
 
-  // Footer
-  const footY = vH - 38;
-  r(0, footY, vW, 38, '#F0F4F8', '#D0D5DD', 1);
-  l(0, footY, vW, footY, '#D0D5DD', 1);
-  t(14, footY+14, 'DOORTRONIX USA', 8, '#1B4F8A', 'start', '700');
-  t(14, footY+28, 'doortronixusa.com', 7, '#888', 'start');
-  t(vW/2, footY+14, cfg.label + ' (' + cfg.code + ')', 9, '#1B4F8A', 'middle', '700');
-  t(vW/2, footY+28, getWidthStr() + ' W × ' + getHeightStr() + ' H', 8, '#555', 'middle');
-  t(vW-14, footY+14, 'PREVIEW ONLY', 7, '#E87722', 'end', '700');
+  const pfConfig = document.getElementById('pf-config');
+  const pfDims   = document.getElementById('pf-dims');
+  if (pfConfig) pfConfig.textContent = cfg.label + ' (' + cfg.code + ')';
+  if (pfDims)   pfDims.textContent   = getWidthStr() + ' W × ' + getHeightStr() + ' H';
 }
 
 // ── Update all ───────────────────────────────────────────────────────
