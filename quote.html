@@ -747,7 +747,7 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
 
     <div class="preview-title">Live Door Preview</div>
     <div id="drawing-wrap">
-      <svg id="door-svg" viewBox="0 0 840 420" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;"></svg>
+      <svg id="door-svg" viewBox="0 0 840 380" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;"></svg>
       <svg id="plan-svg" viewBox="0 0 840 480" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;"></svg>
     </div>
 
@@ -1491,18 +1491,9 @@ function drawDoor(svgId, vW, vH, isConf) {
     dimLine(hDimX, dY, hDimX, dY+dH, hLabel, false);
   }
 
-  // Bottom title bar (preview only)
-  if (!isConf) {
-    const tbY = vH - 38;
-    r(0, tbY, vW, 38, '#F0F4F8', '#D0D5DD', 1);
-    l(0, tbY, vW, tbY, '#D0D5DD', 1);
-    const cLabel = cfg ? cfg.label : 'Select Configuration';
-    t(10, tbY+14, 'DOORTRONIX USA', 8, '#1B4F8A', 'start', '700');
-    t(10, tbY+28, 'doortronixusa.com', 7, '#888', 'start');
-    t(vW/2, tbY+14, cLabel, 9, '#1B4F8A', 'middle', '700');
-    t(vW/2, tbY+28, (cfg ? cfg.code : '') + ' | ' + rv('glazing'), 7, '#555', 'middle');
-    t(vW-10, tbY+14, new Date().toLocaleDateString(), 7, '#888', 'end');
-    t(vW-10, tbY+28, 'PREVIEW ONLY', 7, '#E87722', 'end', '700');
+  // Bottom title bar (confirmation drawing only)
+  if (false) {
+    // removed from quote preview — plan view provides context
   } else {
     const tbY = vH - 50;
     r(0, tbY, vW, 50, '#1B4F8A');
@@ -1777,7 +1768,7 @@ function updateAll() {
   updateNetOpeningDisplay();
   calcPrice();
   updateSpecSummary();
-  drawDoor('door-svg', 840, 420, false);
+  drawDoor('door-svg', 840, 380, false);
   drawPlanView();
 }
 
