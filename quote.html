@@ -1221,7 +1221,7 @@ function drawDoor(svgId, vW, vH, isConf) {
 
   // ── Scale to fit viewBox while maintaining true aspect ratio ───────
   const mL = isConf ? 55 : 110, mR = isConf ? 55 : 90;
-  const mT = isConf ? titleH + 20 : 36, mB = isConf ? 70 : 100;
+  const mT = isConf ? titleH + 20 : 36, mB = isConf ? 70 : 72;
   const availW = vW - mL - mR;
   let sc, dW, dH, dX, dY;
   if (!isConf) {
@@ -1638,7 +1638,7 @@ function drawPlanView() {
   }
 
   // ── CLOSED ──
-  const yClosedBase = 36;
+  const yClosedBase = 16;
   t(stateLblX, yStateLbl(yClosedBase), 'Closed', 16, '#1B4F8A', 'end', '700');
   jambMarks(yClosedBase);
   if (isBi) {
