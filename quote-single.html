@@ -1390,8 +1390,8 @@ function drawDoor(svgId, vW, vH, isConf) {
 
   // Hollow polygon arrow drawn in the top lite of the moving panel
   function liteArrow(cx, cy, availW, availH, pointsRight) {
-    const aw = Math.min(availW * 0.55, availW - 4);
-    const ah = Math.min(availH * 0.5, availH - 4);
+    const aw = Math.min(availW * 0.38, 26);
+    const ah = Math.min(availH * 0.40, availH - 4);
     const ax = cx - aw / 2, ay = cy - ah / 2;
     const bodyW = aw * 0.62, neckH = ah * 0.52;
     const ny1 = cy - neckH / 2, ny2 = cy + neckH / 2;
@@ -1473,7 +1473,7 @@ function drawDoor(svgId, vW, vH, isConf) {
         drawP(pX, pY, soW, pH, sdStroke, sdSW, false, false, true);
         drawP(jX,  pY, sxW, pH, frame, 1.5, false);
       }
-      liteArrow(jX + stileW + G/2, topLiteCY, G, topLiteH, true);
+      liteArrow(jX + stileW + G/2, topLiteCY, G, topLiteH, false);
       panels = [{x:pX+stileW, w:G}, {x:jX+stileW, w:G}];
     } else {
       // RH: SX left, SO right
@@ -1486,7 +1486,7 @@ function drawDoor(svgId, vW, vH, isConf) {
         drawP(jX,  pY, soW, pH, sdStroke, sdSW, false, true, false);
         drawP(pX,  pY, sxW, pH, frame, 1.5, false);
       }
-      liteArrow(pX + stileW + G/2, topLiteCY, G, topLiteH, false);
+      liteArrow(pX + stileW + G/2, topLiteCY, G, topLiteH, true);
       panels = [{x:pX+stileW, w:G}, {x:jX, w:G}];
     }
   }
