@@ -269,6 +269,11 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
       <span class="trust-chip">✓ Ships as Early as 3–4 Weeks</span>
     </div>
 
+    <div id="scope-notice" style="background:#FFF7ED;border:1.5px solid #FDBA74;border-left:5px solid var(--orange);border-radius:8px;padding:12px 16px;margin:14px 0 4px;font-size:13px;line-height:1.5;color:#7C2D12;">
+      <strong style="display:block;margin-bottom:4px;font-size:13px;">📦 Door Package Only — Material Supply</strong>
+      We manufacture and supply the <strong>aluminum door package</strong> (frame, panels, hardware, and operating system). Pricing <strong>does not include glass/glazing, freight, installation, or taxes</strong>. Glass is supplied and installed by others; frames are prepped for your specified glass thickness.
+    </div>
+
     <!-- ── PROJECT CART ── -->
     <div id="project-cart-section">
       <div class="cart-header">
@@ -432,15 +437,16 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
       </div>
 
       <div class="form-grid">
-        <!-- Glazing -->
+        <!-- Frame Finish -->
         <div class="field">
-          <label>Frame Finish / Glazing</label>
+          <label>Frame Finish (Anodized Aluminum)</label>
           <div class="chip-group">
             <input type="radio" name="glazing" id="gl_clear" value="204 Clear" checked>
             <label for="gl_clear">204 Clear Anodized</label>
             <input type="radio" name="glazing" id="gl_bronze" value="313 Dark Bronze">
             <label for="gl_bronze">313 Dark Bronze</label>
           </div>
+          <span class="hint">Aluminum frame finish only. Glass/glazing supplied &amp; installed by others.</span>
         </div>
 
         <!-- Transom -->
@@ -582,7 +588,7 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
             <input type="radio" name="glassPrep" id="gp_1in" value='1"'>
             <label for="gp_1in">1"</label>
           </div>
-          <span class="hint">Glass <strong>not included</strong> — frame is prepped for specified thickness.</span>
+          <span class="hint">Glass <strong>not included</strong> — frame is prepped for your specified glass thickness. Glass supplied &amp; installed by others.</span>
         </div>
 
         <!-- Transom glass prep — only shown when transom selected -->
@@ -851,7 +857,7 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
             <span class="hint" id="location-tags-hint">Label this opening for your reference.</span>
           </div>
         </div>
-        <p>Prices shown are net contractor pricing and do not include glass, freight, installation, or applicable taxes. Doortronix will confirm your quote within 24 hours. All quotes are obligation-free.</p>
+        <p>This quote is for the <strong>aluminum door package only</strong>. Prices are net contractor pricing and <strong>do not include glass/glazing, freight, installation, or applicable taxes</strong> — glass is supplied and installed by others. Doortronix will confirm your quote within 24 hours. All quotes are obligation-free.</p>
         <button type="button" class="btn-add-cart" id="btn-add-to-cart" onclick="addDoorToCart()">Add This Door to Project</button>
         <button type="submit" class="btn-submit" style="background:#6B7280;margin-top:0;">Submit Quote (this door only) →</button>
         <p style="font-size:10px;color:var(--mgray);margin-top:8px;text-align:center;">Single door only? Use "Submit Quote" above. Multiple doors? Add each to the project cart, then submit all at once.</p>
