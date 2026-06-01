@@ -843,10 +843,10 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
             </select>
             <span class="hint">Same size, finish, and specs. For different configurations, add each separately.</span>
           </div>
-          <div class="field" id="location-tags-field" style="display:none;">
-            <label style="font-size:13px;font-weight:700;">Location Tags <span style="font-weight:400;color:var(--mgray);">(optional)</span></label>
-            <input type="text" id="f_location_tags" placeholder="e.g. Main Entry, Garden Center, Receiving">
-            <span class="hint">Label each opening so we can reference them in your quote.</span>
+          <div class="field" id="location-tags-field">
+            <label style="font-size:13px;font-weight:700;">Location / Tag <span style="font-weight:400;color:var(--mgray);">(optional)</span></label>
+            <input type="text" id="f_location_tags" placeholder="e.g. Main Entry">
+            <span class="hint" id="location-tags-hint">Label this opening for your reference.</span>
           </div>
         </div>
         <p>Prices shown are net contractor pricing and do not include glass, freight, installation, or applicable taxes. Doortronix will confirm your quote within 24 hours. All quotes are obligation-free.</p>
@@ -1041,22 +1041,40 @@ function addDoorToCart() {
     if (!val) { alert(`Please fill in "${label}" before adding to the project.`); return; }
   }
 
-  const cart    = getCart();
-  const doorData = captureCurrentDoor();
+  const cart = getCart();
+
+  if (cart.length === 0 && _editingDoorId === null) {
+    _projectHeader = {
+      name: fv('f_name'), company: fv('f_company'), role: fv('f_role'),
+      phone: fv('f_phone'), email: fv('f_email'),
+      projectName: fv('f_project'), location: fv('f_location'),
+      shipDate: fv('f_shipdate'), poNumber: fv('f_po'),
+    };
+  }
+
+  const qty  = parseInt(fv('f_qty')) || 1;
+  const tags = (fv('f_location_tags') || '').split(',').map(t => t.trim()).filter(Boolean);
 
   if (_editingDoorId !== null) {
+    // Editing an existing entry — update in place (always single)
+    const doorData = captureCurrentDoor();
+    doorData.quantity = 1;
     const idx = cart.findIndex(d => d.id === _editingDoorId);
     if (idx >= 0) cart[idx] = doorData; else cart.push(doorData);
     _editingDoorId = null;
-  } else {
-    if (cart.length === 0) {
-      _projectHeader = {
-        name: fv('f_name'), company: fv('f_company'), role: fv('f_role'),
-        phone: fv('f_phone'), email: fv('f_email'),
-        projectName: fv('f_project'), location: fv('f_location'),
-        shipDate: fv('f_shipdate'), poNumber: fv('f_po'),
-      };
+  } else if (qty > 1) {
+    // Split into individual entries — one per door
+    for (let i = 0; i < qty; i++) {
+      const doorData      = captureCurrentDoor();
+      doorData.id         = Date.now() + i;
+      doorData.quantity   = 1;
+      doorData.locationTags = tags[i] || '';
+      cart.push(doorData);
     }
+  } else {
+    // Single door
+    const doorData = captureCurrentDoor();
+    doorData.quantity = 1;
     cart.push(doorData);
   }
 
@@ -1135,10 +1153,17 @@ function resetDoorForm() {
 }
 
 function updateQtyUI() {
-  const qty = parseInt(document.getElementById('f_qty')?.value) || 1;
-  const tagsField = document.getElementById('location-tags-field');
-  const addBtn    = document.getElementById('btn-add-to-cart');
-  if (tagsField) tagsField.style.display = qty > 1 ? '' : 'none';
+  const qty     = parseInt(document.getElementById('f_qty')?.value) || 1;
+  const addBtn  = document.getElementById('btn-add-to-cart');
+  const hint    = document.getElementById('location-tags-hint');
+  const input   = document.getElementById('f_location_tags');
+  if (qty > 1) {
+    if (hint)  hint.textContent  = `Separate each location with a comma — each will become its own door in your project cart.`;
+    if (input) input.placeholder = 'e.g. Main Entry, Garden Center, Receiving';
+  } else {
+    if (hint)  hint.textContent  = 'Label this opening for easy reference.';
+    if (input) input.placeholder = 'e.g. Main Entry';
+  }
   if (addBtn && !addBtn.textContent.includes('Update')) {
     addBtn.textContent = qty > 1 ? `Add ${qty} Doors to Project` : 'Add This Door to Project';
   }
