@@ -216,7 +216,7 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
   <!-- ══ FORM PANEL ══ -->
   <div class="form-panel">
     <h1>Single Slide Door Quote</h1>
-    <p class="intro">Configure your single slide door below to see live contractor pricing. Need a bi-part door? <a href="quote.html" style="color:var(--blue);font-weight:700;">Bi-Part Form →</a> &nbsp;|&nbsp; Quoting multiple openings? <a href="quote-project.html" style="color:var(--orange);font-weight:700;">Use the Project Quote Form →</a><br>Our team in Malakoff, Texas will confirm your quote within <strong>4 business hours</strong>.</p>
+    <p class="intro">Configure your single slide door below to see live contractor pricing. Need a bi-part door? <a href="quote.html" style="color:var(--blue);font-weight:700;">Bi-Part Form →</a> &nbsp;|&nbsp; Quoting multiple openings? <a href="quote-project.html" style="color:var(--orange);font-weight:700;">Use the Project Quote Form →</a><br>Our team in Malakoff, Texas will confirm your quote within <strong>24 hours</strong>.</p>
     <div class="trust-bar">
       <span class="trust-chip">✓ Manufactured in Malakoff, TX</span>
       <span class="trust-chip">✓ Factory-Direct Net Pricing</span>
@@ -743,7 +743,7 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
 
       <!-- Submit -->
       <div class="submit-section">
-        <p>Prices shown are net contractor pricing and do not include glass, freight, installation, or applicable taxes. Doortronix will confirm your quote with exact freight within 4 business hours. All quotes are obligation-free.</p>
+        <p>Prices shown are net contractor pricing and do not include glass, freight, installation, or applicable taxes. Doortronix will confirm your quote with exact freight within 24 hours. All quotes are obligation-free.</p>
         <button type="submit" class="btn-submit">Submit Quote Request →</button>
       </div>
 
@@ -793,7 +793,7 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
     <div class="conf-header">
       <div>
         <h2>✓ Quote Request Submitted</h2>
-        <p>Our team in Malakoff, Texas will respond within 4 business hours with your confirmed quote, production lead time, and freight estimate.</p>
+        <p>Our team in Malakoff, Texas will respond within 24 hours with your confirmed quote, production lead time, and freight estimate.</p>
       </div>
       <div class="conf-ref">
         <div style="font-size:16px;font-weight:700;color:#fff;" id="conf-ref-num"></div>
@@ -1291,7 +1291,7 @@ function calcPrice() {
     html += `<div class="price-line"><span class="pl">× ${qty} openings</span><span class="pv">${fmt(grandTotal)}</span></div>`;
   }
   html += `<div class="price-total-row"><span class="pt-label">Estimated Total</span><span class="pt-value">${fmt(grandTotal)}</span></div>`;
-  html += `<div class="price-note">Net contractor pricing. Does not include glass, freight, installation, or taxes. Doortronix will confirm final pricing and freight within 4 business hours.</div>`;
+  html += `<div class="price-note">Net contractor pricing. Does not include glass, freight, installation, or taxes. Doortronix will confirm final pricing and freight within 24 hours.</div>`;
   body.innerHTML = html;
   const headerTotal = document.getElementById('price-header-total');
   if (headerTotal) headerTotal.textContent = fmt(grandTotal);
