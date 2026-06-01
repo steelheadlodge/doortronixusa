@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSI Specification — Section 08 42 29 Automatic Sliding Door Systems | Doortronix USA</title>
+  <meta name="description" content="Full CSI 3-part specification for Section 08 42 29 — Automatic Sliding Door Systems. Doortronix DT-3000 Revolution. Editable, print-ready, formatted for project manuals.">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .spec-toolbar {
+      position: sticky; top: 0; z-index: 40;
+      background: var(--blue); color: #fff;
+      display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between;
+      padding: 10px 20px;
+    }
+    .spec-toolbar .st-title { font-size: 13px; font-weight: 700; letter-spacing: .3px; }
+    .spec-toolbar .st-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .spec-toolbar button {
+      background: var(--orange); color: #fff; border: none; border-radius: 6px;
+      padding: 8px 16px; font-size: 12px; font-weight: 700; cursor: pointer;
+    }
+    .spec-toolbar button.secondary { background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.4); }
+    .spec-toolbar button:hover { opacity: .9; }
+
+    .spec-doc {
+      max-width: 850px; margin: 36px auto; padding: 0 24px 60px;
+      font-family: "Times New Roman", Georgia, serif;
+      color: #1a1a1a; font-size: 15px; line-height: 1.55;
+    }
+    .spec-doc .doc-head { text-align: center; border-bottom: 3px solid var(--blue); padding-bottom: 18px; margin-bottom: 8px; }
+    .spec-doc .doc-head h1 { font-family: Arial, sans-serif; font-size: 22px; color: var(--blue); margin: 0 0 4px; }
+    .spec-doc .doc-head .sub { font-family: Arial, sans-serif; font-size: 13px; color: #555; }
+    .spec-doc .doc-meta {
+      display: flex; flex-wrap: wrap; gap: 6px 28px; justify-content: center;
+      font-family: Arial, sans-serif; font-size: 11px; color: #777; margin: 12px 0 28px;
+    }
+
+    .spec-doc h2 {
+      font-family: Arial, sans-serif; font-size: 16px; color: var(--blue);
+      border-bottom: 1px solid #ccc; padding-bottom: 6px; margin: 34px 0 14px;
+      text-transform: uppercase; letter-spacing: .5px;
+    }
+    .spec-doc h3 {
+      font-family: Arial, sans-serif; font-size: 14px; color: #222;
+      margin: 22px 0 8px; font-weight: 700;
+    }
+    .spec-doc .art { margin: 0 0 6px; }
+    .spec-doc .lvl1 { margin: 4px 0 4px 28px; }   /* A. B. C. */
+    .spec-doc .lvl2 { margin: 3px 0 3px 58px; }   /* 1. 2. 3. */
+    .spec-doc .lvl3 { margin: 3px 0 3px 88px; }   /* a. b. c. */
+    .spec-doc p { margin: 6px 0; }
+
+    .spec-note {
+      font-family: Arial, sans-serif; font-size: 12px; line-height: 1.5;
+      background: #FFF7ED; border-left: 4px solid var(--orange);
+      color: #7C2D12; padding: 10px 14px; margin: 10px 0 14px 28px; border-radius: 0 6px 6px 0;
+    }
+    .spec-note strong { display: block; margin-bottom: 3px; text-transform: uppercase; letter-spacing: .5px; font-size: 11px; }
+    .spec-doc .editable { background: #FEF9C3; padding: 0 3px; border-radius: 2px; }
+
+    .spec-doc .end-mark { text-align: center; font-family: Arial, sans-serif; font-size: 12px; color: #777; margin-top: 30px; letter-spacing: 1px; }
+
+    @media print {
+      .topbar, .navbar, .breadcrumb, .page-hero, .spec-toolbar, .footer, .cta-banner { display: none !important; }
+      .spec-doc { margin: 0; max-width: none; padding: 0; font-size: 11pt; }
+      .spec-note { background: #fff !important; border-left: 3px solid #999; color: #333; }
+      .spec-doc .editable { background: transparent; }
+      h2, h3 { page-break-after: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="container">
+    <strong>Factory-Direct from Malakoff, Texas</strong> &nbsp;|&nbsp;
+    <a href="contractor-account.html">Contractor Pricing</a> &nbsp;|&nbsp;
+    <a href="tel:+18884535196">(888) 453-5196</a>
+  </div>
+</div>
+
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo" style="text-decoration:none;">
+      <div class="brand">Doortronix<span>USA</span></div>
+      <div class="tagline">Manufactured in Malakoff, Texas</div>
+    </a>
+    <div class="nav-toggle"><span></span><span></span><span></span></div>
+    <div class="nav-links">
+      <div class="nav-dropdown">
+        <a href="#">Products</a>
+        <div class="dropdown-menu">
+          <a href="products/revolution.html">Revolution Sliding Door</a>
+          <a href="products/swinging.html">Swinging Door</a>
+        </div>
+      </div>
+      <a href="why-us.html">Why Doortronix</a>
+      <a href="buy-american.html">Buy American</a>
+      <a href="resources.html" class="active">Resources</a>
+      <a href="contact.html">Contact</a>
+      <a href="quote-combined.html" class="btn-nav-cta">Get a Quote</a>
+    </div>
+  </div>
+</nav>
+
+<div class="breadcrumb">
+  <div class="container">
+    <a href="index.html">Home</a>
+    <span>›</span>
+    <a href="resources.html">Resources</a>
+    <span>›</span>
+    CSI Specification — Sliding Doors
+  </div>
+</div>
+
+<div class="spec-toolbar">
+  <span class="st-title">CSI Section 08 42 29 — Automatic Sliding Door Systems</span>
+  <div class="st-actions">
+    <button onclick="window.print()">Print / Save as PDF</button>
+    <button class="secondary" onclick="copySpec()">Copy Text</button>
+    <a href="quote-combined.html" style="text-decoration:none;"><button>Request a Quote</button></a>
+  </div>
+</div>
+
+<div class="spec-doc" id="spec-doc">
+
+  <div class="doc-head">
+    <h1>SECTION 08 42 29</h1>
+    <div class="sub">AUTOMATIC SLIDING DOOR SYSTEMS</div>
+  </div>
+  <div class="doc-meta">
+    <span>Manufacturer: Doortronix Inc., Malakoff, TX</span>
+    <span>Model: DT-3000 Revolution</span>
+    <span>Reference Standard: ANSI/BHMA A156.10</span>
+  </div>
+
+  <div class="spec-note">
+    <strong>Specifier Note</strong>
+    This specification is written in CSI 3-part SectionFormat for the Doortronix DT-3000 Revolution automatic sliding door system. Edit all <span class="editable">highlighted</span> and bracketed [ ] items to suit project requirements. Delete specifier notes and any provisions not applicable before issuing for construction. Coordinate with related electrical, glazing, and structural sections. Verify all standards and compliance citations against current editions and the Authority Having Jurisdiction (AHJ).
+  </div>
+
+  <!-- ============ PART 1 ============ -->
+  <h2>Part 1 — General</h2>
+
+  <h3>1.01 Summary</h3>
+  <p class="lvl1">A. Section includes power-operated, microprocessor-controlled automatic sliding door systems, including operators, door panels, sidelights, headers, hardware, sensors, controls, and accessories.</p>
+  <p class="lvl1">B. Related Requirements:</p>
+  <p class="lvl2">1. Section 08 11 13 — Hollow Metal Doors and Frames.</p>
+  <p class="lvl2">2. Section 08 80 00 — Glazing.</p>
+  <p class="lvl2">3. Section 26 05 00 — Common Work Results for Electrical, for power supply to door operators.</p>
+  <div class="spec-note">
+    <strong>Specifier Note</strong>
+    Edit the related sections above to reference the actual section numbers used in the project manual. Delete any that do not apply.
+  </div>
+
+  <h3>1.02 References</h3>
+  <p class="lvl1">A. American National Standards Institute / Builders Hardware Manufacturers Association (ANSI/BHMA):</p>
+  <p class="lvl2">1. ANSI/BHMA A156.10 — Power Operated Pedestrian Doors.</p>
+  <p class="lvl1">B. International Code Council (ICC):</p>
+  <p class="lvl2">1. ICC A117.1 — Accessible and Usable Buildings and Facilities.</p>
+  <p class="lvl1">C. National Fire Protection Association (NFPA):</p>
+  <p class="lvl2">1. NFPA 101 — Life Safety Code, for means of egress.</p>
+  <p class="lvl1">D. Americans with Disabilities Act (ADA) Standards for Accessible Design.</p>
+  <p class="lvl1">E. Canadian Standards Association (CSA): CSA B651 — Accessible Design for the Built Environment.</p>
+  <p class="lvl1">F. National Electrical Code (NFPA 70 / NEC).</p>
+
+  <h3>1.03 Submittals</h3>
+  <p class="lvl1">A. Product Data: Manufacturer's data sheets for each system, component, and accessory specified, including operator, controller, sensors, finishes, and electrical requirements.</p>
+  <p class="lvl1">B. Shop Drawings: Show elevations, configurations, panel arrangement, rough opening dimensions, header detail, anchorage, glazing, breakout direction, sensor locations, electrical rough-in, and clearances.</p>
+  <p class="lvl1">C. Samples: Finish samples for each specified anodized or coated finish, upon request.</p>
+  <p class="lvl1">D. Quality Assurance Submittals:</p>
+  <p class="lvl2">1. Manufacturer's certification of compliance with ANSI/BHMA A156.10.</p>
+  <p class="lvl2">2. Installer qualifications, where required.</p>
+  <p class="lvl1">E. Operation and Maintenance Data: Include in project closeout documents.</p>
+  <p class="lvl1">F. Warranty: Submit manufacturer's standard and extended warranty documents.</p>
+
+  <h3>1.04 Quality Assurance</h3>
+  <p class="lvl1">A. Manufacturer Qualifications: Single manufacturer regularly engaged in the production of automatic sliding door systems, with electronics manufactured in the United States.</p>
+  <p class="lvl1">B. Installer Qualifications: Installation performed by personnel trained in accordance with manufacturer's requirements. Inspection of completed installation by an AAADM-certified inspector is recommended where required by the AHJ.</p>
+  <p class="lvl1">C. Regulatory Requirements: Comply with ANSI/BHMA A156.10 and applicable accessibility and life-safety codes for the project location.</p>
+
+  <h3>1.05 Delivery, Storage, and Handling</h3>
+  <p class="lvl1">A. Deliver materials in manufacturer's original, undamaged packaging with identifying labels intact.</p>
+  <p class="lvl1">B. Store materials indoors, protected from weather, moisture, and construction traffic, in accordance with manufacturer's instructions.</p>
+  <p class="lvl1">C. Handle materials to prevent damage to finished surfaces and operating components.</p>
+
+  <h3>1.06 Project Conditions</h3>
+  <p class="lvl1">A. Field Measurements: Verify rough opening dimensions and conditions at the project site before fabrication. Coordinate with related work.</p>
+  <p class="lvl1">B. Do not install operators until building enclosure is weather-tight and ambient conditions are within manufacturer's limits.</p>
+
+  <h3>1.07 Warranty</h3>
+  <p class="lvl1">A. Manufacturer's Standard Warranty: One (1) year limited warranty against defects in materials and workmanship for the complete door system, from date of <span class="editable">[Substantial Completion] [shipment]</span>.</p>
+  <p class="lvl1">B. Extended Warranty: Five (5) year warranty on the steel drive rod and linear motion bearing assembly.</p>
+  <div class="spec-note">
+    <strong>Specifier Note</strong>
+    Confirm warranty commencement date and any project-specific extended warranty terms with the manufacturer prior to issuing for construction.
+  </div>
+
+  <!-- ============ PART 2 ============ -->
+  <h2>Part 2 — Products</h2>
+
+  <h3>2.01 Manufacturer</h3>
+  <p class="lvl1">A. Basis-of-Design Manufacturer: Doortronix Inc., 5783 County Road 1219, Malakoff, TX 75148. Telephone: (888) 453-5196. Website: www.DoortronixUSA.com.</p>
+  <p class="lvl1">B. Basis-of-Design Product: DT-3000 "Revolution" Automatic Sliding Door System.</p>
+  <div class="spec-note">
+    <strong>Specifier Note</strong>
+    To specify Doortronix as sole source, delete the substitution provision below. To allow alternates, retain and edit to the project's substitution requirements (typically Section 01 25 00).
+  </div>
+  <p class="lvl1">C. Substitutions: <span class="editable">[No substitutions permitted.] [Comparable products complying with this Section will be considered in accordance with Section 01 25 00 — Substitution Procedures.]</span></p>
+
+  <h3>2.02 Automatic Door Operator</h3>
+  <p class="lvl1">A. Model: Doortronix DT-3000.</p>
+  <p class="lvl1">B. Drive System: One-inch (1") chrome steel rod with precision linear motion bearing. Track-and-roller drive systems are not permitted.</p>
+  <p class="lvl1">C. Motor: Direct current (DC), 1/5 HP, variable speed.</p>
+  <p class="lvl1">D. Drive Belt: Kevlar-reinforced timing belt.</p>
+  <p class="lvl1">E. Controller: Microprocessor-based control with integral LED self-diagnostic readout displaying fault codes. Servicing shall not require a proprietary handheld programmer.</p>
+  <p class="lvl1">F. Cycle Rating: Minimum 10,000,000 cycles.</p>
+  <p class="lvl1">G. Opening Speed: Field-adjustable, from standard commercial through high-speed operation, within the limits of ANSI/BHMA A156.10.</p>
+  <p class="lvl1">H. Power Supply: 120V AC standard; <span class="editable">[208V] [240V]</span> available where indicated.</p>
+  <p class="lvl1">I. Battery Backup: <span class="editable">[Provide] [Do not provide]</span> battery backup to maintain operation during loss of primary power.</p>
+
+  <h3>2.03 Header</h3>
+  <p class="lvl1">A. Header: Structural aluminum I-beam designed for zero deflection under operating load across the specified clear opening. Extruded channel headers subject to deflection are not permitted.</p>
+  <p class="lvl1">B. Header shall fully house the operator, drive, and controller, with access for service.</p>
+
+  <h3>2.04 Door Panels, Sidelights, and Framing</h3>
+  <p class="lvl1">A. Panel Assembly: Extruded aluminum stiles and rails, clip-and-screw mechanically assembled. Welded or bonded panel frames are not permitted. Glass shall be replaceable without panel destruction or special tools.</p>
+  <p class="lvl1">B. Interlocks: Full-height extruded aluminum interlocks at meeting stiles, top to bottom, with no air-infiltration or light gap.</p>
+  <p class="lvl1">C. Sidelights: Magnetic breakaway sidelights providing full-width release with consistent breakout force, resettable by hand without tools. Ball-catch retention is not permitted.</p>
+  <p class="lvl1">D. Bottom Guide: Fixed pin guide with no moving parts. Floor-mounted roller or wheel guides are not permitted.</p>
+
+  <h3>2.05 Configurations</h3>
+  <p class="lvl1">A. Configuration: As indicated on Drawings. Available configurations include:</p>
+  <p class="lvl2">1. Bi-parting (standard arrangement SO-SX-SX-SO).</p>
+  <p class="lvl2">2. Single slide, left-hand (LH) or right-hand (RH) as indicated.</p>
+  <p class="lvl1">B. Breakout Type: <span class="editable">[FBO — Full Breakout] [FSL — Full Sidelight breakout] [Fixed sidelight / non-breakout]</span> as indicated and as required by the AHJ for egress.</p>
+  <div class="spec-note">
+    <strong>Specifier Note</strong>
+    Indicate configuration, handing, and breakout type on the Drawings. Many jurisdictions require breakout (FBO/FSL) for emergency egress in high-occupancy applications — verify with the AHJ.
+  </div>
+
+  <h3>2.06 Finishes</h3>
+  <p class="lvl1">A. Aluminum Finish: <span class="editable">[204 Clear Anodized] [313 Dark Bronze Anodized] [Black] [White] [Custom powder coat to match _____]</span>.</p>
+  <p class="lvl1">B. Finish shall be applied uniformly and free of visible defects.</p>
+
+  <h3>2.07 Glazing</h3>
+  <p class="lvl1">A. Glazing furnished and installed under Section 08 80 00 — Glazing, unless otherwise indicated. Door framing shall be factory-prepared (prepped) for the specified glass thickness.</p>
+  <p class="lvl1">B. Glass Type: <span class="editable">[Clear tempered] [Low-E] [Tinted] [Frosted] [Lead-lined]</span>, thickness <span class="editable">[1/4"] [9/16"] [5/8"] [1"]</span> as indicated.</p>
+  <div class="spec-note">
+    <strong>Specifier Note</strong>
+    Doortronix supplies the aluminum door package only. Glass/glazing is supplied and installed by others. Coordinate glass type and thickness with the Glazing Section and confirm framing glass-prep with the manufacturer.
+  </div>
+
+  <h3>2.08 Activation and Safety Sensors</h3>
+  <p class="lvl1">A. Activation: <span class="editable">[Microwave motion] [Active infrared] [Push-plate / actuator]</span> sensors as indicated.</p>
+  <p class="lvl1">B. Safety: Door-mounted presence-detection sensors complying with ANSI/BHMA A156.10 to protect the path of door travel.</p>
+
+  <h3>2.09 Accessibility and Operation</h3>
+  <p class="lvl1">A. When configured to accessible (ADA) timing and opening-force parameters, system shall comply with the ADA Standards and ICC A117.1.</p>
+
+  <h3>2.10 Fabrication</h3>
+  <p class="lvl1">A. Fabricate units to sizes shown, with components factory-assembled to the greatest extent practicable.</p>
+  <p class="lvl1">B. Electronics shall be manufactured in the United States.</p>
+
+  <!-- ============ PART 3 ============ -->
+  <h2>Part 3 — Execution</h2>
+
+  <h3>3.01 Examination</h3>
+  <p class="lvl1">A. Verify that rough openings, structural support, and electrical rough-in are complete, correctly located, and within tolerances before installation.</p>
+  <p class="lvl1">B. Do not proceed with installation until unsatisfactory conditions have been corrected.</p>
+
+  <h3>3.02 Installation</h3>
+  <p class="lvl1">A. Install systems plumb, level, and true to line in accordance with manufacturer's approved shop drawings and printed installation instructions.</p>
+  <p class="lvl1">B. Anchor securely to adjacent construction. Maintain clearances required for proper operation and breakout.</p>
+  <p class="lvl1">C. Connect to building electrical supply under Division 26. Coordinate final connections.</p>
+
+  <h3>3.03 Field Quality Control</h3>
+  <p class="lvl1">A. Adjust operators for proper opening/closing speed, check-out, hold-open time, and breakout force in accordance with ANSI/BHMA A156.10.</p>
+  <p class="lvl1">B. Where required by the AHJ, arrange inspection by an AAADM-certified inspector and affix the daily safety-check label.</p>
+
+  <h3>3.04 Adjusting and Cleaning</h3>
+  <p class="lvl1">A. Adjust operating components for smooth, quiet operation.</p>
+  <p class="lvl1">B. Clean exposed surfaces and glazing; remove labels and protective coverings.</p>
+
+  <h3>3.05 Demonstration</h3>
+  <p class="lvl1">A. Demonstrate proper operation, safety features, and routine maintenance to the Owner's personnel.</p>
+  <p class="lvl1">B. Provide the LED fault-code reference and maintenance documentation.</p>
+
+  <div class="end-mark">— END OF SECTION 08 42 29 —</div>
+
+</div>
+
+<div class="cta-banner">
+  <div class="container">
+    <h2>Need a project-specific spec or drawings?</h2>
+    <p>Our engineering team can provide a modified specification, stamped drawings, or submittal documentation for your project.</p>
+    <a href="quote-combined.html" class="btn btn-white" style="font-size:16px; padding:15px 34px;">Request a Quote →</a>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="brand">Doortronix<span style="color:var(--orange)">USA</span></div>
+        <p>Automatic door systems manufactured in Malakoff, Texas. Factory-direct to contractors nationwide.</p>
+        <div class="made-in">🇺🇸 Manufactured in Malakoff, Texas</div>
+      </div>
+      <div>
+        <h4>Products</h4>
+        <ul>
+          <li><a href="products/revolution.html">Revolution Sliding Door</a></li>
+          <li><a href="products/swinging.html">Swinging Door</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Company</h4>
+        <ul>
+          <li><a href="why-us.html">Why Doortronix</a></li>
+          <li><a href="buy-american.html">Buy American</a></li>
+          <li><a href="contractor-account.html">Contractor Account</a></li>
+          <li><a href="resources.html">Resources &amp; Downloads</a></li>
+          <li><a href="contact.html">Contact Us</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="tel:+18884535196">(888) 453-5196</a></li>
+          <li><a href="mailto:info@doortronixusa.com">info@doortronixusa.com</a></li>
+          <li style="color:#B8CCE4; font-size:13px; margin-top:8px;">Doortronix Inc.<br>5783 County Road 1219, Malakoff, TX 75148</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 Doortronix Inc. All rights reserved.</span>
+      <span>ANSI/BHMA A156.10 · CSA Compliant</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+<script>
+function copySpec() {
+  const el = document.getElementById('spec-doc');
+  const text = el.innerText.replace(/\n{3,}/g, '\n\n');
+  navigator.clipboard.writeText(text).then(function() {
+    const btn = event.target;
+    const orig = btn.textContent;
+    btn.textContent = '✓ Copied';
+    setTimeout(function(){ btn.textContent = orig; }, 2000);
+  }).catch(function() {
+    alert('Copy failed — use Print / Save as PDF instead, or select the text manually.');
+  });
+}
+</script>
+</body>
+</html>
