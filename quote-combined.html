@@ -347,16 +347,6 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
           <label>PO / Reference #</label>
           <input type="text" name="poNumber" id="f_po" placeholder="Your PO or job reference number">
         </div>
-        <div class="field full">
-          <label>Number of Door Openings <span class="req">*</span></label>
-          <select name="quantity" id="f_qty" required>
-            <option value="">— Quantity —</option>
-            <option value="1">1</option><option value="2">2</option><option value="3">3</option>
-            <option value="4">4</option><option value="5">5</option><option value="6">6</option>
-            <option value="7">7</option><option value="8">8</option><option value="9">9</option>
-            <option value="10">10+</option>
-          </select>
-        </div>
       </div>
 
       </div><!-- /project-section-wrapper -->
@@ -842,6 +832,16 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
 
       <!-- Submit -->
       <div class="submit-section">
+        <div class="field" style="margin-bottom:14px;">
+          <label style="font-size:13px;font-weight:700;">How many of this exact configuration? <span class="req">*</span></label>
+          <select id="f_qty" name="quantity" required style="max-width:200px;">
+            <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+            <option value="4">4</option><option value="5">5</option><option value="6">6</option>
+            <option value="7">7</option><option value="8">8</option><option value="9">9</option>
+            <option value="10">10+</option>
+          </select>
+          <span class="hint">Same size, finish, and specs. For different configurations, add each separately.</span>
+        </div>
         <p>Prices shown are net contractor pricing and do not include glass, freight, installation, or applicable taxes. Doortronix will confirm your quote within 4 business hours. All quotes are obligation-free.</p>
         <button type="button" class="btn-add-cart" id="btn-add-to-cart" onclick="addDoorToCart()">Add This Door to Project</button>
         <button type="submit" class="btn-submit" style="background:#6B7280;margin-top:0;">Submit Quote (this door only) →</button>
@@ -1014,6 +1014,7 @@ function captureCurrentDoor() {
     sensor:        rv('sensor'),
     addons:        [..._checkedAddons],
     notes:         fv('f_notes'),
+    quantity:      parseInt(fv('f_qty')) || 1,
     estimatedTotal: pd?.grandTotal || null,
   };
 }
@@ -1101,6 +1102,7 @@ function loadDoorIntoForm(door) {
     if (el) { el.classList.add('checked'); _checkedAddons.add(addonId); }
   });
   document.getElementById('f_notes').value = door.notes || '';
+  const qtyEl = document.getElementById('f_qty'); if (qtyEl) qtyEl.value = door.quantity || 1;
   updateAll();
 }
 
@@ -1116,6 +1118,7 @@ function resetDoorForm() {
   _checkedAddons.clear();
   document.querySelectorAll('.addon-item.checked').forEach(el => el.classList.remove('checked'));
   document.getElementById('f_notes').value = '';
+  const qtyEl = document.getElementById('f_qty'); if (qtyEl) qtyEl.value = '1';
   updateAll();
 }
 
@@ -1161,8 +1164,8 @@ function renderCart() {
       <div class="cart-card-num">DOOR ${i+1}${isEditing ? ' ✏️' : ''}</div>
       <div class="cart-card-type">${d.configLabel}</div>
       <div class="cart-card-code">${d.configCode}</div>
-      <div class="cart-card-dims">${d.widthStr || '—'} × ${d.heightStr || '—'}</div>
-      <div class="cart-card-price">${d.estimatedTotal ? '$'+d.estimatedTotal.toLocaleString() : 'Call'}</div>
+      <div class="cart-card-dims">${d.widthStr || '—'} × ${d.heightStr || '—'}${(d.quantity||1)>1 ? ' <strong>×'+d.quantity+'</strong>' : ''}</div>
+      <div class="cart-card-price">${d.estimatedTotal ? '$'+d.estimatedTotal.toLocaleString()+(d.quantity>1?' ea':'') : 'Call'}</div>
       <div class="cart-card-actions">
         <button type="button" onclick="editCartDoor(${d.id})">Edit</button>
         <button type="button" class="btn-remove" onclick="removeCartDoor(${d.id})">✕</button>
@@ -1196,7 +1199,7 @@ async function submitAllDoors() {
     const stile  = d.stileWidth === 'medium' ? 'Medium 3-3/4"' : 'Narrow (std)';
     const rail   = d.bottomRail === '6in' ? '6"' : d.bottomRail === '10in' ? '10"' : '4" (std)';
     const sensor = (['Optex i-oneXT','BEA IXIO'].includes(d.sensor)) ? d.sensor : 'Standard Optex (incl.)';
-    return `DOOR ${i+1}: ${d.configLabel} (${d.configCode})\n` +
+    return `DOOR ${i+1}: ${d.configLabel} (${d.configCode}) — Qty: ${d.quantity||1}\n` +
            `  Width: ${d.widthStr} | Height: ${d.heightStr}\n` +
            `  Finish: ${d.glazing} | Glass Prep: ${d.glassPrep} | Threshold: ${d.threshold}\n` +
            `  Sensor: ${sensor} | Transom: ${d.transom === 'yes' ? 'Yes (+$250)' : 'No'} | Stile: ${stile} | Bottom Rail: ${rail}\n` +
@@ -2341,7 +2344,7 @@ document.getElementById('quoteForm').addEventListener('change', updateAll);
 // ── Form submit ──────────────────────────────────────────────────────
 document.getElementById('quoteForm').addEventListener('submit', async function(e) {
   e.preventDefault();
-  const req = ['f_name','f_company','f_role','f_phone','f_email','f_location','f_qty'];
+  const req = ['f_name','f_company','f_role','f_phone','f_email','f_location'];
   let ok = true;
   req.forEach(id => {
     const el = document.getElementById(id);
