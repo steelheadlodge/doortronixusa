@@ -676,6 +676,8 @@ function addDoor() {
 
   updateDoor(id);
   setActiveDoor(id);
+  const block = document.getElementById('door-block-' + id);
+  if (block) block.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function removeDoor(id) {
