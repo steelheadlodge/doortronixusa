@@ -375,7 +375,7 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
         <label>Select Configuration <span class="req">*</span></label>
 
         <!-- Bi-Part configs -->
-        <div class="config-grid" id="configGrid-bipart" style="grid-template-columns:repeat(3,1fr);">
+        <div class="config-grid" id="configGrid-bipart" style="grid-template-columns:repeat(2,1fr);">
 
           <div style="grid-column:1/-1; font-size:11px; font-weight:700; color:var(--blue); text-transform:uppercase; letter-spacing:.5px; padding-bottom:2px; border-bottom:1px solid var(--border); margin-bottom:2px;">Bi-Part</div>
 
@@ -393,14 +393,6 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
             <div class="cc-name">FSL Bi-Part</div>
             <div class="cc-code">O-SX-SX-O</div>
             <div class="cc-price">from $3,900</div>
-          </label>
-
-          <input type="radio" name="config" id="cfg_esa" value="esa">
-          <label for="cfg_esa" class="config-card">
-            <svg class="cc-icon" width="70" height="36" viewBox="0 0 70 36"><rect x="0" y="0" width="70" height="36" fill="#F8F8F8" rx="3"/><rect x="0" y="0" width="70" height="6" fill="#888"/><rect x="4" y="6" width="15" height="28" fill="#E0E0E0" stroke="#999" stroke-width="1"/><rect x="20" y="6" width="15" height="28" fill="#F0F0F0" stroke="#999" stroke-width="1"/><rect x="36" y="6" width="15" height="28" fill="#F0F0F0" stroke="#999" stroke-width="1"/><rect x="52" y="6" width="15" height="28" fill="#E0E0E0" stroke="#999" stroke-width="1"/></svg>
-            <div class="cc-name">ESA Bi-Part</div>
-            <div class="cc-code">P-SX-SX-P</div>
-            <div class="cc-price" style="color:var(--mgray);">Call for pricing</div>
           </label>
 
         </div><!-- /configGrid-bipart -->
@@ -957,7 +949,6 @@ function getStileW(sc) {
 const CONFIGS = {
   'fbo-bi':        { label:'FBO Bi-Part',      code:'SO-SX-SX-SO', base:3900, transom:250, minW:96,  maxW:168, panels:2, isFBO:true,  isBi:true  },
   'fsl-bi':        { label:'FSL Bi-Part',      code:'O-SX-SX-O',  base:3900, transom:250, minW:96,  maxW:168, panels:2, isFBO:false, isBi:true  },
-  'esa':           { label:'ESA Bi-Part',      code:'P-SX-SX-P',  base:null, panels:2,    isFBO:false, isBi:true  },
   'fbo-single-rh': { label:'FBO Single — RH',  code:'SX-SO',      base:3200, transom:250, minW:78,  maxW:108, panels:1, isFBO:true,  isBi:false },
   'fbo-single-lh': { label:'FBO Single — LH',  code:'SO-SX',      base:3200, transom:250, minW:78,  maxW:108, panels:1, isFBO:true,  isBi:false },
   'fsl-single-rh': { label:'FSL Single — RH',  code:'SX-O',       base:3200, transom:250, minW:78,  maxW:108, panels:1, isFBO:false, isBi:false },
