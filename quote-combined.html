@@ -1032,21 +1032,28 @@ function captureCurrentDoor() {
 }
 
 function addDoorToCart() {
-  const required = [
-    [fv('f_name'),    'Full Name'],
-    [fv('f_company'), 'Company Name'],
-    [fv('f_role'),    'Your Role'],
-    [fv('f_phone'),   'Phone Number'],
-    [fv('f_email'),   'Email Address'],
-    [fv('f_location'),'Project City & State'],
-    [rv('config'),    'Door Configuration'],
-  ];
-  for (const [val, label] of required) {
-    if (!val) { alert(`Please fill in "${label}" before adding to the project.`); return; }
-  }
+  // Restore header from storage if lost (e.g. after page reload)
+  if (!_projectHeader) _projectHeader = getHeader();
 
   const cart = getCart();
 
+  // Validate contact — use saved header if fields are locked (cart already has doors)
+  if (cart.length === 0 && _editingDoorId === null) {
+    const required = [
+      [fv('f_name'),    'Full Name'],
+      [fv('f_company'), 'Company Name'],
+      [fv('f_role'),    'Your Role'],
+      [fv('f_phone'),   'Phone Number'],
+      [fv('f_email'),   'Email Address'],
+      [fv('f_location'),'Project City & State'],
+    ];
+    for (const [val, label] of required) {
+      if (!val) { alert(`Please fill in "${label}" before adding to the project.`); return; }
+    }
+  }
+  if (!rv('config')) { alert('Please select a door configuration.'); return; }
+
+  // Capture project header on first door
   if (cart.length === 0 && _editingDoorId === null) {
     _projectHeader = {
       name: fv('f_name'), company: fv('f_company'), role: fv('f_role'),
