@@ -1,0 +1,2474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sliding Door Quote — Doortronix USA</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #F0F4F8; color: #111; min-height: 100vh; }
+:root {
+  --blue:   #1B4F8A; --dblue: #163F6E; --orange: #E87722;
+  --lgray:  #F2F4F7; --mgray: #6B7280; --border: #D0D5DD;
+  --white:  #FFFFFF; --green: #166534; --lgreen: #DCFCE7; --red: #DC2626;
+}
+
+/* ── Top bar ── */
+.topbar { background:var(--blue); color:#fff; padding:14px 28px; display:flex; align-items:center; justify-content:space-between; box-shadow:0 2px 8px rgba(0,0,0,.25); position:sticky; top:0; z-index:100; }
+.topbar .brand { font-size:20px; font-weight:700; letter-spacing:.5px; }
+.topbar .brand span { color:var(--orange); }
+.topbar .sub { font-size:12px; color:#B8CCE4; }
+.topbar .tagline { font-size:12px; color:#B8CCE4; text-align:right; }
+
+/* ── Layout ── */
+.layout { display:grid; grid-template-columns:1fr 440px; gap:0; max-width:1340px; margin:0 auto; min-height:calc(100vh - 56px); }
+
+/* ── Form panel ── */
+.form-panel { background:var(--white); padding:28px 32px 48px; overflow-y:auto; border-right:1px solid var(--border); }
+.form-panel h1 { font-size:21px; font-weight:700; color:var(--blue); margin-bottom:4px; }
+.form-panel .intro { font-size:13px; color:var(--mgray); margin-bottom:20px; line-height:1.5; }
+.trust-bar { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:22px; }
+.trust-chip { background:var(--lgreen); color:var(--green); border:1px solid #BBF7D0; border-radius:20px; padding:4px 12px; font-size:11px; font-weight:700; }
+
+/* ── Section headers ── */
+.section-header { background:var(--blue); color:#fff; padding:8px 14px; border-radius:6px; font-size:12px; font-weight:700; letter-spacing:.6px; text-transform:uppercase; margin:24px 0 14px; }
+
+/* ── Form grid ── */
+.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.form-grid .full { grid-column:1/-1; }
+.field { display:flex; flex-direction:column; gap:5px; }
+.field label { font-size:12px; font-weight:700; color:#374151; display:flex; align-items:center; gap:4px; }
+.field label .req { color:var(--red); font-size:13px; }
+.field input, .field select, .field textarea { padding:9px 12px; border:1.5px solid var(--border); border-radius:6px; font-size:13px; font-family:Arial,sans-serif; color:#111; background:#fff; transition:border-color .15s,box-shadow .15s; width:100%; }
+.field input:focus, .field select:focus, .field textarea:focus { outline:none; border-color:var(--blue); box-shadow:0 0 0 3px rgba(27,79,138,.12); }
+.field textarea { resize:vertical; min-height:70px; }
+.field .hint { font-size:11px; color:var(--mgray); margin-top:2px; }
+
+/* ── Chip groups ── */
+.chip-group { display:flex; flex-wrap:wrap; gap:7px; }
+.chip-group input[type=radio], .chip-group input[type=checkbox] { display:none; }
+.chip-group label { border:1.5px solid var(--border); border-radius:20px; padding:5px 13px; font-size:12px; font-weight:600; color:var(--mgray); cursor:pointer; transition:all .15s; user-select:none; }
+.chip-group input:checked + label { border-color:var(--blue); background:var(--blue); color:#fff; }
+.chip-group label:hover { border-color:var(--blue); color:var(--blue); }
+
+/* ── Config cards ── */
+.config-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:4px; }
+.config-grid input[type=radio] { display:none; }
+.config-card { border:2px solid var(--border); border-radius:10px; padding:10px 8px; cursor:pointer; transition:all .15s; text-align:center; background:#fff; display:block; }
+.config-card:hover { border-color:var(--blue); }
+.config-grid input[type=radio]:checked + .config-card { border-color:var(--blue); background:#EEF4FB; box-shadow:0 0 0 2px rgba(27,79,138,.15); }
+.config-card .cc-icon { margin:0 auto 5px; }
+.config-card .cc-name { font-size:12px; font-weight:700; color:var(--blue); line-height:1.2; }
+.config-card .cc-code { font-size:10px; color:var(--mgray); margin-top:2px; letter-spacing:.3px; }
+.config-card .cc-price { font-size:12px; font-weight:700; color:var(--orange); margin-top:4px; }
+.config-esa { grid-column:1/-1; }
+
+/* ── Dimension row ── */
+.dim-row { display:grid; grid-template-columns:1fr 16px 1fr; align-items:center; gap:6px; }
+.dim-sep { text-align:center; color:var(--mgray); font-size:14px; font-weight:700; }
+.ft-in-group { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+.size-range-note { font-size:11px; color:var(--mgray); margin-top:5px; }
+.size-range-note.warn { color:#B45309; font-weight:700; }
+.size-range-note.ok { color:var(--green); }
+
+/* ── Add-ons ── */
+.addon-section-label { font-size:11px; font-weight:700; color:var(--mgray); text-transform:uppercase; letter-spacing:.5px; margin:14px 0 8px; padding-bottom:4px; border-bottom:1px solid var(--border); }
+.addon-item { display:flex; align-items:center; justify-content:space-between; padding:7px 10px; border:1.5px solid var(--border); border-radius:7px; margin-bottom:5px; background:#fff; cursor:pointer; transition:all .15s; gap:8px; }
+.addon-item:hover { border-color:var(--blue); }
+.addon-item.checked { border-color:var(--orange); background:#FFF8F3; }
+.addon-item.disabled { opacity:.4; cursor:not-allowed; }
+.addon-item.required-addon { cursor:default; }
+.addon-item.required-addon .addon-check-visual { background:var(--blue); border-color:var(--blue); }
+.addon-item.required-addon .addon-check-visual::after { opacity:1; }
+.addon-check { display:none; }
+.addon-label-wrap { flex:1; }
+.addon-label-wrap .al { font-size:12px; font-weight:600; color:#111; }
+.addon-label-wrap .ad { font-size:10px; color:var(--mgray); margin-top:1px; }
+.addon-price-tag { font-size:12px; font-weight:700; color:var(--blue); white-space:nowrap; }
+.addon-qty-wrap { display:none; align-items:center; gap:4px; }
+.addon-item.checked .addon-qty-wrap { display:flex; }
+.addon-qty-wrap label { font-size:11px; color:var(--mgray); }
+.addon-qty-wrap select { padding:3px 6px; border:1.5px solid var(--border); border-radius:4px; font-size:12px; font-family:Arial; width:52px; }
+.addon-check-visual { width:18px; height:18px; border:2px solid var(--border); border-radius:4px; flex-shrink:0; display:flex; align-items:center; justify-content:center; transition:all .15s; }
+.addon-item.checked .addon-check-visual { background:var(--orange); border-color:var(--orange); }
+.addon-check-visual::after { content:'✓'; font-size:11px; color:#fff; font-weight:700; opacity:0; transition:opacity .1s; }
+.addon-item.checked .addon-check-visual::after { opacity:1; }
+
+/* ── Submit ── */
+.submit-section { margin-top:28px; padding-top:22px; border-top:2px solid var(--lgray); }
+.submit-section p { font-size:11px; color:var(--mgray); margin-bottom:14px; line-height:1.5; }
+.btn-submit { width:100%; padding:15px; background:var(--orange); color:#fff; border:none; border-radius:8px; font-size:15px; font-weight:700; cursor:pointer; transition:background .15s,transform .1s; letter-spacing:.3px; }
+.btn-submit:hover { background:#CF6A1A; }
+.btn-submit:active { transform:scale(.99); }
+
+/* ── Preview panel ── */
+.preview-panel { background:var(--lgray); padding:20px 18px; position:sticky; top:56px; height:calc(100vh - 56px); overflow-y:auto; display:flex; flex-direction:column; gap:14px; }
+.preview-title { font-size:12px; font-weight:700; color:var(--blue); text-transform:uppercase; letter-spacing:.6px; display:flex; align-items:center; gap:8px; }
+.preview-title::after { content:""; flex:1; height:2px; background:var(--blue); opacity:.2; }
+#drawing-wrap { background:#fff; border:1.5px solid var(--border); border-radius:10px; padding:24px 32px 16px; box-shadow:0 2px 8px rgba(0,0,0,.06); }
+#door-svg { width:100%; height:auto; display:block; }
+
+/* ── Price card ── */
+.price-card { background:#fff; border:1.5px solid var(--border); border-radius:10px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,.06); }
+.price-card-header { background:var(--blue); color:#fff; padding:10px 14px; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; }
+.price-card-body { padding:12px 14px; }
+.price-line { display:flex; justify-content:space-between; align-items:baseline; padding:4px 0; border-bottom:1px solid var(--lgray); font-size:12px; gap:8px; }
+.price-line:last-of-type { border-bottom:none; }
+.price-line .pl { color:var(--mgray); flex:1; }
+.price-line .pv { font-weight:700; color:#111; white-space:nowrap; }
+.price-line .pv.add { color:var(--orange); }
+.price-divider { border:none; border-top:2px solid var(--border); margin:8px 0; }
+.price-total-row { display:flex; justify-content:space-between; align-items:center; padding:8px 0 4px; }
+.price-total-row .pt-label { font-size:12px; font-weight:700; color:var(--blue); }
+.price-total-row .pt-value { font-size:20px; font-weight:700; color:var(--blue); }
+.price-note { font-size:10px; color:var(--mgray); margin-top:8px; line-height:1.5; border-top:1px solid var(--lgray); padding-top:8px; }
+.price-call { text-align:center; padding:16px; color:var(--blue); }
+.price-call .pc-label { font-size:13px; font-weight:700; margin-bottom:4px; }
+.price-call .pc-phone { font-size:18px; font-weight:700; color:var(--orange); }
+.price-empty { text-align:center; padding:20px; color:var(--mgray); font-size:12px; }
+
+/* ── Spec card ── */
+.spec-card { background:#fff; border:1.5px solid var(--border); border-radius:10px; padding:14px; box-shadow:0 2px 8px rgba(0,0,0,.06); }
+.spec-card h3 { font-size:11px; font-weight:700; color:var(--blue); text-transform:uppercase; letter-spacing:.5px; margin-bottom:10px; }
+.spec-row { display:flex; justify-content:space-between; align-items:baseline; padding:4px 0; border-bottom:1px solid var(--lgray); font-size:11px; }
+.spec-row:last-child { border-bottom:none; }
+.spec-row .sk { color:var(--mgray); }
+.spec-row .sv { font-weight:700; color:#111; text-align:right; max-width:60%; }
+
+/* ── Confirmation ── */
+#confirmation { display:none; position:fixed; inset:0; background:rgba(10,30,60,.7); z-index:200; overflow-y:auto; padding:28px 16px; }
+.conf-box { background:#fff; max-width:900px; margin:0 auto; border-radius:12px; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,.3); }
+.conf-header { background:var(--blue); color:#fff; padding:22px 28px; display:flex; justify-content:space-between; align-items:flex-start; }
+.conf-header h2 { font-size:19px; margin-bottom:4px; }
+.conf-header p { font-size:12px; color:#B8CCE4; }
+.conf-header .conf-ref { font-size:12px; color:#B8CCE4; text-align:right; }
+.conf-body { padding:28px; }
+.conf-grid { display:grid; grid-template-columns:1fr 1fr; gap:28px; }
+.conf-section h3 { font-size:11px; font-weight:700; color:var(--blue); text-transform:uppercase; letter-spacing:.6px; margin-bottom:10px; padding-bottom:5px; border-bottom:2px solid var(--blue); }
+.conf-spec-row { display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid #F0F4F8; font-size:12px; }
+.conf-spec-row .ck { color:var(--mgray); }
+.conf-spec-row .cv { font-weight:700; }
+.conf-price-box { background:var(--lgray); border-radius:8px; padding:14px 18px; margin-top:18px; }
+.conf-price-box h3 { font-size:11px; font-weight:700; color:var(--blue); text-transform:uppercase; letter-spacing:.6px; margin-bottom:10px; }
+.conf-price-line { display:flex; justify-content:space-between; font-size:12px; padding:3px 0; }
+.conf-price-line .cpk { color:var(--mgray); }
+.conf-price-line .cpv { font-weight:700; }
+.conf-price-total { display:flex; justify-content:space-between; font-size:15px; font-weight:700; color:var(--blue); margin-top:8px; padding-top:8px; border-top:2px solid var(--border); }
+#conf-svg-wrap { margin-top:20px; }
+#conf-svg-wrap h3 { font-size:11px; font-weight:700; color:var(--blue); text-transform:uppercase; letter-spacing:.6px; margin-bottom:10px; padding-bottom:5px; border-bottom:2px solid var(--blue); }
+#conf-svg { width:100%; height:auto; border:1px solid var(--border); border-radius:6px; }
+.conf-footer { background:var(--lgray); padding:18px 28px; display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
+.conf-footer p { font-size:11px; color:var(--mgray); }
+.btn-print { padding:9px 22px; background:var(--blue); color:#fff; border:none; border-radius:6px; font-size:13px; font-weight:700; cursor:pointer; }
+.btn-print:hover { background:var(--dblue); }
+.btn-close { padding:9px 22px; background:#fff; color:var(--mgray); border:1.5px solid var(--border); border-radius:6px; font-size:13px; font-weight:700; cursor:pointer; }
+.btn-close:hover { border-color:var(--red); color:var(--red); }
+.orange-bar { height:4px; background:var(--orange); width:100%; }
+
+@media (max-width:960px) {
+  .layout { grid-template-columns:1fr; }
+  .preview-panel { position:static; height:auto; }
+  .config-grid { grid-template-columns:repeat(2,1fr); }
+  #form-price-section { display:none !important; }
+}
+@media (min-width:961px) {
+  #form-price-section { display:block; }
+  .preview-price-section { display:none; }
+}
+@media (max-width:600px) {
+  .form-grid { grid-template-columns:1fr; }
+  .config-grid { grid-template-columns:1fr 1fr; }
+  .conf-grid { grid-template-columns:1fr; }
+}
+@media print {
+  #confirmation { position:static; background:none; padding:0; }
+  .conf-footer .btn-print, .conf-footer .btn-close { display:none; }
+  .conf-box { box-shadow:none; border:1px solid #ccc; }
+  .topbar, .form-panel, .preview-panel { display:none; }
+}
+/* ── Additional Door Mini-Form Cards ── */
+.extra-door-card { background:#f4f7fb; border:1.5px solid #c8d8ec; border-radius:9px; padding:16px 16px 12px; margin-bottom:12px; }
+.extra-door-card-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+.extra-door-card-title { font-weight:700; font-size:13px; color:var(--blue); }
+.extra-door-card-remove { background:none; border:none; color:#b00; font-size:20px; cursor:pointer; line-height:1; padding:2px 6px; border-radius:5px; }
+.extra-door-card-remove:hover { background:#fdecea; }
+.ed-grid2 { display:grid; grid-template-columns:1fr 1fr; gap:8px 12px; }
+.ed-grid3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px 12px; }
+.ed-grid4 { display:grid; grid-template-columns:2fr 1fr 1fr 80px; gap:8px 12px; }
+.ed-field label { display:block; font-size:11px; color:var(--mgray); margin-bottom:3px; font-weight:600; }
+.ed-field select, .ed-field input[type=text], .ed-field input[type=number], .ed-field textarea { width:100%; padding:7px 9px; border:1px solid #c0cfe0; border-radius:6px; font-size:13px; background:#fff; box-sizing:border-box; }
+.ed-field textarea { height:54px; resize:vertical; font-size:12px; }
+.ed-divider { border:none; border-top:1px solid #d0dcea; margin:10px 0 8px; }
+
+/* ── Door Type Toggle ── */
+.door-type-toggle { display:flex; gap:0; border:2px solid var(--blue); border-radius:8px; overflow:hidden; margin-bottom:16px; }
+.door-type-tab { flex:1; padding:10px 8px; text-align:center; font-size:13px; font-weight:700; cursor:pointer; background:#fff; color:var(--blue); border:none; transition:all .15s; letter-spacing:.2px; }
+.door-type-tab.active { background:var(--blue); color:#fff; }
+.door-type-tab:hover:not(.active) { background:#EEF4FB; }
+
+/* ── Project Cart ── */
+#project-cart-section { background:#EEF4FB; border:2px solid var(--blue); border-radius:10px; padding:14px 16px; margin-bottom:20px; display:none; }
+.cart-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; flex-wrap:wrap; gap:8px; }
+.cart-header-left { display:flex; align-items:center; gap:10px; }
+.cart-title { font-size:13px; font-weight:700; color:var(--blue); text-transform:uppercase; letter-spacing:.5px; }
+.cart-total-badge { background:var(--orange); color:#fff; font-size:12px; font-weight:700; border-radius:20px; padding:3px 12px; }
+.cart-header-right { display:flex; gap:8px; align-items:center; }
+.btn-submit-all { background:var(--orange); color:#fff; border:none; border-radius:7px; padding:9px 20px; font-size:13px; font-weight:700; cursor:pointer; transition:background .15s; white-space:nowrap; }
+.btn-submit-all:hover { background:#CF6A1A; }
+.btn-clear-cart { background:none; border:1.5px solid #c00; color:#c00; border-radius:7px; padding:7px 12px; font-size:11px; font-weight:700; cursor:pointer; }
+.btn-clear-cart:hover { background:#fdecea; }
+#cart-cards { display:flex; flex-wrap:wrap; gap:8px; }
+.cart-card { background:#fff; border:1.5px solid var(--border); border-radius:8px; padding:10px 12px; min-width:140px; max-width:190px; flex:1; box-shadow:0 1px 4px rgba(0,0,0,.06); }
+.cart-card-num { font-size:10px; font-weight:700; color:var(--orange); text-transform:uppercase; letter-spacing:.4px; margin-bottom:3px; }
+.cart-card-type { font-size:12px; font-weight:700; color:var(--blue); line-height:1.2; }
+.cart-card-code { font-size:10px; color:var(--mgray); letter-spacing:.3px; margin-top:1px; }
+.cart-card-dims { font-size:11px; color:#111; margin-top:4px; font-weight:600; }
+.cart-card-price { font-size:13px; font-weight:700; color:var(--orange); margin-top:3px; }
+.cart-card-actions { display:flex; gap:5px; margin-top:7px; }
+.cart-card-actions button { flex:1; padding:4px 0; border-radius:5px; font-size:11px; font-weight:700; cursor:pointer; border:1.5px solid var(--border); background:#fff; color:var(--blue); }
+.cart-card-actions button:hover { border-color:var(--blue); background:#EEF4FB; }
+.cart-card-actions .btn-remove { color:#c00; border-color:#f5c6c6; }
+.cart-card-actions .btn-remove:hover { background:#fdecea; border-color:#c00; }
+.cart-card.editing { border-color:var(--orange); box-shadow:0 0 0 2px rgba(232,119,34,.2); }
+
+/* ── Contact lock bar ── */
+#contact-unlock-bar { display:none; background:#FFF8F3; border:1px solid var(--orange); border-radius:6px; padding:7px 14px; margin-bottom:12px; align-items:center; justify-content:space-between; gap:8px; font-size:12px; color:var(--mgray); }
+#contact-unlock-bar a { color:var(--orange); font-weight:700; cursor:pointer; text-decoration:none; }
+#contact-unlock-bar a:hover { text-decoration:underline; }
+
+/* ── Door section label ── */
+#door-section-label { font-size:15px; font-weight:700; color:var(--blue); margin:8px 0 4px; }
+
+/* ── Add to project button ── */
+.btn-add-cart { width:100%; padding:14px; background:var(--blue); color:#fff; border:none; border-radius:8px; font-size:14px; font-weight:700; cursor:pointer; transition:background .15s; letter-spacing:.3px; margin-bottom:10px; }
+.btn-add-cart:hover { background:var(--dblue); }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="https://doortronixusa.com" style="text-decoration:none;color:#fff;">
+    <div class="brand">DOORTRONIX <span>USA</span></div>
+    <div class="sub">doortronixusa.com</div>
+  </a>
+  <div class="tagline">Manufactured in Malakoff, Texas<br>Factory-Direct to Contractors Nationwide</div>
+</div>
+
+<div class="layout">
+
+  <!-- ══ FORM PANEL ══ -->
+  <div class="form-panel">
+    <h1 id="form-main-title">Sliding Door Quote</h1>
+    <p class="intro">Configure your door below to see live contractor pricing. Select Bi-Part or Single Slide — then add multiple doors to quote an entire project in one submission.<br>Our team in Malakoff, Texas will confirm your quote within <strong>4 business hours</strong>.</p>
+    <div class="trust-bar">
+      <span class="trust-chip">✓ Manufactured in Malakoff, TX</span>
+      <span class="trust-chip">✓ Factory-Direct Net Pricing</span>
+      <span class="trust-chip">✓ 4-Hour Response</span>
+      <span class="trust-chip">✓ Ships as Early as 3–4 Weeks</span>
+    </div>
+
+    <!-- ── PROJECT CART ── -->
+    <div id="project-cart-section">
+      <div class="cart-header">
+        <div class="cart-header-left">
+          <span class="cart-title">📋 Project Quote</span>
+          <span class="cart-total-badge" id="cart-total-badge">Est. Total: —</span>
+        </div>
+        <div class="cart-header-right">
+          <button type="button" class="btn-clear-cart" onclick="clearCart()">Clear All</button>
+          <button type="button" class="btn-submit-all" onclick="submitAllDoors()">Submit Full Project Quote →</button>
+        </div>
+      </div>
+      <div id="cart-cards"></div>
+    </div>
+
+    <form id="quoteForm" novalidate>
+
+      <!-- ── CONTACT ── -->
+      <div id="contact-unlock-bar">
+        <span>Contact &amp; project info saved from Door #1.</span>
+        <a onclick="unlockContactSection()">Edit project info</a>
+      </div>
+      <div id="contact-section-wrapper">
+      <div class="section-header">① Contact Information</div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Full Name <span class="req">*</span></label>
+          <input type="text" name="name" id="f_name" placeholder="Your full name" required>
+        </div>
+        <div class="field">
+          <label>Company Name <span class="req">*</span></label>
+          <input type="text" name="company" id="f_company" placeholder="Your company" required>
+        </div>
+        <div class="field">
+          <label>Your Role <span class="req">*</span></label>
+          <select name="role" id="f_role" required>
+            <option value="">— Select your role —</option>
+            <option>General Contractor</option>
+            <option>Glazier</option>
+            <option>Automatic Door Company / Installer</option>
+            <option>Locksmith</option>
+            <option>Architect / Specifier</option>
+            <option>Facility Manager</option>
+            <option>Owner / Developer</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Phone Number <span class="req">*</span></label>
+          <input type="tel" name="phone" id="f_phone" placeholder="(555) 000-0000" required>
+        </div>
+        <div class="field full">
+          <label>Email Address <span class="req">*</span></label>
+          <input type="email" name="email" id="f_email" placeholder="you@yourcompany.com" required>
+        </div>
+      </div>
+
+      </div><!-- /contact-section-wrapper -->
+
+      <!-- ── PROJECT ── -->
+      <div id="project-section-wrapper">
+      <div class="section-header">② Project Details</div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Project Name</label>
+          <input type="text" name="projectName" id="f_project" placeholder="e.g. Walmart #4321 or Hospital Lobby">
+        </div>
+        <div class="field">
+          <label>Project City &amp; State <span class="req">*</span></label>
+          <input type="text" name="projectLocation" id="f_location" placeholder="e.g. Dallas, TX" required>
+        </div>
+        <div class="field">
+          <label>Target Ship Date</label>
+          <input type="date" name="shipDate" id="f_shipdate">
+          <span class="hint">Lead time from 3–4 weeks — expedited orders available</span>
+        </div>
+        <div class="field">
+          <label>PO / Reference #</label>
+          <input type="text" name="poNumber" id="f_po" placeholder="Your PO or job reference number">
+        </div>
+        <div class="field full">
+          <label>Number of Door Openings <span class="req">*</span></label>
+          <select name="quantity" id="f_qty" required>
+            <option value="">— Quantity —</option>
+            <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+            <option value="4">4</option><option value="5">5</option><option value="6">6</option>
+            <option value="7">7</option><option value="8">8</option><option value="9">9</option>
+            <option value="10">10+</option>
+          </select>
+        </div>
+      </div>
+
+      </div><!-- /project-section-wrapper -->
+
+      <!-- ── DOOR CONFIGURATION ── -->
+      <p id="door-section-label" style="font-size:15px;font-weight:700;color:var(--blue);margin:20px 0 4px;">Configuring Door #1</p>
+      <div class="section-header">③ Door Configuration</div>
+
+      <!-- Door type toggle -->
+      <div class="door-type-toggle" style="margin-bottom:14px;">
+        <button type="button" class="door-type-tab active" id="tab-bipart" onclick="setDoorType('bi-part')">⊟ Bi-Part Sliding</button>
+        <button type="button" class="door-type-tab" id="tab-single" onclick="setDoorType('single')">→ Single Slide</button>
+      </div>
+
+      <div class="field full" style="margin-bottom:12px;">
+        <label>Select Configuration <span class="req">*</span></label>
+
+        <!-- Bi-Part configs -->
+        <div class="config-grid" id="configGrid-bipart" style="grid-template-columns:repeat(3,1fr);">
+
+          <div style="grid-column:1/-1; font-size:11px; font-weight:700; color:var(--blue); text-transform:uppercase; letter-spacing:.5px; padding-bottom:2px; border-bottom:1px solid var(--border); margin-bottom:2px;">Bi-Part</div>
+
+          <input type="radio" name="config" id="cfg_fbo_bi" value="fbo-bi" checked>
+          <label for="cfg_fbo_bi" class="config-card">
+            <svg class="cc-icon" width="70" height="36" viewBox="0 0 70 36"><rect x="0" y="0" width="70" height="36" fill="#EEF4FB" rx="3"/><rect x="0" y="0" width="70" height="6" fill="#1B4F8A"/><rect x="4" y="6" width="15" height="28" fill="#B8D4F0" stroke="#1B4F8A" stroke-width="1"/><rect x="20" y="6" width="15" height="28" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1"/><rect x="36" y="6" width="15" height="28" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1"/><rect x="52" y="6" width="15" height="28" fill="#B8D4F0" stroke="#1B4F8A" stroke-width="1"/><line x1="11" y1="11" x2="5" y2="25" stroke="#1B4F8A" stroke-width="1" stroke-dasharray="2,1"/><line x1="59" y1="11" x2="65" y2="25" stroke="#1B4F8A" stroke-width="1" stroke-dasharray="2,1"/></svg>
+            <div class="cc-name">FBO Bi-Part</div>
+            <div class="cc-code">SO-SX-SX-SO</div>
+            <div class="cc-price">from $3,900</div>
+          </label>
+
+          <input type="radio" name="config" id="cfg_fsl_bi" value="fsl-bi">
+          <label for="cfg_fsl_bi" class="config-card">
+            <svg class="cc-icon" width="70" height="36" viewBox="0 0 70 36"><rect x="0" y="0" width="70" height="36" fill="#EEF4FB" rx="3"/><rect x="0" y="0" width="70" height="6" fill="#1B4F8A"/><rect x="4" y="6" width="15" height="28" fill="#C8E0F8" stroke="#1B4F8A" stroke-width="1"/><rect x="20" y="6" width="15" height="28" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1"/><rect x="36" y="6" width="15" height="28" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1"/><rect x="52" y="6" width="15" height="28" fill="#C8E0F8" stroke="#1B4F8A" stroke-width="1"/><text x="11" y="24" font-size="9" fill="#1B4F8A" text-anchor="middle" font-family="Arial">↔</text><text x="59" y="24" font-size="9" fill="#1B4F8A" text-anchor="middle" font-family="Arial">↔</text></svg>
+            <div class="cc-name">FSL Bi-Part</div>
+            <div class="cc-code">O-SX-SX-O</div>
+            <div class="cc-price">from $3,900</div>
+          </label>
+
+          <input type="radio" name="config" id="cfg_esa" value="esa">
+          <label for="cfg_esa" class="config-card">
+            <svg class="cc-icon" width="70" height="36" viewBox="0 0 70 36"><rect x="0" y="0" width="70" height="36" fill="#F8F8F8" rx="3"/><rect x="0" y="0" width="70" height="6" fill="#888"/><rect x="4" y="6" width="15" height="28" fill="#E0E0E0" stroke="#999" stroke-width="1"/><rect x="20" y="6" width="15" height="28" fill="#F0F0F0" stroke="#999" stroke-width="1"/><rect x="36" y="6" width="15" height="28" fill="#F0F0F0" stroke="#999" stroke-width="1"/><rect x="52" y="6" width="15" height="28" fill="#E0E0E0" stroke="#999" stroke-width="1"/></svg>
+            <div class="cc-name">ESA Bi-Part</div>
+            <div class="cc-code">P-SX-SX-P</div>
+            <div class="cc-price" style="color:var(--mgray);">Call for pricing</div>
+          </label>
+
+        </div><!-- /configGrid-bipart -->
+
+        <!-- Single Slide configs -->
+        <div class="config-grid" id="configGrid-single" style="display:none;grid-template-columns:repeat(4,1fr);">
+
+          <div style="grid-column:1/-1; font-size:11px; font-weight:700; color:var(--blue); text-transform:uppercase; letter-spacing:.5px; padding-bottom:2px; border-bottom:1px solid var(--border); margin-bottom:2px;">Single Slide</div>
+
+          <input type="radio" name="config" id="cfg_fbo_ss_rh" value="fbo-single-rh">
+          <label for="cfg_fbo_ss_rh" class="config-card">
+            <svg class="cc-icon" width="70" height="36" viewBox="0 0 70 36"><rect x="0" y="0" width="70" height="36" fill="#EEF4FB" rx="3"/><rect x="0" y="0" width="70" height="6" fill="#1B4F8A"/><rect x="2" y="6" width="32" height="28" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1"/><rect x="37" y="6" width="32" height="28" fill="#B8D4F0" stroke="#1B4F8A" stroke-width="1"/><text x="18" y="23" font-size="11" fill="#1B4F8A" text-anchor="middle" font-family="Arial">→</text><line x1="50" y1="11" x2="56" y2="25" stroke="#1B4F8A" stroke-width="1" stroke-dasharray="2,1"/></svg>
+            <div class="cc-name">FBO Single — RH</div>
+            <div class="cc-code">SX-SO → ext.</div>
+            <div class="cc-price">from $3,200</div>
+          </label>
+
+          <input type="radio" name="config" id="cfg_fbo_ss_lh" value="fbo-single-lh">
+          <label for="cfg_fbo_ss_lh" class="config-card">
+            <svg class="cc-icon" width="70" height="36" viewBox="0 0 70 36"><rect x="0" y="0" width="70" height="36" fill="#EEF4FB" rx="3"/><rect x="0" y="0" width="70" height="6" fill="#1B4F8A"/><rect x="2" y="6" width="32" height="28" fill="#B8D4F0" stroke="#1B4F8A" stroke-width="1"/><rect x="37" y="6" width="32" height="28" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1"/><line x1="20" y1="11" x2="14" y2="25" stroke="#1B4F8A" stroke-width="1" stroke-dasharray="2,1"/><text x="53" y="23" font-size="11" fill="#1B4F8A" text-anchor="middle" font-family="Arial">←</text></svg>
+            <div class="cc-name">FBO Single — LH</div>
+            <div class="cc-code">SO-SX → ext.</div>
+            <div class="cc-price">from $3,200</div>
+          </label>
+
+          <input type="radio" name="config" id="cfg_fsl_ss_rh" value="fsl-single-rh">
+          <label for="cfg_fsl_ss_rh" class="config-card">
+            <svg class="cc-icon" width="70" height="36" viewBox="0 0 70 36"><rect x="0" y="0" width="70" height="36" fill="#EEF4FB" rx="3"/><rect x="0" y="0" width="70" height="6" fill="#1B4F8A"/><rect x="2" y="6" width="32" height="28" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1"/><rect x="37" y="6" width="32" height="28" fill="#C8E0F8" stroke="#1B4F8A" stroke-width="1"/><text x="18" y="23" font-size="11" fill="#1B4F8A" text-anchor="middle" font-family="Arial">→</text><text x="53" y="24" font-size="9" fill="#1B4F8A" text-anchor="middle" font-family="Arial">↔</text></svg>
+            <div class="cc-name">FSL Single — RH</div>
+            <div class="cc-code">SX-O → ext.</div>
+            <div class="cc-price">from $3,200</div>
+          </label>
+
+          <input type="radio" name="config" id="cfg_fsl_ss_lh" value="fsl-single-lh">
+          <label for="cfg_fsl_ss_lh" class="config-card">
+            <svg class="cc-icon" width="70" height="36" viewBox="0 0 70 36"><rect x="0" y="0" width="70" height="36" fill="#EEF4FB" rx="3"/><rect x="0" y="0" width="70" height="6" fill="#1B4F8A"/><rect x="2" y="6" width="32" height="28" fill="#C8E0F8" stroke="#1B4F8A" stroke-width="1"/><rect x="37" y="6" width="32" height="28" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1"/><text x="18" y="24" font-size="9" fill="#1B4F8A" text-anchor="middle" font-family="Arial">↔</text><text x="53" y="23" font-size="11" fill="#1B4F8A" text-anchor="middle" font-family="Arial">←</text></svg>
+            <div class="cc-name">FSL Single — LH</div>
+            <div class="cc-code">O-SX → ext.</div>
+            <div class="cc-price">from $3,200</div>
+          </label>
+
+        </div><!-- /configGrid-single -->
+
+        <p style="font-size:11px;color:var(--mgray);margin-top:6px;">ESA and custom configurations: call <strong>(888) 453-5196</strong>.</p>
+      </div>
+
+      <div class="form-grid">
+        <!-- Glazing -->
+        <div class="field">
+          <label>Frame Finish / Glazing</label>
+          <div class="chip-group">
+            <input type="radio" name="glazing" id="gl_clear" value="204 Clear" checked>
+            <label for="gl_clear">204 Clear Anodized</label>
+            <input type="radio" name="glazing" id="gl_bronze" value="313 Dark Bronze">
+            <label for="gl_bronze">313 Dark Bronze</label>
+          </div>
+        </div>
+
+        <!-- Transom -->
+        <div class="field">
+          <label>Transom</label>
+          <div class="chip-group">
+            <input type="radio" name="transom" id="tr_no" value="no" checked>
+            <label for="tr_no">No Transom</label>
+            <input type="radio" name="transom" id="tr_yes" value="yes">
+            <label for="tr_yes">With Transom (+$250)</label>
+          </div>
+          <span class="hint">Standard header height 7'6"–8'0". Max with transom: 11'6"</span>
+        </div>
+
+        <!-- Frame Width -->
+        <div class="field">
+          <label>Frame Width <span class="req">*</span></label>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">
+            <div class="field">
+              <select id="f_wft" name="widthFt">
+                <option value="">Ft —</option>
+                <option value="6">6'</option><option value="7">7'</option><option value="8">8'</option>
+                <option value="9">9'</option><option value="10">10'</option><option value="11">11'</option>
+                <option value="12">12'</option><option value="13">13'</option><option value="14">14'</option>
+                <option value="15">15'</option><option value="16">16'</option>
+              </select>
+            </div>
+            <div class="field">
+              <select id="f_win" name="widthIn">
+                <option value="0">0"</option><option value="1">1"</option><option value="2">2"</option>
+                <option value="3">3"</option><option value="4">4"</option><option value="5">5"</option>
+                <option value="6">6"</option><option value="7">7"</option><option value="8">8"</option>
+                <option value="9">9"</option><option value="10">10"</option><option value="11">11"</option>
+              </select>
+            </div>
+            <div class="field">
+              <select id="f_w16" name="widthSixteenth">
+                <option value="0" selected>0</option>
+                <option value="1">1/16</option><option value="2">1/8</option><option value="3">3/16</option>
+                <option value="4">1/4</option><option value="5">5/16</option><option value="6">3/8</option>
+                <option value="7">7/16</option><option value="8">1/2</option><option value="9">9/16</option>
+                <option value="10">5/8</option><option value="11">11/16</option><option value="12">3/4</option>
+                <option value="13">13/16</option><option value="14">7/8</option><option value="15">15/16</option>
+              </select>
+            </div>
+          </div>
+          <span class="hint size-range-note" id="width-range-note"></span>
+        </div>
+
+        <!-- Frame Height -->
+        <div class="field">
+          <label id="height-field-label">Frame Height</label>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">
+            <div class="field">
+              <select id="f_hft" name="heightFt">
+                <option value="7" selected>7'</option><option value="8">8'</option>
+                <option value="9">9'</option><option value="10">10'</option><option value="11">11'</option>
+                <option value="12">12'</option>
+              </select>
+            </div>
+            <div class="field">
+              <select id="f_hin" name="heightIn">
+                <option value="0">0"</option><option value="1">1"</option><option value="2">2"</option>
+                <option value="3">3"</option><option value="4">4"</option><option value="5">5"</option>
+                <option value="6" selected>6"</option><option value="7">7"</option><option value="8">8"</option>
+                <option value="9">9"</option><option value="10">10"</option><option value="11">11"</option>
+              </select>
+            </div>
+            <div class="field">
+              <select id="f_h16" name="heightSixteenth">
+                <option value="0" selected>0</option>
+                <option value="1">1/16</option><option value="2">1/8</option><option value="3">3/16</option>
+                <option value="4">1/4</option><option value="5">5/16</option><option value="6">3/8</option>
+                <option value="7">7/16</option><option value="8">1/2</option><option value="9">9/16</option>
+                <option value="10">5/8</option><option value="11">11/16</option><option value="12">3/4</option>
+                <option value="13">13/16</option><option value="14">7/8</option><option value="15">15/16</option>
+              </select>
+            </div>
+          </div>
+          <span class="hint size-range-note" id="height-range-note">Standard header height: 7'6" to 8'0"</span>
+        </div>
+
+        <!-- Overall Frame Height (only shown when transom selected) -->
+        <div class="field" id="ftth-field" style="display:none;">
+          <label>Overall Frame Height (incl. Transom)</label>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">
+            <div class="field">
+              <select id="f_ftthft" name="ftthFt" onchange="clampFtthIn()">
+                <option value="">Ft —</option>
+                <option value="7">7'</option><option value="8">8'</option>
+                <option value="9">9'</option><option value="10">10'</option>
+                <option value="11">11'</option><option value="12">12'</option>
+              </select>
+            </div>
+            <div class="field">
+              <select id="f_ftthin" name="ftthIn">
+                <option value="0" selected>0"</option><option value="1">1"</option><option value="2">2"</option>
+                <option value="3">3"</option><option value="4">4"</option><option value="5">5"</option>
+                <option value="6">6"</option><option value="7">7"</option><option value="8">8"</option>
+                <option value="9">9"</option><option value="10">10"</option><option value="11">11"</option>
+              </select>
+            </div>
+            <div class="field">
+              <select id="f_ftth16" name="ftthSixteenth">
+                <option value="0" selected>0</option>
+                <option value="1">1/16</option><option value="2">1/8</option><option value="3">3/16</option>
+                <option value="4">1/4</option><option value="5">5/16</option><option value="6">3/8</option>
+                <option value="7">7/16</option><option value="8">1/2</option><option value="9">9/16</option>
+                <option value="10">5/8</option><option value="11">11/16</option><option value="12">3/4</option>
+                <option value="13">13/16</option><option value="14">7/8</option><option value="15">15/16</option>
+              </select>
+            </div>
+          </div>
+          <span class="hint" id="ftth-range-note">Total rough opening height including transom. Minimum 7'8" (92").</span>
+        </div>
+
+        <!-- Net slide opening — auto-calculated -->
+        <div class="field full">
+          <label>Net Slide Opening (clear door width)</label>
+          <div id="net-opening-display" style="padding:9px 14px;background:#F0F4F8;border:1.5px solid var(--border);border-radius:6px;font-size:15px;font-weight:700;color:var(--blue);min-height:40px;letter-spacing:.3px;">—</div>
+          <span class="hint" id="net-opening-note">Select configuration and frame width to calculate. Equal-panel FBO/FSL only — call for unequal-panel openings.</span>
+        </div>
+      </div>
+
+      <!-- ── DOOR SPECIFICATIONS ── -->
+      <div class="section-header">④ Door Specifications</div>
+
+      <div class="form-grid">
+        <!-- Door panel glass prep -->
+        <div class="field">
+          <label>Door Panel Glass Prep</label>
+          <div class="chip-group">
+            <input type="radio" name="glassPrep" id="gp_quarter" value='1/4"' checked>
+            <label for="gp_quarter">1/4"</label>
+            <input type="radio" name="glassPrep" id="gp_9_16" value='9/16"'>
+            <label for="gp_9_16">9/16"</label>
+            <input type="radio" name="glassPrep" id="gp_5_8" value='5/8"'>
+            <label for="gp_5_8">5/8"</label>
+            <input type="radio" name="glassPrep" id="gp_1in" value='1"'>
+            <label for="gp_1in">1"</label>
+          </div>
+          <span class="hint">Glass <strong>not included</strong> — frame is prepped for specified thickness.</span>
+        </div>
+
+        <!-- Transom glass prep — only shown when transom selected -->
+        <div class="field" id="transom-glass-field" style="display:none;">
+          <label>Transom Glass Prep</label>
+          <div class="chip-group">
+            <input type="radio" name="transomGlassPrep" id="tgp_quarter" value='1/4"' checked>
+            <label for="tgp_quarter">1/4"</label>
+            <input type="radio" name="transomGlassPrep" id="tgp_1in" value='1"'>
+            <label for="tgp_1in">1"</label>
+          </div>
+        </div>
+
+        <div class="field full" id="transom-verticals-field" style="display:none;">
+          <label>Transom Verticals</label>
+          <div class="chip-group">
+            <input type="radio" name="transomV" id="tv_0" value="0" checked>
+            <label for="tv_0">None (std)</label>
+            <input type="radio" name="transomV" id="tv_1" value="1">
+            <label for="tv_1">1 (+$50)</label>
+            <input type="radio" name="transomV" id="tv_2" value="2">
+            <label for="tv_2">2 (+$100)</label>
+            <input type="radio" name="transomV" id="tv_3" value="3">
+            <label for="tv_3">3 (+$150)</label>
+            <input type="radio" name="transomV" id="tv_4" value="4">
+            <label for="tv_4">4 (+$200)</label>
+            <input type="radio" name="transomV" id="tv_5" value="5">
+            <label for="tv_5">5 (+$250)</label>
+            <input type="radio" name="transomV" id="tv_6" value="6">
+            <label for="tv_6">6 (+$300)</label>
+          </div>
+          <span class="hint">2 verticals on a bi-part align with the door panel interlocks. All others divide the transom equally.</span>
+        </div>
+
+        <!-- Stile width -->
+        <div class="field">
+          <label>Stile Width</label>
+          <div class="chip-group">
+            <input type="radio" name="stileWidth" id="sw_narrow" value="narrow" checked>
+            <label for="sw_narrow">Narrow (std)</label>
+            <input type="radio" name="stileWidth" id="sw_medium" value="medium">
+            <label for="sw_medium">Medium 3-3/4" (+$180/panel)</label>
+          </div>
+        </div>
+
+        <!-- Bottom rail -->
+        <div class="field">
+          <label>Bottom Rail</label>
+          <div class="chip-group">
+            <input type="radio" name="bottomRail" id="br_std" value="std" checked>
+            <label for="br_std">4" (std)</label>
+            <input type="radio" name="bottomRail" id="br_6" value="6in">
+            <label for="br_6">6" (+$80/panel)</label>
+            <input type="radio" name="bottomRail" id="br_10" value="10in">
+            <label for="br_10">10" (+$160/panel)</label>
+          </div>
+        </div>
+
+        <!-- Muntin -->
+        <div class="field">
+          <label>Horizontal Muntin</label>
+          <div class="chip-group">
+            <input type="radio" name="muntin" id="mt_std" value='2" Muntin (std)' checked>
+            <label for="mt_std">2" Muntin (std)</label>
+            <input type="radio" name="muntin" id="mt_none" value="No Muntin">
+            <label for="mt_none">No Muntin</label>
+          </div>
+        </div>
+
+        <!-- Threshold -->
+        <div class="field">
+          <label>Threshold</label>
+          <div class="chip-group">
+            <input type="radio" name="threshold" id="th_std" value="Standard 1/2&quot;" checked>
+            <label for="th_std">1/2" Standard</label>
+            <input type="radio" name="threshold" id="th_none" value="No Threshold">
+            <label for="th_none">No Threshold</label>
+            <input type="radio" name="threshold" id="th_rec" value="Recessed (call)">
+            <label for="th_rec">Recessed (call)</label>
+          </div>
+        </div>
+
+        <!-- Sensor -->
+        <div class="field">
+          <label>Activation Sensor</label>
+          <div class="chip-group">
+            <input type="radio" name="sensor" id="sn_std" value="Standard Optex (incl.)" checked>
+            <label for="sn_std">Standard (incl.)</label>
+            <input type="radio" name="sensor" id="sn_optex" value="Optex i-oneXT">
+            <label for="sn_optex">Optex i-oneXT (+$220)</label>
+            <input type="radio" name="sensor" id="sn_bea" value="BEA IXIO">
+            <label for="sn_bea">BEA IXIO (+$280)</label>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ── HARDWARE & OPTIONS ── -->
+      <div class="section-header">⑤ Hardware &amp; Options</div>
+      <p style="font-size:12px;color:var(--mgray);margin-bottom:12px;">All prices are net contractor pricing. Check items to add to your estimate.</p>
+
+      <div class="addon-section-label">Hardware &amp; Locking</div>
+
+      <div id="addon_key_switch" class="addon-item" data-price="50" data-unit="ea" onclick="toggleAddon(this)">
+        <div class="addon-check-visual"></div>
+        <div class="addon-label-wrap">
+          <div class="al">5-Position Key Switch</div>
+          <div class="ad">On/Off/1-Way/2-Way/Hold Open</div>
+        </div>
+        <div class="addon-price-tag">$50</div>
+        <div class="addon-qty-wrap"></div>
+      </div>
+
+      <div id="addon_electric_lock" class="addon-item" data-price="515" data-unit="ea" onclick="toggleAddon(this)">
+        <div class="addon-check-visual"></div>
+        <div class="addon-label-wrap">
+          <div class="al">Electric Lock</div>
+          <div class="ad">Fail Safe or Fail Secure — specify in notes</div>
+        </div>
+        <div class="addon-price-tag">$515</div>
+        <div class="addon-qty-wrap"></div>
+      </div>
+
+      <div id="addon_lock_indicator" class="addon-item" data-price="60" data-unit="ea" onclick="toggleAddon(this)">
+        <div class="addon-check-visual"></div>
+        <div class="addon-label-wrap">
+          <div class="al">Lock Indicator</div>
+        </div>
+        <div class="addon-price-tag">$60</div>
+        <div class="addon-qty-wrap"></div>
+      </div>
+
+      <div id="addon_ar_paddle" class="addon-item" data-price="355" data-unit="/panel" data-perpanel="true" onclick="toggleAddon(this)">
+        <div class="addon-check-visual"></div>
+        <div class="addon-label-wrap">
+          <div class="al">Adams Rite Paddle Exit Device</div>
+          <div class="ad">For full open or fixed sidelite units</div>
+        </div>
+        <div class="addon-price-tag">$355/panel</div>
+        <div class="addon-qty-wrap">
+          <label>Panels:</label>
+          <select onclick="event.stopPropagation()" onchange="calcPrice()">
+            <option>1</option><option>2</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="addon_ar_8600" class="addon-item" data-price="465" data-unit="/panel" data-perpanel="true" data-fboonly="true" onclick="toggleAddon(this)">
+        <div class="addon-check-visual"></div>
+        <div class="addon-label-wrap">
+          <div class="al">Adams Rite 8600 Panic Device</div>
+          <div class="ad">Full breakout open (FBO) units only</div>
+        </div>
+        <div class="addon-price-tag">$465/panel</div>
+        <div class="addon-qty-wrap">
+          <label>Panels:</label>
+          <select onclick="event.stopPropagation()" onchange="calcPrice()">
+            <option>1</option><option>2</option>
+          </select>
+        </div>
+      </div>
+
+<div id="addon_cart_bar" class="addon-item" data-price="50" data-unit="ea" onclick="toggleAddon(this)">
+        <div class="addon-check-visual"></div>
+        <div class="addon-label-wrap">
+          <div class="al">Cart Bar</div>
+          <div class="ad">Specify location in notes</div>
+        </div>
+        <div class="addon-price-tag">$50 ea</div>
+        <div class="addon-qty-wrap">
+          <label>Qty:</label>
+          <select onclick="event.stopPropagation()" onchange="calcPrice()">
+            <option>1</option><option>2</option><option>3</option><option>4</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="addon-section-label">Frame Extras</div>
+
+      <div id="addon_muntin_2in" class="addon-item" data-price="150" data-unit="ea" onclick="toggleAddon(this)">
+        <div class="addon-check-visual"></div>
+        <div class="addon-label-wrap">
+          <div class="al">Additional 2" Muntin Bars</div>
+          <div class="ad">Specify location in notes</div>
+        </div>
+        <div class="addon-price-tag">$150 ea</div>
+        <div class="addon-qty-wrap">
+          <label>Qty:</label>
+          <select onclick="event.stopPropagation()" onchange="calcPrice()">
+            <option>1</option><option>2</option><option>3</option><option>4</option>
+          </select>
+        </div>
+      </div>
+
+
+<div class="addon-section-label">Safety &amp; Electrical</div>
+
+      <div id="addon_alarm_contacts" class="addon-item" data-price="150" data-unit="ea" onclick="toggleAddon(this)">
+        <div class="addon-check-visual"></div>
+        <div class="addon-label-wrap">
+          <div class="al">Alarm Contacts</div>
+          <div class="ad">Monitor Breakout + Door Position — both included</div>
+        </div>
+        <div class="addon-price-tag">$150</div>
+        <div class="addon-qty-wrap"></div>
+      </div>
+
+      <div id="addon_battery" class="addon-item" data-price="2200" data-unit="ea" onclick="toggleAddon(this)">
+        <div class="addon-check-visual"></div>
+        <div class="addon-label-wrap">
+          <div class="al">Battery Backup (UPS)</div>
+          <div class="ad">Concealed within header — maintains one cycle on power loss</div>
+        </div>
+        <div class="addon-price-tag">$2,200</div>
+        <div class="addon-qty-wrap"></div>
+      </div>
+
+      <div id="addon_nose_casters" class="addon-item" data-price="200" data-unit="ea" onclick="toggleAddon(this)">
+        <div class="addon-check-visual"></div>
+        <div class="addon-label-wrap">
+          <div class="al">Nose Casters</div>
+          <div class="ad" id="nose-casters-desc">Required for bi-part openings over 14'</div>
+        </div>
+        <div class="addon-price-tag">$200 ea</div>
+        <div class="addon-qty-wrap">
+          <label>Qty:</label>
+          <select id="nose-casters-qty" onclick="event.stopPropagation()" onchange="calcPrice()">
+            <option>1</option><option>2</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Notes -->
+      <div class="section-header">⑥ Notes &amp; Special Requirements for This Door</div>
+      <div class="field">
+        <textarea name="notes" id="f_notes" placeholder="Access control requirements, lead-lined panels, unusual site conditions, installation type (new construction / retrofit), emergency egress requirements, or anything else we should know..."></textarea>
+      </div>
+
+      <!-- Desktop price breakdown (hidden on mobile — preview panel handles it there) -->
+      <div id="form-price-section">
+        <div class="section-header">⑦ Price Estimate</div>
+        <div class="price-card">
+          <div class="price-card-header" style="display:flex;justify-content:space-between;align-items:center;">Net Contractor Price<span id="form-price-header-total" style="font-size:16px;"></span></div>
+          <div class="price-card-body" id="form-price-body">
+            <div class="price-empty">Select a configuration above to see pricing.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Submit -->
+      <div class="submit-section">
+        <p>Prices shown are net contractor pricing and do not include glass, freight, installation, or applicable taxes. Doortronix will confirm your quote within 4 business hours. All quotes are obligation-free.</p>
+        <button type="button" class="btn-add-cart" id="btn-add-to-cart" onclick="addDoorToCart()">Add This Door to Project</button>
+        <button type="submit" class="btn-submit" style="background:#6B7280;margin-top:0;">Submit Quote (this door only) →</button>
+        <p style="font-size:10px;color:var(--mgray);margin-top:8px;text-align:center;">Single door only? Use "Submit Quote" above. Multiple doors? Add each to the project cart, then submit all at once.</p>
+      </div>
+
+    </form>
+
+    <!-- Sticky price bar — always visible at bottom of form panel -->
+    <div id="sticky-price-bar" style="position:sticky;bottom:0;background:var(--blue);color:#fff;padding:10px 20px;display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:700;border-top:2px solid var(--dblue);z-index:10;">
+      <span>Net Contractor Price</span>
+      <span id="sticky-price-total" style="font-size:18px;">—</span>
+    </div>
+  </div><!-- /form-panel -->
+
+  <!-- ══ PREVIEW PANEL ══ -->
+  <div class="preview-panel">
+    <div class="preview-price-section">
+      <div class="preview-title">Price Estimate</div>
+      <div class="price-card">
+        <div class="price-card-header" style="display:flex;justify-content:space-between;align-items:center;">Net Contractor Price<span id="price-header-total" style="font-size:16px;"></span></div>
+        <div class="price-card-body" id="price-body">
+          <div class="price-empty">Select a configuration above to see pricing.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="preview-title">Live Door Preview</div>
+    <div id="drawing-wrap">
+      <svg id="door-svg" viewBox="0 0 600 300" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;"></svg>
+      <svg id="plan-svg" viewBox="0 0 600 340" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;"></svg>
+      <div id="plan-footer" style="padding:10px 14px 6px;display:flex;justify-content:center;gap:20px;align-items:center;font-family:Arial,sans-serif;border-top:1px solid #E5EAF0;">
+        <span id="pf-config" style="color:#1B4F8A;font-weight:700;font-size:12px;"></span>
+        <span id="pf-dims" style="color:#555;font-size:12px;"></span>
+      </div>
+    </div>
+
+    <div class="spec-card">
+      <h3>Configuration Summary</h3>
+      <div id="spec-summary"></div>
+    </div>
+  </div>
+
+</div><!-- /layout -->
+
+<!-- ══ CONFIRMATION ══ -->
+<div id="confirmation">
+  <div class="conf-box">
+    <div class="orange-bar"></div>
+    <div class="conf-header">
+      <div>
+        <h2>✓ Quote Request Submitted</h2>
+        <p>Our team in Malakoff, Texas will respond within 4 business hours with your confirmed quote, production lead time, and freight estimate.</p>
+      </div>
+      <div class="conf-ref">
+        <div style="font-size:16px;font-weight:700;color:#fff;" id="conf-ref-num"></div>
+        <div style="margin-top:4px;" id="conf-ref-date"></div>
+      </div>
+    </div>
+    <div class="conf-body">
+      <div class="conf-grid">
+        <div class="conf-section">
+          <h3>Contact Information</h3>
+          <div id="conf-contact"></div>
+        </div>
+        <div class="conf-section">
+          <h3>Project Details</h3>
+          <div id="conf-project"></div>
+        </div>
+      </div>
+      <div style="margin-top:20px;" class="conf-section">
+        <h3>Door Configuration</h3>
+        <div id="conf-door" style="display:grid;grid-template-columns:1fr 1fr;gap:0 20px;"></div>
+      </div>
+      <div class="conf-price-box" id="conf-price-box"></div>
+      <div id="conf-svg-wrap">
+        <h3>Confirmation Drawing — Door Elevation</h3>
+        <svg id="conf-svg" viewBox="0 0 760 460" xmlns="http://www.w3.org/2000/svg"></svg>
+      </div>
+    </div>
+    <div class="conf-footer">
+      <p>Doortronix Inc. | 5783 County Road 1219, Malakoff, TX 75148 | (888) 453-5196 | doortronixusa.com<br>
+      Net contractor pricing. Freight, installation, and taxes not included. Subject to final review.</p>
+      <div style="display:flex;gap:10px;">
+        <button class="btn-close" onclick="closeConf()">Close</button>
+        <button class="btn-print" onclick="window.print()">Print / Save PDF</button>
+      </div>
+    </div>
+    <div class="orange-bar"></div>
+  </div>
+</div>
+
+<script>
+const FORMSPREE = "https://formspree.io/f/mykorzwy";
+
+// ── Addon state (JS-authoritative, not CSS-derived) ──────────────────
+const _checkedAddons = new Set();
+let _doorScale = null;
+
+function getStileW(sc) {
+  return Math.max(3, sc * (rv('stileWidth') === 'medium' ? 3.75 : 2.5));
+}
+
+// ── Pricing data ────────────────────────────────────────────────────
+const CONFIGS = {
+  'fbo-bi':        { label:'FBO Bi-Part',      code:'SO-SX-SX-SO', base:3900, transom:250, minW:96,  maxW:168, panels:2, isFBO:true,  isBi:true  },
+  'fsl-bi':        { label:'FSL Bi-Part',      code:'O-SX-SX-O',  base:3900, transom:250, minW:96,  maxW:168, panels:2, isFBO:false, isBi:true  },
+  'esa':           { label:'ESA Bi-Part',      code:'P-SX-SX-P',  base:null, panels:2,    isFBO:false, isBi:true  },
+  'fbo-single-rh': { label:'FBO Single — RH',  code:'SX-SO',      base:3200, transom:250, minW:78,  maxW:108, panels:1, isFBO:true,  isBi:false },
+  'fbo-single-lh': { label:'FBO Single — LH',  code:'SO-SX',      base:3200, transom:250, minW:78,  maxW:108, panels:1, isFBO:true,  isBi:false },
+  'fsl-single-rh': { label:'FSL Single — RH',  code:'SX-O',       base:3200, transom:250, minW:78,  maxW:108, panels:1, isFBO:false, isBi:false },
+  'fsl-single-lh': { label:'FSL Single — LH',  code:'O-SX',       base:3200, transom:250, minW:78,  maxW:108, panels:1, isFBO:false, isBi:false },
+};
+
+// ── Door Type Toggle ────────────────────────────────────────────────
+let _currentDoorType = 'bi-part';
+
+function setDoorType(type) {
+  _currentDoorType = type;
+  document.getElementById('configGrid-bipart').style.display = type === 'bi-part' ? '' : 'none';
+  document.getElementById('configGrid-single').style.display  = type === 'single'   ? '' : 'none';
+  document.getElementById('tab-bipart').classList.toggle('active', type === 'bi-part');
+  document.getElementById('tab-single').classList.toggle('active', type === 'single');
+  if (type === 'bi-part') {
+    document.getElementById('cfg_fbo_bi').checked = true;
+  } else {
+    document.getElementById('cfg_fbo_ss_rh').checked = true;
+  }
+  updateAll();
+}
+
+// ── Project Cart ─────────────────────────────────────────────────────
+const CART_KEY = 'dtx_project_cart';
+let _projectHeader = null;
+let _editingDoorId = null;
+
+function getCart()      { try { return JSON.parse(localStorage.getItem(CART_KEY)) || []; } catch { return []; } }
+function saveCart(cart) { localStorage.setItem(CART_KEY, JSON.stringify(cart)); }
+
+function clearCart() {
+  if (getCart().length > 0 && !confirm('Clear all doors from this project quote?')) return;
+  localStorage.removeItem(CART_KEY);
+  _projectHeader = null;
+  _editingDoorId = null;
+  unlockContactSection();
+  renderCart();
+}
+
+function captureCurrentDoor() {
+  const cfg = getConfig();
+  const pd  = window._priceData;
+  return {
+    id:            _editingDoorId || Date.now(),
+    typeCategory:  _currentDoorType,
+    config:        rv('config'),
+    configLabel:   cfg?.label  || rv('config'),
+    configCode:    cfg?.code   || '',
+    widthStr:      getWidthStr(),
+    heightStr:     getHeightStr(),
+    widthIn:       getWidthIn(),
+    heightIn:      getHeightIn(),
+    glazing:       rv('glazing'),
+    transom:       rv('transom'),
+    transomGlassPrep: rv('transomGlassPrep'),
+    transomV:      rv('transomV'),
+    glassPrep:     rv('glassPrep'),
+    stileWidth:    rv('stileWidth'),
+    bottomRail:    rv('bottomRail'),
+    muntin:        rv('muntin'),
+    threshold:     rv('threshold'),
+    sensor:        rv('sensor'),
+    addons:        [..._checkedAddons],
+    notes:         fv('f_notes'),
+    estimatedTotal: pd?.grandTotal || null,
+  };
+}
+
+function addDoorToCart() {
+  const required = [
+    [fv('f_name'),    'Full Name'],
+    [fv('f_company'), 'Company Name'],
+    [fv('f_role'),    'Your Role'],
+    [fv('f_phone'),   'Phone Number'],
+    [fv('f_email'),   'Email Address'],
+    [fv('f_location'),'Project City & State'],
+    [rv('config'),    'Door Configuration'],
+  ];
+  for (const [val, label] of required) {
+    if (!val) { alert(`Please fill in "${label}" before adding to the project.`); return; }
+  }
+
+  const cart    = getCart();
+  const doorData = captureCurrentDoor();
+
+  if (_editingDoorId !== null) {
+    const idx = cart.findIndex(d => d.id === _editingDoorId);
+    if (idx >= 0) cart[idx] = doorData; else cart.push(doorData);
+    _editingDoorId = null;
+  } else {
+    if (cart.length === 0) {
+      _projectHeader = {
+        name: fv('f_name'), company: fv('f_company'), role: fv('f_role'),
+        phone: fv('f_phone'), email: fv('f_email'),
+        projectName: fv('f_project'), location: fv('f_location'),
+        shipDate: fv('f_shipdate'), poNumber: fv('f_po'),
+      };
+    }
+    cart.push(doorData);
+  }
+
+  saveCart(cart);
+  lockContactSection();
+  resetDoorForm();
+  renderCart();
+  document.getElementById('door-section-label').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function editCartDoor(id) {
+  const cart = getCart();
+  const door = cart.find(d => d.id === id);
+  if (!door) return;
+  _editingDoorId = id;
+  loadDoorIntoForm(door);
+  renderCart();
+  document.getElementById('door-section-label').scrollIntoView({ behavior: 'smooth' });
+}
+
+function removeCartDoor(id) {
+  let cart = getCart().filter(d => d.id !== id);
+  saveCart(cart);
+  if (cart.length === 0) unlockContactSection();
+  if (_editingDoorId === id) { _editingDoorId = null; resetDoorForm(); }
+  renderCart();
+}
+
+function loadDoorIntoForm(door) {
+  setDoorType(door.typeCategory || 'bi-part');
+  const cfgEl = document.querySelector(`input[name="config"][value="${door.config}"]`);
+  if (cfgEl) cfgEl.checked = true;
+  const setRadio = (name, val) => { const e = document.querySelector(`input[name="${name}"][value="${CSS.escape ? CSS.escape(val) : val}"]`) || document.querySelector(`input[name="${name}"]`); if (val) { const match = document.querySelector(`input[name="${name}"][value="${val}"]`); if (match) match.checked = true; } };
+  if (door.widthIn) {
+    const wFt = Math.floor(door.widthIn / 12); const wIn = Math.floor(door.widthIn % 12);
+    document.getElementById('f_wft').value = wFt; document.getElementById('f_win').value = wIn; document.getElementById('f_w16').value = 0;
+  }
+  if (door.heightIn) {
+    const hFt = Math.floor(door.heightIn / 12); const hIn = Math.floor(door.heightIn % 12);
+    document.getElementById('f_hft').value = hFt; document.getElementById('f_hin').value = hIn; document.getElementById('f_h16').value = 0;
+  }
+  ['glazing','transom','transomGlassPrep','transomV','glassPrep','stileWidth','bottomRail','muntin','threshold','sensor'].forEach(name => {
+    const v = door[name]; if (!v) return;
+    const el = document.querySelector(`input[name="${name}"][value="${v}"]`);
+    if (el) el.checked = true;
+  });
+  _checkedAddons.clear();
+  document.querySelectorAll('.addon-item.checked').forEach(el => el.classList.remove('checked'));
+  (door.addons || []).forEach(addonId => {
+    const el = document.getElementById(addonId);
+    if (el) { el.classList.add('checked'); _checkedAddons.add(addonId); }
+  });
+  document.getElementById('f_notes').value = door.notes || '';
+  updateAll();
+}
+
+function resetDoorForm() {
+  setDoorType('bi-part');
+  document.getElementById('cfg_fbo_bi').checked = true;
+  ['f_wft','f_win','f_w16'].forEach(id => { const e = document.getElementById(id); if(e) e.value = id==='f_wft'?'':0; });
+  document.getElementById('f_hft').value = '7';
+  document.getElementById('f_hin').value = '6';
+  document.getElementById('f_h16').value = '0';
+  const defaults = {glazing:'204 Clear',transom:'no',glassPrep:'1/4"',stileWidth:'narrow',bottomRail:'std',muntin:'2" Muntin (std)',threshold:'Standard 1/2"',sensor:'Standard Optex (incl.)'};
+  Object.entries(defaults).forEach(([name, val]) => { const el = document.querySelector(`input[name="${name}"][value="${val}"]`); if(el) el.checked=true; });
+  _checkedAddons.clear();
+  document.querySelectorAll('.addon-item.checked').forEach(el => el.classList.remove('checked'));
+  document.getElementById('f_notes').value = '';
+  updateAll();
+}
+
+function lockContactSection() {
+  ['contact-section-wrapper','project-section-wrapper'].forEach(id => {
+    const w = document.getElementById(id); if(!w) return;
+    w.style.opacity = '0.6';
+    w.querySelectorAll('input,select,textarea').forEach(el => el.disabled = true);
+  });
+  document.getElementById('contact-unlock-bar').style.display = 'flex';
+}
+
+function unlockContactSection() {
+  ['contact-section-wrapper','project-section-wrapper'].forEach(id => {
+    const w = document.getElementById(id); if(!w) return;
+    w.style.opacity = '';
+    w.querySelectorAll('input,select,textarea').forEach(el => el.disabled = false);
+  });
+  document.getElementById('contact-unlock-bar').style.display = 'none';
+}
+
+function renderCart() {
+  const cart = getCart();
+  const cartSection = document.getElementById('project-cart-section');
+  const cartCards   = document.getElementById('cart-cards');
+  const lbl         = document.getElementById('door-section-label');
+  const addBtn      = document.getElementById('btn-add-to-cart');
+
+  if (cart.length === 0) {
+    cartSection.style.display = 'none';
+    if (lbl) lbl.textContent  = 'Configuring Door #1';
+    if (addBtn) addBtn.textContent = 'Add This Door to Project';
+    return;
+  }
+
+  cartSection.style.display = 'block';
+  const projTotal = cart.reduce((s, d) => s + (d.estimatedTotal || 0), 0);
+  document.getElementById('cart-total-badge').textContent = 'Est. Total: ' + (projTotal > 0 ? '$' + projTotal.toLocaleString() : '—');
+
+  cartCards.innerHTML = cart.map((d, i) => {
+    const isEditing = d.id === _editingDoorId;
+    return `<div class="cart-card${isEditing ? ' editing' : ''}">
+      <div class="cart-card-num">DOOR ${i+1}${isEditing ? ' ✏️' : ''}</div>
+      <div class="cart-card-type">${d.configLabel}</div>
+      <div class="cart-card-code">${d.configCode}</div>
+      <div class="cart-card-dims">${d.widthStr || '—'} × ${d.heightStr || '—'}</div>
+      <div class="cart-card-price">${d.estimatedTotal ? '$'+d.estimatedTotal.toLocaleString() : 'Call'}</div>
+      <div class="cart-card-actions">
+        <button type="button" onclick="editCartDoor(${d.id})">Edit</button>
+        <button type="button" class="btn-remove" onclick="removeCartDoor(${d.id})">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  const nextNum = _editingDoorId !== null
+    ? cart.findIndex(d => d.id === _editingDoorId) + 1
+    : cart.length + 1;
+  if (lbl) lbl.textContent = _editingDoorId !== null
+    ? `Editing Door #${nextNum}` : `Configuring Door #${nextNum}`;
+  if (addBtn) addBtn.textContent = _editingDoorId !== null
+    ? 'Update Door in Project' : 'Add This Door to Project';
+}
+
+async function submitAllDoors() {
+  const cart = getCart();
+  if (cart.length === 0) { alert('Add at least one door to your project before submitting.'); return; }
+
+  const hdr = _projectHeader || {
+    name: fv('f_name'), company: fv('f_company'), role: fv('f_role'),
+    phone: fv('f_phone'), email: fv('f_email'),
+    projectName: fv('f_project'), location: fv('f_location'),
+    shipDate: fv('f_shipdate'), poNumber: fv('f_po'),
+  };
+  if (!hdr.name || !hdr.email) { alert('Please fill in contact information before submitting.'); return; }
+
+  const projTotal = cart.reduce((s, d) => s + (d.estimatedTotal || 0), 0);
+  const doorBlocks = cart.map((d, i) => {
+    const stile  = d.stileWidth === 'medium' ? 'Medium 3-3/4"' : 'Narrow (std)';
+    const rail   = d.bottomRail === '6in' ? '6"' : d.bottomRail === '10in' ? '10"' : '4" (std)';
+    const sensor = (['Optex i-oneXT','BEA IXIO'].includes(d.sensor)) ? d.sensor : 'Standard Optex (incl.)';
+    return `DOOR ${i+1}: ${d.configLabel} (${d.configCode})\n` +
+           `  Width: ${d.widthStr} | Height: ${d.heightStr}\n` +
+           `  Finish: ${d.glazing} | Glass Prep: ${d.glassPrep} | Threshold: ${d.threshold}\n` +
+           `  Sensor: ${sensor} | Transom: ${d.transom === 'yes' ? 'Yes (+$250)' : 'No'} | Stile: ${stile} | Bottom Rail: ${rail}\n` +
+           `  Muntin: ${d.muntin} | Add-ons: ${d.addons.join(', ') || 'None'}\n` +
+           `  Est. Price: ${d.estimatedTotal ? '$'+d.estimatedTotal.toLocaleString() : 'Call for pricing'}` +
+           (d.notes ? `\n  Notes: ${d.notes}` : '');
+  }).join('\n\n');
+
+  const payload = {
+    name: hdr.name, company: hdr.company, role: hdr.role,
+    phone: hdr.phone, email: hdr.email,
+    projectName: hdr.projectName || '', location: hdr.location,
+    shipDate: hdr.shipDate || '', poNumber: hdr.poNumber || '',
+    doorCount: cart.length,
+    projectEstimatedTotal: projTotal > 0 ? '$' + projTotal.toLocaleString() : 'See individual doors',
+    doors: doorBlocks,
+  };
+
+  const btn = document.querySelector('.btn-submit-all');
+  if (btn) { btn.textContent = 'Submitting…'; btn.disabled = true; }
+
+  if (FORMSPREE && FORMSPREE !== 'https://formspree.io/f/YOUR_FORM_ID') {
+    try {
+      await fetch(FORMSPREE, { method:'POST', headers:{'Content-Type':'application/json','Accept':'application/json'}, body: JSON.stringify(payload) });
+    } catch(err) { console.warn('Formspree error:', err); }
+  }
+
+  clearCart();
+  if (btn) { btn.textContent = 'Submit Full Project Quote →'; btn.disabled = false; }
+  alert(`Project quote submitted for ${hdr.name}!\n${cart.length} door${cart.length>1?'s':''} — Est. Total: ${projTotal > 0 ? '$'+projTotal.toLocaleString() : '—'}\n\nWe'll confirm within 4 business hours.`);
+}
+
+// ── Legacy addExtraDoor stub (not used in combined form) ─────────────
+function addExtraDoor() {
+  _extraDoorCount++;
+  const n = _extraDoorCount;
+  const list = document.getElementById('extra-doors-list');
+  const card = document.createElement('div');
+  card.className = 'extra-door-card';
+  card.id = 'extra-door-' + n;
+  card.innerHTML = `
+    <div class="extra-door-card-header">
+      <span class="extra-door-card-title">Door Opening #${n}</span>
+      <button type="button" class="extra-door-card-remove" onclick="removeExtraDoor(${n})" title="Remove">✕</button>
+    </div>
+    <div class="ed-grid4" style="margin-bottom:8px;">
+      <div class="ed-field">
+        <label>Door Type / Configuration</label>
+        <select id="ed_type_${n}">
+          <option value="Bi-Part FBO">Bi-Part FBO (SO-SX-SX-SO)</option>
+          <option value="Bi-Part FSL">Bi-Part FSL (O-SX-SX-O)</option>
+          <option value="Bi-Part ESA">Bi-Part ESA (P-SX-SX-P)</option>
+          <option value="Single Slide FBO-RH">Single Slide FBO — Right Hand</option>
+          <option value="Single Slide FBO-LH">Single Slide FBO — Left Hand</option>
+          <option value="Single Slide FSL-RH">Single Slide FSL — Right Hand</option>
+          <option value="Single Slide FSL-LH">Single Slide FSL — Left Hand</option>
+          <option value="Swing Single">Swing Door — Single</option>
+          <option value="Swing Pair">Swing Door — Pair</option>
+          <option value="Other">Other (describe in notes)</option>
+        </select>
+      </div>
+      <div class="ed-field">
+        <label>Rough Opening Width</label>
+        <input type="text" id="ed_w_${n}" placeholder='e.g. 72" or 6&apos;0"'>
+      </div>
+      <div class="ed-field">
+        <label>Rough Opening Height</label>
+        <input type="text" id="ed_h_${n}" placeholder='e.g. 84" or 7&apos;0"'>
+      </div>
+      <div class="ed-field">
+        <label>Qty</label>
+        <input type="number" id="ed_q_${n}" value="1" min="1" max="99">
+      </div>
+    </div>
+    <hr class="ed-divider">
+    <div class="ed-grid3" style="margin-bottom:8px;">
+      <div class="ed-field">
+        <label>Frame Finish</label>
+        <select id="ed_finish_${n}">
+          <option value="204 Clear Anodized">204 Clear Anodized</option>
+          <option value="313 Dark Bronze">313 Dark Bronze</option>
+        </select>
+      </div>
+      <div class="ed-field">
+        <label>Door Glass Prep</label>
+        <select id="ed_glass_${n}">
+          <option value='1/4"'>1/4" Clear (std)</option>
+          <option value='1" IG'>1" Insulating Glass</option>
+          <option value="Tempered">Tempered</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div class="ed-field">
+        <label>Threshold</label>
+        <select id="ed_thresh_${n}">
+          <option value='1/2" Standard'>1/2" Standard</option>
+          <option value="No Threshold">No Threshold</option>
+          <option value="Recessed (call)">Recessed (call)</option>
+        </select>
+      </div>
+    </div>
+    <div class="ed-grid3" style="margin-bottom:8px;">
+      <div class="ed-field">
+        <label>Sensor</label>
+        <select id="ed_sensor_${n}">
+          <option value="Standard Optex (incl.)">Standard Optex (included)</option>
+          <option value="Optex i-oneXT">Optex i-oneXT (upgrade)</option>
+          <option value="BEA IXIO">BEA IXIO (upgrade)</option>
+        </select>
+      </div>
+      <div class="ed-field">
+        <label>Transom Panel</label>
+        <select id="ed_transom_${n}">
+          <option value="No">No</option>
+          <option value="Yes">Yes (+$250)</option>
+        </select>
+      </div>
+      <div class="ed-field">
+        <label>Stile Width</label>
+        <select id="ed_stile_${n}">
+          <option value="Narrow (std)">Narrow (std)</option>
+          <option value='Medium 3-3/4"'>Medium 3-3/4"</option>
+        </select>
+      </div>
+    </div>
+    <hr class="ed-divider">
+    <div class="ed-field">
+      <label>Notes / Special Requirements for this opening</label>
+      <textarea id="ed_notes_${n}" placeholder="Access control, lead-lined panels, egress requirements, site conditions, etc."></textarea>
+    </div>`;
+  list.appendChild(card);
+  card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function removeExtraDoor(n) {
+  const el = document.getElementById('extra-door-' + n);
+  if (el) el.remove();
+}
+
+function getExtraDoorsText() {
+  if (_extraDoorCount === 0) return '';
+  const lines = [];
+  for (let i = 1; i <= _extraDoorCount; i++) {
+    const el = document.getElementById('extra-door-' + i);
+    if (!el) continue;
+    const g = id => document.getElementById(id)?.value?.trim() || '—';
+    const type   = g('ed_type_'   + i);
+    const w      = g('ed_w_'      + i);
+    const h      = g('ed_h_'      + i);
+    const q      = g('ed_q_'      + i);
+    const finish = g('ed_finish_' + i);
+    const glass  = g('ed_glass_'  + i);
+    const thresh = g('ed_thresh_' + i);
+    const sensor = g('ed_sensor_' + i);
+    const transom= g('ed_transom_'+ i);
+    const stile  = g('ed_stile_'  + i);
+    const notes  = g('ed_notes_'  + i);
+    lines.push(
+      `--- Door Opening #${lines.length+1} ---\n` +
+      `Type: ${type} | W: ${w} | H: ${h} | Qty: ${q}\n` +
+      `Finish: ${finish} | Glass Prep: ${glass} | Threshold: ${thresh}\n` +
+      `Sensor: ${sensor} | Transom: ${transom} | Stile: ${stile}` +
+      (notes && notes !== '—' ? `\nNotes: ${notes}` : '')
+    );
+  }
+  return lines.join('\n\n');
+}
+
+// ── Helpers ─────────────────────────────────────────────────────────
+function fv(id) { const e=document.getElementById(id); return e?e.value.trim():''; }
+function rv(n)  { const e=document.querySelector(`input[name="${n}"]:checked`); return e?e.value:''; }
+function getConfig() { return CONFIGS[rv('config')] || null; }
+
+function getWidthIn() {
+  const ft = parseInt(fv('f_wft'));
+  const inches = parseInt(fv('f_win')) || 0;
+  const sixteenth = parseInt(fv('f_w16')) || 0;
+  if (!ft) return null;
+  return ft * 12 + inches + sixteenth / 16;
+}
+function getWidthStr() {
+  const ft = fv('f_wft');
+  if (!ft) return '—';
+  const inches = parseInt(fv('f_win')) || 0;
+  const sixteenth = parseInt(fv('f_w16')) || 0;
+  const inStr = inches + (sixteenth ? '-' + SIXTEENTH_LABELS[sixteenth] : '') + '"';
+  return `${ft}'-${inStr}`;
+}
+const SIXTEENTH_LABELS = ['','1/16','1/8','3/16','1/4','5/16','3/8','7/16','1/2','9/16','5/8','11/16','3/4','13/16','7/8','15/16'];
+function getHeightIn() {
+  const ft = parseInt(fv('f_hft'));
+  const inches = parseInt(fv('f_hin')) || 0;
+  const sixteenth = parseInt(fv('f_h16')) || 0;
+  if (!ft) return null;
+  return ft * 12 + inches + sixteenth / 16;
+}
+function getHeightStr() {
+  const ft = fv('f_hft');
+  const inches = parseInt(fv('f_hin')) || 0;
+  const sixteenth = parseInt(fv('f_h16')) || 0;
+  const inStr = inches + (sixteenth ? '-' + SIXTEENTH_LABELS[sixteenth] : '') + '"';
+  return `${ft}'-${inStr}`;
+}
+function fmtInches(totalIn) {
+  const whole = Math.floor(totalIn);
+  const frac = totalIn - whole;
+  const sixteenths = Math.round(frac * 16);
+  if (sixteenths === 0) return `${whole}"`;
+  if (sixteenths === 16) return `${whole + 1}"`;
+  return `${whole}-${SIXTEENTH_LABELS[sixteenths]}"`;
+}
+function calcNetOpeningIn() {
+  const cfg = getConfig();
+  if (!cfg) return null;
+  const wIn = getWidthIn();
+  if (wIn === null) return null;
+  if (cfg.base === null) return null;                  // ESA — no formula
+  return cfg.isBi ? 36 + (wIn - 96) * 0.5 : 33 + (wIn - 78) * 0.5;
+}
+function getOpenStr() {
+  const n = calcNetOpeningIn();
+  return n !== null && n > 0 ? fmtInches(n) : '';
+}
+function updateNetOpeningDisplay() {
+  const el = document.getElementById('net-opening-display');
+  const note = document.getElementById('net-opening-note');
+  if (!el) return;
+  const cfg = getConfig();
+  const n = calcNetOpeningIn();
+  if (!cfg) {
+    el.textContent = '—';
+    if (note) note.textContent = 'Select a configuration above to calculate.';
+  } else if (cfg.base === null) {
+    el.textContent = '—';
+    if (note) note.textContent = 'Contact us for net opening on ESA configurations.';
+  } else if (n === null) {
+    el.textContent = '—';
+    if (note) note.textContent = 'Select frame width above to calculate.';
+  } else {
+    el.textContent = fmtInches(n);
+    if (note) {
+      if (cfg.isBi) note.textContent = `Bipart equal-panel formula: 36" base at 8'0", +1/2" per inch of additional frame width.`;
+      else note.textContent = `Single slide equal-panel formula: 33" base at 6'6", +1/2" per inch of additional frame width.`;
+    }
+  }
+}
+function fmt(n) { return '$' + n.toLocaleString(); }
+function inToStr(totalIn) {
+  const ft = Math.floor(totalIn / 12);
+  const inches = totalIn % 12;
+  return `${ft}'${inches ? inches + '"' : '0"'}`;
+}
+
+// ── Add-on toggle ───────────────────────────────────────────────────
+function toggleAddon(el) {
+  if (el.classList.contains('disabled')) return;
+  if (el.classList.contains('required-addon')) return;
+  el.classList.toggle('checked');
+  if (el.classList.contains('checked')) {
+    _checkedAddons.add(el.id);
+    // Auto-set qty to 2 for Adams Rite 8600 (one per active panel on a bi-part)
+    if (el.id === 'addon_ar_8600') {
+      const s = el.querySelector('.addon-qty-wrap select');
+      if (s) s.value = '2';
+    }
+  } else {
+    _checkedAddons.delete(el.id);
+  }
+  calcPrice();
+}
+
+// ── FTTH inch clamp — when ft=7, minimum inch is 8 (7'8" = 92") ────
+// NOTE: does NOT call calcPrice — callers (updateAll/updateFTTH) handle that
+function clampFtthIn() {
+  const ftSel = document.getElementById('f_ftthft');
+  const inSel = document.getElementById('f_ftthin');
+  if (!ftSel || !inSel) return;
+  const ft = parseInt(ftSel.value) || 0;
+  const MIN_IN = 8; // 7'8" = 92" minimum
+  Array.from(inSel.options).forEach(opt => {
+    const v = parseInt(opt.value);
+    opt.disabled = (ft === 7 && v < MIN_IN);
+    opt.hidden   = (ft === 7 && v < MIN_IN);
+  });
+  // If current selection is now below minimum, bump up
+  if (ft === 7 && parseInt(inSel.value) < MIN_IN) {
+    inSel.value = String(MIN_IN);
+  }
+}
+
+// ── FTTH field visibility ───────────────────────────────────────────
+function updateFTTH() {
+  const hasTransom = rv('transom') === 'yes';
+  const f = document.getElementById('ftth-field');
+  if (f) f.style.display = hasTransom ? '' : 'none';
+  if (hasTransom) clampFtthIn();
+  const tg = document.getElementById('transom-glass-field');
+  if (tg) tg.style.display = hasTransom ? '' : 'none';
+  const tv = document.getElementById('transom-verticals-field');
+  if (tv) tv.style.display = hasTransom ? '' : 'none';
+  // Swap Frame Height label based on transom selection
+  const hl = document.getElementById('height-field-label');
+  if (hl) hl.textContent = hasTransom ? 'Header Height (FTTH)' : 'Frame Height';
+  const hn = document.getElementById('height-range-note');
+  if (hn && !hn.classList.contains('warn') && !hn.classList.contains('ok')) {
+    hn.textContent = hasTransom ? 'Floor to top of header/operator. Standard: 7\'6" to 8\'0".' : 'Standard header height: 7\'6" to 8\'0"';
+  }
+}
+
+// ── FBO-only add-on visibility ──────────────────────────────────────
+function updateAddonVisibility() {
+  const cfg = getConfig();
+  const ar8600 = document.getElementById('addon_ar_8600');
+  if (!ar8600) return;
+  if (!cfg || !cfg.isFBO) {
+    ar8600.classList.add('disabled');
+    ar8600.classList.remove('checked');
+    _checkedAddons.delete('addon_ar_8600');
+  } else {
+    ar8600.classList.remove('disabled');
+  }
+}
+
+// ── Price calculation ───────────────────────────────────────────────
+function calcPrice() {
+  const body = document.getElementById('price-body');
+  try {
+  const cfg = getConfig();
+  updateAddonVisibility();
+
+  if (!cfg) {
+    body.innerHTML = '<div class="price-empty">Select a configuration above to see pricing.</div>';
+    const ht = document.getElementById('price-header-total'); if (ht) ht.textContent = '';
+    const st = document.getElementById('sticky-price-total'); if (st) st.textContent = '—';
+    return;
+  }
+  if (cfg.base === null) {
+    const lbl = 'ESA pricing requires a quote call';
+    body.innerHTML = `<div class="price-call"><div class="pc-label">${lbl}</div><div class="pc-phone">(888) 453-5196</div><div style="font-size:11px;color:var(--mgray);margin-top:6px;">Mon–Fri, factory hours</div></div>`;
+    return;
+  }
+
+  let total = cfg.base;
+  const lines = [{ label: cfg.label + ' — Standard Package', amount: cfg.base }];
+
+  // Transom
+  if (rv('transom') === 'yes') {
+    total += cfg.transom;
+    lines.push({ label: 'Transom', amount: cfg.transom });
+    const numV = parseInt(rv('transomV')) || 0;
+    if (numV > 0) {
+      const vAmt = numV * 50;
+      total += vAmt;
+      lines.push({ label: `Transom Verticals ×${numV}`, amount: vAmt });
+    }
+  }
+
+  // Stile / rail / sensor upcharges (panels = active + sidelite panels)
+  const totalPanels = cfg.panels * 2;
+  const isMediumStile = rv('stileWidth') === 'medium';
+  if (isMediumStile) {
+    const amt = 180 * totalPanels;
+    total += amt;
+    lines.push({ label: `Medium Stiles ×${totalPanels} panels`, amount: amt });
+  }
+  const railVal = rv('bottomRail');
+  if (railVal === '6in') {
+    if (!isMediumStile) {
+      const amt = 80 * totalPanels;
+      total += amt;
+      lines.push({ label: `6" Bottom Rails ×${totalPanels} panels`, amount: amt });
+    } else {
+      lines.push({ label: `6" Bottom Rails ×${totalPanels} panels (incl.)`, amount: 0 });
+    }
+  } else if (railVal === '10in') {
+    const amt = 160 * totalPanels;
+    total += amt;
+    lines.push({ label: `10" Bottom Rails ×${totalPanels} panels`, amount: amt });
+  }
+  const sensorVal = rv('sensor');
+  if (sensorVal === 'Optex i-oneXT') {
+    total += 220; lines.push({ label: 'Optex i-oneXT Sensor', amount: 220 });
+  } else if (sensorVal === 'BEA IXIO') {
+    total += 280; lines.push({ label: 'BEA IXIO Sensor', amount: 280 });
+  }
+
+  // Width adjustment
+  const wIn = getWidthIn();
+  if (wIn !== null) {
+    const note = document.getElementById('width-range-note');
+    if (wIn < cfg.minW) {
+      if (note) { note.textContent = `⚠ Minimum frame width is ${inToStr(cfg.minW)} — call us to confirm`; note.className = 'size-range-note warn'; }
+    } else if (wIn > cfg.maxW) {
+      if (note) { note.textContent = `⚠ Over ${inToStr(cfg.maxW)} — call us for pricing on wider openings`; note.className = 'size-range-note warn'; }
+    } else {
+      if (note) { note.textContent = `✓ Within range (${inToStr(cfg.minW)} – ${inToStr(cfg.maxW)})`; note.className = 'size-range-note ok'; }
+    }
+  } else {
+    const note = document.getElementById('width-range-note');
+    if (note) { note.textContent = `Bi-part range: 8'0" – 14'0"`; note.className = 'size-range-note'; }
+  }
+
+  // Header height check (f_hft) — always 7'6"–8'0"
+  const hIn = getHeightIn();
+  const hNote = document.getElementById('height-range-note');
+  if (hIn !== null && hNote) {
+    if (hIn < 90) {
+      hNote.textContent = `⚠ Minimum header height is 7'6" — call us to confirm`;
+      hNote.className = 'size-range-note warn';
+    } else if (hIn > 96) {
+      hNote.textContent = `⚠ Over 8'0" — call us for taller header heights`;
+      hNote.className = 'size-range-note warn';
+    } else {
+      hNote.textContent = rv('transom') === 'yes'
+        ? `✓ Header height within range (7'6" – 8'0")`
+        : `✓ Within range (7'6" – 8'0")`;
+      hNote.className = 'size-range-note ok';
+    }
+  }
+  // Overall frame height check (FTTH) — min 92" when transom selected
+  if (rv('transom') === 'yes') {
+    const ftthFt = parseInt(fv('f_ftthft')) || 0;
+    const ftthIn = parseInt(fv('f_ftthin')) || 0;
+    const ftth16 = parseInt(fv('f_ftth16')) || 0;
+    const ftthTotal = ftthFt * 12 + ftthIn + ftth16 / 16;
+    const ftthNote = document.getElementById('ftth-range-note');
+    if (ftthNote && ftthFt) {
+      if (ftthTotal < 92) {
+        ftthNote.textContent = `⚠ Minimum overall frame height with transom is 7'8" (92")`;
+        ftthNote.className = 'size-range-note warn';
+      } else if (ftthTotal > 144) {
+        ftthNote.textContent = `⚠ Over 12'0" — call us for taller openings`;
+        ftthNote.className = 'size-range-note warn';
+      } else {
+        ftthNote.textContent = `✓ Overall frame height within range (7'8" – 12'0")`;
+        ftthNote.className = 'size-range-note ok';
+      }
+    }
+  }
+
+  // Add-ons — read from authoritative JS Set (not CSS classes)
+  _checkedAddons.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el || el.classList.contains('disabled')) return;
+    const price = parseInt(el.dataset.price) || 0;
+    const sel = el.querySelector('.addon-qty-wrap select');
+    const qty = sel ? (parseInt(sel.value) || 1) : 1;
+    const amount = price * qty;
+    total += amount;
+    const nameEl = el.querySelector('.al');
+    const name = nameEl ? nameEl.textContent.trim() : id;
+    lines.push({ label: name + (qty > 1 ? ' \xd7' + qty : ''), amount });
+  });
+
+  // Per-unit display
+  const qty = parseInt(fv('f_qty')) || 1;
+  const grandTotal = total * qty;
+
+  // Render
+  let html = '';
+  lines.forEach(l => {
+    html += `<div class="price-line"><span class="pl">${l.label}</span><span class="pv add">+${fmt(l.amount)}</span></div>`;
+  });
+  html += '<hr class="price-divider">';
+  if (qty > 1) {
+    html += `<div class="price-line"><span class="pl">Per unit subtotal</span><span class="pv">${fmt(total)}</span></div>`;
+    html += `<div class="price-line"><span class="pl">× ${qty} openings</span><span class="pv">${fmt(grandTotal)}</span></div>`;
+  }
+  html += `<div class="price-total-row"><span class="pt-label">Estimated Total</span><span class="pt-value">${fmt(grandTotal)}</span></div>`;
+  html += `<div class="price-note">Net contractor pricing. Does not include glass, freight, installation, or taxes. Doortronix will confirm final pricing and freight within 4 business hours.</div>`;
+  body.innerHTML = html;
+  const headerTotal = document.getElementById('price-header-total');
+  if (headerTotal) headerTotal.textContent = fmt(grandTotal);
+  const stickyTotal = document.getElementById('sticky-price-total');
+  if (stickyTotal) stickyTotal.textContent = fmt(grandTotal);
+  const formBody = document.getElementById('form-price-body');
+  if (formBody) formBody.innerHTML = html;
+  const formHeaderTotal = document.getElementById('form-price-header-total');
+  if (formHeaderTotal) formHeaderTotal.textContent = fmt(grandTotal);
+
+  // Store for confirmation
+  window._priceData = { lines, total, qty, grandTotal };
+  } catch(e) {
+    if (body) body.innerHTML = `<div class="price-empty" style="color:red;">Price error: ${e.message}</div>`;
+  }
+}
+
+// ── Spec summary ────────────────────────────────────────────────────
+function updateSpecSummary() {
+  const cfg = getConfig();
+  const ftthStr = rv('transom') === 'yes' ? (() => {
+    const ft=fv('f_ftthft'), i=parseInt(fv('f_ftthin'))||0, s=parseInt(fv('f_ftth16'))||0;
+    if (!ft) return '—';
+    const inPart = i === 0 && s === 0 ? '' : i + (s ? '-' + SIXTEENTH_LABELS[s] : '') + '"';
+    return `${ft}'${inPart}`;
+  })() : null;
+  const alarmContacts = _checkedAddons.has('addon_alarm_contacts')
+    ? 'Monitor Breakout + Door Position (+$150)' : 'None';
+  const specs = [
+    ['Configuration', cfg ? cfg.label : '—'],
+    ['Code', cfg ? cfg.code : '—'],
+    ['Frame Finish', rv('glazing') || '—'],
+    ['Door Glass Prep', rv('glassPrep') || '—'],
+    ...(rv('transom') === 'yes' ? [['Transom Glass Prep', rv('transomGlassPrep') || '—'], ['Transom Verticals', rv('transomV') === '0' || !rv('transomV') ? 'None' : rv('transomV')]] : []),
+    ['Stile Width', rv('stileWidth') === 'medium' ? 'Medium 3-3/4"' : 'Narrow (std)'],
+    ['Bottom Rail', rv('bottomRail') === '6in' ? '6"' : rv('bottomRail') === '10in' ? '10"' : '4" (std)'],
+    ['Horizontal Muntin', rv('muntin') || '2" Muntin (std)'],
+    ['Threshold', rv('threshold') || '—'],
+    ['Sensor', (['Optex i-oneXT','BEA IXIO'].includes(rv('sensor'))) ? rv('sensor') : '—'],
+    ['Transom', rv('transom') === 'yes' ? `Yes (+$250)${ftthStr ? ' — FTTH: ' + ftthStr : ''}` : 'No'],
+    ['Frame Width', getWidthStr()],
+    [rv('transom') === 'yes' ? 'Header Height (FTTH)' : 'Frame Height', getHeightStr()],
+    ...(rv('transom') === 'yes' ? [['Overall Frame Height', (() => { const ft=fv('f_ftthft'),i=fv('f_ftthin')||'0'; return ft ? `${ft}'${i==='0'?'':i+'"'}` : '—'; })()]] : []),
+    ['Net Opening', getOpenStr() || '—'],
+    ['Alarm Contacts', alarmContacts],
+    ['Quantity', fv('f_qty') || '—'],
+  ];
+  document.getElementById('spec-summary').innerHTML = specs.map(([k,v]) =>
+    `<div class="spec-row"><span class="sk">${k}</span><span class="sv">${v}</span></div>`
+  ).join('');
+}
+
+// ── SVG Drawing ─────────────────────────────────────────────────────
+function isDarkBronze() { return rv('glazing') === '313 Dark Bronze'; }
+function getFrameColor() {
+  return isDarkBronze() ? '#3D2710' : '#B8C4D0';
+}
+function getPanelFill() {
+  return isDarkBronze() ? '#4A3018' : '#7A9CB8';
+}
+function getGlazeFill() {
+  return isDarkBronze()
+    ? { fill:'#C8B8A0', stroke:'#8A7060' }
+    : { fill:'#E8F4FD', stroke:'#A8D4F5' };
+}
+
+function drawDoor(svgId, vW, vH, isConf) {
+  const svg = document.getElementById(svgId);
+  if (!svg) return;
+  svg.innerHTML = '';
+  const cfg = getConfig();
+  const glaze = getGlazeFill();
+  const frame = getFrameColor();
+  const hasTransom = rv('transom') === 'yes';
+  const isBi = cfg ? cfg.isBi : true;
+  const isLH = cfg && (cfg.code === 'O-SX' || cfg.code === 'O-SX-SX-O');
+  const isFBO = cfg ? cfg.isFBO : false;
+
+  const titleH = isConf ? 60 : 0;
+
+  // ── Real dimensions in inches ──────────────────────────────────────
+  const realW      = getWidthIn()  || (isBi ? 120 : 84);
+  const realFrameH = getHeightIn() || 90;  // frame height (floor to top of header)
+  const ftthFt2    = parseInt(fv('f_ftthft')) || 0;
+  const ftthIn2    = parseInt(fv('f_ftthin')) || 0;
+  const realFtth   = hasTransom && ftthFt2 ? ftthFt2 * 12 + ftthIn2 : realFrameH;
+  const realTransomIn = hasTransom ? Math.max(0, realFtth - realFrameH) : 0;
+  const realTotalH = realFtth;   // total height incl. transom
+
+  // ── Scale to fit viewBox while maintaining true aspect ratio ───────
+  const mL = isConf ? 55 : 110, mR = isConf ? 55 : 90;
+  const mT = isConf ? titleH + 20 : 52, mB = isConf ? 70 : 72;
+  const availW = vW - mL - mR;
+  let sc, dW, dH, dX, dY;
+  if (!isConf) {
+    // Scale from width only so door always fills container at true proportion
+    sc = availW / realW;
+    dW = realW * sc;
+    dH = realTotalH * sc;
+    vH = Math.ceil(mT + dH + mB);
+    svg.setAttribute('viewBox', `0 0 ${vW} ${vH}`);
+    dX = mL + (availW - dW) / 2;
+    dY = mT;
+  } else {
+    const availH = vH - mT - mB;
+    sc = Math.min(availW / realW, availH / realTotalH);
+    dW = realW * sc;
+    dH = realTotalH * sc;
+    dX = mL + (availW - dW) / 2;
+    dY = mT + (availH - dH) / 2;
+  }
+
+  // ── Frame members at true scale ────────────────────────────────────
+  const jambW  = Math.max(2, sc * 1.75);  // 1-3/4" structural tube
+  const railIn = rv('bottomRail') === '10in' ? 10 : rv('bottomRail') === '6in' ? 6 : 4;
+  const stileW = Math.max(3, sc * (rv('stileWidth') === 'medium' ? 3.75 : 2.5));
+  const topRH  = Math.max(3, sc * 4.0);   // 4" top rail
+  const btmRH  = Math.max(3, sc * railIn); // bottom rail per selection
+  const muntH  = Math.max(1.5, sc * 2.0); // 2" muntin bar
+  const sillH  = Math.max(1, sc * 0.5);   // 1/2" threshold
+  const headerH = Math.max(10, sc * 8.0); // 8" header / operator box
+  const frameT  = jambW;
+
+  // Panel stiles — match selected finish
+  const panelFill = getPanelFill();
+  const transomH  = realTransomIn * sc;   // true-scale transom strip
+  const doorH     = dH - transomH;
+
+  function r(x,y,w,h,fill,stroke,sw,rx) {
+    const el = document.createElementNS('http://www.w3.org/2000/svg','rect');
+    Object.entries({x,y,width:Math.max(w,0),height:Math.max(h,0),fill:fill||'none',rx:rx||0}).forEach(([k,v])=>el.setAttribute(k,v));
+    if(stroke){el.setAttribute('stroke',stroke);el.setAttribute('stroke-width',sw||1);}
+    svg.appendChild(el); return el;
+  }
+  function l(x1,y1,x2,y2,s,sw,dash) {
+    const el = document.createElementNS('http://www.w3.org/2000/svg','line');
+    Object.entries({x1,y1,x2,y2,stroke:s||'#666','stroke-width':sw||1}).forEach(([k,v])=>el.setAttribute(k,v));
+    if(dash) el.setAttribute('stroke-dasharray',dash);
+    svg.appendChild(el);
+  }
+  function t(x,y,str,size,fill,anchor,weight) {
+    const el = document.createElementNS('http://www.w3.org/2000/svg','text');
+    Object.entries({x,y,'font-size':size||11,fill:fill||'#111','text-anchor':anchor||'middle','font-weight':weight||'normal','font-family':'Arial,sans-serif'}).forEach(([k,v])=>el.setAttribute(k,v));
+    el.textContent=str; svg.appendChild(el); return el;
+  }
+  function path(d,fill,stroke,sw,dash) {
+    const el = document.createElementNS('http://www.w3.org/2000/svg','path');
+    el.setAttribute('d',d); el.setAttribute('fill',fill||'none');
+    if(stroke){el.setAttribute('stroke',stroke);el.setAttribute('stroke-width',sw||1);}
+    if(dash) el.setAttribute('stroke-dasharray',dash);
+    svg.appendChild(el);
+  }
+  function dimLine(x1,y1,x2,y2,lbl,horiz) {
+    const aw=5,off=7;
+    if(horiz){
+      l(x1,y1,x2,y2,'#1B4F8A',0.7); l(x1,y1-off,x1,y1+off,'#1B4F8A',0.7); l(x2,y1-off,x2,y1+off,'#1B4F8A',0.7);
+      path(`M${x1},${y1}l${aw},-3l0,6Z`,'#1B4F8A'); path(`M${x2},${y1}l${-aw},-3l0,6Z`,'#1B4F8A');
+      t((x1+x2)/2,y1-8,lbl,18,'#1B4F8A','middle','700');
+    } else {
+      l(x1,y1,x2,y2,'#1B4F8A',0.7); l(x1-off,y1,x1+off,y1,'#1B4F8A',0.7); l(x1-off,y2,x1+off,y2,'#1B4F8A',0.7);
+      path(`M${x1},${y1}l-3,${aw}l6,0Z`,'#1B4F8A'); path(`M${x1},${y2}l-3,${-aw}l6,0Z`,'#1B4F8A');
+      const cx=x1-4,cy=(y1+y2)/2;
+      const el=t(cx,cy,lbl,18,'#1B4F8A','middle','700');
+      el.setAttribute('transform',`rotate(-90,${cx},${cy})`);
+    }
+  }
+
+  // Confirmation title
+  if (isConf) {
+    r(0,0,vW,titleH,'#1B4F8A');
+    t(16,22,'DOORTRONIX USA',14,'#fff','start','700');
+    t(16,38,'Confirmation Drawing — Door Elevation',10,'#B8CCE4','start');
+    const cLabel = cfg ? cfg.label + ' (' + cfg.code + ')' : '—';
+    t(vW-14,22,cLabel,11,'#E87722','end','700');
+    t(vW-14,38,getWidthStr() + ' W × ' + getHeightStr() + ' H',10,'#fff','end','700');
+    t(vW-14,52,rv('glazing'),9,'#B8CCE4','end');
+    t(vW/2,36,'Not for construction — for approval only',9,'#7090A8','middle');
+  }
+
+  // Outer frame bg
+  r(dX, dY, dW, dH, '#E8EEF4', frame, 2);
+
+  // Sill
+  r(dX, dY+dH-sillH, dW, sillH, frame);
+
+  // Transom strip — sits above the header/operator
+  if (hasTransom) {
+    const numV = parseInt(rv('transomV') || '0');
+    // Use frameT for all transom framing members (matches jamb thickness)
+    const tx = dX + frameT, tw = dW - frameT * 2;
+    // Glass height: subtract top tube (frameT) and bottom 1" glass stop
+    const tGlassY = dY + frameT;                    // glass starts below top header tube
+    const glassStopH = Math.max(1.5, sc * 1);       // 1" glass stop line thickness
+    const tGlassH = transomH - frameT - glassStopH; // glass fills to just above glass stop
+
+    // Compute vertical mullion center x-positions
+    const _pX = dX + frameT, _pW = dW - frameT * 2;
+    const vertXs = [];
+    if (numV > 0) {
+      if (numV === 2 && isBi) {
+        const gap = 3, panW = (_pW - gap * 3) / 4;
+        vertXs.push(_pX + panW + gap / 2);
+        vertXs.push(_pX + (panW + gap) * 3 - gap / 2);
+      } else {
+        for (let i = 1; i <= numV; i++) {
+          vertXs.push(tx + tw * i / (numV + 1));
+        }
+      }
+    }
+
+    // Draw glass lites between vertical mullions
+    const liteEdges = [tx, ...vertXs.flatMap(vx => [vx - frameT/2, vx + frameT/2]), tx + tw];
+    for (let i = 0; i < liteEdges.length - 1; i += 2) {
+      const lx = liteEdges[i], lw = liteEdges[i+1] - liteEdges[i];
+      if (lw > 1) r(lx, tGlassY, lw, tGlassH, glaze.fill, glaze.stroke, 0.5);
+    }
+
+    // Top header tube — 1-3/4" horizontal member at very top of transom
+    r(dX, dY, dW, frameT, frame);
+
+    // Left and right transom jambs (frameT wide, full transom height)
+    r(dX, dY, frameT, transomH, frame);
+    r(dX + dW - frameT, dY, frameT, transomH, frame);
+
+    // Vertical mullions — filled rects, frameT wide, between top tube and bottom mullion
+    vertXs.forEach(vx => {
+      r(vx - frameT/2, tGlassY, frameT, tGlassH, frame);
+    });
+
+    // Bottom glass stop — 1" solid line at base of transom, top of header
+    l(dX, tGlassY + tGlassH + glassStopH/2, dX + dW, tGlassY + tGlassH + glassStopH/2, frame, glassStopH);
+
+    // TRANSOM label centred on the first (or only) lite
+    const firstLiteW = vertXs.length > 0 ? (vertXs[0] - frameT/2) - tx : tw;
+    t(tx + firstLiteW/2, tGlassY + tGlassH/2 + 3, 'TRANSOM', 7, '#aaa', 'middle');
+  }
+
+  // Header / operator — inset between jambs
+  r(dX+frameT, dY+transomH, dW-frameT*2, headerH, frame, '#777', 1);
+  t(dX+dW/2, dY+transomH+headerH*0.68, 'HEADER / OPERATOR', 7, '#fff', 'middle', '700');
+
+  // Jambs — full height from top of header through door panel zone
+  r(dX, dY+transomH, frameT, dH-transomH-sillH, frame);
+  r(dX+dW-frameT, dY+transomH, frameT, dH-transomH-sillH, frame);
+
+  const pY = dY+transomH+headerH+2, pH = dH-transomH-headerH-sillH-4;
+  const pX = dX+frameT, pW = dW-frameT*2;
+  // Muntin Y — after pY/pH are defined
+  // Muntin: 42" AFF for taller doors (true scale); center of panel for standard height
+  const muntY = realFrameH > 96
+    ? (pY + pH) - (42 * sc) - muntH / 2
+    : pY + topRH + (pH - topRH - btmRH) / 2 - muntH / 2;
+  // Panel drawing helper — frame background + inset glass lite + optional diagonal glass lines
+  let panels = []; // collect {x,w} for muntin overlay
+  // noInnerL / noInnerR: suppress stile inset on that side so glass extends to panel edge
+  // breakoutDir: 'left' draws < chevron, 'right' draws > chevron (FBO sidelite breakout indicator)
+
+  // Hollow polygon arrow drawn in the top lite of the moving panel
+  function liteArrow(cx, cy, availW, availH, pointsRight) {
+    const aw = Math.min(availW * 0.50, 42); // scale with glass width only
+    const ah = aw * 0.62;                   // height is ALWAYS 62% of width — shape locked forever
+    const ax = cx - aw / 2, ay = cy - ah / 2;
+    const shaftW = aw * 0.58, neckH = ah * 0.44; // shaft 58% of width, neck 44% of height
+    const ny1 = cy - neckH / 2, ny2 = cy + neckH / 2;
+    let d;
+    if (pointsRight) {
+      // flat back, rectangular shaft, triangular head
+      d = `M${ax},${ny1} L${ax+shaftW},${ny1} L${ax+shaftW},${ay} L${ax+aw},${cy} L${ax+shaftW},${ay+ah} L${ax+shaftW},${ny2} L${ax},${ny2} Z`;
+    } else {
+      d = `M${ax+aw},${ny1} L${ax+aw-shaftW},${ny1} L${ax+aw-shaftW},${ay} L${ax},${cy} L${ax+aw-shaftW},${ay+ah} L${ax+aw-shaftW},${ny2} L${ax+aw},${ny2} Z`;
+    }
+    path(d, 'rgba(27,79,138,0.18)', '#1B4F8A', 2.2);
+  }
+  const hasMuntin = rv('muntin') !== 'No Muntin';
+  const topLiteBottom = hasMuntin ? muntY : pY + pH - btmRH;
+  const topLiteCY  = (pY + topRH + topLiteBottom) / 2;
+  const topLiteH   = topLiteBottom - (pY + topRH);
+
+  function drawP(px, py, pw, ph, strokeColor, sw, breakoutDir, noInnerL, noInnerR) {
+    r(px, py, pw, ph, panelFill, strokeColor, sw);
+    const lIn = noInnerL ? 0 : stileW;
+    const rIn = noInnerR ? 0 : stileW;
+    const gx = px+lIn, gy = py+topRH, gw = pw-lIn-rIn, gh = ph-topRH-btmRH;
+    if (gw > 2 && gh > 2) {
+      r(gx, gy, gw, gh, glaze.fill, 'none', 0);
+    }
+    // Re-draw stile and rail areas over glass to seal corners cleanly (no anti-alias bleed)
+    if (lIn > 0) r(px, py, lIn, ph, panelFill, 'none', 0);
+    if (rIn > 0) r(px+pw-rIn, py, rIn, ph, panelFill, 'none', 0);
+    r(px, py, pw, topRH, panelFill, 'none', 0);
+    r(px, py+ph-btmRH, pw, btmRH, panelFill, 'none', 0);
+  }
+
+  if (!cfg) {
+    // No config selected — show a bipart silhouette as default
+    const panW = pW / 4;
+    const x1 = pX, x2 = pX+panW, x3 = pX+panW*2, x4 = pX+panW*3;
+    drawP(x1, pY, panW, pH, '#B8C4D0', 1, false);
+    drawP(x4, pY, panW, pH, '#B8C4D0', 1, false);
+    drawP(x2, pY, panW, pH, '#B8C4D0', 1, false);
+    drawP(x3, pY, panW, pH, '#B8C4D0', 1, false);
+    t(dX+dW/2, pY+pH/2+4, 'Select a Configuration', 9, '#aaa', 'middle');
+    panels = [{x:x1,w:panW},{x:x2,w:panW},{x:x3,w:panW},{x:x4,w:panW}];
+  } else if (cfg.base === null) {
+    // ESA placeholder
+    const hw = pW/2;
+    drawP(pX, pY, hw-2, pH, glaze.stroke, 1, false);
+    drawP(pX+hw+2, pY, hw-2, pH, glaze.stroke, 1, false);
+    r(pX+hw-2, pY, 4, pH, panelFill, panelFill, 0);
+    t(dX+dW/2, pY+pH/2+4, 'ESA', 9, '#888', 'middle');
+    panels = [{x:pX,w:hw-2},{x:pX+hw+2,w:hw-2}];
+  } else if (isBi) {
+    // Bipart — SO narrower by stileW/2, SX wider by stileW/2 → equal glass width G for all panels
+    const panW = pW / 4;
+    const soW  = panW - stileW / 2;   // SO panel width
+    const sxW  = panW + stileW / 2;   // SX panel width
+    const G    = panW - stileW * 1.5; // glass width, equal for all 4 panels
+    const x1 = pX;
+    const x2 = x1 + soW;   // left SO/SX junction
+    const x3 = x2 + sxW;   // center (= pX + 2*panW)
+    const x4 = x3 + sxW;   // right SX/SO junction (x4+soW = pX+pW)
+    const sdStroke = isFBO ? frame : '#AABBC8', sdSW = isFBO ? 1.5 : 1;
+    if (isFBO) {
+      // FBO: moving panels travel BEHIND sidelites — SX first (back), SO on top (front)
+      drawP(x2, pY, sxW, pH, frame, 1.5, false);
+      drawP(x3, pY, sxW, pH, frame, 1.5, false);
+      drawP(x1, pY, soW, pH, sdStroke, sdSW, false, false, true);
+      drawP(x4, pY, soW, pH, sdStroke, sdSW, false, true,  false);
+      // Indicator lines at inner face of SX stiles (release point)
+      l(x2+stileW, pY, x2+stileW, pY+pH, frame, 1.0);
+      l(x4-stileW, pY, x4-stileW, pY+pH, frame, 1.0);
+    } else {
+      // FSL: moving panels travel IN FRONT of sidelites — SO first (back), SX on top (front)
+      drawP(x1, pY, soW, pH, sdStroke, sdSW, false, false, true);
+      drawP(x4, pY, soW, pH, sdStroke, sdSW, false, true,  false);
+      drawP(x2, pY, sxW, pH, frame, 1.5, false);
+      drawP(x3, pY, sxW, pH, frame, 1.5, false);
+    }
+    // Center interlock
+    r(x3-stileW, pY, stileW*2, pH, panelFill, frame, 0.4);
+    l(x3, pY, x3, pY+pH, frame, 1.2);
+    // Movement arrows — hollow chevron in top lite of each SX panel
+    liteArrow(x2 + stileW + G/2, topLiteCY, G, topLiteH, false);
+    liteArrow(x3 + stileW + G/2, topLiteCY, G, topLiteH, true);
+    // Floor guide pin
+    const pin = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    Object.entries({cx:x3, cy:pY+pH-btmRH/2, r:3, fill:'none', stroke:frame, 'stroke-width':1}).forEach(([k,v])=>pin.setAttribute(k,v));
+    svg.appendChild(pin);
+    // Panels: glass coords → muntins are equal width G across all 4 panels
+    panels = [{x:x1+stileW, w:G}, {x:x2+stileW, w:G}, {x:x3+stileW, w:G}, {x:x4, w:G}];
+  } else {
+    // Single slide — SO narrower, SX wider → equal glass width G
+    const panW = pW / 2;
+    const soW  = panW - stileW / 2;
+    const sxW  = panW + stileW / 2;
+    const G    = panW - stileW * 1.5;
+    const sdStroke = isFBO ? frame : '#AABBC8', sdSW = isFBO ? 1.5 : 1;
+    const aY = muntY - 8;
+    if (isLH) {
+      // LH: SO left, SX right
+      const jX = pX + soW;
+      drawP(pX, pY, soW, pH, sdStroke, sdSW, isFBO ? 'left' : false, false, true);
+      drawP(jX,  pY, sxW, pH, frame, 1.5, false);
+      if (isFBO) l(jX+stileW, pY, jX+stileW, pY+pH, frame, 1.0);
+      liteArrow(jX + stileW + G/2, topLiteCY, G, topLiteH, false);
+      panels = [{x:pX+stileW, w:G}, {x:jX+stileW, w:G}];
+    } else {
+      // RH: SX left, SO right
+      const jX = pX + sxW;
+      drawP(jX,  pY, soW, pH, sdStroke, sdSW, isFBO ? 'right' : false, true, false);
+      drawP(pX,  pY, sxW, pH, frame, 1.5, false);
+      if (isFBO) l(jX-stileW, pY, jX-stileW, pY+pH, frame, 1.0);
+      liteArrow(pX + stileW + G/2, topLiteCY, G, topLiteH, true);
+      panels = [{x:pX+stileW, w:G}, {x:jX, w:G}];
+    }
+  }
+
+  // Horizontal muntin — centered when header ≤ 8'0"; fixed at 42" AFF when header > 8'0"
+  if (panels.length > 0 && rv('muntin') !== 'No Muntin') {
+    panels.forEach(({x, w}) => r(x, muntY, w, muntH, panelFill, frame, 0.4));
+  }
+
+  // Dim lines — width below door, height on right side
+  dimLine(dX, dY+dH+26, dX+dW, dY+dH+26, getWidthStr(), true);
+  if (isConf) {
+    dimLine(dX-30, dY, dX-30, dY+dH, getHeightStr(), false);
+  } else {
+    const hLabel = hasTransom && ftthFt2
+      ? getHeightStr() + ' + ' + (Math.floor(realTransomIn/12) > 0 ? Math.floor(realTransomIn/12)+"'" : '') + (realTransomIn%12 > 0 ? (realTransomIn%12)+'"' : '') + ' transom'
+      : getHeightStr();
+    const hDimX = Math.min(dX + dW + 28, vW - 14);
+    dimLine(hDimX, dY, hDimX, dY+dH, hLabel, false);
+  }
+
+  if (isConf) {
+    const tbY = vH - 50;
+    r(0, tbY, vW, 50, '#1B4F8A');
+    l(0, tbY, vW, tbY, '#E87722', 2);
+    t(14, tbY+16, 'DOORTRONIX USA — CONFIRMATION DRAWING', 9, '#fff', 'start', '700');
+    t(14, tbY+29, 'Not for construction — for customer approval only', 7, '#B8CCE4', 'start');
+    t(14, tbY+42, 'Manufactured in Malakoff, Texas | Factory-Direct', 7, '#B8CCE4', 'start');
+    const cLabel2 = cfg ? cfg.label + ' | ' + rv('glazing') : '—';
+    t(vW-14, tbY+16, cLabel2, 9, '#E87722', 'end', '700');
+    t(vW-14, tbY+29, getWidthStr() + ' W × ' + getHeightStr() + ' H', 9, '#fff', 'end', '700');
+  } else {
+    _doorScale = { dX, dW, sc, vW };
+  }
+}
+
+// ── Plan view ────────────────────────────────────────────────────────
+function drawPlanView() {
+  const svg = document.getElementById('plan-svg');
+  if (!svg) return;
+  svg.innerHTML = '';
+  const vW = 600;
+  let vH = 340;
+  svg.setAttribute('viewBox', `0 0 ${vW} ${vH}`);
+  const cfg = getConfig();
+  if (!cfg) return;
+  if (!_doorScale) return;
+
+  const frame = getFrameColor();
+  const panelFill = getPanelFill();
+  const isBi = cfg.isBi;
+  const isLH = cfg.code === 'O-SX' || cfg.code === 'SO-SX' || cfg.code === 'O-SX-SX-O';
+  const isFBO = cfg.isFBO;
+
+  const frameX = _doorScale.dX;
+  const frameW = _doorScale.dW;
+  const sc     = _doorScale.sc;
+  const jambW  = Math.max(2, sc * 1.75);
+  const openX  = frameX + jambW;
+  const openW  = frameW - jambW * 2;
+  const panH   = Math.max(2, sc * 1.75);
+  const trackSep = panH;
+
+  function r(x,y,w,h,fill,stroke,sw,rx) {
+    const el = document.createElementNS('http://www.w3.org/2000/svg','rect');
+    Object.entries({x,y,width:Math.max(w,0),height:Math.max(h,0),fill:fill||'none',rx:rx||0}).forEach(([k,v])=>el.setAttribute(k,v));
+    if(stroke){el.setAttribute('stroke',stroke);el.setAttribute('stroke-width',sw||1);}
+    svg.appendChild(el); return el;
+  }
+  function l(x1,y1,x2,y2,s,sw,dash) {
+    const el = document.createElementNS('http://www.w3.org/2000/svg','line');
+    Object.entries({x1,y1,x2,y2,stroke:s||'#666','stroke-width':sw||1}).forEach(([k,v])=>el.setAttribute(k,v));
+    if(dash) el.setAttribute('stroke-dasharray',dash);
+    svg.appendChild(el);
+  }
+  function t(x,y,str,size,fill,anchor,weight) {
+    const el = document.createElementNS('http://www.w3.org/2000/svg','text');
+    Object.entries({x,y,'font-size':size||11,fill:fill||'#111','text-anchor':anchor||'middle','font-weight':weight||'normal','font-family':'Arial,sans-serif'}).forEach(([k,v])=>el.setAttribute(k,v));
+    el.textContent = str; svg.appendChild(el); return el;
+  }
+  function path(dStr,fill,stroke,sw,dash) {
+    const el = document.createElementNS('http://www.w3.org/2000/svg','path');
+    el.setAttribute('d',dStr); el.setAttribute('fill',fill||'none');
+    if(stroke){el.setAttribute('stroke',stroke);el.setAttribute('stroke-width',sw||1);}
+    if(dash) el.setAttribute('stroke-dasharray',dash);
+    svg.appendChild(el);
+  }
+  function dimLine(x1,y1,x2,y2,lbl) {
+    const aw=5, off=6;
+    l(x1,y1,x2,y2,'#1B4F8A',0.7);
+    l(x1,y1-off,x1,y1+off,'#1B4F8A',0.7); l(x2,y1-off,x2,y1+off,'#1B4F8A',0.7);
+    path(`M${x1},${y1}l${aw},-3l0,6Z`,'#1B4F8A'); path(`M${x2},${y1}l${-aw},-3l0,6Z`,'#1B4F8A');
+    t((x1+x2)/2, y1-7, lbl, 18, '#1B4F8A','middle','700');
+  }
+  function inlineArrow(centerX, y, color, pointsLeft) {
+    color = color || '#1B4F8A';
+    const lineLen = 16, headSize = 6, half = lineLen / 2;
+    const startX = centerX - half, endX = centerX + half;
+    if (pointsLeft) {
+      l(endX, y, startX, y, color, 1.4);
+      path(`M${startX},${y} L${startX + headSize},${y - 3.5} L${startX + headSize},${y + 3.5} Z`, color);
+    } else {
+      l(startX, y, endX, y, color, 1.4);
+      path(`M${endX},${y} L${endX - headSize},${y - 3.5} L${endX - headSize},${y + 3.5} Z`, color);
+    }
+  }
+
+  const stileW = getStileW(sc);
+  const halfStile = stileW / 2;
+  const numPanels = isBi ? 4 : 2;
+  const eqW = openW / numPanels;
+  const panelLen = eqW + halfStile;
+  const fixedPanelLen = eqW + halfStile;
+  const sxPanelLen    = eqW + halfStile;
+  const openInset = sc * 3;
+  const meetX = openX + openW / 2;
+  const stateLblX = frameX - 14;
+  const fixedLbl = isFBO ? 'SO' : 'O';
+
+  const pos = {
+    biLeftFixed:  openX,
+    biLeftSX:     meetX - panelLen,
+    biRightSX:    meetX,
+    biRightFixed: openX + eqW * 3 - halfStile,
+    lhFixed:      openX,
+    lhSX:         openX + openW - sxPanelLen,
+    rhSX:         openX,
+    rhFixed:      openX + eqW - halfStile,
+  };
+
+  const yBack  = (y) => y;
+  const yFront = (y) => y + trackSep;
+  const yFixedTrack = (y) => isFBO ? yFront(y) : yBack(y);
+  const ySlideTrack = (y) => isFBO ? yBack(y)  : yFront(y);
+  const yStateLbl   = (y) => y + trackSep / 2 + panH / 2 + 3;
+
+  function drawPlanPanel(x, y, w, label, isSO) {
+    const stroke = (isSO && !isFBO) ? '#7E96AE' : frame;
+    const sw = (isSO && !isFBO) ? 1.2 : 1.6;
+    r(x + 0.5, y, w - 1, panH, panelFill, stroke, sw);
+    if (w > 28 && panH >= 7) t(x + w/2, y + panH/2 + 4, label, Math.min(14, panH + 2), '#fff', 'middle', '700');
+  }
+
+  const jambDepth = Math.max(4, sc * 4.5);
+  function jambMarks(yBase) {
+    const trackDepth = trackSep + panH;
+    const jambY = yBase - (jambDepth - trackDepth) / 2;
+    r(frameX,                    jambY, jambW, jambDepth, frame, '#94A3B8', 0.9);
+    r(frameX + frameW - jambW,   jambY, jambW, jambDepth, frame, '#94A3B8', 0.9);
+  }
+
+  // ── CLOSED ──
+  const yClosedBase = 16;
+  t(stateLblX, yStateLbl(yClosedBase), 'Closed', 16, '#1B4F8A', 'end', '700');
+  jambMarks(yClosedBase);
+  if (isBi) {
+    drawPlanPanel(pos.biLeftFixed,  yFixedTrack(yClosedBase), panelLen, fixedLbl, true);
+    drawPlanPanel(pos.biLeftSX,     ySlideTrack(yClosedBase), panelLen, 'SX', false);
+    drawPlanPanel(pos.biRightSX,    ySlideTrack(yClosedBase), panelLen, 'SX', false);
+    drawPlanPanel(pos.biRightFixed, yFixedTrack(yClosedBase), panelLen, fixedLbl, true);
+    inlineArrow(pos.biLeftSX + panelLen / 2,  ySlideTrack(yClosedBase) - 5, '#1B4F8A', true);
+    inlineArrow(pos.biRightSX + panelLen / 2, ySlideTrack(yClosedBase) - 5, '#1B4F8A', false);
+  } else if (isLH) {
+    drawPlanPanel(pos.lhFixed, yFixedTrack(yClosedBase), fixedPanelLen, fixedLbl, true);
+    drawPlanPanel(pos.lhSX,    ySlideTrack(yClosedBase), sxPanelLen, 'SX', false);
+    inlineArrow(pos.lhSX + sxPanelLen / 2, ySlideTrack(yClosedBase) - 5, '#1B4F8A', true);
+  } else {
+    drawPlanPanel(pos.rhSX,    ySlideTrack(yClosedBase), sxPanelLen, 'SX', false);
+    drawPlanPanel(pos.rhFixed, yFixedTrack(yClosedBase), fixedPanelLen, fixedLbl, true);
+    inlineArrow(pos.rhSX + sxPanelLen / 2, ySlideTrack(yClosedBase) - 5, '#1B4F8A', false);
+  }
+
+  // ── OPEN ──
+  const yOpenBase = yFront(yClosedBase) + panH + 34;
+  const yOpenDim  = ySlideTrack(yOpenBase) + panH + 14;
+  t(stateLblX, yStateLbl(yOpenBase), 'Open', 16, '#1B4F8A', 'end', '700');
+  jambMarks(yOpenBase);
+  if (isBi) {
+    const leftSxX  = openX + openInset;
+    const rightSxX = pos.biRightFixed - openInset;
+    drawPlanPanel(pos.biLeftFixed,  yFixedTrack(yOpenBase), panelLen, fixedLbl, true);
+    drawPlanPanel(leftSxX,          ySlideTrack(yOpenBase), panelLen, 'SX', false);
+    drawPlanPanel(rightSxX,         ySlideTrack(yOpenBase), panelLen, 'SX', false);
+    drawPlanPanel(pos.biRightFixed, yFixedTrack(yOpenBase), panelLen, fixedLbl, true);
+    dimLine(leftSxX + panelLen, yOpenDim, rightSxX, yOpenDim, getOpenStr());
+  } else if (isLH) {
+    const sxOpenX = openX + openInset;
+    drawPlanPanel(pos.lhFixed, yFixedTrack(yOpenBase), fixedPanelLen, fixedLbl, true);
+    drawPlanPanel(sxOpenX, ySlideTrack(yOpenBase), sxPanelLen, 'SX', false);
+    dimLine(sxOpenX + sxPanelLen, yOpenDim, openX + openW, yOpenDim, getOpenStr());
+  } else {
+    const sxOpenX = openX + openW - sxPanelLen - openInset;
+    drawPlanPanel(sxOpenX,   ySlideTrack(yOpenBase), sxPanelLen, 'SX', false);
+    drawPlanPanel(pos.rhFixed, yFixedTrack(yOpenBase), fixedPanelLen, fixedLbl, true);
+    dimLine(openX, yOpenDim, sxOpenX, yOpenDim, getOpenStr());
+  }
+
+  // ── BREAKAWAY ──
+  const yBreakBase = yFront(yOpenBase) + panH + 56;
+  const swingR = isBi ? panelLen : Math.max(fixedPanelLen, sxPanelLen);
+  const yBreakFootLbl = ySlideTrack(yBreakBase) + panH + swingR + 40;
+  t(stateLblX, yStateLbl(yBreakBase), 'Breakaway', 16, '#1B4F8A', 'end', '700');
+  jambMarks(yBreakBase);
+  if (isBi) {
+    drawPlanPanel(pos.biLeftFixed,  yFixedTrack(yBreakBase), panelLen, fixedLbl, true);
+    drawPlanPanel(pos.biLeftSX,     ySlideTrack(yBreakBase), panelLen, 'SX', false);
+    drawPlanPanel(pos.biRightSX,    ySlideTrack(yBreakBase), panelLen, 'SX', false);
+    drawPlanPanel(pos.biRightFixed, yFixedTrack(yBreakBase), panelLen, fixedLbl, true);
+  } else if (isLH) {
+    drawPlanPanel(pos.lhFixed, yFixedTrack(yBreakBase), fixedPanelLen, fixedLbl, true);
+    drawPlanPanel(pos.lhSX,    ySlideTrack(yBreakBase), sxPanelLen, 'SX', false);
+  } else {
+    drawPlanPanel(pos.rhSX,    ySlideTrack(yBreakBase), sxPanelLen, 'SX', false);
+    drawPlanPanel(pos.rhFixed, yFixedTrack(yBreakBase), fixedPanelLen, fixedLbl, true);
+  }
+
+  function noseArc(hx, hy, nxRest, nyRest, nxOut, nyOut, sweep, radius) {
+    const r2 = radius != null ? radius : swingR;
+    path(`M ${nxRest} ${nyRest} A ${r2} ${r2} 0 0 ${sweep} ${nxOut} ${nyOut}`, 'none', '#1B4F8A', 1.3, '4,4');
+    l(hx, hy, hx, hy + r2, frame, 1.4);
+  }
+  if (isBi) {
+    const yFixed = yFixedTrack(yBreakBase) + panH / 2;
+    const ySlide = ySlideTrack(yBreakBase) + panH / 2;
+    if (isFBO) noseArc(frameX, yFixed, pos.biLeftFixed + panelLen, yFixed, frameX, yFixed + swingR, 1);
+    noseArc(pos.biLeftSX,             ySlide, pos.biLeftSX + panelLen, ySlide, pos.biLeftSX,             ySlide + swingR, 1);
+    noseArc(pos.biRightSX + panelLen, ySlide, pos.biRightSX,           ySlide, pos.biRightSX + panelLen, ySlide + swingR, 0);
+    if (isFBO) noseArc(frameX + frameW, yFixed, pos.biRightFixed, yFixed, frameX + frameW, yFixed + swingR, 0);
+  } else if (isLH) {
+    const yFixed = yFixedTrack(yBreakBase) + panH / 2;
+    const ySlide = ySlideTrack(yBreakBase) + panH / 2;
+    if (isFBO) noseArc(openX, yFixed, pos.lhFixed + fixedPanelLen, yFixed, openX, yFixed + fixedPanelLen, 1, fixedPanelLen);
+    noseArc(pos.lhSX, ySlide, pos.lhSX + sxPanelLen, ySlide, pos.lhSX, ySlide + sxPanelLen, 1, sxPanelLen);
+  } else {
+    const yFixed = yFixedTrack(yBreakBase) + panH / 2;
+    const ySlide = ySlideTrack(yBreakBase) + panH / 2;
+    noseArc(pos.rhSX + sxPanelLen, ySlide, pos.rhSX, ySlide, pos.rhSX + sxPanelLen, ySlide + sxPanelLen, 0, sxPanelLen);
+    if (isFBO) noseArc(openX + openW, yFixed, pos.rhFixed, yFixed, openX + openW, yFixed + fixedPanelLen, 0, fixedPanelLen);
+  }
+
+  vH = Math.ceil(yBreakFootLbl + 16);
+  svg.setAttribute('viewBox', `0 0 ${vW} ${vH}`);
+  t(vW/2, yBreakFootLbl,
+    isFBO ? ('FBO — All ' + numPanels + ' panels pivot open for full emergency egress')
+          : ('FSL — Only sliding (SX) panels break out; fixed panels (O) do not'),
+    14, '#666', 'middle', '700');
+
+  const pfConfig = document.getElementById('pf-config');
+  const pfDims   = document.getElementById('pf-dims');
+  if (pfConfig) pfConfig.textContent = cfg.label + ' (' + cfg.code + ')';
+  if (pfDims)   pfDims.textContent   = getWidthStr() + ' W × ' + getHeightStr() + ' H';
+}
+
+// ── Update all ───────────────────────────────────────────────────────
+// ── Nose caster auto-require for bi-part > 14ft wide ────────────────
+function updateNoseCasters() {
+  const el = document.getElementById('addon_nose_casters');
+  const qtySel = document.getElementById('nose-casters-qty');
+  if (!el || !qtySel) return;
+  const wFt = parseInt(fv('f_wft')) || 0;
+  const wIn = parseInt(fv('f_win')) || 0;
+  const totalIn = wFt * 12 + wIn;
+  const required = totalIn > 168; // over 14'0"
+  if (required) {
+    el.classList.add('checked', 'required-addon');
+    _checkedAddons.add('addon_nose_casters');
+    qtySel.value = '2';
+  } else {
+    el.classList.remove('required-addon');
+    // Only auto-deselect if it was required (not manually checked by user at smaller width)
+    // We leave user's manual selection intact when dropping below threshold
+  }
+}
+
+function updateAll() {
+  // Update nose casters label based on door type
+  const ncDesc = document.getElementById('nose-casters-desc');
+  if (ncDesc) {
+    const cfg = getConfig();
+    ncDesc.textContent = (cfg && !cfg.isBi) ? 'Optional for single-slide openings over 9\'' : 'Required for bi-part openings over 14\'';
+  }
+  // Auto-select 6" bottom rail when medium stile is chosen
+  if (rv('stileWidth') === 'medium' && rv('bottomRail') === 'std') {
+    document.getElementById('br_6').checked = true;
+  }
+  updateNoseCasters();
+  updateFTTH();
+  updateNetOpeningDisplay();
+  calcPrice();
+  updateSpecSummary();
+  drawDoor('door-svg', 600, 300, false);
+  drawPlanView();
+}
+
+// ── Event listeners ──────────────────────────────────────────────────
+document.getElementById('quoteForm').addEventListener('input', updateAll);
+document.getElementById('quoteForm').addEventListener('change', updateAll);
+
+// ── Form submit ──────────────────────────────────────────────────────
+document.getElementById('quoteForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const req = ['f_name','f_company','f_role','f_phone','f_email','f_location','f_qty'];
+  let ok = true;
+  req.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el.value.trim()) { el.style.borderColor='var(--red)'; ok=false; }
+    else el.style.borderColor='';
+  });
+  if (!rv('config')) { alert('Please select a door configuration.'); return; }
+  if (!ok) { alert('Please fill in all required fields marked with *.'); return; }
+
+  const cfg = getConfig();
+  const addons = [];
+  _checkedAddons.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el || el.classList.contains('disabled')) return;
+    const qty = el.querySelector('.addon-qty-wrap select');
+    const nameEl = el.querySelector('.al');
+    addons.push((nameEl ? nameEl.textContent.trim() : id) + (qty ? ' \xd7' + qty.value : ''));
+  });
+
+  const pd = window._priceData;
+  const ftthFt = fv('f_ftthft');
+  const ftthInV = parseInt(fv('f_ftthin')) || 0, ftth16V = parseInt(fv('f_ftth16')) || 0;
+  const ftthStr2 = ftthFt ? `${ftthFt}'${ftthInV === 0 && ftth16V === 0 ? '' : ftthInV + (ftth16V ? '-' + SIXTEENTH_LABELS[ftth16V] : '') + '"'}` : '';
+  const alarmContacts2 = _checkedAddons.has('addon_alarm_contacts')
+    ? 'Monitor Breakout + Door Position' : 'None';
+  const data = {
+    name: fv('f_name'), company: fv('f_company'), role: fv('f_role'),
+    phone: fv('f_phone'), email: fv('f_email'),
+    projectName: fv('f_project'), location: fv('f_location'),
+    poNumber: fv('f_po'), shipDate: fv('f_shipdate'), quantity: fv('f_qty'),
+    configuration: cfg ? cfg.label + ' (' + cfg.code + ')' : rv('config'),
+    frameFinish: rv('glazing'), doorGlassPrep: rv('glassPrep'), transomGlassPrep: rv('transomGlassPrep') || 'N/A',
+    transomVerticals: rv('transom') === 'yes' ? (rv('transomV') === '0' || !rv('transomV') ? 'None' : rv('transomV')) : 'N/A',
+    stileWidth: rv('stileWidth') === 'medium' ? 'Medium 3-3/4"' : 'Narrow (std)',
+    bottomRail: rv('bottomRail') === '6in' ? '6"' : rv('bottomRail') === '10in' ? '10"' : '4" (std)',
+    muntin: rv('muntin') || '2" Muntin (std)',
+    threshold: rv('threshold'),
+    sensor: (['Optex i-oneXT','BEA IXIO'].includes(rv('sensor'))) ? rv('sensor') : 'Standard Optex (incl.)',
+    transom: rv('transom') === 'yes' ? 'Yes' : 'No',
+    ftth: ftthStr2 || 'N/A',
+    frameWidth: getWidthStr(), frameHeight: getHeightStr(),
+    netOpening: getOpenStr(),
+    alarmContacts: alarmContacts2,
+    addons: addons.join(', ') || 'None',
+    estimatedTotal: pd ? '$' + pd.grandTotal.toLocaleString() : 'See notes',
+    submissionType: 'single-door-direct',
+    notes: fv('f_notes'),
+  };
+
+  if (FORMSPREE && FORMSPREE !== "https://formspree.io/f/YOUR_FORM_ID") {
+    try {
+      await fetch(FORMSPREE, {
+        method:'POST',
+        headers:{'Content-Type':'application/json','Accept':'application/json'},
+        body: JSON.stringify(data)
+      });
+    } catch(err) { console.warn('Formspree error:', err); }
+  }
+
+  showConf(data, pd);
+});
+
+function showConf(data, pd) {
+  const ref = 'DTX-' + Date.now().toString().slice(-6);
+  document.getElementById('conf-ref-num').textContent = 'Ref: ' + ref;
+  document.getElementById('conf-ref-date').textContent =
+    new Date().toLocaleDateString('en-US',{weekday:'short',year:'numeric',month:'short',day:'numeric'});
+
+  document.getElementById('conf-contact').innerHTML =
+    [['Name',data.name],['Company',data.company],['Role',data.role],['Phone',data.phone],['Email',data.email]]
+    .map(([k,v])=>`<div class="conf-spec-row"><span class="ck">${k}</span><span class="cv">${v||'—'}</span></div>`).join('');
+
+  document.getElementById('conf-project').innerHTML =
+    [['Project',data.projectName||'—'],['Location',data.location],['Target Ship',data.shipDate||'ASAP'],['Qty',data.quantity+' opening(s)']]
+    .map(([k,v])=>`<div class="conf-spec-row"><span class="ck">${k}</span><span class="cv">${v||'—'}</span></div>`).join('');
+
+  const doorSpecs = [
+    ['Configuration',data.configuration],
+    ['Frame Finish',data.frameFinish],['Door Glass Prep',data.doorGlassPrep],
+    ...(data.transom === 'Yes' ? [['Transom Glass Prep',data.transomGlassPrep],['Transom Verticals',data.transomVerticals]] : []),
+    ['Stile Width',data.stileWidth],['Bottom Rail',data.bottomRail],
+    ['Horizontal Muntin',data.muntin],
+    ['Threshold',data.threshold],['Sensor',data.sensor],
+    ['Transom',data.transom + (data.ftth && data.ftth !== 'N/A' ? ' — FTTH: '+data.ftth : '')],
+    ['Frame Width',data.frameWidth],['Frame Height',data.frameHeight],
+    ['Net Opening',data.netOpening||'—'],
+    ['Alarm Contacts',data.alarmContacts],
+    ['Add-ons',data.addons],
+  ];
+  document.getElementById('conf-door').innerHTML = doorSpecs
+    .map(([k,v])=>`<div class="conf-spec-row"><span class="ck">${k}</span><span class="cv">${v||'—'}</span></div>`).join('');
+
+  // Price box
+  if (pd) {
+    let ph = '<h3>Price Estimate</h3>';
+    pd.lines.forEach(l => { ph += `<div class="conf-price-line"><span class="cpk">${l.label}</span><span class="cpv">+$${l.amount.toLocaleString()}</span></div>`; });
+    if (pd.qty > 1) {
+      ph += `<div class="conf-price-line"><span class="cpk">× ${pd.qty} openings</span><span class="cpv">= $${pd.grandTotal.toLocaleString()}</span></div>`;
+    }
+    ph += `<div class="conf-price-total"><span>Estimated Total</span><span>$${pd.grandTotal.toLocaleString()}</span></div>`;
+    ph += `<p style="font-size:10px;color:var(--mgray);margin-top:8px;">Net contractor pricing. Glass, freight, installation &amp; taxes not included. Subject to final review by Doortronix.</p>`;
+    document.getElementById('conf-price-box').innerHTML = ph;
+  }
+
+  drawDoor('conf-svg', 760, 460, true);
+  document.getElementById('confirmation').style.display = 'block';
+  document.getElementById('confirmation').scrollTop = 0;
+}
+
+function closeConf() {
+  document.getElementById('confirmation').style.display = 'none';
+}
+
+// ── Init ─────────────────────────────────────────────────────────────
+// Default to FBO Bi-Part on first load
+document.getElementById('cfg_fbo_bi').checked = true;
+setDoorType('bi-part');
+renderCart();
+</script>
+</body>
+</html>
