@@ -189,7 +189,7 @@ ul { list-style: none; }
   content: '';
   position: absolute;
   inset: 0;
-  background: url('../images/hero-door.jpg') center/cover no-repeat;
+  background: url('../images/hero-door.jpg') center top / cover no-repeat;
   opacity: .22;
 }
 .hero-inner {
