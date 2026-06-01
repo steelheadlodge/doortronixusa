@@ -980,16 +980,20 @@ function setDoorType(type) {
 }
 
 // ── Project Cart ─────────────────────────────────────────────────────
-const CART_KEY = 'dtx_project_cart';
+const CART_KEY   = 'dtx_project_cart';
+const HEADER_KEY = 'dtx_project_header';
 let _projectHeader = null;
 let _editingDoorId = null;
 
-function getCart()      { try { return JSON.parse(localStorage.getItem(CART_KEY)) || []; } catch { return []; } }
-function saveCart(cart) { localStorage.setItem(CART_KEY, JSON.stringify(cart)); }
+function getCart()        { try { return JSON.parse(localStorage.getItem(CART_KEY))   || []; } catch { return []; } }
+function saveCart(cart)   { localStorage.setItem(CART_KEY, JSON.stringify(cart)); }
+function getHeader()      { try { return JSON.parse(localStorage.getItem(HEADER_KEY)) || null; } catch { return null; } }
+function saveHeader(hdr)  { localStorage.setItem(HEADER_KEY, JSON.stringify(hdr)); }
 
 function clearCart() {
   if (getCart().length > 0 && !confirm('Clear all doors from this project quote?')) return;
   localStorage.removeItem(CART_KEY);
+  localStorage.removeItem(HEADER_KEY);
   _projectHeader = null;
   _editingDoorId = null;
   unlockContactSection();
@@ -1050,6 +1054,7 @@ function addDoorToCart() {
       projectName: fv('f_project'), location: fv('f_location'),
       shipDate: fv('f_shipdate'), poNumber: fv('f_po'),
     };
+    saveHeader(_projectHeader);
   }
 
   const qty  = parseInt(fv('f_qty')) || 1;
@@ -1166,6 +1171,26 @@ function updateQtyUI() {
   }
   if (addBtn && !addBtn.textContent.includes('Update')) {
     addBtn.textContent = qty > 1 ? `Add ${qty} Doors to Project` : 'Add This Door to Project';
+  }
+}
+
+function prefillContactFromHeader(hdr) {
+  if (!hdr) return;
+  const set = (id, val) => { const e = document.getElementById(id); if (e && val) e.value = val; };
+  set('f_name',     hdr.name);
+  set('f_company',  hdr.company);
+  set('f_phone',    hdr.phone);
+  set('f_email',    hdr.email);
+  set('f_project',  hdr.projectName);
+  set('f_location', hdr.location);
+  set('f_shipdate', hdr.shipDate);
+  set('f_po',       hdr.poNumber);
+  // Role is a select
+  const roleEl = document.getElementById('f_role');
+  if (roleEl && hdr.role) {
+    for (const opt of roleEl.options) {
+      if (opt.value === hdr.role || opt.text === hdr.role) { opt.selected = true; break; }
+    }
   }
 }
 
@@ -2511,6 +2536,18 @@ function closeConf() {
 // Default to FBO Bi-Part on first load
 document.getElementById('cfg_fbo_bi').checked = true;
 setDoorType('bi-part');
+
+// Restore project header and lock if a saved cart exists
+(function() {
+  const savedCart   = getCart();
+  const savedHeader = getHeader();
+  if (savedCart.length > 0 && savedHeader) {
+    _projectHeader = savedHeader;
+    prefillContactFromHeader(savedHeader);
+    lockContactSection();
+  }
+})();
+
 renderCart();
 </script>
 </body>
