@@ -1136,7 +1136,7 @@ function loadDoorIntoForm(door) {
   setDoorType(door.typeCategory || 'bi-part');
   const cfgEl = document.querySelector(`input[name="config"][value="${door.config}"]`);
   if (cfgEl) cfgEl.checked = true;
-  const setRadio = (name, val) => { const e = document.querySelector(`input[name="${name}"][value="${CSS.escape ? CSS.escape(val) : val}"]`) || document.querySelector(`input[name="${name}"]`); if (val) { const match = document.querySelector(`input[name="${name}"][value="${val}"]`); if (match) match.checked = true; } };
+  const setRadio = (name, val) => { if (!val) return; const match = document.querySelector(`input[name="${name}"][value='${val}']`); if (match) match.checked = true; };
   if (door.widthIn) {
     const wFt = Math.floor(door.widthIn / 12); const wIn = Math.floor(door.widthIn % 12);
     document.getElementById('f_wft').value = wFt; document.getElementById('f_win').value = wIn; document.getElementById('f_w16').value = 0;
@@ -1147,7 +1147,7 @@ function loadDoorIntoForm(door) {
   }
   ['glazing','transom','transomGlassPrep','transomV','glassPrep','stileWidth','bottomRail','muntin','threshold','sensor'].forEach(name => {
     const v = door[name]; if (!v) return;
-    const el = document.querySelector(`input[name="${name}"][value="${v}"]`);
+    const el = document.querySelector(`input[name="${name}"][value='${v}']`);
     if (el) el.checked = true;
   });
   _checkedAddons.clear();
@@ -1171,7 +1171,7 @@ function resetDoorForm() {
   document.getElementById('f_hin').value = '6';
   document.getElementById('f_h16').value = '0';
   const defaults = {glazing:'204 Clear',transom:'no',glassPrep:'1/4"',stileWidth:'narrow',bottomRail:'std',muntin:'2" Muntin (std)',threshold:'Standard 1/2"',sensor:'Standard Optex (incl.)'};
-  Object.entries(defaults).forEach(([name, val]) => { const el = document.querySelector(`input[name="${name}"][value="${val}"]`); if(el) el.checked=true; });
+  Object.entries(defaults).forEach(([name, val]) => { const el = document.querySelector(`input[name="${name}"][value='${val}']`); if(el) el.checked=true; });
   _checkedAddons.clear();
   document.querySelectorAll('.addon-item.checked').forEach(el => el.classList.remove('checked'));
   document.getElementById('f_notes').value = '';
