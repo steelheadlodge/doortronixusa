@@ -332,6 +332,12 @@ ul { list-style: none; }
   height: 44px;
   display: block;
 }
+@media (min-width: 961px) {
+  .why-icon svg {
+    width: 36px;
+    height: 36px;
+  }
+}
 .why-card h3 {
   font-size: 16px;
   font-weight: 700;
