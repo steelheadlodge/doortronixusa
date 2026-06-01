@@ -991,7 +991,6 @@ function getHeader()      { try { return JSON.parse(localStorage.getItem(HEADER_
 function saveHeader(hdr)  { localStorage.setItem(HEADER_KEY, JSON.stringify(hdr)); }
 
 function clearCart() {
-  if (getCart().length > 0 && !confirm('Clear all doors from this project quote?')) return;
   localStorage.removeItem(CART_KEY);
   localStorage.removeItem(HEADER_KEY);
   _projectHeader = null;
@@ -1032,6 +1031,12 @@ function captureCurrentDoor() {
 }
 
 function addDoorToCart() {
+  const _btn = document.getElementById('btn-add-to-cart');
+  if (_btn) { _btn.style.opacity = '0.6'; setTimeout(() => _btn.style.opacity = '', 400); }
+  try { _addDoorToCartImpl(); } catch(err) { showCartError('Error: ' + err.message); console.error(err); }
+}
+
+function _addDoorToCartImpl() {
   // Restore header from storage if lost (e.g. after page reload)
   if (!_projectHeader) _projectHeader = getHeader();
 
