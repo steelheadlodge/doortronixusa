@@ -256,7 +256,8 @@ ul { list-style: none; }
 }
 .section-subtitle.white { color: #C8DDEF; }
 .text-center { text-align: center; }
-.text-center .section-subtitle { margin-left: auto; margin-right: auto; }
+.text-center .section-subtitle,
+.section-subtitle.text-center { margin-left: auto; margin-right: auto; }
 
 /* ── Product cards ─────────────────────────────────────────────── */
 .product-grid {
