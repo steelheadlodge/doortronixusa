@@ -1216,7 +1216,7 @@ function renderCart() {
       <div class="cart-card-price">${d.estimatedTotal ? '$'+d.estimatedTotal.toLocaleString()+(d.quantity>1?' ea':'') : 'Call'}</div>
       <div class="cart-card-actions">
         <button type="button" onclick="editCartDoor(${d.id})">Edit</button>
-        <button type="button" class="btn-remove" onclick="removeCartDoor(${d.id})">✕</button>
+        <button type="button" class="btn-remove" onclick="removeCartDoor(${d.id})">Delete</button>
       </div>
     </div>`;
   }).join('');
