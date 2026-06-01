@@ -207,7 +207,9 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
 .door-type-tab:hover:not(.active) { background:#EEF4FB; }
 
 /* ── Project Cart ── */
-#project-cart-section { background:#EEF4FB; border:2px solid var(--blue); border-radius:10px; padding:14px 16px; margin-bottom:20px; display:none; }
+#project-cart-section { background:#EEF4FB; border:2px solid var(--blue); border-radius:10px; padding:14px 16px; margin-bottom:20px; display:none; transition:box-shadow .3s; }
+#project-cart-section.flash { animation:cartFlash .6s ease; }
+@keyframes cartFlash { 0%,100%{box-shadow:none} 40%{box-shadow:0 0 0 4px #3b82f680} }
 .cart-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; flex-wrap:wrap; gap:8px; }
 .cart-header-left { display:flex; align-items:center; gap:10px; }
 .cart-title { font-size:13px; font-weight:700; color:var(--blue); text-transform:uppercase; letter-spacing:.5px; }
@@ -1111,7 +1113,19 @@ function _addDoorToCartImpl() {
   lockContactSection();
   resetDoorForm();
   renderCart();
-  document.getElementById('door-section-label').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+  // Show success toast near the button
+  showAddSuccess(qty > 1 ? `${qty} doors added to your project!` : 'Door added to your project!');
+
+  // Scroll to cart so user sees the confirmation, then flash it
+  const cartEl = document.getElementById('project-cart-section');
+  if (cartEl) {
+    cartEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setTimeout(() => {
+      cartEl.classList.add('flash');
+      setTimeout(() => cartEl.classList.remove('flash'), 700);
+    }, 400);
+  }
 }
 
 function editCartDoor(id) {
@@ -1179,6 +1193,20 @@ function resetDoorForm() {
   const tagsEl = document.getElementById('f_location_tags'); if (tagsEl) tagsEl.value = '';
   updateQtyUI();
   updateAll();
+}
+
+function showAddSuccess(msg) {
+  let el = document.getElementById('cart-success-msg');
+  if (!el) {
+    el = document.createElement('p');
+    el.id = 'cart-success-msg';
+    el.style.cssText = 'color:#166534;font-size:13px;font-weight:700;margin-bottom:10px;padding:10px 14px;background:#f0fdf4;border:1px solid #86efac;border-radius:6px;text-align:center;';
+    const btn = document.getElementById('btn-add-to-cart');
+    if (btn) btn.parentNode.insertBefore(el, btn);
+  }
+  el.textContent = '✓ ' + msg;
+  el.style.display = 'block';
+  setTimeout(() => { if (el) el.style.display = 'none'; }, 4000);
 }
 
 function showCartError(msg) {
