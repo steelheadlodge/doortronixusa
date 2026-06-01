@@ -1039,19 +1039,31 @@ function addDoorToCart() {
 
   // Validate contact — use saved header if fields are locked (cart already has doors)
   if (cart.length === 0 && _editingDoorId === null) {
-    const required = [
-      [fv('f_name'),    'Full Name'],
-      [fv('f_company'), 'Company Name'],
-      [fv('f_role'),    'Your Role'],
-      [fv('f_phone'),   'Phone Number'],
-      [fv('f_email'),   'Email Address'],
-      [fv('f_location'),'Project City & State'],
-    ];
-    for (const [val, label] of required) {
-      if (!val) { alert(`Please fill in "${label}" before adding to the project.`); return; }
+    const requiredIds = ['f_name','f_company','f_role','f_phone','f_email','f_location'];
+    let firstMissing = null;
+    requiredIds.forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (!el.value.trim()) {
+        el.style.borderColor = 'var(--red)';
+        el.style.boxShadow   = '0 0 0 3px rgba(220,38,38,.15)';
+        if (!firstMissing) firstMissing = el;
+      } else {
+        el.style.borderColor = '';
+        el.style.boxShadow   = '';
+      }
+    });
+    if (firstMissing) {
+      firstMissing.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      firstMissing.focus();
+      showCartError('Please fill in all required contact and project fields above.');
+      return;
     }
   }
-  if (!rv('config')) { alert('Please select a door configuration.'); return; }
+  if (!rv('config')) {
+    showCartError('Please select a door configuration.');
+    return;
+  }
 
   // Capture project header on first door
   if (cart.length === 0 && _editingDoorId === null) {
@@ -1164,6 +1176,25 @@ function resetDoorForm() {
   updateAll();
 }
 
+function showCartError(msg) {
+  let el = document.getElementById('cart-error-msg');
+  if (!el) {
+    el = document.createElement('p');
+    el.id = 'cart-error-msg';
+    el.style.cssText = 'color:var(--red);font-size:12px;font-weight:700;margin-bottom:10px;padding:8px 12px;background:#fef2f2;border:1px solid #fca5a5;border-radius:6px;';
+    const btn = document.getElementById('btn-add-to-cart');
+    if (btn) btn.parentNode.insertBefore(el, btn);
+  }
+  el.textContent = '⚠ ' + msg;
+  el.style.display = 'block';
+  setTimeout(() => { if (el) el.style.display = 'none'; }, 5000);
+}
+
+function clearCartError() {
+  const el = document.getElementById('cart-error-msg');
+  if (el) el.style.display = 'none';
+}
+
 function updateQtyUI() {
   const qty     = parseInt(document.getElementById('f_qty')?.value) || 1;
   const addBtn  = document.getElementById('btn-add-to-cart');
@@ -1264,7 +1295,7 @@ function renderCart() {
 
 async function submitAllDoors() {
   const cart = getCart();
-  if (cart.length === 0) { alert('Add at least one door to your project before submitting.'); return; }
+  if (cart.length === 0) { showCartError('Add at least one door to your project before submitting.'); return; }
 
   const hdr = _projectHeader || {
     name: fv('f_name'), company: fv('f_company'), role: fv('f_role'),
@@ -1272,7 +1303,7 @@ async function submitAllDoors() {
     projectName: fv('f_project'), location: fv('f_location'),
     shipDate: fv('f_shipdate'), poNumber: fv('f_po'),
   };
-  if (!hdr.name || !hdr.email) { alert('Please fill in contact information before submitting.'); return; }
+  if (!hdr.name || !hdr.email) { showCartError('Please fill in contact information before submitting.'); return; }
 
   const projTotal = cart.reduce((s, d) => s + (d.estimatedTotal || 0), 0);
   const doorBlocks = cart.map((d, i) => {
