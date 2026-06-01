@@ -832,15 +832,22 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
 
       <!-- Submit -->
       <div class="submit-section">
-        <div class="field" style="margin-bottom:14px;">
-          <label style="font-size:13px;font-weight:700;">How many of this exact configuration? <span class="req">*</span></label>
-          <select id="f_qty" name="quantity" required style="max-width:200px;">
-            <option value="1">1</option><option value="2">2</option><option value="3">3</option>
-            <option value="4">4</option><option value="5">5</option><option value="6">6</option>
-            <option value="7">7</option><option value="8">8</option><option value="9">9</option>
-            <option value="10">10+</option>
-          </select>
-          <span class="hint">Same size, finish, and specs. For different configurations, add each separately.</span>
+        <div class="form-grid" style="margin-bottom:14px;">
+          <div class="field">
+            <label style="font-size:13px;font-weight:700;">How many of this exact configuration? <span class="req">*</span></label>
+            <select id="f_qty" name="quantity" required onchange="updateQtyUI()">
+              <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+              <option value="4">4</option><option value="5">5</option><option value="6">6</option>
+              <option value="7">7</option><option value="8">8</option><option value="9">9</option>
+              <option value="10">10+</option>
+            </select>
+            <span class="hint">Same size, finish, and specs. For different configurations, add each separately.</span>
+          </div>
+          <div class="field" id="location-tags-field" style="display:none;">
+            <label style="font-size:13px;font-weight:700;">Location Tags <span style="font-weight:400;color:var(--mgray);">(optional)</span></label>
+            <input type="text" id="f_location_tags" placeholder="e.g. Main Entry, Garden Center, Receiving">
+            <span class="hint">Label each opening so we can reference them in your quote.</span>
+          </div>
         </div>
         <p>Prices shown are net contractor pricing and do not include glass, freight, installation, or applicable taxes. Doortronix will confirm your quote within 24 hours. All quotes are obligation-free.</p>
         <button type="button" class="btn-add-cart" id="btn-add-to-cart" onclick="addDoorToCart()">Add This Door to Project</button>
@@ -1015,6 +1022,7 @@ function captureCurrentDoor() {
     addons:        [..._checkedAddons],
     notes:         fv('f_notes'),
     quantity:      parseInt(fv('f_qty')) || 1,
+    locationTags:  fv('f_location_tags'),
     estimatedTotal: pd?.grandTotal || null,
   };
 }
@@ -1103,6 +1111,8 @@ function loadDoorIntoForm(door) {
   });
   document.getElementById('f_notes').value = door.notes || '';
   const qtyEl = document.getElementById('f_qty'); if (qtyEl) qtyEl.value = door.quantity || 1;
+  const tagsEl = document.getElementById('f_location_tags'); if (tagsEl) tagsEl.value = door.locationTags || '';
+  updateQtyUI();
   updateAll();
 }
 
@@ -1119,7 +1129,19 @@ function resetDoorForm() {
   document.querySelectorAll('.addon-item.checked').forEach(el => el.classList.remove('checked'));
   document.getElementById('f_notes').value = '';
   const qtyEl = document.getElementById('f_qty'); if (qtyEl) qtyEl.value = '1';
+  const tagsEl = document.getElementById('f_location_tags'); if (tagsEl) tagsEl.value = '';
+  updateQtyUI();
   updateAll();
+}
+
+function updateQtyUI() {
+  const qty = parseInt(document.getElementById('f_qty')?.value) || 1;
+  const tagsField = document.getElementById('location-tags-field');
+  const addBtn    = document.getElementById('btn-add-to-cart');
+  if (tagsField) tagsField.style.display = qty > 1 ? '' : 'none';
+  if (addBtn && !addBtn.textContent.includes('Update')) {
+    addBtn.textContent = qty > 1 ? `Add ${qty} Doors to Project` : 'Add This Door to Project';
+  }
 }
 
 function lockContactSection() {
@@ -1165,6 +1187,7 @@ function renderCart() {
       <div class="cart-card-type">${d.configLabel}</div>
       <div class="cart-card-code">${d.configCode}</div>
       <div class="cart-card-dims">${d.widthStr || '—'} × ${d.heightStr || '—'}${(d.quantity||1)>1 ? ' <strong>×'+d.quantity+'</strong>' : ''}</div>
+      ${d.locationTags ? `<div style="font-size:10px;color:var(--mgray);margin-top:2px;font-style:italic;">${d.locationTags}</div>` : ''}
       <div class="cart-card-price">${d.estimatedTotal ? '$'+d.estimatedTotal.toLocaleString()+(d.quantity>1?' ea':'') : 'Call'}</div>
       <div class="cart-card-actions">
         <button type="button" onclick="editCartDoor(${d.id})">Edit</button>
@@ -1205,6 +1228,7 @@ async function submitAllDoors() {
            `  Sensor: ${sensor} | Transom: ${d.transom === 'yes' ? 'Yes (+$250)' : 'No'} | Stile: ${stile} | Bottom Rail: ${rail}\n` +
            `  Muntin: ${d.muntin} | Add-ons: ${d.addons.join(', ') || 'None'}\n` +
            `  Est. Price: ${d.estimatedTotal ? '$'+d.estimatedTotal.toLocaleString() : 'Call for pricing'}` +
+           (d.locationTags ? `\n  Locations: ${d.locationTags}` : '') +
            (d.notes ? `\n  Notes: ${d.notes}` : '');
   }).join('\n\n');
 
