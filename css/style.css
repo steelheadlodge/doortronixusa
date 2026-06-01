@@ -189,8 +189,8 @@ ul { list-style: none; }
   content: '';
   position: absolute;
   inset: 0;
-  background: url('../images/DOOR1.jpg') center/cover no-repeat;
-  opacity: .18;
+  background: url('../images/hero-door.jpg') center/cover no-repeat;
+  opacity: .22;
 }
 .hero-inner {
   position: relative;
