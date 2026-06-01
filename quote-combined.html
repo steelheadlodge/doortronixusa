@@ -1072,6 +1072,22 @@ function _addDoorToCartImpl() {
     return;
   }
 
+  // Validate frame width is within config range
+  const _cfg = getConfig();
+  const _wIn = getWidthIn();
+  if (!_wIn) {
+    const wftEl = document.getElementById('f_wft');
+    if (wftEl) { wftEl.style.borderColor = 'var(--red)'; wftEl.style.boxShadow = '0 0 0 3px rgba(220,38,38,.15)'; wftEl.scrollIntoView({ behavior:'smooth', block:'center' }); }
+    showCartError('Please enter the frame width.');
+    return;
+  }
+  if (_cfg && (_wIn < _cfg.minW || _wIn > _cfg.maxW)) {
+    const wftEl = document.getElementById('f_wft');
+    if (wftEl) { wftEl.style.borderColor = 'var(--red)'; wftEl.style.boxShadow = '0 0 0 3px rgba(220,38,38,.15)'; wftEl.scrollIntoView({ behavior:'smooth', block:'center' }); }
+    showCartError(`Width ${inchesToStr(_wIn)} is outside the valid range for this configuration (${inchesToStr(_cfg.minW)} – ${inchesToStr(_cfg.maxW)}).`);
+    return;
+  }
+
   // Capture project header on first door
   if (cart.length === 0 && _editingDoorId === null) {
     _projectHeader = {
@@ -2462,6 +2478,48 @@ function updateNoseCasters() {
   }
 }
 
+// ── Size Constraints ─────────────────────────────────────────────────
+function inchesToStr(totalIn) {
+  const ft = Math.floor(totalIn / 12);
+  const inches = Math.round(totalIn % 12);
+  return `${ft}'-${inches}"`;
+}
+
+function updateSizeConstraints() {
+  const cfg = getConfig();
+  if (!cfg) return;
+  const { minW, maxW } = cfg;
+
+  // Min/max feet (inclusive — partial feet at boundary are allowed via inch entry)
+  const minFt = Math.floor(minW / 12);
+  const maxFt = Math.floor(maxW / 12);
+
+  // Update width foot options
+  const wftSel = document.getElementById('f_wft');
+  if (wftSel) {
+    Array.from(wftSel.options).forEach(opt => {
+      const v = parseInt(opt.value);
+      if (!v) return; // skip placeholder
+      const tooSmall = v < minFt;
+      const tooBig   = v > maxFt;
+      opt.disabled = tooSmall || tooBig;
+      opt.style.color = (tooSmall || tooBig) ? '#bbb' : '';
+    });
+
+    // If currently selected foot is now out of range, reset it
+    const curFt = parseInt(wftSel.value);
+    if (curFt && (curFt < minFt || curFt > maxFt)) {
+      wftSel.value = '';
+      document.getElementById('f_win').value = '0';
+      document.getElementById('f_w16').value = '0';
+    }
+  }
+
+  // Update the range hint note
+  const note = document.getElementById('width-range-note');
+  if (note) note.textContent = `Valid range: ${inchesToStr(minW)} – ${inchesToStr(maxW)}`;
+}
+
 function updateAll() {
   // Update nose casters label based on door type
   const ncDesc = document.getElementById('nose-casters-desc');
@@ -2473,6 +2531,7 @@ function updateAll() {
   if (rv('stileWidth') === 'medium' && rv('bottomRail') === 'std') {
     document.getElementById('br_6').checked = true;
   }
+  updateSizeConstraints();
   updateNoseCasters();
   updateFTTH();
   updateNetOpeningDisplay();
