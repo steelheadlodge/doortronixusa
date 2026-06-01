@@ -253,6 +253,8 @@ ul { list-style: none; }
   max-width: 640px;
   line-height: 1.6;
   margin-bottom: 48px;
+  margin-left: auto;
+  margin-right: auto;
 }
 .section-subtitle.white { color: #C8DDEF; }
 .text-center { text-align: center; }
