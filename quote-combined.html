@@ -165,10 +165,12 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
 .btn-close:hover { border-color:var(--red); color:var(--red); }
 .orange-bar { height:4px; background:var(--orange); width:100%; }
 
+#configGrid-bipart { grid-template-columns:repeat(2,1fr); }
+#configGrid-single { grid-template-columns:repeat(4,1fr); }
 @media (max-width:960px) {
   .layout { grid-template-columns:1fr; }
   .preview-panel { position:static; height:auto; }
-  .config-grid { grid-template-columns:repeat(2,1fr); }
+  #configGrid-bipart, #configGrid-single { grid-template-columns:repeat(2,1fr); }
   #form-price-section { display:none !important; }
 }
 @media (min-width:961px) {
@@ -177,7 +179,7 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
 }
 @media (max-width:600px) {
   .form-grid { grid-template-columns:1fr; }
-  .config-grid { grid-template-columns:1fr 1fr; }
+  #configGrid-bipart, #configGrid-single { grid-template-columns:repeat(2,1fr); }
   .conf-grid { grid-template-columns:1fr; }
 }
 @media print {
@@ -372,7 +374,7 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
         <label>Select Configuration <span class="req">*</span></label>
 
         <!-- Bi-Part configs -->
-        <div class="config-grid" id="configGrid-bipart" style="grid-template-columns:repeat(2,1fr);">
+        <div class="config-grid" id="configGrid-bipart">
 
           <div style="grid-column:1/-1; font-size:11px; font-weight:700; color:var(--blue); text-transform:uppercase; letter-spacing:.5px; padding-bottom:2px; border-bottom:1px solid var(--border); margin-bottom:2px;">Bi-Part</div>
 
@@ -395,7 +397,7 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
         </div><!-- /configGrid-bipart -->
 
         <!-- Single Slide configs -->
-        <div class="config-grid" id="configGrid-single" style="display:none;grid-template-columns:repeat(4,1fr);">
+        <div class="config-grid" id="configGrid-single" style="display:none;">
 
           <div style="grid-column:1/-1; font-size:11px; font-weight:700; color:var(--blue); text-transform:uppercase; letter-spacing:.5px; padding-bottom:2px; border-bottom:1px solid var(--border); margin-bottom:2px;">Single Slide</div>
 
