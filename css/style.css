@@ -99,9 +99,13 @@ ul { list-style: none; }
 }
 .nav-logo {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
   line-height: 1.1;
+  text-decoration: none;
 }
+.nav-logo-mark { height: 44px; width: auto; display: block; flex-shrink: 0; }
 .nav-logo .brand {
   font-size: 22px;
   font-weight: 700;
