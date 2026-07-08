@@ -77,6 +77,8 @@
         <h2 style="font-size:22px; font-weight:700; color:var(--blue); margin-bottom:20px;">Send Us a Message</h2>
         <div class="form-card" style="max-width:100%;">
           <form id="contact-form" action="https://formspree.io/f/mykorzwy" method="POST">
+            <!-- Honeypot: hidden from humans, bots fill it → Formspree silently drops the submission. -->
+            <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute !important; left:-9999px !important; top:-9999px !important; width:1px; height:1px; opacity:0; pointer-events:none;">
             <div class="form-row">
               <div class="form-group">
                 <label for="fname">First Name *</label>

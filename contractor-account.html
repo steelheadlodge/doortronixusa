@@ -80,6 +80,8 @@
 
           <form id="contractor-form" action="https://formspree.io/f/mykorzwy" method="POST">
             <input type="hidden" name="form_type" value="Contractor Account Application">
+            <!-- Honeypot: hidden from humans, bots fill it → Formspree silently drops the submission. -->
+            <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute !important; left:-9999px !important; top:-9999px !important; width:1px; height:1px; opacity:0; pointer-events:none;">
 
             <h3 style="font-size:14px; font-weight:700; color:var(--blue); text-transform:uppercase; letter-spacing:.5px; margin-bottom:16px; padding-bottom:8px; border-bottom:2px solid var(--orange);">Company Information</h3>
 
