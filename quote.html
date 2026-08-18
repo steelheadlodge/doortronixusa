@@ -4,6 +4,24 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Bi-Part Sliding Door Quote — Doortronix USA</title>
+<meta name="description" content="Request a factory-direct quote on a Doortronix bi-parting automatic sliding door.">
+
+<!-- Open Graph / Twitter share preview -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Doortronix USA">
+<meta property="og:url" content="https://doortronixusa.com/quote.html">
+<meta property="og:title" content="Bi-Part Sliding Door Quote — Doortronix USA">
+<meta property="og:description" content="Request a factory-direct quote on a Doortronix bi-parting automatic sliding door.">
+<meta property="og:image" content="https://doortronixusa.com/images/revolution.jpg?v=3">
+<meta property="og:image:secure_url" content="https://doortronixusa.com/images/revolution.jpg?v=3">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1024">
+<meta property="og:image:height" content="585">
+<meta property="og:image:alt" content="Doortronix Revolution automatic sliding door">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Bi-Part Sliding Door Quote — Doortronix USA">
+<meta name="twitter:description" content="Request a factory-direct quote on a Doortronix bi-parting automatic sliding door.">
+<meta name="twitter:image" content="https://doortronixusa.com/images/revolution.jpg?v=3">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #F0F4F8; color: #111; min-height: 100vh; }
@@ -588,8 +606,8 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
       <div id="addon_key_switch" class="addon-item" data-price="50" data-unit="ea" onclick="toggleAddon(this)">
         <div class="addon-check-visual"></div>
         <div class="addon-label-wrap">
-          <div class="al">5-Position Key Switch</div>
-          <div class="ad">On/Off/1-Way/2-Way/Hold Open</div>
+          <div class="al">Function Switch</div>
+          <div class="ad">On / Off / Hold Open / 1-Way / 2-Way. Ships keyed; knob on request (not reversible)</div>
         </div>
         <div class="addon-price-tag">$50</div>
         <div class="addon-qty-wrap"></div>
@@ -813,7 +831,7 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
       </div>
       <div class="conf-price-box" id="conf-price-box"></div>
       <div id="conf-svg-wrap">
-        <h3>Confirmation Drawing — Door Elevation</h3>
+        <h3>Estimate Drawing — Door Elevation</h3>
         <svg id="conf-svg" viewBox="0 0 760 460" xmlns="http://www.w3.org/2000/svg"></svg>
       </div>
     </div>
@@ -822,7 +840,7 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
       Net contractor pricing. Freight, installation, and taxes not included. Subject to final review.</p>
       <div style="display:flex;gap:10px;">
         <button class="btn-close" onclick="closeConf()">Close</button>
-        <button class="btn-print" onclick="window.print()">Print / Save PDF</button>
+        <button class="btn-print" onclick="window.print()">Print Estimate / Save PDF</button>
       </div>
     </div>
     <div class="orange-bar"></div>
@@ -1458,7 +1476,7 @@ function drawDoor(svgId, vW, vH, isConf) {
   if (isConf) {
     r(0,0,vW,titleH,'#1B4F8A');
     t(16,22,'DOORTRONIX USA',14,'#fff','start','700');
-    t(16,38,'Confirmation Drawing — Door Elevation',10,'#B8CCE4','start');
+    t(16,38,'Estimate Drawing — Door Elevation',10,'#B8CCE4','start');
     const cLabel = cfg ? cfg.label + ' (' + cfg.code + ')' : '—';
     t(vW-14,22,cLabel,11,'#E87722','end','700');
     t(vW-14,38,getWidthStr() + ' W × ' + getHeightStr() + ' H',10,'#fff','end','700');

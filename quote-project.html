@@ -4,6 +4,24 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Project Door Quote — Doortronix USA</title>
+<meta name="description" content="Request a project quote for multiple openings on commercial automatic door systems.">
+
+<!-- Open Graph / Twitter share preview -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Doortronix USA">
+<meta property="og:url" content="https://doortronixusa.com/quote-project.html">
+<meta property="og:title" content="Project Door Quote — Doortronix USA">
+<meta property="og:description" content="Request a project quote for multiple openings on commercial automatic door systems.">
+<meta property="og:image" content="https://doortronixusa.com/images/revolution.jpg?v=3">
+<meta property="og:image:secure_url" content="https://doortronixusa.com/images/revolution.jpg?v=3">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1024">
+<meta property="og:image:height" content="585">
+<meta property="og:image:alt" content="Doortronix Revolution automatic sliding door">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Project Door Quote — Doortronix USA">
+<meta name="twitter:description" content="Request a project quote for multiple openings on commercial automatic door systems.">
+<meta name="twitter:image" content="https://doortronixusa.com/images/revolution.jpg?v=3">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:Arial,Helvetica,sans-serif;font-size:14px;background:#F0F4F8;color:#111;min-height:100vh;}
@@ -314,7 +332,7 @@ body{font-family:Arial,Helvetica,sans-serif;font-size:14px;background:#F0F4F8;co
       <p>Reference #: <strong id="conf-ref-footer"></strong> · Doortronix USA · (888) 453-5196 · doortronixusa.com</p>
       <div style="display:flex;gap:10px;">
         <button class="btn-close" onclick="closeConf()">Close</button>
-        <button class="btn-print" onclick="window.print()">Print / Save PDF</button>
+        <button class="btn-print" onclick="window.print()">Print Estimate / Save PDF</button>
       </div>
     </div>
   </div>
@@ -636,7 +654,7 @@ function makeDoorBlock(id) {
 
 function makeAddonItems(id) {
   const addons = [
-    { key:'key_switch',     label:'Key Switch',              desc:'Surface-mount key cylinder switch',   price:50,  qty:false },
+    { key:'key_switch',     label:'Function Switch',         desc:'On / Off / Hold Open / 1-Way / 2-Way. Ships keyed; knob on request (not reversible)',   price:50,  qty:false },
     { key:'electric_lock',  label:'Electric Lock',           desc:'Surface-mount electrified deadbolt',  price:515, qty:false },
     { key:'lock_indicator', label:'Lock Indicator Light',    desc:'Visual lock/unlock indicator panel',  price:60,  qty:false },
     { key:'ar_paddle',      label:'AR Panic Paddle',         desc:'Breakout panic paddle per panel',     price:355, qty:'1-2 panels', maxqty:2 },
@@ -996,7 +1014,7 @@ function drawDoor(svgId, vW, vH, isConf) {
     if(breakoutDir==='right'){const rx2=px+pw-stileW-4;path(`M${rx2},${py+topRH+6}L${rx2-stileW},${py+topRH+12}L${rx2},${py+topRH+18}`,'none','#E87722',1.5);}
   }
 
-  if(isConf){r(0,0,vW,titleH,'#1B4F8A');t(16,22,'DOORTRONIX USA',14,'#fff','start','700');t(16,38,'Confirmation Drawing — Door Elevation',10,'#B8CCE4','start');const cLabel=cfg?cfg.label+' ('+cfg.code+')':'—';t(vW-14,22,cLabel,11,'#E87722','end','700');t(vW-14,38,getWidthStr()+' W × '+getHeightStr()+' H',10,'#fff','end','700');t(vW-14,52,rv('glazing'),9,'#B8CCE4','end');t(vW/2,36,'Not for construction — for approval only',9,'#7090A8','middle');}
+  if(isConf){r(0,0,vW,titleH,'#1B4F8A');t(16,22,'DOORTRONIX USA',14,'#fff','start','700');t(16,38,'Estimate Drawing — Door Elevation',10,'#B8CCE4','start');const cLabel=cfg?cfg.label+' ('+cfg.code+')':'—';t(vW-14,22,cLabel,11,'#E87722','end','700');t(vW-14,38,getWidthStr()+' W × '+getHeightStr()+' H',10,'#fff','end','700');t(vW-14,52,rv('glazing'),9,'#B8CCE4','end');t(vW/2,36,'Not for construction — for approval only',9,'#7090A8','middle');}
 
   if(hasTransom&&realTransomIn>0){const tY=dY,tH=transomH;r(dX,tY,dW,tH,'#E0E8F0',frame,1.5);const txH=sc*1.5;r(dX+frameT,tY,dW-frameT*2,txH,'#C8D8E8',frame,0.5);const txGlassY=tY+txH,txGlassH=tH-txH;if(txGlassH>1)r(dX+frameT,txGlassY,dW-frameT*2,txGlassH,glaze.fill,'none',0);}
 
