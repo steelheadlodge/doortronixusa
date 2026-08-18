@@ -711,12 +711,23 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
       <p style="font-size:12px;color:var(--mgray);margin-bottom:12px;">All prices are net contractor pricing. Check items to add to your estimate.</p>
 
       <div class="addon-section-label">Hardware &amp; Locking</div>
+      <p style="font-size:12px;color:var(--mgray);margin:-4px 0 10px;">3-position rocker (On / Off / Hold Open) included with every unit.</p>
 
       <div id="addon_key_switch" class="addon-item" data-price="50" data-unit="ea" onclick="toggleAddon(this)">
         <div class="addon-check-visual"></div>
         <div class="addon-label-wrap">
-          <div class="al">Function Switch</div>
-          <div class="ad">On / Off / Hold Open / 1-Way / 2-Way. Ships keyed; knob on request (not reversible)</div>
+          <div class="al">4-Position Key Switch</div>
+          <div class="ad">On / Off / Hold Open / 1-Way / 2-Way</div>
+        </div>
+        <div class="addon-price-tag">$50</div>
+        <div class="addon-qty-wrap"></div>
+      </div>
+
+      <div id="addon_knob_switch" class="addon-item" data-price="50" data-unit="ea" onclick="toggleAddon(this)">
+        <div class="addon-check-visual"></div>
+        <div class="addon-label-wrap">
+          <div class="al">4-Position Knob Switch</div>
+          <div class="ad">On / Off / Hold Open / 1-Way / 2-Way — knob cannot be converted back to key</div>
         </div>
         <div class="addon-price-tag">$50</div>
         <div class="addon-qty-wrap"></div>
@@ -1669,6 +1680,14 @@ function toggleAddon(el) {
   el.classList.toggle('checked');
   if (el.classList.contains('checked')) {
     _checkedAddons.add(el.id);
+    if (el.id === 'addon_key_switch' || el.id === 'addon_knob_switch') {
+      const otherId = el.id === 'addon_key_switch' ? 'addon_knob_switch' : 'addon_key_switch';
+      const other = document.getElementById(otherId);
+      if (other && other.classList.contains('checked')) {
+        other.classList.remove('checked');
+        _checkedAddons.delete(otherId);
+      }
+    }
     // Auto-set qty to 2 for Adams Rite 8600 (one per active panel on a bi-part)
     if (el.id === 'addon_ar_8600') {
       const s = el.querySelector('.addon-qty-wrap select');

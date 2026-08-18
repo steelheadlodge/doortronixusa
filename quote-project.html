@@ -627,6 +627,7 @@ function makeDoorBlock(id) {
             Hardware &amp; Options <span id="addon-toggle-icon-${id}">▶ show</span>
           </div>
           <div id="addon-panel-${id}" style="display:none">
+            <p style="font-size:12px;color:var(--mgray);margin:0 0 8px;">3-position rocker (On / Off / Hold Open) included with every unit.</p>
             ${makeAddonItems(id)}
           </div>
         </div>
@@ -654,7 +655,8 @@ function makeDoorBlock(id) {
 
 function makeAddonItems(id) {
   const addons = [
-    { key:'key_switch',     label:'Function Switch',         desc:'On / Off / Hold Open / 1-Way / 2-Way. Ships keyed; knob on request (not reversible)',   price:50,  qty:false },
+    { key:'key_switch',     label:'4-Position Key Switch',   desc:'On / Off / Hold Open / 1-Way / 2-Way',   price:50,  qty:false },
+    { key:'knob_switch',    label:'4-Position Knob Switch',  desc:'On / Off / Hold Open / 1-Way / 2-Way — knob cannot be converted back to key',   price:50,  qty:false },
     { key:'electric_lock',  label:'Electric Lock',           desc:'Surface-mount electrified deadbolt',  price:515, qty:false },
     { key:'lock_indicator', label:'Lock Indicator Light',    desc:'Visual lock/unlock indicator panel',  price:60,  qty:false },
     { key:'ar_paddle',      label:'AR Panic Paddle',         desc:'Breakout panic paddle per panel',     price:355, qty:'1-2 panels', maxqty:2 },
@@ -751,7 +753,16 @@ function toggleDoorAddon(id, key, el) {
   if (el.classList.contains('required-addon')) return;
   const set = _doorAddons[id];
   if (set.has(key)) { set.delete(key); el.classList.remove('checked'); }
-  else              { set.add(key);    el.classList.add('checked'); }
+  else {
+    set.add(key);
+    el.classList.add('checked');
+    if (key === 'key_switch' || key === 'knob_switch') {
+      const other = key === 'key_switch' ? 'knob_switch' : 'key_switch';
+      set.delete(other);
+      const otherEl = document.getElementById('addon-' + id + '-' + other);
+      if (otherEl) otherEl.classList.remove('checked');
+    }
+  }
   updateDoor(id);
 }
 
