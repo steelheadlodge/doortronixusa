@@ -341,9 +341,9 @@ body{font-family:Arial,Helvetica,sans-serif;font-size:14px;background:#F0F4F8;co
 <script>
 // ─── CONFIGS ────────────────────────────────────────────────────────────────
 const CONFIGS = {
-  'fbo-bi':  { label:'FBO Bi-Part',   code:'SO-SX-SX-SO', isBi:true,  isFBO:true,  isLH:false, panels:2, base:3900, minW:96,  maxW:168 },
-  'fsl-bi':  { label:'FSL Bi-Part',   code:'O-SX-SX-O',   isBi:true,  isFBO:false, isLH:false, panels:2, base:3900, minW:96,  maxW:168 },
-  'esa':     { label:'ESA Bi-Part',   code:'P-SX-SX-P',   isBi:true,  isFBO:true,  isLH:false, panels:2, base:null, minW:96,  maxW:168 },
+  'fbo-bi':  { label:'FBO Bi-Part',   code:'SO-SX-SX-SO', isBi:true,  isFBO:true,  isLH:false, panels:2, base:3900, minW:96,  maxW:192 },
+  'fsl-bi':  { label:'FSL Bi-Part',   code:'O-SX-SX-O',   isBi:true,  isFBO:false, isLH:false, panels:2, base:3900, minW:96,  maxW:192 },
+  'esa':     { label:'ESA Bi-Part',   code:'P-SX-SX-P',   isBi:true,  isFBO:true,  isLH:false, panels:2, base:null, minW:96,  maxW:192 },
   'fbo-rh':  { label:'FBO Single RH', code:'SX-SO',        isBi:false, isFBO:true,  isLH:false, panels:1, base:3200, minW:78,  maxW:108 },
   'fbo-lh':  { label:'FBO Single LH', code:'SO-SX',        isBi:false, isFBO:true,  isLH:true,  panels:1, base:3200, minW:78,  maxW:108 },
   'fsl-rh':  { label:'FSL Single RH', code:'SX-O',         isBi:false, isFBO:false, isLH:false, panels:1, base:3200, minW:78,  maxW:108 },
@@ -528,7 +528,7 @@ function makeDoorBlock(id) {
                 <select class="sel-in" data-field="f_win">${inOpts(0)}</select>
                 <select class="sel-16" data-field="f_w16">${frac16Opts()}</select>
               </div>
-              <div class="size-range-note" id="width-range-note-${id}">Bi-part: 8'0" – 14'0"</div>
+              <div class="size-range-note" id="width-range-note-${id}">Bi-part: 8'0" – 16'0" (+$200/ft over 14'0")</div>
               <div class="size-range-note" id="net-opening-${id}" style="color:var(--blue);font-weight:600;margin-top:2px;"></div>
             </div>
             <div class="dims-group">
@@ -538,7 +538,7 @@ function makeDoorBlock(id) {
                 <select class="sel-in" data-field="f_hin">${inOpts(6)}</select>
                 <select class="sel-16" data-field="f_h16">${frac16Opts()}</select>
               </div>
-              <div class="size-range-note" id="height-range-note-${id}">Standard: 7'6" – 8'0"</div>
+              <div class="size-range-note" id="height-range-note-${id}">Standard: 7'6" – 8'0". Over 8'0": +$200/ft</div>
             </div>
           </div>
           <!-- FTTH (shown when transom=yes) -->
@@ -813,11 +813,14 @@ function updateWidthNoteFor(id) {
   if (!note) return;
   if (!cfg) { note.textContent = ''; note.className = 'size-range-note'; return; }
   const minW = cfg.minW, maxW = cfg.maxW;
-  const label = cfg.isBi ? `Bi-part: 8'0" – 14'0"` : `Single slide: 6'6" – 9'0"`;
+  const label = cfg.isBi ? `Bi-part: 8'0" – 16'0" (+$200/ft over 14'0")` : `Single slide: 6'6" – 9'0"`;
   if (!wIn) { note.textContent = label; note.className = 'size-range-note'; return; }
   if (wIn < minW || wIn > maxW) {
     note.textContent = `⚠ Out of range (${inToStr(minW)} – ${inToStr(maxW)}) — call us`;
     note.className = 'size-range-note warn';
+  } else if (cfg.isBi && wIn > 168) {
+    note.textContent = `+$200/ft over 14'0" (max 16'0")`;
+    note.className = 'size-range-note ok';
   } else {
     note.textContent = `✓ Within range (${inToStr(minW)} – ${inToStr(maxW)})`;
     note.className = 'size-range-note ok';
@@ -829,8 +832,8 @@ function updateHeightNoteFor(id) {
   const note = document.getElementById('height-range-note-' + id);
   if (!note || !hIn) return;
   if (hIn < 90)      { note.textContent = `⚠ Min 7'6" — call to confirm`; note.className = 'size-range-note warn'; }
-  else if (hIn > 96) { note.textContent = `⚠ Over 8'0" — call us for taller headers`; note.className = 'size-range-note warn'; }
-  else               { note.textContent = `✓ Within range (7'6" – 8'0")`; note.className = 'size-range-note ok'; }
+  else if (hIn > 96) { note.textContent = `+$200/ft over 8'0" — ${Math.ceil((hIn - 96) / 12)} ft added`; note.className = 'size-range-note ok'; }
+  else               { note.textContent = `✓ Within range (7'6" – 8'0"). Over 8'0": +$200/ft`; note.className = 'size-range-note ok'; }
 }
 
 function updateNetOpeningFor(id) {
@@ -854,6 +857,10 @@ function calcDoorPrice(id) {
   const sensor = rv('sensor');
   if (sensor === 'Optex i-oneXT') total += 220;
   if (sensor === 'BEA IXIO')      total += 280;
+  const hIn = getHeightIn();
+  const wIn = getWidthIn();
+  if (hIn != null && hIn > 96) total += 200 * Math.ceil((hIn - 96) / 12);
+  if (cfg.isBi && wIn != null && wIn > 168) total += 200 * Math.ceil((wIn - 168) / 12);
   const set = _doorAddons[id];
   set.forEach(key => {
     const el = document.getElementById('addon-' + id + '-' + key);

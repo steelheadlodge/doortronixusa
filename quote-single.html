@@ -375,7 +375,7 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
             <input type="radio" name="transom" id="tr_yes" value="yes">
             <label for="tr_yes">With Transom (+$250)</label>
           </div>
-          <span class="hint">Standard header height 7'6"–8'0". Max with transom: 11'6"</span>
+          <span class="hint">Standard header height 7'6"–8'0" (+$200/ft over 8'0"). Max with transom: 11'6"</span>
         </div>
 
         <!-- Frame Width -->
@@ -441,7 +441,7 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
               </select>
             </div>
           </div>
-          <span class="hint size-range-note" id="height-range-note">Standard header height: 7'6" to 8'0". Single slide width range: 6'6" – 9'0"</span>
+          <span class="hint size-range-note" id="height-range-note">Standard header height: 7'6" to 8'0". Over 8'0": +$200/ft. Single slide width range: 6'6" – 9'0"</span>
         </div>
 
         <!-- Overall Frame Height (only shown when transom selected) -->
@@ -1164,7 +1164,7 @@ function updateFTTH() {
   if (hl) hl.textContent = hasTransom ? 'Header Height (FTTH)' : 'Frame Height';
   const hn = document.getElementById('height-range-note');
   if (hn && !hn.classList.contains('warn') && !hn.classList.contains('ok')) {
-    hn.textContent = hasTransom ? 'Floor to top of header/operator. Standard: 7\'6" to 8\'0".' : 'Standard header height: 7\'6" to 8\'0"';
+    hn.textContent = hasTransom ? 'Floor to top of header/operator. Standard: 7\'6" to 8\'0" (+$200/ft over 8\'0").' : 'Standard header height: 7\'6" to 8\'0" (+$200/ft over 8\'0")';
   }
 }
 
@@ -1245,8 +1245,17 @@ function calcPrice() {
     total += 280; lines.push({ label: 'BEA IXIO Sensor', amount: 280 });
   }
 
-  // Width adjustment
+  // Size overage: $200/ft over 8'0" height (singles and bi-parts)
   const wIn = getWidthIn();
+  const hIn = getHeightIn();
+  if (hIn != null && hIn > 96) {
+    const ft = Math.ceil((hIn - 96) / 12);
+    const amt = 200 * ft;
+    total += amt;
+    lines.push({ label: `Height over 8'0" \u00d7 ${ft} ft`, amount: amt });
+  }
+
+  // Width adjustment
   if (wIn !== null) {
     const note = document.getElementById('width-range-note');
     if (wIn < cfg.minW) {
@@ -1261,20 +1270,20 @@ function calcPrice() {
     if (note) { note.textContent = `Single slide range: 6'6" – 9'0"`; note.className = 'size-range-note'; }
   }
 
-  // Header height check (f_hft) — always 7'6"–8'0"
-  const hIn = getHeightIn();
+  // Header height — standard 7'6"–8'0"; over 8'0" is +$200/ft
   const hNote = document.getElementById('height-range-note');
   if (hIn !== null && hNote) {
     if (hIn < 90) {
       hNote.textContent = `⚠ Minimum header height is 7'6" — call us to confirm`;
       hNote.className = 'size-range-note warn';
     } else if (hIn > 96) {
-      hNote.textContent = `⚠ Over 8'0" — call us for taller header heights`;
-      hNote.className = 'size-range-note warn';
+      const ft = Math.ceil((hIn - 96) / 12);
+      hNote.textContent = `+$200/ft over 8'0" — ${ft} ft added`;
+      hNote.className = 'size-range-note ok';
     } else {
       hNote.textContent = rv('transom') === 'yes'
         ? `✓ Header height within range (7'6" – 8'0")`
-        : `✓ Within range (7'6" – 8'0")`;
+        : `✓ Within range (7'6" – 8'0"). Over 8'0": +$200/ft`;
       hNote.className = 'size-range-note ok';
     }
   }
