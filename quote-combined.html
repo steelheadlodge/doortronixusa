@@ -841,9 +841,9 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
         <div class="addon-check-visual"></div>
         <div class="addon-label-wrap">
           <div class="al">Nose Casters</div>
-          <div class="ad" id="nose-casters-desc">Required for bi-part openings over 14'</div>
+          <div class="ad" id="nose-casters-desc">Required over 14' bi-part — included in the width overage</div>
         </div>
-        <div class="addon-price-tag">$200 ea</div>
+        <div class="addon-price-tag">Incl. over 14'</div>
         <div class="addon-qty-wrap">
           <label>Qty:</label>
           <select id="nose-casters-qty" onclick="event.stopPropagation()" onchange="calcPrice()">
@@ -1892,10 +1892,14 @@ function calcPrice() {
     const price = parseInt(el.dataset.price) || 0;
     const sel = el.querySelector('.addon-qty-wrap select');
     const qty = sel ? (parseInt(sel.value) || 1) : 1;
-    const amount = price * qty;
-    total += amount;
     const nameEl = el.querySelector('.al');
     const name = nameEl ? nameEl.textContent.trim() : id;
+    if (id === 'addon_nose_casters' && cfg.isBi && wIn != null && wIn > 168) {
+      lines.push({ label: name + (qty > 1 ? ' \xd7' + qty : '') + ' (included over 14\')', amount: 0 });
+      return;
+    }
+    const amount = price * qty;
+    total += amount;
     lines.push({ label: name + (qty > 1 ? ' \xd7' + qty : ''), amount });
   });
 
@@ -2609,7 +2613,7 @@ function updateAll() {
   const ncDesc = document.getElementById('nose-casters-desc');
   if (ncDesc) {
     const cfg = getConfig();
-    ncDesc.textContent = (cfg && !cfg.isBi) ? 'Optional for single-slide openings over 9\'' : 'Required for bi-part openings over 14\'';
+    ncDesc.textContent = (cfg && !cfg.isBi) ? 'Optional for single-slide openings over 9\'' : 'Required over 14\' bi-part — included in the width overage';
   }
   // Auto-select 6" bottom rail when medium stile is chosen
   if (rv('stileWidth') === 'medium' && rv('bottomRail') === 'std') {

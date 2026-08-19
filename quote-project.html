@@ -665,7 +665,7 @@ function makeAddonItems(id) {
     { key:'muntin_2in',     label:'Additional 2" Muntin',    desc:'Extra horizontal muntin bar',         price:150, qty:'1-4',        maxqty:4 },
     { key:'alarm_contacts', label:'Alarm Contacts',          desc:'Monitor breakout + door position',    price:150, qty:false },
     { key:'battery',        label:'Battery Backup (UPS)',    desc:'12-hour battery power supply unit',   price:2200,qty:false },
-    { key:'nose_casters',   label:'Nose Casters',            desc:'Required over 14\' (bi-part) / 9\' (single)', price:200, qty:'1-2', maxqty:2 },
+    { key:'nose_casters',   label:'Nose Casters',            desc:'Required over 14\' bi-part — included in the width overage', price:200, qty:'1-2', maxqty:2 },
   ];
   return addons.map(a => {
     const qtyHtml = a.maxqty ? `<div class="addon-qty-wrap"><label>Qty</label><select onchange="updateDoor(${id})">${Array.from({length:a.maxqty},(_,i)=>`<option value="${i+1}">${i+1}</option>`).join('')}</select></div>` : '';
@@ -868,6 +868,7 @@ function calcDoorPrice(id) {
     const price = parseInt(el.dataset.price) || 0;
     const qtySel = el.querySelector('.addon-qty-wrap select');
     const qty = qtySel ? (parseInt(qtySel.value) || 1) : 1;
+    if (key === 'nose_casters' && cfg.isBi && wIn != null && wIn > 168) return;
     total += price * qty;
   });
   const qty = parseInt(fv('f_dqty')) || 1;
