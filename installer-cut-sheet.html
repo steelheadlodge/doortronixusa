@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Confirmation Drawing — Doortronix USA</title>
+<style>
+*, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+:root {
+  --blue:#1B4F8A; --orange:#E87722; --ink:#111; --muted:#555; --line:#111;
+}
+html, body { background:#E8EEF4; color:var(--ink); font-family:Arial, Helvetica, sans-serif; }
+.screen-bar {
+  max-width:8.5in; margin:12px auto 8px; padding:0 8px;
+  display:flex; justify-content:space-between; align-items:center; gap:10px;
+  font-size:12px; color:#444;
+}
+.screen-bar button {
+  background:var(--blue); color:#fff; border:none; padding:8px 14px;
+  font-size:12px; font-weight:700; cursor:pointer;
+}
+.sheet {
+  width:8.5in; height:11in; margin:0 auto 24px; background:#fff;
+  border:1px solid #C5CDD6; display:flex; flex-direction:column;
+  padding:0.26in 0.28in 0.2in;
+}
+.head {
+  display:flex; justify-content:space-between; align-items:flex-end;
+  border-bottom:2.5px solid var(--blue); padding-bottom:6px; margin-bottom:7px;
+}
+.head .co { font-size:18px; font-weight:800; letter-spacing:.4px; color:var(--blue); }
+.head .co span { color:var(--orange); }
+.head .phone { font-size:10px; color:#666; margin-top:1px; }
+.head .doc { text-align:right; }
+.head .doc-title { font-size:16px; font-weight:800; letter-spacing:.4px; text-transform:uppercase; }
+.head .doc-sub { font-size:11px; color:#666; margin-top:1px; }
+.head .doc-ref { font-size:12px; font-weight:700; margin-top:2px; }
+
+.meta { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:0; border:1px solid var(--line); margin-bottom:7px; }
+.meta .cell { padding:4px 7px; border-right:1px solid #CCC; border-bottom:1px solid #EEE; min-width:0; }
+.meta .cell:nth-child(4n) { border-right:none; }
+.meta .cell.wide { grid-column:1 / -1; border-right:none; border-bottom:none; }
+.meta .k { font-size:9px; text-transform:uppercase; letter-spacing:.4px; color:#666; }
+.meta .v { font-size:12px; font-weight:700; line-height:1.25; }
+.meta .cell.wide .v { font-size:13px; }
+
+.body { flex:1; min-height:0; display:grid; grid-template-columns:1.35fr 0.65fr; gap:8px; }
+.draws { min-height:0; display:flex; flex-direction:column; border:1px solid var(--line); }
+.draws .elev { flex:1 1 0; min-height:0; overflow:hidden; padding:18px 4px 4px; }
+.draws .plan-col { flex:1.2 1 0; min-height:0; display:flex; flex-direction:column; }
+.draws .plan { flex:1; min-height:0; overflow:hidden; padding:4px; }
+.draws svg { width:100%; height:100%; display:block; }
+.plan-notes {
+  flex:none; border-top:1px solid var(--line); padding:5px 7px 6px;
+  font-size:8.5px; line-height:1.32; color:#111;
+}
+.plan-notes strong { font-size:9px; letter-spacing:.3px; }
+
+.side { min-height:0; display:flex; flex-direction:column; border:1px solid var(--line); overflow:hidden; }
+.side h3 {
+  background:var(--blue); color:#fff; font-size:10px; font-weight:700;
+  letter-spacing:.5px; text-transform:uppercase; padding:4px 7px;
+}
+.tbl { width:100%; border-collapse:collapse; }
+.tbl td { padding:3px 7px; border-bottom:1px solid #E5E7EB; vertical-align:top; font-size:11px; }
+.tbl td:first-child { width:42%; color:#555; }
+.tbl td:last-child { font-weight:700; }
+.note { font-size:10px; color:#666; padding:4px 7px 6px; line-height:1.3; }
+
+.side-foot { margin-top:auto; }
+.ship { font-size:12px; line-height:1.4; padding:7px 8px 8px; border-top:1px solid var(--line); }
+.ship .k { font-size:9px; text-transform:uppercase; letter-spacing:.4px; color:#666; font-weight:700; margin-bottom:2px; }
+.approve-body { background:#F4F7FB; border-top:3px solid var(--orange); padding:8px 8px 9px; }
+.approve-hint { font-size:10px; font-weight:700; color:var(--blue); margin-bottom:8px; }
+.sign { display:grid; grid-template-columns:1fr 1.15fr 0.7fr; gap:8px; align-items:end; }
+.sign .ln { border-bottom:2px solid #111; min-height:26px; background:#fff; }
+.sign .k { font-size:9px; text-transform:uppercase; letter-spacing:.4px; color:#333; font-weight:700; margin-top:3px; }
+
+@media print {
+  html, body { background:#fff; }
+  .screen-bar { display:none !important; }
+  .sheet {
+    width:8.5in; height:11in; margin:0; border:none;
+    page-break-after:avoid; page-break-inside:avoid;
+  }
+  @page { size: letter portrait; margin: 0; }
+}
+</style>
+</head>
+<body>
+<div class="screen-bar">
+  <span>Confirmation drawing (draft).</span>
+  <span>
+    <button type="button" onclick="window.print()">Print</button>
+    <button type="button" onclick="loadSample('fbo-bi')">FBO Bi 10×7'6</button>
+    <button type="button" onclick="loadSample('fsl-bi')">FSL Bi</button>
+    <button type="button" onclick="loadSample('fbo-single-rh')">FBO RH</button>
+    <button type="button" onclick="loadSample('fbo-bi',{widthFt:14,heightFt:8,heightIn:0,transom:true,ftthFt:12,ftthIn:0,transomVerticals:2,frameFinish:'Clear Anodized'})">14×12 Clear</button>
+    <button type="button" onclick="loadSample('fbo-bi',{widthFt:14,heightFt:8,heightIn:0,transom:true,ftthFt:12,ftthIn:0,transomVerticals:2,frameFinish:'313 Dark Bronze'})">14×12 Bronze</button>
+    <button type="button" onclick="loadSample('fbo-single-rh',{widthFt:8,heightFt:8,heightIn:0,transom:true,ftthFt:10,ftthIn:0,transomVerticals:1,frameFinish:'Clear Anodized'})">RH 8×10 T</button>
+  </span>
+</div>
+
+<div class="sheet" id="sheet">
+  <header class="head">
+    <div>
+      <div class="co">DOORTRONIX<span>USA</span></div>
+      <div class="phone">Malakoff, TX · (888) 453-5196</div>
+    </div>
+    <div class="doc">
+      <div class="doc-title">Confirmation Drawing</div>
+      <div class="doc-sub">Sizes &amp; configuration</div>
+      <div class="doc-ref" id="ref-line">—</div>
+    </div>
+  </header>
+
+  <div class="meta" id="meta"></div>
+
+  <div class="body">
+    <div class="draws">
+      <div class="elev"><svg id="door-svg" viewBox="0 0 840 420" preserveAspectRatio="xMidYMid meet"></svg></div>
+      <div class="plan-col">
+        <div class="plan"><svg id="plan-svg" viewBox="0 0 840 480" preserveAspectRatio="xMidYMid meet"></svg></div>
+        <div class="plan-notes">
+          <strong>NOTES:</strong><br>
+          1. ELECTRICAL REQUIREMENTS: 120 VAC, 5 AMP MIN TO POWER OPERATOR BY ELECTRICAL CONTRACTOR.<br>
+          2. ROUGH OPENING SHALL PROVIDE 1/4"[6] SHIM SPACE ON SIDES AND TOP OF PACKAGE.<br>
+          3. LIMITS OF ACTIVATION AND SAFETY ZONES ARE FOR REFERENCE ONLY; SEE ANSI/BHMA A156.10 FOR DETAILED REQUIREMENTS.<br>
+          4. SEE SPECIFICATIONS FOR ADDITIONAL INFORMATION.
+        </div>
+      </div>
+    </div>
+    <aside class="side">
+      <h3>Configuration</h3>
+      <table class="tbl" id="particulars"></table>
+      <h3 id="glass-h">Glass sizes</h3>
+      <table class="tbl" id="glass-tbl"></table>
+      <div class="note" id="glass-note">Glass by others.</div>
+      <h3>Options</h3>
+      <table class="tbl" id="options-tbl"></table>
+      <div class="side-foot">
+        <div class="ship">
+          <div class="k">Ship to</div>
+          <div id="ship-to">—</div>
+        </div>
+        <h3>Approval</h3>
+        <div class="approve-body">
+          <div class="approve-hint">Sign to confirm sizes and configuration</div>
+          <div class="sign">
+            <div>
+              <div class="ln" id="appr-name"></div>
+              <div class="k">Approved by</div>
+            </div>
+            <div>
+              <div class="ln"></div>
+              <div class="k">Signature</div>
+            </div>
+            <div>
+              <div class="ln" id="appr-date"></div>
+              <div class="k">Date</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script>
+const SIXTEENTH_LABELS = ['','1/16','1/8','3/16','1/4','5/16','3/8','7/16','1/2','9/16','5/8','11/16','3/4','13/16','7/8','15/16'];
+const IS_SUBMITTAL = true; // compact drawing titles — same geometry as confirmation
+let ORDER = null;
+
+const CONFIGS = {
+  'fbo-single-rh': { label:'FBO Single — RH', code:'SX-SO',       isFBO:true,  isBi:false },
+  'fbo-single-lh': { label:'FBO Single — LH', code:'SO-SX',       isFBO:true,  isBi:false },
+  'fsl-single-rh': { label:'FSL Single — RH', code:'SX-O',        isFBO:false, isBi:false },
+  'fsl-single-lh': { label:'FSL Single — LH', code:'O-SX',        isFBO:false, isBi:false },
+  'fbo-bi':        { label:'FBO Bi-Part',     code:'SO-SX-SX-SO', isFBO:true,  isBi:true  },
+  'fsl-bi':        { label:'FSL Bi-Part',     code:'O-SX-SX-O',   isFBO:false, isBi:true  },
+};
+
+function encodeOrder(obj) {
+  const json = JSON.stringify(obj);
+  return btoa(unescape(encodeURIComponent(json))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+}
+function decodeOrder(str) {
+  const b64 = str.replace(/-/g,'+').replace(/_/g,'/');
+  const pad = b64.length % 4 ? '='.repeat(4 - b64.length % 4) : '';
+  return JSON.parse(decodeURIComponent(escape(atob(b64 + pad))));
+}
+function formatDate(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso + (iso.length === 10 ? 'T12:00:00' : ''));
+  if (isNaN(d)) return iso;
+  return d.toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' });
+}
+function dash(v) { return (v == null || v === '') ? '—' : v; }
+
+const SAMPLE_ORDER = {
+  ref: 'DTX-ICS001',
+  issuedDate: new Date().toISOString().slice(0,10),
+  leadTime: '3–4 weeks from cleared payment — call to confirm',
+  customer: {
+    name: 'Adam Mannino',
+    company: 'Mannino Glass Co.',
+  },
+  project: {
+    name: 'Walgreens Renovation — Tyler Plaza',
+    jobNumber: 'J-24819',
+    po: 'PO-24819',
+    doorMark: '101A',
+    quantity: 1,
+    location: 'Tyler, TX',
+    shipTo: 'Walgreens — Tyler Plaza\n4121 S Broadway Ave\nTyler, TX 75703',
+  },
+  door: {
+    configKey: 'fbo-bi',
+    frameFinish: '313 Dark Bronze',
+    doorGlassPrep: '1/4"',
+    transom: false,
+    stileWidth: 'narrow',
+    bottomRail: 'std',
+    muntin: '2" Muntin (std)',
+    threshold: '1/2" Standard',
+    sensor: 'Standard Optex (incl.)',
+    locking: 'Standard hooklock',
+    widthFt: 10, widthIn: 0, width16: 0,
+    heightFt: 7, heightIn: 6, height16: 0,
+  },
+  addons: [
+    { name: 'Key Switch', qty: 1 },
+  ],
+};
+
+function loadFromURL() {
+  const params = new URLSearchParams(location.search);
+  const d = params.get('d');
+  if (!d) return false;
+  try { ORDER = decodeOrder(d); return true; }
+  catch (err) { console.error(err); return false; }
+}
+function loadSample(configKey, doorOverrides) {
+  ORDER = JSON.parse(JSON.stringify(SAMPLE_ORDER));
+  if (configKey) ORDER.door.configKey = configKey;
+  if (doorOverrides) Object.assign(ORDER.door, doorOverrides);
+  renderSheet();
+}
+
+function stileLabel(d) {
+  return d.stileWidth === 'medium' ? 'Medium 3-3/4"' : 'Narrow 2-1/2"';
+}
+function railLabel(d) {
+  if (d.bottomRail === '6in') return '6"';
+  if (d.bottomRail === '10in') return '10"';
+  return '4" (std)';
+}
+function muntinLabel(d) {
+  if (!d.muntin || /no muntin/i.test(d.muntin)) return 'No muntin';
+  return d.muntin;
+}
+function lockLabel() {
+  const d = ORDER.door || {};
+  if (d.locking) return d.locking;
+  const hits = (ORDER.addons || []).filter(a => /lock|hookbolt|deadbolt|adams rite|electric lock/i.test(a.name || ''));
+  if (hits.length) return hits.map(a => a.qty > 1 ? a.name + ' ×' + a.qty : a.name).join(', ');
+  return 'Standard hooklock';
+}
+function isSwitchAddon(name) {
+  return /key switch|knob switch|function switch/i.test(name || '');
+}
+function switchLabel() {
+  const hits = (ORDER.addons || []).filter(a => isSwitchAddon(a.name));
+  if (hits.length) return hits.map(a => a.qty > 1 ? a.name + ' ×' + a.qty : a.name).join(', ');
+  if (ORDER.door && ORDER.door.switch) return ORDER.door.switch;
+  return 'Rocker — On / Off / Hold Open';
+}
+function doorMarks() {
+  const p = ORDER.project || {};
+  const qty = p.quantity || 1;
+  const marks = p.doorMarks || p.doorMark;
+  if (Array.isArray(marks) && marks.length) return marks.join(', ') + (qty > 1 && marks.length === 1 ? '  (qty ' + qty + ')' : '');
+  if (typeof marks === 'string' && marks.trim()) {
+    return qty > 1 && !marks.includes(',') ? marks + '  (qty ' + qty + ')' : marks;
+  }
+  return qty > 1 ? 'Qty ' + qty + ' — tags TBD' : '—';
+}
+function optionList() {
+  const addons = (ORDER.addons || []).filter(a => !isSwitchAddon(a.name));
+  if (!addons.length) return [['Options', 'None']];
+  return addons.map(a => [a.name, a.qty > 1 ? '× ' + a.qty : 'Yes']);
+}
+
+function fillTable(id, rows) {
+  document.getElementById(id).innerHTML = rows.map(([k,v]) =>
+    '<tr><td>' + k + '</td><td>' + dash(v) + '</td></tr>').join('');
+}
+
+function renderSheet() {
+  if (!ORDER) return;
+  const d = ORDER.door || {};
+  const c = ORDER.customer || {};
+  const p = ORDER.project || {};
+  const cfg = CONFIGS[d.configKey];
+  const qty = p.quantity || 1;
+  const h = d.transom ? getFTTHStr() : getHeightStr();
+
+  document.getElementById('ref-line').textContent = formatDate(ORDER.issuedDate);
+
+  const cells = [
+    ['Customer', c.company || c.name],
+    ['Job name', p.name],
+    ['Job number', p.jobNumber || p.job || '—'],
+    ['Customer PO', p.po],
+    ['Door / tag', doorMarks()],
+    ['Quantity', qty + (qty === 1 ? ' opening' : ' openings')],
+    ['Location', p.location],
+    ['Lead time', ORDER.leadTime],
+  ];
+  const modelStr = 'DT-3000  ·  ' + (cfg ? cfg.label + ' (' + cfg.code + ')' : '—');
+  document.getElementById('meta').innerHTML = cells.map(([k,v]) =>
+    '<div class="cell"><div class="k">' + k + '</div><div class="v">' + dash(v) + '</div></div>').join('')
+    + '<div class="cell wide"><div class="k">Model / config</div><div class="v">' + dash(modelStr) + '</div></div>';
+
+  fillTable('particulars', [
+    ['Frame size', getWidthStr() + ' W × ' + h + ' H'],
+    ['Net slide (typ.)', getClearOpeningStr() || d.netOpening],
+    ['Finish', d.frameFinish],
+    ['Stile width', stileLabel(d)],
+    ['Muntin', muntinLabel(d)],
+    ['Sensors', d.sensor],
+    ['Glass prep', d.doorGlassPrep],
+    ['Threshold', d.threshold],
+    ['Locking', lockLabel()],
+    ['Switch', switchLabel()],
+    ['Bottom rail', railLabel(d)],
+  ]);
+
+  fillTable('glass-tbl', glassSizeRows());
+  const prep = (d.doorGlassPrep || '').trim();
+  document.getElementById('glass-h').textContent = prep ? 'Glass sizes — ' + prep : 'Glass sizes';
+
+  fillTable('options-tbl', optionList());
+  document.getElementById('ship-to').innerHTML = (p.shipTo || '—').replace(/\n/g, '<br>');
+  document.getElementById('appr-name').textContent = '';
+  document.getElementById('appr-date').textContent = '';
+
+  requestAnimationFrame(() => requestAnimationFrame(drawAll));
+}
+
+function svgSize(el) {
+  const r = el.getBoundingClientRect();
+  return {
+    vW: Math.max(180, Math.round(r.width) || 840),
+    vH: Math.max(120, Math.round(r.height) || 420),
+  };
+}
+function drawAll() {
+  drawDoor();
+  drawPlanView();
+  centerSvgVertically(document.getElementById('door-svg'), 16);
+  centerSvgVertically(document.getElementById('plan-svg'), 0);
+}
+function centerSvgVertically(svg, extraDown) {
+  if (!svg || !svg.children.length) return;
+  try {
+    const b = svg.getBBox();
+    const vb = svg.viewBox.baseVal;
+    if (!b.height || !vb.height) return;
+    const pad = 8;
+    const mid = (vb.height - b.height) / 2 - b.y;
+    const minDy = pad - b.y;
+    const maxDy = vb.height - pad - (b.y + b.height);
+    const dy = Math.max(minDy, Math.min(maxDy, mid + (extraDown || 0)));
+    if (Math.abs(dy) < 1) return;
+    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    while (svg.firstChild) g.appendChild(svg.firstChild);
+    g.setAttribute('transform', 'translate(0,' + dy + ')');
+    svg.appendChild(g);
+  } catch (e) { /* ignore */ }
+}
+
+// ── Dimension helpers ───────────────────────────────────────────────────
+function getWidthIn() {
+  const d = ORDER.door;
+  const ft = parseInt(d.widthFt); if (!ft) return null;
+  return ft*12 + (parseInt(d.widthIn) || 0) + (parseInt(d.width16) || 0)/16;
+}
+function getHeightIn() {
+  const d = ORDER.door;
+  const ft = parseInt(d.heightFt); if (!ft) return null;
+  return ft*12 + (parseInt(d.heightIn) || 0) + (parseInt(d.height16) || 0)/16;
+}
+function getFTTHIn() {
+  const d = ORDER.door;
+  return (parseInt(d.ftthFt) || 0) * 12 + (parseInt(d.ftthIn) || 0);
+}
+function getWidthStr() {
+  const d = ORDER.door;
+  const ft = d.widthFt; if (!ft) return '—';
+  const i = parseInt(d.widthIn) || 0, s = parseInt(d.width16) || 0;
+  const inStr = i === 0 && s === 0 ? '' : i + (s ? '-' + SIXTEENTH_LABELS[s] : '') + '"';
+  return `${ft}'${inStr}`;
+}
+function getHeightStr() {
+  const d = ORDER.door;
+  const ft = d.heightFt; if (!ft) return '—';
+  const i = parseInt(d.heightIn) || 0, s = parseInt(d.height16) || 0;
+  const inStr = i === 0 && s === 0 ? '' : i + (s ? '-' + SIXTEENTH_LABELS[s] : '') + '"';
+  return `${ft}'${inStr}`;
+}
+function getFTTHStr() {
+  const d = ORDER.door;
+  const ft = parseInt(d.ftthFt) || 0;
+  if (!ft) return getHeightStr();
+  const i = parseInt(d.ftthIn) || 0;
+  return `${ft}'${i ? i + '"' : ''}`;
+}
+// Clear door opening (slide open) — cut-sheet formula; NOT full breakout opening
+function calcClearOpeningIn() {
+  const d = ORDER.door;
+  const cfg = CONFIGS[d.configKey];
+  const wIn = getWidthIn();
+  if (!cfg || wIn === null) return null;
+  return cfg.isBi ? 36 + (wIn - 96) * 0.5 : 33 + (wIn - 78) * 0.5;
+}
+function getClearOpeningStr() {
+  const n = calcClearOpeningIn();
+  if (n === null || n <= 0) return ORDER.door.netOpening || '';
+  const ft = Math.floor(n / 12);
+  const rem = Math.round(n - ft * 12);
+  return rem === 0 ? `${ft}'-0"` : `${ft}'-${rem}"`;
+}
+
+function formatInches(n) {
+  if (n == null || !isFinite(n) || n <= 0) return '—';
+  const whole = Math.floor(n + 1e-9);
+  let sixteenths = Math.round((n - whole) * 16);
+  if (sixteenths === 16) return (whole + 1) + '"';
+  if (sixteenths === 0) return whole + '"';
+  let num = sixteenths, den = 16;
+  while (num % 2 === 0) { num /= 2; den /= 2; }
+  return whole + '-' + num + '/' + den + '"';
+}
+function glassPair(w, h) {
+  return formatInches(w) + ' × ' + formatInches(h);
+}
+
+// Factory glass formulas from the 6/5/12 cut-list sheets (4" bottom rail).
+// 6" rail: −2" from bottom lite only. 10" rail: −6" from bottom lite only.
+function calcGlass() {
+  const d = ORDER.door || {};
+  const cfg = CONFIGS[d.configKey];
+  const W = getWidthIn();
+  const Hhdr = getHeightIn();
+  if (!cfg || W == null || Hhdr == null) return null;
+  const isBi = cfg.isBi;
+  const medium = d.stileWidth === 'medium';
+  const hasMuntin = !!(d.muntin && !/no muntin/i.test(d.muntin));
+  const railDeduct = d.bottomRail === '10in' ? 6 : d.bottomRail === '6in' ? 2 : 0;
+
+  let liteW;
+  if (isBi) {
+    liteW = (W - 17.25) / 4 - 0.3125;
+    if (medium) liteW -= 3;
+  } else {
+    liteW = W / 2 - (medium ? 8.5 : 5.5);
+  }
+
+  // Height from the 4" / 2" muntin sheets. Medium stile changes width only.
+  const noMuntinH = Hhdr - 17.625;
+  const muntinH = Hhdr / 2 - 10;
+  const topH = hasMuntin ? muntinH : noMuntinH;
+  const botH = hasMuntin ? muntinH - railDeduct : noMuntinH - railDeduct;
+  const panels = isBi ? 4 : 2;
+  const fixedLbl = cfg.isFBO ? 'SO' : 'O';
+
+  const out = { liteW, topH, botH, hasMuntin, panels, fixedLbl, isBi, transoms: [] };
+
+  if (d.transom) {
+    const ftth = d.ftthFt ? getFTTHIn() : Hhdr;
+    const tH = (ftth - Hhdr) - 2;
+    const verts = parseInt(d.transomVerticals, 10) || 0;
+    if (tH > 0) {
+      if (verts <= 0) {
+        out.transoms.push({ label: 'Transom (1 lite)', qty: 1, w: W - 2.875, h: tH });
+      } else if (verts === 1) {
+        out.transoms.push({ label: 'Transom (2 lites)', qty: 2, w: W / 2 - 2, h: tH });
+      } else if (isBi) {
+        const railSO = (W - 17.25) / 4 + 0.0625;
+        const sideW = railSO + 3.25;
+        const centerW = (W - 7) - 2 * (railSO + 2.625) + 0.625;
+        out.transoms.push({ label: 'Transom (sides)', qty: 2, w: sideW, h: tH });
+        out.transoms.push({ label: 'Transom (center)', qty: 1, w: centerW, h: tH });
+      } else {
+        out.transoms.push({ label: 'Transom (3 lites)', qty: 3, w: (W - 5.125) / 3, h: tH });
+      }
+    }
+  }
+  return out;
+}
+function glassSizeRows() {
+  const g = calcGlass();
+  if (!g) return [['Glass', '—']];
+  function row(label, qty, w, h) {
+    return [label, '(Qty ' + qty + ')  ' + glassPair(w, h)];
+  }
+  const rows = [];
+  const pcs = g.panels;
+  if (g.hasMuntin && Math.abs(g.topH - g.botH) > 0.01) {
+    rows.push(row('SX / ' + g.fixedLbl + ' top', pcs, g.liteW, g.topH));
+    rows.push(row('SX / ' + g.fixedLbl + ' bottom', pcs, g.liteW, g.botH));
+  } else {
+    const n = g.hasMuntin ? pcs * 2 : pcs;
+    rows.push(row('SX / ' + g.fixedLbl, n, g.liteW, g.topH));
+  }
+  g.transoms.forEach(t => {
+    rows.push(row(t.label, t.qty, t.w, t.h));
+  });
+  return rows;
+}
+function getStileW(sc) {
+  const d = ORDER.door;
+  return Math.max(3, sc * (d.stileWidth === 'medium' ? 3.75 : 2.5));
+}
+
+// ── Shared scale between elevation and plan view (set by drawDoor) ─────
+let _doorScale = null;
+
+// ── Drawing colors based on finish ──────────────────────────────────────
+function isDarkBronze() { return ORDER.door.frameFinish === '313 Dark Bronze'; }
+function getFrameColor() { return isDarkBronze() ? '#3D2710' : '#B8C4D0'; }
+function getPanelFill()  { return isDarkBronze() ? '#4A3018' : '#7A9CB8'; }
+function getGlazeFill() {
+  return isDarkBronze()
+    ? { fill:'#C8B8A0', stroke:'#8A7060' }
+    : { fill:'#E8F4FD', stroke:'#A8D4F5' };
+}
+
+// ════════════════════════════════════════════════════════════════════════
+//  SVG drawing — adapted from quote-single.html drawDoor(isConf=true)
+//  Reads from ORDER object instead of form fields
+// ════════════════════════════════════════════════════════════════════════
+function drawDoor() {
+  const svg = document.getElementById('door-svg');
+  if (!svg) return;
+  svg.innerHTML = '';
+  const { vW, vH } = svgSize(svg);
+  svg.setAttribute('viewBox', `0 0 ${vW} ${vH}`);
+  const d = ORDER.door;
+  const cfg = CONFIGS[d.configKey];
+  if (!cfg) return;
+
+  const glaze = getGlazeFill();
+  const frame = getFrameColor();
+  const hasTransom = !!d.transom;
+  const isBi = cfg.isBi;
+  const isLH = cfg.code === 'O-SX' || cfg.code === 'SO-SX' || cfg.code === 'O-SX-SX-O';
+  const isFBO = cfg.isFBO;
+
+  const titleH = 34;
+  const widthDimGap = 42;                // space from door bottom to width dim line
+  const realW      = getWidthIn()  || (isBi ? 120 : 84);
+  const realFrameH = getHeightIn() || 90;
+  const realFtth   = hasTransom && d.ftthFt ? getFTTHIn() : realFrameH;
+  const realTransomIn = hasTransom ? Math.max(0, realFtth - realFrameH) : 0;
+  const realTotalH = realFtth;
+
+  const mL = 36, mR = 28, mT = titleH + 12;
+  // Bottom margin: width dim gap + label/tick clearance below door
+  const mB = widthDimGap + 16;
+  const availW = vW - mL - mR, availH = vH - mT - mB;
+  const sc  = Math.min(availW / realW, availH / realTotalH);
+  const dW  = realW * sc, dH = realTotalH * sc;
+  const dX  = mL + (availW - dW) / 2;
+  const dY  = mT + (availH - dH) / 2;
+  const widthDimY = dY + dH + widthDimGap;
+
+  const jambW   = Math.max(2, sc * 1.75);
+  const railIn  = d.bottomRail === '10in' ? 10 : d.bottomRail === '6in' ? 6 : 4;
+  const stileW  = getStileW(sc);
+  const topRH   = Math.max(3, sc * 4.0);
+  const btmRH   = Math.max(3, sc * railIn);
+  const muntH   = Math.max(1.5, sc * 2.0);
+  const sillH   = Math.max(1, sc * 0.5);
+  const headerH = Math.max(10, sc * 8.0);
+  const frameT  = jambW;
+  const panelFill = getPanelFill();
+  const transomH  = realTransomIn * sc;
+
+  function r(x,y,w,h,fill,stroke,sw,rx) {
+    const el = document.createElementNS('http://www.w3.org/2000/svg','rect');
+    Object.entries({x,y,width:Math.max(w,0),height:Math.max(h,0),fill:fill||'none',rx:rx||0}).forEach(([k,v])=>el.setAttribute(k,v));
+    if(stroke){el.setAttribute('stroke',stroke);el.setAttribute('stroke-width',sw||1);}
+    svg.appendChild(el); return el;
+  }
+  function l(x1,y1,x2,y2,s,sw,dash) {
+    const el = document.createElementNS('http://www.w3.org/2000/svg','line');
+    Object.entries({x1,y1,x2,y2,stroke:s||'#666','stroke-width':sw||1}).forEach(([k,v])=>el.setAttribute(k,v));
+    if(dash) el.setAttribute('stroke-dasharray',dash);
+    svg.appendChild(el);
+  }
+  function t(x,y,str,size,fill,anchor,weight) {
+    const el = document.createElementNS('http://www.w3.org/2000/svg','text');
+    Object.entries({x,y,'font-size':size||11,fill:fill||'#111','text-anchor':anchor||'middle','font-weight':weight||'normal','font-family':'Arial,sans-serif'}).forEach(([k,v])=>el.setAttribute(k,v));
+    el.textContent = str; svg.appendChild(el); return el;
+  }
+  function path(dStr,fill,stroke,sw,dash) {
+    const el = document.createElementNS('http://www.w3.org/2000/svg','path');
+    el.setAttribute('d',dStr); el.setAttribute('fill',fill||'none');
+    if(stroke){el.setAttribute('stroke',stroke);el.setAttribute('stroke-width',sw||1);}
+    if(dash) el.setAttribute('stroke-dasharray',dash);
+    svg.appendChild(el);
+  }
+  function dimLine(x1,y1,x2,y2,lbl,horiz) {
+    const aw=5, off=7;
+    if (horiz) {
+      l(x1,y1,x2,y2,'#1B4F8A',0.7);
+      l(x1,y1-off,x1,y1+off,'#1B4F8A',0.7); l(x2,y1-off,x2,y1+off,'#1B4F8A',0.7);
+      path(`M${x1},${y1}l${aw},-3l0,6Z`,'#1B4F8A'); path(`M${x2},${y1}l${-aw},-3l0,6Z`,'#1B4F8A');
+      t((x1+x2)/2, y1-8, lbl, 13, '#1B4F8A','middle','700');
+    } else {
+      l(x1,y1,x2,y2,'#1B4F8A',0.7);
+      l(x1-off,y1,x1+off,y1,'#1B4F8A',0.7); l(x1-off,y2,x1+off,y2,'#1B4F8A',0.7);
+      path(`M${x1},${y1}l-3,${aw}l6,0Z`,'#1B4F8A'); path(`M${x1},${y2}l-3,${-aw}l6,0Z`,'#1B4F8A');
+      const cx=x1-4, cy=(y1+y2)/2;
+      const el = t(cx, cy, lbl, 13, '#1B4F8A','middle','700');
+      el.setAttribute('transform',`rotate(-90,${cx},${cy})`);
+    }
+  }
+
+  if (!IS_SUBMITTAL) {
+    r(0, 0, vW, 40, '#1B4F8A');
+    t(16, 18, 'DOORTRONIX USA', 14, '#fff', 'start', '700');
+    t(16, 33, 'ORDER CONFIRMATION DRAWING', 9, '#B8CCE4', 'start', '700');
+    t(vW-14, 18, cfg.label + ' (' + cfg.code + ')', 11, '#E87722', 'end', '700');
+    t(vW-14, 33, getWidthStr() + ' W × ' + (hasTransom ? getFTTHStr() : getHeightStr()) + ' H  |  ' + (d.frameFinish || ''), 9, '#fff', 'end');
+    t(dX + dW / 2, 60, 'EXTERIOR ELEVATION', 16, '#111', 'middle', '700');
+    l(dX + dW / 2 - 110, 64, dX + dW / 2 + 110, 64, '#1B4F8A', 1);
+  } else {
+    t(dX + dW / 2, 16, 'EXTERIOR ELEVATION', 16, '#111', 'middle', '700');
+    l(dX + dW / 2 - 110, 21, dX + dW / 2 + 110, 21, '#1B4F8A', 1);
+  }
+
+  // Outer frame
+  r(dX, dY, dW, dH, '#E8EEF4', frame, 2);
+  // Sill
+  r(dX, dY+dH-sillH, dW, sillH, frame);
+
+  // Transom
+  if (hasTransom) {
+    const numV = parseInt(d.transomVerticals) || 0;
+    const tx = dX + frameT, tw = dW - frameT * 2;
+    const tGlassY = dY + frameT;
+    const glassStopH = Math.max(1.5, sc * 1);
+    const tGlassH = transomH - frameT - glassStopH;
+    const _pX = dX + frameT, _pW = dW - frameT * 2;
+    const vertXs = [];
+    if (numV > 0) {
+      if (numV === 2 && isBi) {
+        const gap = 3, panW2 = (_pW - gap * 3) / 4;
+        vertXs.push(_pX + panW2 + gap / 2);
+        vertXs.push(_pX + (panW2 + gap) * 3 - gap / 2);
+      } else {
+        for (let i = 1; i <= numV; i++) vertXs.push(tx + tw * i / (numV + 1));
+      }
+    }
+    const liteEdges = [tx, ...vertXs.flatMap(vx => [vx - frameT/2, vx + frameT/2]), tx + tw];
+    for (let i = 0; i < liteEdges.length - 1; i += 2) {
+      const lx = liteEdges[i], lw = liteEdges[i+1] - liteEdges[i];
+      if (lw > 1) r(lx, tGlassY, lw, tGlassH, glaze.fill, glaze.stroke, 0.5);
+    }
+    r(dX, dY, dW, frameT, frame);
+    r(dX, dY, frameT, transomH, frame);
+    r(dX + dW - frameT, dY, frameT, transomH, frame);
+    vertXs.forEach(vx => r(vx - frameT/2, tGlassY, frameT, tGlassH, frame));
+    l(dX, tGlassY + tGlassH + glassStopH/2, dX + dW, tGlassY + tGlassH + glassStopH/2, frame, glassStopH);
+    const firstLiteW = vertXs.length > 0 ? (vertXs[0] - frameT/2) - tx : tw;
+    t(tx + firstLiteW/2, tGlassY + tGlassH/2 + 3, 'TRANSOM', 11, '#aaa', 'middle');
+  }
+
+  // Header — sensor on the header face, centered (standard location)
+  const hdrX = dX + frameT, hdrY = dY + transomH, hdrW = dW - frameT * 2;
+  r(hdrX, hdrY, hdrW, headerH, frame, '#777', 1);
+  const sensW = Math.max(12, sc * 11);
+  const sensH = Math.max(5, Math.min(headerH * 0.4, sc * 2.25));
+  const sensX = dX + dW / 2 - sensW / 2;
+  const sensY = hdrY + headerH - sensH - Math.max(2, headerH * 0.14);
+  r(sensX, sensY, sensW, sensH, '#1a1a1a', '#111', 0.7, 1.2);
+  r(sensX + 2, sensY + sensH * 0.52, sensW - 4, Math.max(1.6, sensH * 0.3), '#5a6570', 'none', 0, 0.5);
+
+  // Jambs
+  r(dX, dY+transomH, frameT, dH-transomH-sillH, frame);
+  r(dX+dW-frameT, dY+transomH, frameT, dH-transomH-sillH, frame);
+
+  // Panel zone
+  const pY = dY+transomH+headerH+2, pH = dH-transomH-headerH-sillH-4;
+  const pX = dX+frameT, pW = dW-frameT*2;
+  const muntY = realFrameH > 96
+    ? (pY + pH) - (42 * sc) - muntH / 2
+    : pY + topRH + (pH - topRH - btmRH) / 2 - muntH / 2;
+
+  let panels = [];
+  let junctionFace = null; // { x, y1, y2 } — drawn after muntins
+  function glassRect(px, pw, noInnerL, noInnerR) {
+    const lIn = noInnerL ? 0 : stileW;
+    const rIn = noInnerR ? 0 : stileW;
+    return { x: px + lIn, w: pw - lIn - rIn };
+  }
+  function drawP(px, py, pw, ph, strokeColor, sw, breakoutDir, noInnerL, noInnerR) {
+    r(px, py, pw, ph, panelFill, strokeColor, sw);
+    const lIn = noInnerL ? 0 : stileW;
+    const rIn = noInnerR ? 0 : stileW;
+    const gx = px+lIn, gy = py+topRH, gw = pw-lIn-rIn, gh = ph-topRH-btmRH;
+    if (gw > 2 && gh > 2) r(gx, gy, gw, gh, glaze.fill, 'none', 0);
+    if (lIn > 0) r(px, py, lIn, ph, panelFill, 'none', 0);
+    if (rIn > 0) r(px+pw-rIn, py, rIn, ph, panelFill, 'none', 0);
+    r(px, py, pw, topRH, panelFill, 'none', 0);
+    r(px, py+ph-btmRH, pw, btmRH, panelFill, 'none', 0);
+  }
+
+  if (isBi) {
+    const panW = pW / 4;
+    const soW  = panW - stileW / 2;
+    const sxW  = panW + stileW / 2;
+    const G    = panW - stileW * 1.5;
+    const x1 = pX;
+    const x2 = x1 + soW;
+    const x3 = x2 + sxW;
+    const x4 = x3 + sxW;
+    const sdStroke = isFBO ? frame : '#AABBC8', sdSW = isFBO ? 1.5 : 1;
+    const biStY = pY + topRH;
+    const biStH = pH - topRH - btmRH;
+    if (isFBO) {
+      drawP(x2, pY, sxW, pH, frame, 1.5, false, true, false);
+      drawP(x3, pY, sxW, pH, frame, 1.5, false, false, true);
+      drawP(x1, pY, soW, pH, sdStroke, sdSW, false, false, true);
+      drawP(x4, pY, soW, pH, sdStroke, sdSW, false, true, false);
+      // Fill outer overlap stile zones + blank artifact lines in rail zones
+      r(x2,           biStY, stileW, biStH, panelFill, 'none', 0);
+      r(x2 - 1,       pY,              stileW + 2, topRH,  panelFill, 'none', 0);
+      r(x2 - 1,       pY + pH - btmRH, stileW + 2, btmRH,  panelFill, 'none', 0);
+      r(x4 - stileW,     biStY, stileW, biStH, panelFill, 'none', 0);
+      r(x4 - stileW - 1, pY,              stileW + 2, topRH,  panelFill, 'none', 0);
+      r(x4 - stileW - 1, pY + pH - btmRH, stileW + 2, btmRH,  panelFill, 'none', 0);
+      // SO in front at both outer junctions — face lines in rail zones only
+      l(x2 + stileW, biStY - stileW, x2 + stileW, biStY,          frame, 1.5);
+      l(x2 + stileW, biStY + biStH,  x2 + stileW, pY + pH,        frame, 1.5);
+      l(x4 - stileW, biStY - stileW, x4 - stileW, biStY,          frame, 1.5);
+      l(x4 - stileW, biStY + biStH,  x4 - stileW, pY + pH,        frame, 1.5);
+    } else {
+      drawP(x1, pY, soW, pH, sdStroke, sdSW, false, false, true);
+      drawP(x4, pY, soW, pH, sdStroke, sdSW, false, true, false);
+      drawP(x2, pY, sxW, pH, frame, 1.5, false);
+      drawP(x3, pY, sxW, pH, frame, 1.5, false);
+    }
+    r(x3 - stileW, pY, stileW * 2, pH, panelFill, frame, 0.4);
+    l(x3, pY, x3, pY + pH, frame, 1.2);
+    const aY = muntY - 8;
+    l(x2 + stileW + 3, aY, x3 - stileW - 3, aY, '#1B4F8A', 1.2, '5,3');
+    path(`M${x2 + stileW + 3},${aY}l5,-3.5l0,7Z`, '#1B4F8A');
+    l(x3 + stileW + 3, aY, x4 - stileW - 3, aY, '#1B4F8A', 1.2, '5,3');
+    path(`M${x4 - stileW - 3},${aY}l-5,-3.5l0,7Z`, '#1B4F8A');
+    panels = [{ x: x1 + stileW, w: G }, { x: x2 + stileW, w: G }, { x: x3 + stileW, w: G }, { x: x4, w: G }];
+  } else {
+    // Single slide — fixed narrower, SX wider → equal glass width G between stiles
+    const panW = pW / 2;
+    const soW  = panW - stileW / 2;
+    const sxW  = panW + stileW / 2;
+    const G    = panW - stileW * 1.5;
+    const sdStroke = isFBO ? frame : '#AABBC8', sdSW = isFBO ? 1.5 : 1;
+    const aY = muntY - 8;
+    const meetX = pX + panW;
+    const stY = pY + topRH;
+    const stH = pH - topRH - btmRH;
+    // Junction overlap — fill between rails; front-panel face on correct side
+    function drawJunctionStile() {
+      // Fill stile zone between rails
+      r(meetX - stileW / 2, stY, stileW, stH, panelFill, 'none', 0);
+      // Blank the panel-edge artifact through top and bottom rail zones
+      r(meetX - stileW / 2 - 1, pY, stileW + 2, topRH, panelFill, 'none', 0);
+      r(meetX - stileW / 2 - 1, pY + pH - btmRH, stileW + 2, btmRH, panelFill, 'none', 0);
+      // Record face line segments (in rail zones, not glass zone)
+      const faceOnRight = isFBO ? isLH : !isLH;
+      const fX = faceOnRight ? meetX + stileW / 2 : meetX - stileW / 2;
+      junctionFace = { x: fX, stY, stH };
+    }
+    if (isLH) {
+      const jX = pX + soW;
+      if (isFBO) {
+        drawP(jX, pY, sxW, pH, frame, 1.5, false, true, false);
+        drawP(pX, pY, soW, pH, sdStroke, sdSW, false, false, true);
+        drawJunctionStile();
+        r(pX, stY, stileW, stH, panelFill, 'none', 0);
+      } else {
+        drawP(pX, pY, soW, pH, sdStroke, sdSW, false, false, true);
+        drawP(jX, pY, sxW, pH, frame, 1.5, false, true, false);
+        drawJunctionStile();
+      }
+      l(jX + stileW + 3, aY, jX + sxW - stileW - 3, aY, '#1B4F8A', 1.2, '5,3');
+      path(`M${jX + stileW + 3},${aY}l5,-3.5l0,7Z`, '#1B4F8A');
+      panels = [{ x: pX + stileW, w: G }, { x: jX + stileW, w: G }];
+    } else {
+      const jX = pX + sxW;
+      if (isFBO) {
+        drawP(pX, pY, sxW, pH, frame, 1.5, false, false, true);
+        drawP(jX, pY, soW, pH, sdStroke, sdSW, false, true, false);
+        drawJunctionStile();
+        r(jX + soW - stileW, stY, stileW, stH, panelFill, 'none', 0);
+      } else {
+        drawP(jX, pY, soW, pH, sdStroke, sdSW, false, true, false);
+        drawP(pX, pY, sxW, pH, frame, 1.5, false, false, true);
+        drawJunctionStile();
+      }
+      l(pX + stileW + 3, aY, jX - stileW - 3, aY, '#1B4F8A', 1.2, '5,3');
+      path(`M${jX - stileW - 3},${aY}l-5,-3.5l0,7Z`, '#1B4F8A');
+      panels = [{ x: pX + stileW, w: G }, { x: jX, w: G }];
+    }
+  }
+
+  if (panels.length > 0 && d.muntin && d.muntin !== 'No Muntin') {
+    panels.forEach(({x, w}) => r(x, muntY, w, muntH, panelFill, frame, 0.4));
+  }
+
+  // Junction face line: two short segments in the rail zones (not the glass zone)
+  if (junctionFace) {
+    const { x: jfX, stY: jfStY, stH: jfStH } = junctionFace;
+    l(jfX, jfStY - stileW, jfX, jfStY,           frame, 1.5); // top rail
+    l(jfX, jfStY + jfStH,  jfX, jfStY + jfStH + btmRH, frame, 1.5); // bottom rail
+  }
+
+  // Dim lines — width below the door, height on left
+  dimLine(dX, widthDimY, dX+dW, widthDimY, getWidthStr(), true);
+  dimLine(dX-32, dY, dX-32, dY+dH, hasTransom ? getFTTHStr() : getHeightStr(), false);
+
+  // Share horizontal scale with plan view so they line up
+  _doorScale = { dX, dY, dW, dH, sc, vW };
+}
+
+// ════════════════════════════════════════════════════════════════════════
+//  PLAN VIEW — top-down operation diagram (cut-sheet style)
+//  - Width-aligned with elevation: frame outer = dX/dW; panels in opening inside jambs
+//  - FBO: SO front track, SX back track (SO-SX-SX-SO)
+//  - FSL: O back track, SX front track (O-SX-SX-O); only SX break out
+// ════════════════════════════════════════════════════════════════════════
+function drawPlanView() {
+  const svg = document.getElementById('plan-svg');
+  if (!svg) return;
+  svg.innerHTML = '';
+  const { vW, vH } = svgSize(svg);
+  svg.setAttribute('viewBox', `0 0 ${vW} ${vH}`);
+  const d = ORDER.door;
+  const cfg = CONFIGS[d.configKey];
+  if (!cfg || !_doorScale) return;
+
+  const frame = getFrameColor();
+  const panelFill = getPanelFill();
+  const isBi = cfg.isBi;
+  const isLH = cfg.code === 'O-SX' || cfg.code === 'SO-SX' || cfg.code === 'O-SX-SX-O';
+  const isFBO = cfg.isFBO;
+
+  // Same door width and inch-scale as the elevation above
+  const sc = _doorScale.sc;
+  const frameW = _doorScale.dW;
+  const frameX = _doorScale.dX + (vW - _doorScale.vW) / 2;
+  const jambW  = Math.max(2, sc * 1.75);
+  const openX  = frameX + jambW;
+  const openW  = frameW - jambW * 2;
+  const titleH = 30, stateGap = 16, openDimGap = 16, footGap = 16;
+
+  // Panel depth in plan = 1-3/4" at same scale as elevation width
+  const panH  = Math.max(2, sc * 1.75);
+  const trackSep = panH;          // back track → front track offset (1-3/4")
+
+  function r(x,y,w,h,fill,stroke,sw,rx) {
+    const el = document.createElementNS('http://www.w3.org/2000/svg','rect');
+    Object.entries({x,y,width:Math.max(w,0),height:Math.max(h,0),fill:fill||'none',rx:rx||0}).forEach(([k,v])=>el.setAttribute(k,v));
+    if(stroke){el.setAttribute('stroke',stroke);el.setAttribute('stroke-width',sw||1);}
+    svg.appendChild(el); return el;
+  }
+  function l(x1,y1,x2,y2,s,sw,dash) {
+    const el = document.createElementNS('http://www.w3.org/2000/svg','line');
+    Object.entries({x1,y1,x2,y2,stroke:s||'#666','stroke-width':sw||1}).forEach(([k,v])=>el.setAttribute(k,v));
+    if(dash) el.setAttribute('stroke-dasharray',dash);
+    svg.appendChild(el);
+  }
+  function t(x,y,str,size,fill,anchor,weight) {
+    const el = document.createElementNS('http://www.w3.org/2000/svg','text');
+    Object.entries({x,y,'font-size':size||11,fill:fill||'#111','text-anchor':anchor||'middle','font-weight':weight||'normal','font-family':'Arial,sans-serif'}).forEach(([k,v])=>el.setAttribute(k,v));
+    el.textContent = str; svg.appendChild(el); return el;
+  }
+  function path(dStr,fill,stroke,sw,dash) {
+    const el = document.createElementNS('http://www.w3.org/2000/svg','path');
+    el.setAttribute('d',dStr); el.setAttribute('fill',fill||'none');
+    if(stroke){el.setAttribute('stroke',stroke);el.setAttribute('stroke-width',sw||1);}
+    if(dash) el.setAttribute('stroke-dasharray',dash);
+    svg.appendChild(el);
+  }
+  function dimLine(x1,y1,x2,y2,lbl) {
+    const aw=5, off=6;
+    l(x1,y1,x2,y2,'#1B4F8A',0.7);
+    l(x1,y1-off,x1,y1+off,'#1B4F8A',0.7); l(x2,y1-off,x2,y1+off,'#1B4F8A',0.7);
+    path(`M${x1},${y1}l${aw},-3l0,6Z`,'#1B4F8A'); path(`M${x2},${y1}l${-aw},-3l0,6Z`,'#1B4F8A');
+    t((x1+x2)/2, y1+16, lbl, 13, '#1B4F8A','middle','700');
+  }
+  function inlineArrow(centerX, y, color, pointsLeft) {
+    color = color || '#1B4F8A';
+    const lineLen = 16, headSize = 6, half = lineLen / 2;
+    const startX = centerX - half, endX = centerX + half;
+    if (pointsLeft) {
+      l(endX, y, startX, y, color, 1.4);
+      path(`M${startX},${y} L${startX + headSize},${y - 3.5} L${startX + headSize},${y + 3.5} Z`, color);
+    } else {
+      l(startX, y, endX, y, color, 1.4);
+      path(`M${endX},${y} L${endX - headSize},${y - 3.5} L${endX - headSize},${y + 3.5} Z`, color);
+    }
+  }
+
+  t(frameX + frameW / 2, 10, 'PLAN', 16, '#111', 'middle', '700');
+  l(frameX + frameW / 2 - 40, 15, frameX + frameW / 2 + 40, 15, '#1B4F8A', 1);
+
+  const stileW = getStileW(sc);
+  const halfStile = stileW / 2;     // each panel extends halfStile → overlap zone = full stileW
+  const numPanels = isBi ? 4 : 2;
+  const eqW = openW / numPanels;
+  const panelLen = eqW + halfStile; // bipart panel length in plan
+  let fixedPanelLen, sxPanelLen;
+  if (isBi) {
+    fixedPanelLen = panelLen;
+    sxPanelLen = panelLen;
+  } else {
+    // Single plan — both panels lengthened halfStile at junction (overlap = stileW: 2-1/2" or 3-3/4")
+    fixedPanelLen = eqW + halfStile;
+    sxPanelLen = eqW + halfStile;
+  }
+  const openInset = sc * 3;        // SX stops 3" short of fully open to jamb
+  const meetX = openX + openW / 2; // center mullion where SX panels meet
+  const stateLblX = frameX - 14;
+
+  const fixedLbl = isFBO ? 'SO' : 'O';
+
+  // Closed positions — fixed/SX overlap by stileW at junction (matches elevation)
+  const pos = {
+    biLeftFixed:  openX,
+    biLeftSX:     meetX - panelLen,
+    biRightSX:    meetX,
+    biRightFixed: openX + eqW * 3 - halfStile,
+    lhFixed:      openX,
+    lhSX:         openX + openW - sxPanelLen,
+    rhSX:         openX,
+    rhFixed:      openX + eqW - halfStile,
+  };
+
+  // Plan depth: interior (back) at top, exterior (front) at bottom (+Y)
+  const yBack  = (y) => y;
+  const yFront = (y) => y + trackSep;
+  // FBO: fixed front / slide back  |  FSL: fixed back / slide front
+  const yFixedTrack = (y) => isFBO ? yFront(y) : yBack(y);
+  const ySlideTrack = (y) => isFBO ? yBack(y)  : yFront(y);
+  const yStateLbl   = (y) => y + trackSep / 2 + panH / 2 + 3;
+
+  function drawPlanPanel(x, y, w, label, isSO) {
+    const stroke = (isSO && !isFBO) ? '#7E96AE' : frame;
+    const sw = (isSO && !isFBO) ? 1.2 : 1.6;
+    r(x + 0.5, y, w - 1, panH, panelFill, stroke, sw);
+    if (w > 28 && panH >= 7) {
+      t(x + w/2, y + panH/2 + 3.5, label, Math.min(12, panH + 2), '#fff', 'middle', '700');
+    }
+  }
+
+  // Jamb profile in plan: 1-3/4" × 4-1/2" — outer faces align with elevation frame
+  const jambDepth = Math.max(4, sc * 4.5);
+
+  function jambMarks(yBase) {
+    const trackDepth = trackSep + panH;
+    const jambY = yBase - (jambDepth - trackDepth) / 2;
+    r(frameX,              jambY, jambW, jambDepth, frame, '#94A3B8', 0.9);
+    r(frameX + frameW - jambW, jambY, jambW, jambDepth, frame, '#94A3B8', 0.9);
+  }
+
+  // ── CLOSED ──────────────────────────────────────────────────────────
+  const yClosedBase = titleH + 6;
+  t(stateLblX, yStateLbl(yClosedBase), 'Closed', 14, '#1B4F8A', 'end', '700');
+  jambMarks(yClosedBase);
+
+  if (isBi) {
+    drawPlanPanel(pos.biLeftFixed,  yFixedTrack(yClosedBase), panelLen, fixedLbl, true);
+    drawPlanPanel(pos.biLeftSX,     ySlideTrack(yClosedBase), panelLen, 'SX', false);
+    drawPlanPanel(pos.biRightSX,    ySlideTrack(yClosedBase), panelLen, 'SX', false);
+    drawPlanPanel(pos.biRightFixed, yFixedTrack(yClosedBase), panelLen, fixedLbl, true);
+    inlineArrow(pos.biLeftSX + panelLen / 2,  ySlideTrack(yClosedBase) - 5, '#1B4F8A', true);
+    inlineArrow(pos.biRightSX + panelLen / 2, ySlideTrack(yClosedBase) - 5, '#1B4F8A', false);
+  } else if (isLH) {
+    drawPlanPanel(pos.lhFixed, yFixedTrack(yClosedBase), fixedPanelLen, fixedLbl, true);
+    drawPlanPanel(pos.lhSX,    ySlideTrack(yClosedBase), sxPanelLen, 'SX', false);
+    inlineArrow(pos.lhSX + sxPanelLen / 2, ySlideTrack(yClosedBase) - 5, '#1B4F8A', true);
+  } else {
+    drawPlanPanel(pos.rhSX,    ySlideTrack(yClosedBase), sxPanelLen, 'SX', false);
+    drawPlanPanel(pos.rhFixed, yFixedTrack(yClosedBase), fixedPanelLen, fixedLbl, true);
+    inlineArrow(pos.rhSX + sxPanelLen / 2, ySlideTrack(yClosedBase) - 5, '#1B4F8A', false);
+  }
+
+  // ── OPEN — SX stops 3" short of fully open; fixed panels stay at jambs ─
+  const yOpenBase = yFront(yClosedBase) + panH + stateGap;
+  const yOpenBottom = Math.max(ySlideTrack(yOpenBase), yFixedTrack(yOpenBase)) + panH;
+  const yOpenDim  = yOpenBottom + 12;
+  t(stateLblX, yStateLbl(yOpenBase), 'Open', 14, '#1B4F8A', 'end', '700');
+  jambMarks(yOpenBase);
+
+  if (isBi) {
+    const leftSxX  = openX + openInset;
+    const rightSxX = pos.biRightFixed - openInset;
+    drawPlanPanel(pos.biLeftFixed,  yFixedTrack(yOpenBase), panelLen, fixedLbl, true);
+    drawPlanPanel(leftSxX,          ySlideTrack(yOpenBase), panelLen, 'SX', false);
+    drawPlanPanel(rightSxX,         ySlideTrack(yOpenBase), panelLen, 'SX', false);
+    drawPlanPanel(pos.biRightFixed, yFixedTrack(yOpenBase), panelLen, fixedLbl, true);
+    dimLine(leftSxX + panelLen, yOpenDim, rightSxX, yOpenDim,
+            'Clear Door Opening: ' + getClearOpeningStr());
+  } else if (isLH) {
+    const sxOpenX = openX + openInset;
+    drawPlanPanel(pos.lhFixed, yFixedTrack(yOpenBase), fixedPanelLen, fixedLbl, true);
+    drawPlanPanel(sxOpenX,   ySlideTrack(yOpenBase), sxPanelLen, 'SX', false);
+    dimLine(sxOpenX + sxPanelLen, yOpenDim, openX + openW, yOpenDim,
+            'Clear Door Opening: ' + getClearOpeningStr());
+  } else {
+    const sxOpenX = openX + openW - sxPanelLen - openInset;
+    drawPlanPanel(sxOpenX,   ySlideTrack(yOpenBase), sxPanelLen, 'SX', false);
+    drawPlanPanel(pos.rhFixed, yFixedTrack(yOpenBase), fixedPanelLen, fixedLbl, true);
+    dimLine(openX, yOpenDim, sxOpenX, yOpenDim,
+            'Clear Door Opening: ' + getClearOpeningStr());
+  }
+
+  // ── BREAKAWAY — footprints + SX nose arcs (fixed panels: FBO only) ───
+  const yBreakBase = yOpenDim + 26;
+  const swingR = isBi ? panelLen : Math.max(fixedPanelLen, sxPanelLen);
+  const yBreakFootLbl = ySlideTrack(yBreakBase) + panH + swingR + footGap;
+  t(stateLblX, yStateLbl(yBreakBase), 'Breakaway', 14, '#1B4F8A', 'end', '700');
+  jambMarks(yBreakBase);
+
+  if (isBi) {
+    drawPlanPanel(pos.biLeftFixed,  yFixedTrack(yBreakBase), panelLen, fixedLbl, true);
+    drawPlanPanel(pos.biLeftSX,     ySlideTrack(yBreakBase), panelLen, 'SX', false);
+    drawPlanPanel(pos.biRightSX,    ySlideTrack(yBreakBase), panelLen, 'SX', false);
+    drawPlanPanel(pos.biRightFixed, yFixedTrack(yBreakBase), panelLen, fixedLbl, true);
+  } else if (isLH) {
+    drawPlanPanel(pos.lhFixed, yFixedTrack(yBreakBase), fixedPanelLen, fixedLbl, true);
+    drawPlanPanel(pos.lhSX,    ySlideTrack(yBreakBase), sxPanelLen, 'SX', false);
+  } else {
+    drawPlanPanel(pos.rhSX,    ySlideTrack(yBreakBase), sxPanelLen, 'SX', false);
+    drawPlanPanel(pos.rhFixed, yFixedTrack(yBreakBase), fixedPanelLen, fixedLbl, true);
+  }
+
+  // Nose arc (dotted quarter-circle) + vertical swung line from hinge at panel edge
+  function noseArc(hx, hy, nxRest, nyRest, nxOut, nyOut, sweep, radius) {
+    const r = radius != null ? radius : swingR;
+    path(`M ${nxRest} ${nyRest} A ${r} ${r} 0 0 ${sweep} ${nxOut} ${nyOut}`,
+         'none', '#1B4F8A', 1.3, '4,4');
+    l(hx, hy, hx, hy + r, frame, 1.4);
+  }
+
+  if (isBi) {
+    const yFixed = yFixedTrack(yBreakBase) + panH / 2;
+    const ySlide = ySlideTrack(yBreakBase) + panH / 2;
+    const leftSxHeel  = pos.biLeftSX;
+    const leftSxNose  = pos.biLeftSX + panelLen;
+    const rightSxHeel = pos.biRightSX + panelLen;
+    const rightSxNose = pos.biRightSX;
+    if (isFBO) noseArc(frameX, yFixed, pos.biLeftFixed + panelLen, yFixed, frameX, yFixed + swingR, 1);
+    noseArc(leftSxHeel, ySlide, leftSxNose, ySlide, leftSxHeel, ySlide + swingR, 1);
+    noseArc(rightSxHeel, ySlide, rightSxNose, ySlide, rightSxHeel, ySlide + swingR, 0);
+    if (isFBO) noseArc(frameX + frameW, yFixed, pos.biRightFixed, yFixed, frameX + frameW, yFixed + swingR, 0);
+  } else if (isLH) {
+    const yFixed = yFixedTrack(yBreakBase) + panH / 2;
+    const ySlide = ySlideTrack(yBreakBase) + panH / 2;
+    if (isFBO) noseArc(openX, yFixed, pos.lhFixed + fixedPanelLen, yFixed, openX, yFixed + fixedPanelLen, 1, fixedPanelLen);
+    noseArc(pos.lhSX, ySlide, pos.lhSX + sxPanelLen, ySlide, pos.lhSX, ySlide + sxPanelLen, 1, sxPanelLen);
+  } else {
+    const yFixed = yFixedTrack(yBreakBase) + panH / 2;
+    const ySlide = ySlideTrack(yBreakBase) + panH / 2;
+    noseArc(pos.rhSX + sxPanelLen, ySlide, pos.rhSX, ySlide, pos.rhSX + sxPanelLen, ySlide + sxPanelLen, 0, sxPanelLen);
+    if (isFBO) noseArc(openX + openW, yFixed, pos.rhFixed, yFixed, openX + openW, yFixed + fixedPanelLen, 0, fixedPanelLen);
+  }
+
+  t(frameX + frameW / 2, yBreakFootLbl,
+    isFBO ? ('FBO — All ' + numPanels + ' panels pivot open for full emergency egress')
+          : ('FSL — Only sliding (SX) panels break out; fixed panels (O) do not'),
+    12, '#666', 'middle', '700');
+
+}
+
+// ════════════════════════════════════════════════════════════════════════
+
+if (loadFromURL()) renderSheet();
+else loadSample('fbo-single-rh', { widthFt:8, heightFt:8, heightIn:0, transom:true, ftthFt:10, ftthIn:0, transomVerticals:1, frameFinish:'Clear Anodized' });
+
+window.addEventListener('resize', () => { if (ORDER) drawAll(); });
+window._encodeOrder = encodeOrder;
+</script>
+</body>
+</html>
