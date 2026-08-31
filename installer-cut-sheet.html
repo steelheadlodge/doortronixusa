@@ -10,6 +10,8 @@
   --blue:#1B4F8A; --orange:#E87722; --ink:#111; --muted:#555; --line:#111;
 }
 html, body { background:#E8EEF4; color:var(--ink); font-family:Arial, Helvetica, sans-serif; }
+/* Keep the blue section headers, table fills, and banners when printing / saving to PDF. */
+.sheet, .sheet * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 .screen-bar {
   max-width:8.5in; margin:12px auto 8px; padding:0 8px;
   display:flex; justify-content:space-between; align-items:center; gap:10px;
@@ -95,6 +97,7 @@ html.embed .sheet { margin:0 auto 0; }
 .cut-flag { background:#FEF3C7; border-left:4px solid #F59E0B; padding:8px 12px; font-size:10px; color:#78350F; border-radius:4px; margin:6px 0 14px; }
 @media print {
   html, body { background:#fff; }
+  .sheet, .sheet * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
   .screen-bar, .screen-only { display:none !important; }
   .sheet {
     width:8.5in; min-height:11in; margin:0; border:none;
