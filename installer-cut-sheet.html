@@ -780,13 +780,17 @@ function renderCutList() {
   }
 
   let gh = '<thead><tr><th>Lite</th><th class="num">Qty/opng</th><th class="num">Size</th><th class="num">Total (' + qty + ')</th></tr></thead><tbody>';
-  cl.glass.forEach(rw => {
-    const label = rw[0], val = rw[1];
-    const m = /\(Qty\s*(\d+)\)\s*(.*)/.exec(val);
-    const per = m ? parseInt(m[1], 10) : 1;
-    const size = m ? m[2] : val;
-    gh += '<tr><td>' + label + '</td><td class="num">' + per + '</td><td class="num">' + size + '</td><td class="num">' + (per * qty) + '</td></tr>';
-  });
+  if (glassSizesHidden()) {
+    gh += '<tr><td colspan="4" style="border:1px solid #cbd5e1;padding:6px;">Glass sizes provided separately — formulas TBD.</td></tr>';
+  } else {
+    cl.glass.forEach(rw => {
+      const label = rw[0], val = rw[1];
+      const m = /\(Qty\s*(\d+)\)\s*(.*)/.exec(val);
+      const per = m ? parseInt(m[1], 10) : 1;
+      const size = m ? m[2] : val;
+      gh += '<tr><td>' + label + '</td><td class="num">' + per + '</td><td class="num">' + size + '</td><td class="num">' + (per * qty) + '</td></tr>';
+    });
+  }
   gh += '</tbody>';
   setHTML('cut-glass', gh);
 
@@ -876,8 +880,15 @@ function renderSheet() {
 
   fillTable('glass-tbl', glassSizeRows());
   renderCutList();
+  const hideGlass = glassSizesHidden();
   const prep = (d.doorGlassPrep || '').trim();
-  document.getElementById('glass-h').textContent = prep ? 'Glass sizes — ' + prep : 'Glass sizes';
+  document.getElementById('glass-h').textContent = (prep && !hideGlass) ? 'Glass sizes — ' + prep : 'Glass sizes';
+  const glassNote = document.getElementById('glass-note');
+  if (glassNote) {
+    glassNote.textContent = hideGlass
+      ? 'Glass sizes provided separately. Glass by others. Do not cut until signed.'
+      : 'Glass by others. Do not cut until signed.';
+  }
 
   fillTable('options-tbl', optionList());
   document.getElementById('ship-to').innerHTML = (p.shipTo || '—').replace(/\n/g, '<br>');
@@ -1259,7 +1270,16 @@ function calcSwingGlass(cfg, d, W, Hhdr) {
   }
   return out;
 }
+// Medium-stile glass formulas aren't finalized — suppress glass sizes for
+// swing doors (always medium stile) and any medium-stile slider until worked out.
+function glassSizesHidden() {
+  const d = ORDER && ORDER.door;
+  if (!d) return false;
+  return isSwingCfg(CONFIGS[d.configKey]) || d.stileWidth === 'medium';
+}
+
 function glassSizeRows() {
+  if (glassSizesHidden()) return [['Glass sizes', 'Provided separately']];
   const g = calcGlass();
   if (!g) return [['Glass', '—']];
   function row(label, qty, w, h) {
