@@ -126,14 +126,17 @@ Stripe deposit. Stripe is not wired locally (no keys), so `/pay` returns a
 
 ---
 
-## 6. Open decision: push/pull handles on OHC low-energy swings
+## 6. Push/pull handles on OHC low-energy swings — DONE
 
-Question: should low-energy (OHC) single/pair swing doors offer a selectable
-pull handle (10" vs 12") that also shows on the drawing?
-
-Context: low-energy operators are meant to also work as manual push/pull
-("push-and-go"), so a graspable pull on the pull side is legitimate and common,
-especially interior/vestibule entrances. Today the builder lists "Push/pull
-hardware for manual use (incl.)" generically but doesn't let you pick a size or
-draw it. Leaning toward: yes, add a selectable pull (default to the more common
-size) and draw it on the pull side. Pending final decision.
+Implemented (low energy only; high energy has no manual pull/push bar):
+- **Manual Pull Handle** selector: 10" offset wire pull (std, incl.) / 12"
+  offset wire pull (**+$100 each**) / None (by others). One per leaf, so pair +
+  twin charge the 12" upgrade ×2.
+- **Horizontal Push Bar** selector: cut-to-width push bar (std) / None (by
+  others). Cut to the exact door width because stock push bars only come in
+  fixed lengths.
+- **Drawing:** the elevation is the exterior face, so out-swing shows the
+  vertical offset pull on the lock stile and in-swing shows the horizontal push
+  bar. Drawn in both the live preview (`quote-combined.html`) and the print /
+  confirmation sheet (`installer-cut-sheet.html`). Verified on single RH/LH,
+  pair, and twin.

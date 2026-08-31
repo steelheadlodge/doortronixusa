@@ -1173,6 +1173,28 @@ body.sheet-mode #plan-svg { background:#fff; }
               <label for="pf_blue">Painted blue (+$40 ea)</label>
             </div>
           </div>
+          <div class="field full" id="swing-pull-field">
+            <label>Manual Pull Handle (low energy)</label>
+            <div class="chip-group">
+              <input type="radio" name="swingPull" id="pull_10" value="10" checked>
+              <label for="pull_10">10" offset wire pull (std)</label>
+              <input type="radio" name="swingPull" id="pull_12" value="12">
+              <label for="pull_12">12" offset wire pull (+$100 ea)</label>
+              <input type="radio" name="swingPull" id="pull_none" value="none">
+              <label for="pull_none">None / by others</label>
+            </div>
+            <span class="hint" id="swing-pull-hint">Offset wire pull on the lock stile for manual push-and-go and power-off use. One per leaf.</span>
+          </div>
+          <div class="field full" id="swing-pushbar-field">
+            <label>Horizontal Push Bar</label>
+            <div class="chip-group">
+              <input type="radio" name="swingPushBar" id="pb_cut" value="cut" checked>
+              <label for="pb_cut">Cut-to-width push bar (std)</label>
+              <input type="radio" name="swingPushBar" id="pb_none" value="none">
+              <label for="pb_none">None / by others</label>
+            </div>
+            <span class="hint" id="swing-pushbar-hint">Pairs with the offset wire pull on the push face. Cut to the exact door width — stock push bars only come in fixed lengths, so custom-width doors need this. One per leaf.</span>
+          </div>
         </div>
 
       </div>
@@ -2212,6 +2234,8 @@ function captureCurrentDoor() {
     swingPlateLogo: rv('swingPlateLogo'),
     swingPlateFinish: rv('swingPlateFinish'),
     swingPlateWireless: rv('swingPlateWireless'),
+    swingPull: rv('swingPull'),
+    swingPushBar: rv('swingPushBar'),
     swingSidelite: rv('swingSidelite'),
     swingSideliteW: getSwingSideliteStr(),
     swingSideliteWIn: getSwingSideliteInTotal(),
@@ -2396,7 +2420,7 @@ function loadDoorIntoForm(door) {
   } else if (door.swingSideliteWIn) {
     slWidthSetIds('sl_rwft', 'sl_rwin', door.swingSideliteWIn);
   }
-  ['glazing','transom','transomGlassPrep','glassPrep','stileWidth','bottomRail','muntin','threshold','sensor','swingDir','swingHand','swingEnergy','swingStop','swingCrashIn','swingCrashOut','swingScan','swingApproach','swingHdrSafe','swingPlate','swingPlateLogo','swingPlateFinish','swingPlateWireless','swingSidelite','swingSideliteGlass'].forEach(name => {
+  ['glazing','transom','transomGlassPrep','glassPrep','stileWidth','bottomRail','muntin','threshold','sensor','swingDir','swingHand','swingEnergy','swingStop','swingCrashIn','swingCrashOut','swingScan','swingApproach','swingHdrSafe','swingPlate','swingPlateLogo','swingPlateFinish','swingPlateWireless','swingPull','swingPushBar','swingSidelite','swingSideliteGlass'].forEach(name => {
     const v = door[name]; if (!v && v !== '0') return;
     const el = document.querySelector(`input[name="${name}"][value='${v}']`);
     if (el) el.checked = true;
@@ -2930,6 +2954,35 @@ function handStr(hand, isOut) {
 //   RH Outswing = hinge left   ·  RH Inswing  = hinge right
 //   LH Inswing  = hinge left   ·  LH Outswing = hinge right
 function hingeLeftFor(hand, isOut) { return (hand === 'rh') === isOut; }
+// Low-energy manual hardware on a swing leaf. The elevation is the exterior face:
+// out-swing exterior is the pull side (show the offset wire pull), in-swing exterior
+// is the push side (show the cut-to-width push bar). o = {leafL, leafW, leafY, leafH,
+// stileW, sc, lockLeft, outSwing}.
+function drawSwingLeafHardware(svg, o) {
+  if (rv('swingEnergy') === 'high') return;
+  const metal = '#5a5f66', edge = '#2a2d31';
+  const cyMid = o.leafY + o.leafH - 40 * o.sc;
+  if (o.outSwing) {
+    const pullSz = swingPullSize();
+    if (!pullSz) return;
+    const len = Math.max(o.sc * 6, pullSz * o.sc);
+    const px = o.lockLeft ? o.leafL + o.stileW : o.leafL + o.leafW - o.stileW;
+    const top = cyMid - len / 2, bot = cyMid + len / 2;
+    const bw = Math.max(1.6, o.sc * 0.9);
+    svgEl(svg, 'line', { x1: px, y1: top + len * 0.12, x2: px, y2: bot - len * 0.12, stroke: metal, 'stroke-width': bw, 'stroke-linecap': 'round' });
+    svgEl(svg, 'circle', { cx: px, cy: top + len * 0.12, r: Math.max(1, o.sc * 0.55), fill: edge });
+    svgEl(svg, 'circle', { cx: px, cy: bot - len * 0.12, r: Math.max(1, o.sc * 0.55), fill: edge });
+  } else {
+    if (!swingPushBarOn()) return;
+    const inset = o.stileW * 0.9;
+    const x1 = o.leafL + inset, x2 = o.leafL + o.leafW - inset;
+    if (x2 - x1 < 4) return;
+    const bh = Math.max(1.6, o.sc * 0.9);
+    svgEl(svg, 'line', { x1, y1: cyMid, x2, y2: cyMid, stroke: metal, 'stroke-width': bh, 'stroke-linecap': 'round' });
+    svgEl(svg, 'circle', { cx: x1 + (x2 - x1) * 0.06, cy: cyMid, r: Math.max(1, o.sc * 0.55), fill: edge });
+    svgEl(svg, 'circle', { cx: x2 - (x2 - x1) * 0.06, cy: cyMid, r: Math.max(1, o.sc * 0.55), fill: edge });
+  }
+}
 function singleHand(cfg) {
   if (cfg && cfg.code === 'OHC LH') return 'lh';   // back-compat hand-specific config
   if (cfg && cfg.code === 'OHC RH') return 'rh';   // back-compat hand-specific config
@@ -3431,6 +3484,29 @@ function getSwingPlateStr(forPrice) {
     : ' · hardwired';
   return (map[swingPlateKind()] || swingPlateKind()) + ' ×' + n + ', ' + logo + ', ' + fin + wire;
 }
+const PULL_12_UPCHARGE = 100;
+// Manual push/pull hardware only applies to low-energy swings. One set per leaf.
+function swingHwLeafCount() {
+  const cfg = getConfig();
+  return (cfg && (cfg.isBi || cfg.isTwin)) ? 2 : 1;
+}
+function swingPullSize() {
+  const v = rv('swingPull');
+  if (v === '12') return 12;
+  if (v === 'none') return 0;
+  return 10;
+}
+function swingPushBarOn() {
+  return rv('swingPushBar') !== 'none';
+}
+function getSwingPullStr() {
+  const sz = swingPullSize();
+  if (!sz) return 'None / by others';
+  return sz + '" offset wire pull';
+}
+function getSwingPushBarStr() {
+  return swingPushBarOn() ? 'Cut-to-width push bar' : 'None / by others';
+}
 function swingSideliteSellFor(wIn) {
   if (!wIn) return 0;
   return Math.max(450, Math.round(175 * (wIn / 12)));
@@ -3877,7 +3953,22 @@ function calcPrice() {
       lines.push({ label: 'MS Sedco DH94 header safety — ' + hdrN + ' per opening', amount: 245 * hdrN });
     }
     if (!high) {
-      lines.push({ label: 'Push/pull hardware for manual use', amount: 0 });
+      const hwN = swingHwLeafCount();
+      const pullSz = swingPullSize();
+      const nSuffix = hwN > 1 ? ' ×' + hwN : '';
+      if (pullSz === 12) {
+        const pullAmt = PULL_12_UPCHARGE * hwN;
+        total += pullAmt;
+        lines.push({ label: '12" offset wire pull' + nSuffix, amount: pullAmt });
+      } else if (pullSz === 10) {
+        lines.push({ label: '10" offset wire pull' + nSuffix, amount: 0 });
+      } else {
+        lines.push({ label: 'Offset wire pull — by others', amount: 0 });
+      }
+      lines.push({
+        label: swingPushBarOn() ? 'Cut-to-width push bar' + nSuffix : 'Push bar — by others',
+        amount: 0
+      });
     }
     if (!high && swingPlateKind()) {
       const n = swingPlateStations();
@@ -4112,6 +4203,7 @@ function updateSpecSummary() {
       ['Door stop', getSwingStopStr()],
       ['Crash bars', getSwingCrashStr()],
       ...(rv('swingEnergy') !== 'high' ? [['Push plates', getSwingPlateStr()]] : []),
+      ...(rv('swingEnergy') !== 'high' ? [['Manual hardware', getSwingPullStr() + ' + ' + (swingPushBarOn() ? 'cut-to-width push bar' : 'push bar by others') + (swingHwLeafCount() > 1 ? ' (×' + swingHwLeafCount() + ')' : '')]] : []),
       ['Guide rails', getSwingRailStr()],
       ['SuperScan', ({ none:'None', both:'Both faces', swing:'Swing side only', others:'By others', front:'Front', back:'Back' })[rv('swingScan')] || rv('swingScan')],
       ['Header safety', rv('swingHdrSafe') === 'yes' ? (cfg.isTwin ? 'MS Sedco DH94 (1 per door)' : 'MS Sedco DH94 (1 per opening)') : 'None'],
@@ -4684,6 +4776,7 @@ function drawTwinSwingElevation(svg, vW, vH, isConf) {
     const cy = leafY + leafH - 40 * sc;
     const cx = hingeLeft ? innerX + leafW - stileW / 2 : innerX + stileW / 2;
     svgEl(svg, 'circle', { cx, cy, r: Math.max(2.2, sc * 0.9), fill: '#2a2a2a', stroke: '#111', 'stroke-width': 0.7 });
+    drawSwingLeafHardware(svg, { leafL: innerX, leafW, leafY, leafH, stileW, sc, lockLeft: !hingeLeft, outSwing: bay.outSwing });
     bay.innerX = innerX;
     bay.leafW = leafW;
   }
@@ -4942,6 +5035,10 @@ function drawSwingElevation(svg, vW, vH, isConf) {
     else cx = innerX + stileW / 2;
     svgEl(svg, 'circle', { cx, cy, r: rr, fill: '#2a2a2a', stroke: '#111', 'stroke-width': 0.7 });
   })();
+  leafXs.forEach((lx, i) => {
+    const lockLeft = isPair ? (i === 1) : !hingeOnLeft;
+    drawSwingLeafHardware(svg, { leafL: lx, leafW, leafY, leafH, stileW, sc, lockLeft, outSwing });
+  });
 
   function drawStorefront(x, w, doorOnLeft) {
     if (w <= 1) return;
@@ -5906,6 +6003,7 @@ document.getElementById('quoteForm').addEventListener('submit', async function(e
     swingHardware: cfg && cfg.isSwing ? [
       (cfg.isBi ? 'Deadbolt + flushbolts' : cfg.isTwin ? 'Adams Rite deadbolt ×2' : 'Adams Rite deadbolt') + ' (key cylinder exterior, thumbturn interior)',
       '1" fingerguard',
+      rv('swingEnergy') !== 'high' ? (getSwingPullStr() + ' + ' + (swingPushBarOn() ? 'cut-to-width push bar' : 'push bar by others') + (swingHwLeafCount() > 1 ? ' (×' + swingHwLeafCount() + ')' : '')) : null,
       getSwingCrashStr() !== 'None' ? 'Crash bars — ' + getSwingCrashStr() : null,
       'Guide rails — ' + getSwingRailStr(),
       rv('swingScan') !== 'none' ? 'SuperScan ' + rv('swingScan') : null,
@@ -6035,6 +6133,8 @@ function buildSheetOrder() {
     swingPlateLogo: rv('swingPlateLogo'),
     swingPlateFinish: rv('swingPlateFinish'),
     swingPlateWireless: rv('swingPlateWireless'),
+    swingPull: rv('swingPull'),
+    swingPushBar: rv('swingPushBar'),
     swingRails: (cfg && cfg.isTwin) ? getSwingRailStr() : (typeof swingRailNeed === 'function' ? swingRailNeed() : rv('swingRails')),
     swingRailsL: (cfg && cfg.isTwin) ? swingRailNeedOn('left') : undefined,
     swingRailsR: (cfg && cfg.isTwin) ? swingRailNeedOn('right') : undefined,
