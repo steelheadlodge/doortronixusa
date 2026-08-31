@@ -468,9 +468,12 @@ body.sheet-mode #plan-svg { background:#fff; }
           <span class="hint">Doortronix internal — shows on the confirmation drawing.</span>
         </div>
         <div class="field">
-          <label>Target Ship Date</label>
-          <input type="date" name="shipDate" id="f_shipdate">
-          <span class="hint">Lead time from 3–4 weeks — call to confirm. Expedited orders available</span>
+          <label>Requested Timeline</label>
+          <select name="timeline" id="f_timeline">
+            <option value="standard">Standard — 3–4 weeks</option>
+            <option value="expedite">Expedited (rush) — call to confirm</option>
+          </select>
+          <span class="hint">Standard lead time is 3–4 weeks from cleared payment. Need it sooner? Choose expedited and we’ll confirm availability and any rush fee.</span>
         </div>
         <div class="field">
           <label>Project City &amp; State <span class="req">*</span></label>
@@ -1696,6 +1699,14 @@ async function savePortalOrder(hdr, doors, listTotal) {
   return data;
 }
 
+// Human-readable requested timeline (Standard vs Expedited). Carried through the
+// existing shipDate field so downstream (order save, quote email) is unchanged.
+function shipTimelineStr() {
+  return fv('f_timeline') === 'expedite'
+    ? 'Expedited (rush) — confirm availability'
+    : 'Standard — 3–4 weeks';
+}
+
 // Saved quotes (drafts). Any signed-in account holder can save an in-progress
 // project and reopen it later from the portal.
 let _currentDraftId = null;
@@ -1709,7 +1720,7 @@ function buildDraftHeader() {
     projectName: h.projectName || fv('f_project'),
     location: h.location || fv('f_location'),
     poNumber: h.poNumber || fv('f_po'),
-    shipDate: h.shipDate || fv('f_shipdate'),
+    shipDate: h.shipDate || shipTimelineStr(),
     shipTo: h.shipTo || fv('f_shipto'),
   };
 }
@@ -2433,7 +2444,7 @@ function _addDoorToCartImpl() {
       name: fv('f_name'), company: fv('f_company'), role: fv('f_role'),
       phone: fv('f_phone'), email: fv('f_email'),
       projectName: fv('f_project'), location: fv('f_location'),
-      shipDate: fv('f_shipdate'), poNumber: fv('f_po'),
+      shipDate: shipTimelineStr(), poNumber: fv('f_po'),
     };
     saveHeader(_projectHeader);
   }
@@ -2706,7 +2717,8 @@ function prefillContactFromHeader(hdr) {
   set('f_email',    hdr.email);
   set('f_project',  hdr.projectName);
   set('f_location', hdr.location);
-  set('f_shipdate', hdr.shipDate);
+  const tEl = document.getElementById('f_timeline');
+  if (tEl && hdr.shipDate) tEl.value = /expedit/i.test(hdr.shipDate) ? 'expedite' : 'standard';
   set('f_po',       hdr.poNumber);
   // Role is a select
   const roleEl = document.getElementById('f_role');
@@ -2793,7 +2805,7 @@ async function submitAllDoors() {
     name: fv('f_name'), company: fv('f_company'), role: fv('f_role'),
     phone: fv('f_phone'), email: fv('f_email'),
     projectName: fv('f_project'), location: fv('f_location'),
-    shipDate: fv('f_shipdate'), poNumber: fv('f_po'),
+    shipDate: shipTimelineStr(), poNumber: fv('f_po'),
   };
   if (!hdr.name || !hdr.email) { showCartError('Please fill in contact information before submitting.'); return; }
 
@@ -6184,7 +6196,7 @@ document.getElementById('quoteForm').addEventListener('submit', async function(e
     phone: fv('f_phone'), email: fv('f_email'),
     projectName: fv('f_project'), location: fv('f_location'),
     shipTo: fv('f_shipto') || fv('f_location'), jobNumber: fv('f_job'),
-    poNumber: fv('f_po'), shipDate: fv('f_shipdate'), quantity: fv('f_qty'),
+    poNumber: fv('f_po'), shipDate: shipTimelineStr(), quantity: fv('f_qty'),
     configuration: cfg ? cfg.label + ' (' + cfg.code + ')' : rv('config'),
     packageType: cfg && cfg.isSwing ? 'Complete swing door and frame' : 'Sliding door',
     swingDirection: cfg && cfg.isSwing ? getSwingStr() + (!cfg.isTwin && !cfg.isBi && rv('swingDir') === 'in' ? ' (breakout)' : '') : 'N/A',
@@ -6424,7 +6436,7 @@ function showConf(data, pd) {
     .map(([k,v])=>`<div class="conf-spec-row"><span class="ck">${k}</span><span class="cv">${v||'—'}</span></div>`).join('');
 
   document.getElementById('conf-project').innerHTML =
-    [['Project',data.projectName||'—'],['Location',data.location],['Target Ship',data.shipDate||'ASAP'],['Qty',data.quantity+' opening(s)']]
+    [['Project',data.projectName||'—'],['Location',data.location],['Timeline',data.shipDate||'Standard — 3–4 weeks'],['Qty',data.quantity+' opening(s)']]
     .map(([k,v])=>`<div class="conf-spec-row"><span class="ck">${k}</span><span class="cv">${v||'—'}</span></div>`).join('');
 
   const doorSpecs = [
