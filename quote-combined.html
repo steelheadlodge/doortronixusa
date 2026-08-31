@@ -363,11 +363,17 @@ body.sheet-mode #plan-svg { background:#fff; }
         <button type="button" class="type-choice" onclick="chooseDoorFamily('swing')">
           <svg viewBox="0 0 96 52" width="96" height="52" aria-hidden="true">
             <rect x="0" y="0" width="96" height="52" fill="#EEF4FB" rx="4"/>
-            <rect x="18" y="0" width="60" height="8" fill="#1B4F8A"/>
-            <rect x="20" y="9" width="56" height="39" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1.3"/>
-            <line x1="20" y1="9" x2="20" y2="48" stroke="#1B4F8A" stroke-width="2.4"/>
-            <path d="M20,48 A39,39 0 0,1 59,9" fill="none" stroke="#1B4F8A" stroke-width="1.3" stroke-dasharray="3,2"/>
-            <circle cx="70" cy="30" r="1.6" fill="#1B4F8A"/>
+            <rect x="24" y="0" width="48" height="8" fill="#1B4F8A"/>
+            <!-- Left-hand leaf (hinge left) -->
+            <rect x="26" y="9" width="20" height="39" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1.3"/>
+            <line x1="26" y1="9" x2="26" y2="48" stroke="#1B4F8A" stroke-width="2.4"/>
+            <path d="M46,48 A20,20 0 0,1 26,28" fill="none" stroke="#1B4F8A" stroke-width="1.3" stroke-dasharray="3,2"/>
+            <!-- Right-hand leaf (hinge right) -->
+            <rect x="50" y="9" width="20" height="39" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1.3"/>
+            <line x1="70" y1="9" x2="70" y2="48" stroke="#1B4F8A" stroke-width="2.4"/>
+            <path d="M50,48 A20,20 0 0,0 70,28" fill="none" stroke="#1B4F8A" stroke-width="1.3" stroke-dasharray="3,2"/>
+            <circle cx="44" cy="30" r="1.4" fill="#1B4F8A"/>
+            <circle cx="52" cy="30" r="1.4" fill="#1B4F8A"/>
           </svg>
           <div class="tc-name">Swing Doors</div>
           <div class="tc-desc">Single, Pair &amp; Entry/Exit · low-energy operators</div>
