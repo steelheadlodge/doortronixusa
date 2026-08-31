@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order | Doortronix USA</title>
+  <link rel="stylesheet" href="css/portal.css">
+</head>
+<body data-page="order">
+  <div class="topbar">Factory-Direct from Malakoff, Texas</div>
+  <nav class="nav"><div class="nav-inner">
+    <a href="../index.html" class="brand">Doortronix<span>USA</span></a>
+    <div class="nav-links" id="nav-links"></div>
+  </div></nav>
+  <div class="wrap" id="order-wrap">
+    <div class="err" id="page-err"></div>
+    <p class="muted"><a href="orders.html">← All orders</a></p>
+    <h1 id="onum">Order</h1>
+    <p class="lead" id="ostatus"></p>
+    <div class="grid">
+      <div class="stat"><div class="k">Project</div><div class="v" style="font-size:16px" id="oproject">—</div></div>
+      <div class="stat"><div class="k">Job location</div><div class="v" style="font-size:16px" id="oloc">—</div></div>
+      <div class="stat"><div class="k">PO</div><div class="v" style="font-size:16px" id="opo">—</div></div>
+    </div>
+    <div class="card">
+      <h2>Pricing</h2>
+      <p>Published contractor net: <strong id="olist">—</strong></p>
+      <p>Your net: <strong class="price" id="oyour">—</strong></p>
+      <p>Confirmed total: <strong id="oconf">—</strong></p>
+      <p>Deposit: <strong id="odep">—</strong></p>
+      <p class="muted" id="pay-note"></p>
+      <div class="err" id="pay-err"></div>
+      <div class="row-actions">
+        <button class="btn btn-primary hidden" type="button" id="pay-deposit">Pay deposit</button>
+        <button class="btn btn-blue hidden" type="button" id="pay-balance">Pay balance</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Lead time</h2>
+      <p id="olead">—</p>
+      <p class="muted" id="ostart"></p>
+    </div>
+    <div class="card">
+      <h2>Doors</h2>
+      <div id="odoors"></div>
+      <div class="row-actions">
+        <button class="btn btn-outline" type="button" id="btn-dup">Duplicate this order</button>
+      </div>
+    </div>
+  </div>
+  <script src="js/portal.js"></script>
+</body>
+</html>

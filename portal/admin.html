@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin | Doortronix USA</title>
+  <link rel="stylesheet" href="css/portal.css">
+</head>
+<body data-page="admin">
+  <div class="topbar">Factory-Direct from Malakoff, Texas</div>
+  <nav class="nav"><div class="nav-inner">
+    <a href="../index.html" class="brand">Doortronix<span>USA</span></a>
+    <div class="nav-links" id="nav-links"></div>
+  </div></nav>
+  <div class="wrap" id="admin-wrap">
+    <div class="err" id="page-err"></div>
+    <h1>Factory admin</h1>
+    <p class="lead">Set distributor discounts, confirm prices, and move orders through production.</p>
+    <div class="admin-warn">Every order stays <strong>submitted</strong> until you confirm the dollar amount. That keeps a customer from paying a price they typed. Self-serve is a note only — it does not open Stripe.</div>
+    <div class="card">
+      <h2>Published lead time</h2>
+      <form id="lead-form">
+        <input id="ad_lead">
+        <button class="btn btn-blue" type="submit" style="margin-top:10px">Update lead time</button>
+        <p class="ok hidden" id="lead_ok">Lead time updated. All new orders will show this until you override one.</p>
+      </form>
+    </div>
+    <div class="card">
+      <h2>Companies</h2>
+      <table>
+        <thead><tr><th>Company</th><th>Discount %</th><th>Deposit %</th><th>Self-serve</th><th>Users / orders</th><th></th></tr></thead>
+        <tbody id="co-body"></tbody>
+      </table>
+    </div>
+    <div class="card">
+      <h2>All orders</h2>
+      <table>
+        <thead><tr><th>Order</th><th>Company</th><th>Status</th><th>Amount</th><th>Confirm / status</th></tr></thead>
+        <tbody id="ad-orders"></tbody>
+      </table>
+    </div>
+  </div>
+  <script src="js/portal.js"></script>
+</body>
+</html>

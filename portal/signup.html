@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Account | Doortronix USA</title>
+  <link rel="stylesheet" href="css/portal.css">
+</head>
+<body data-page="auth">
+  <div class="topbar">Factory-Direct from Malakoff, Texas</div>
+  <nav class="nav"><div class="nav-inner">
+    <a href="../index.html" class="brand">Doortronix<span>USA</span></a>
+    <div class="nav-links" id="nav-links"></div>
+  </div></nav>
+  <div class="auth-card">
+    <h1>Create an account</h1>
+    <p class="lead">Free account. Pay deposits or the full amount, track fabrication and shipping, open your confirmation drawing, and reorder the same package. Published contractor net shows as soon as you sign in. Any company discount we assign appears here — never on the public quote page.</p>
+    <form id="signup-form">
+      <label for="su_name">Your name</label>
+      <input id="su_name" required autocomplete="name">
+      <label for="su_company">Company</label>
+      <input id="su_company" required autocomplete="organization">
+      <div class="two">
+        <div>
+          <label for="su_email">Email</label>
+          <input id="su_email" type="email" required autocomplete="email">
+        </div>
+        <div>
+          <label for="su_phone">Phone</label>
+          <input id="su_phone" type="tel" autocomplete="tel">
+        </div>
+      </div>
+      <label for="su_password">Password (8+ characters)</label>
+      <input id="su_password" type="password" required minlength="8" autocomplete="new-password">
+      <div class="err" id="su_err"></div>
+      <button class="btn btn-primary btn-wide" type="submit">Create Account</button>
+    </form>
+    <p class="muted" style="margin-top:16px;text-align:center;">Already have an account? <a href="login.html">Sign in</a></p>
+  </div>
+  <script src="js/portal.js"></script>
+</body>
+</html>

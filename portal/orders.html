@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orders | Doortronix USA</title>
+  <link rel="stylesheet" href="css/portal.css">
+</head>
+<body data-page="orders">
+  <div class="topbar">Factory-Direct from Malakoff, Texas</div>
+  <nav class="nav"><div class="nav-inner">
+    <a href="../index.html" class="brand">Doortronix<span>USA</span></a>
+    <div class="nav-links" id="nav-links"></div>
+  </div></nav>
+  <div class="wrap">
+    <div class="err" id="page-err"></div>
+    <h1>Orders</h1>
+    <p class="lead">Quotes you’ve submitted, production status, and what you can pay.</p>
+    <div class="row-actions" style="margin:0 0 18px">
+      <a class="btn btn-primary" href="../quote-combined.html">New order</a>
+    </div>
+    <div class="card">
+      <table>
+        <thead><tr><th>Order</th><th>Project</th><th>Status</th><th>Amount</th><th>Date</th></tr></thead>
+        <tbody id="orders-body"></tbody>
+      </table>
+    </div>
+  </div>
+  <script src="js/portal.js"></script>
+</body>
+</html>

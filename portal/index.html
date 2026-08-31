@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Account | Doortronix USA</title>
+  <link rel="stylesheet" href="css/portal.css">
+</head>
+<body data-page="dash">
+  <div class="topbar">Factory-Direct from Malakoff, Texas</div>
+  <nav class="nav"><div class="nav-inner">
+    <a href="../index.html" class="brand">Doortronix<span>USA</span></a>
+    <div class="nav-links" id="nav-links"></div>
+  </div></nav>
+  <div class="wrap">
+    <div class="err" id="page-err"></div>
+    <h1 id="hello">Dashboard</h1>
+    <p class="lead" id="co"></p>
+    <div class="grid">
+      <div class="stat">
+        <div class="k">Your pricing</div>
+        <div class="v" style="font-size:16px;line-height:1.35" id="price-line">—</div>
+      </div>
+      <div class="stat">
+        <div class="k">Current lead time</div>
+        <div class="v" style="font-size:16px;line-height:1.35" id="lead-line">—</div>
+        <div class="s">Starts when the deposit clears</div>
+      </div>
+      <div class="stat">
+        <div class="k">Open orders</div>
+        <div class="v" id="stat-open">—</div>
+      </div>
+      <div class="stat">
+        <div class="k">Deposits due</div>
+        <div class="v" id="stat-due">—</div>
+      </div>
+    </div>
+    <div class="row-actions" style="margin:0 0 22px">
+      <a class="btn btn-primary" href="../quote-combined.html">Create an order</a>
+      <a class="btn btn-outline" href="orders.html">All orders</a>
+    </div>
+    <div class="card">
+      <h2>Recent orders</h2>
+      <table>
+        <thead><tr><th>Order</th><th>Project</th><th>Status</th><th>Amount</th><th>Date</th></tr></thead>
+        <tbody id="recent-body"></tbody>
+      </table>
+    </div>
+  </div>
+  <script src="js/portal.js"></script>
+</body>
+</html>
