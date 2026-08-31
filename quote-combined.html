@@ -1815,9 +1815,11 @@ function setDoorType(type) {
   if (type === 'bi-part') {
     document.getElementById('cfg_fbo_bi').checked = true;
     const sn = document.getElementById('sn_std'); if (sn) sn.checked = true;
+    const sw = document.getElementById('sw_narrow'); if (sw) sw.checked = true;
   } else if (type === 'single') {
     document.getElementById('cfg_fbo_ss_rh').checked = true;
     const sn = document.getElementById('sn_std'); if (sn) sn.checked = true;
+    const sw = document.getElementById('sw_narrow'); if (sw) sw.checked = true;
   } else {
     document.getElementById('cfg_swing_single').checked = true;
     const med = document.getElementById('sw_medium'); if (med) med.checked = true;
