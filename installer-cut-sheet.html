@@ -2392,12 +2392,20 @@ function drawDoor() {
     l(dX, tGlassY + tGlassH + glassStopH/2, dX + dW, tGlassY + tGlassH + glassStopH/2, frame, glassStopH);
   }
 
-  // Header — sensor on the header face, centered (standard location)
+  // Header — motion sensor sits over the clear walk-through opening.
+  // Bi-part opens at the center; a single slide opens over the sliding (SX)
+  // leaf, so center the sensor on that leaf, not the middle of the header.
   const hdrX = dX + frameT, hdrY = dY + transomH, hdrW = dW - frameT * 2;
   r(hdrX, hdrY, hdrW, headerH, frame, '#777', 1);
   const sensW = Math.max(12, sc * 11);
   const sensH = Math.max(5, Math.min(headerH * 0.4, sc * 2.25));
-  const sensX = dX + dW / 2 - sensW / 2;
+  let sensCenterX = dX + dW / 2;
+  if (!isBi) {
+    const _pX = dX + frameT, _pW = dW - frameT * 2;
+    const _panW = _pW / 2, _soW = _panW - stileW / 2, _sxW = _panW + stileW / 2;
+    sensCenterX = isLH ? (_pX + _soW + _sxW / 2) : (_pX + _sxW / 2);
+  }
+  const sensX = sensCenterX - sensW / 2;
   const sensY = hdrY + headerH - sensH - Math.max(2, headerH * 0.14);
   r(sensX, sensY, sensW, sensH, '#1a1a1a', '#111', 0.7, 1.2);
   r(sensX + 2, sensY + sensH * 0.52, sensW - 4, Math.max(1.6, sensH * 0.3), '#5a6570', 'none', 0, 0.5);
