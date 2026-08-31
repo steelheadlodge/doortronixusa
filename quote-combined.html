@@ -278,6 +278,9 @@ body.sheet-mode #plan-svg { background:#fff; }
 .cart-header-right { display:flex; gap:8px; align-items:center; }
 .btn-submit-all { background:var(--orange); color:#fff; border:none; border-radius:7px; padding:9px 20px; font-size:13px; font-weight:700; cursor:pointer; transition:background .15s; white-space:nowrap; }
 .btn-submit-all:hover { background:#CF6A1A; }
+.btn-save-quote { background:#166534; color:#fff; border:none; border-radius:7px; padding:9px 16px; font-size:13px; font-weight:700; cursor:pointer; transition:background .15s; white-space:nowrap; }
+.btn-save-quote:hover { background:#14532d; }
+.btn-save-quote:disabled { opacity:.6; cursor:default; }
 .btn-clear-cart { background:none; border:1.5px solid #c00; color:#c00; border-radius:7px; padding:7px 12px; font-size:11px; font-weight:700; cursor:pointer; }
 .btn-clear-cart:hover { background:#fdecea; }
 #cart-cards { display:flex; flex-wrap:wrap; gap:8px; }
@@ -389,10 +392,12 @@ body.sheet-mode #plan-svg { background:#fff; }
         </div>
         <div class="cart-header-right">
           <button type="button" class="btn-clear-cart" onclick="clearCart()">Clear All</button>
+          <button type="button" class="btn-save-quote" id="btn-save-quote" onclick="savePortalDraft()" style="display:none;">💾 Save quote</button>
           <button type="button" class="btn-submit-all" onclick="submitAllDoors()">Submit Full Project Quote →</button>
         </div>
       </div>
       <div id="cart-cards"></div>
+      <div id="save-quote-status" style="display:none;font-size:12px;font-weight:600;margin-top:8px;"></div>
     </div>
 
     <form id="quoteForm" novalidate>
@@ -1685,6 +1690,67 @@ async function savePortalOrder(hdr, doors, listTotal) {
   return data;
 }
 
+// Saved quotes (drafts). Any signed-in account holder can save an in-progress
+// project and reopen it later from the portal.
+let _currentDraftId = null;
+
+function buildDraftHeader() {
+  const h = _projectHeader || {};
+  return {
+    name: h.name || fv('f_name'),
+    email: h.email || fv('f_email'),
+    phone: h.phone || fv('f_phone'),
+    projectName: h.projectName || fv('f_project'),
+    location: h.location || fv('f_location'),
+    poNumber: h.poNumber || fv('f_po'),
+    shipDate: h.shipDate || fv('f_shipdate'),
+    shipTo: h.shipTo || fv('f_shipto'),
+  };
+}
+
+async function savePortalDraft() {
+  const t = localStorage.getItem('dtx_session');
+  const btn = document.getElementById('btn-save-quote');
+  const statusEl = document.getElementById('save-quote-status');
+  const setStatus = (msg, ok) => {
+    if (!statusEl) return;
+    statusEl.style.display = 'block';
+    statusEl.style.color = ok ? '#166534' : '#B91C1C';
+    statusEl.innerHTML = msg;
+  };
+  if (!t) { setStatus('Sign in to save quotes to your account.', false); return; }
+  const cart = getCart();
+  if (!cart.length) { setStatus('Add at least one door before saving.', false); return; }
+
+  const hdr = buildDraftHeader();
+  const listTotal = cart.reduce((s, d) => s + (d.estimatedTotal || 0), 0);
+  const title = hdr.projectName || hdr.poNumber || ('Quote ' + new Date().toLocaleDateString());
+  const payload = {
+    title, name: hdr.name, email: hdr.email, phone: hdr.phone,
+    projectName: hdr.projectName, location: hdr.location,
+    poNumber: hdr.poNumber, shipDate: hdr.shipDate, shipTo: hdr.shipTo,
+    doors: cart, listTotal,
+  };
+
+  if (btn) { btn.disabled = true; btn.textContent = 'Saving…'; }
+  try {
+    const editing = !!_currentDraftId;
+    const res = await fetch(PORTAL_API + '/drafts' + (editing ? '/' + _currentDraftId : ''), {
+      method: editing ? 'PATCH' : 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + t },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || 'Could not save this quote.');
+    if (data.draft && data.draft.id) _currentDraftId = data.draft.id;
+    setStatus('✓ Saved to your account. Find it under <a href="portal/quotes.html" style="color:#166534;font-weight:700;">Saved quotes →</a>', true);
+  } catch (err) {
+    setStatus(err.message || 'Could not save this quote.', false);
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = _currentDraftId ? '💾 Update saved quote' : '💾 Save quote'; }
+  }
+}
+
 function portalOrderLink(saved) {
   if (!saved || !saved.order) return '';
   return ` <a href="portal/order.html?id=${saved.order.id}" style="color:#166534;font-weight:700;">View in your account →</a>`;
@@ -2680,6 +2746,11 @@ function renderCart() {
   cartSection.style.display = 'block';
   const projTotal = cart.reduce((s, d) => s + (d.estimatedTotal || 0), 0);
   document.getElementById('cart-total-badge').textContent = 'Est. Total: ' + (projTotal > 0 ? '$' + projTotal.toLocaleString() : '—');
+  const saveBtn = document.getElementById('btn-save-quote');
+  if (saveBtn) {
+    saveBtn.style.display = window._portalUser ? '' : 'none';
+    saveBtn.textContent = _currentDraftId ? '💾 Update saved quote' : '💾 Save quote';
+  }
 
   cartCards.innerHTML = cart.map((d, i) => {
     const isEditing = d.id === _editingDoorId;
@@ -6446,12 +6517,17 @@ renderCart();
     const r = JSON.parse(raw);
     if (!r.doors || !r.doors.length) return;
     saveCart(r.doors);
+    // Reopened from a saved quote → keep the draft id so "Save" updates it.
+    if (r.draftId) _currentDraftId = r.draftId;
     const hdr = Object.assign({}, getHeader() || {});
     if (r.projectName) hdr.projectName = r.projectName;
     if (r.location) hdr.location = r.location;
     if (r.name) hdr.name = r.name;
     if (r.email) hdr.email = r.email;
     if (r.phone) hdr.phone = r.phone;
+    if (r.poNumber) hdr.poNumber = r.poNumber;
+    if (r.shipDate) hdr.shipDate = r.shipDate;
+    if (r.shipTo) hdr.shipTo = r.shipTo;
     if (hdr.name && hdr.email) {
       saveHeader(hdr);
       _projectHeader = hdr;
@@ -6463,6 +6539,10 @@ renderCart();
     if (pe && r.projectName) pe.value = r.projectName;
     const le = document.getElementById('f_location');
     if (le && r.location && !le.value) le.value = r.location;
+    const poe = document.getElementById('f_po');
+    if (poe && r.poNumber && !poe.value) poe.value = r.poNumber;
+    const ste = document.getElementById('f_shipto');
+    if (ste && r.shipTo && !ste.value) ste.value = r.shipTo;
     renderCart();
   } catch (e) { console.warn('Could not restore copied order', e); }
 })();
@@ -6489,6 +6569,8 @@ portalMe().then(function (me) {
     chip.appendChild(a);
   }
   syncAccountBox(me);
+  // Reveal the "Save quote" button now that we know the user is signed in.
+  renderCart();
   if (me) calcPrice();
 });
 </script>

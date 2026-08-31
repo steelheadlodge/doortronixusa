@@ -62,6 +62,7 @@
     }
     links.innerHTML =
       '<a href="index.html">Dashboard</a>' +
+      '<a href="quotes.html">Saved Quotes</a>' +
       '<a href="orders.html">Orders</a>' +
       '<a href="' + quote + '">New Order</a>' +
       '<a href="account.html">Account</a>' +
@@ -180,6 +181,75 @@
     body.innerHTML = orders.length
       ? orders.map(orderRow).join('')
       : '<tr><td colspan="5" class="muted">No orders yet.</td></tr>';
+  }
+
+  async function quotesPage() {
+    const me = await requireAuth();
+    if (!me) return;
+    const data = await api('/drafts');
+    const body = document.getElementById('quotes-body');
+    const drafts = data.drafts || [];
+    if (!drafts.length) {
+      body.innerHTML = '<tr><td colspan="5" class="muted">No saved quotes yet. Start a quote, add doors, and hit “Save quote.”</td></tr>';
+      return;
+    }
+    body.innerHTML = drafts.map(draftRow).join('');
+    body.addEventListener('click', async (e) => {
+      const openId = e.target.getAttribute('data-open');
+      const delId = e.target.getAttribute('data-del');
+      if (openId) {
+        e.target.disabled = true;
+        try {
+          const d = await api('/drafts/' + openId);
+          const q = d.draft;
+          localStorage.setItem(RESTORE_KEY, JSON.stringify({
+            draftId: q.id,
+            projectName: q.projectName,
+            location: q.location,
+            poNumber: q.poNumber,
+            shipDate: q.shipDate,
+            shipTo: q.shipTo,
+            name: q.name,
+            email: q.email,
+            phone: q.phone,
+            doors: q.doors || [],
+          }));
+          location.href = '../quote-combined.html';
+        } catch (err) {
+          showErr('page-err', err.message);
+          e.target.disabled = false;
+        }
+      } else if (delId) {
+        if (!confirm('Delete this saved quote? This cannot be undone.')) return;
+        e.target.disabled = true;
+        try {
+          await api('/drafts/' + delId, { method: 'DELETE' });
+          const tr = e.target.closest('tr');
+          if (tr) tr.remove();
+          if (!body.querySelector('tr')) {
+            body.innerHTML = '<tr><td colspan="5" class="muted">No saved quotes yet.</td></tr>';
+          }
+        } catch (err) {
+          showErr('page-err', err.message);
+          e.target.disabled = false;
+        }
+      }
+    });
+  }
+
+  function draftRow(q) {
+    const name = q.title || q.projectName || q.poNumber || 'Untitled quote';
+    const saved = (q.updatedAt || q.createdAt || '').slice(0, 16).replace('T', ' ');
+    return '<tr>' +
+      '<td><strong>' + esc(name) + '</strong>' + (q.location ? '<br><span class="muted" style="font-size:12px">' + esc(q.location) + '</span>' : '') + '</td>' +
+      '<td>' + (q.doorCount != null ? q.doorCount : '—') + '</td>' +
+      '<td class="price">' + money(q.listTotal) + '</td>' +
+      '<td>' + esc(saved || '—') + '</td>' +
+      '<td style="white-space:nowrap">' +
+        '<button class="btn btn-blue" type="button" data-open="' + q.id + '" style="padding:6px 12px;font-size:12px">Open</button> ' +
+        '<button class="btn btn-outline" type="button" data-del="' + q.id + '" style="padding:6px 10px;font-size:12px">Delete</button>' +
+      '</td>' +
+      '</tr>';
   }
 
   async function orderPage() {
@@ -395,6 +465,7 @@
     const page = document.body.getAttribute('data-page');
     if (page === 'auth') fillAuthPages();
     else if (page === 'dash') dashboard().catch((e) => showErr('page-err', e.message));
+    else if (page === 'quotes') quotesPage().catch((e) => showErr('page-err', e.message));
     else if (page === 'orders') ordersPage().catch((e) => showErr('page-err', e.message));
     else if (page === 'order') orderPage().catch((e) => showErr('page-err', e.message));
     else if (page === 'account') accountPage().catch((e) => showErr('page-err', e.message));

@@ -90,6 +90,28 @@ async function handle(request, env) {
     return startPay(request, env, session, Number(payMatch[1]));
   }
 
+  if (path === '/drafts' && request.method === 'GET') {
+    if (!session) return json({ error: 'Not signed in' }, 401, request);
+    return listDrafts(env, session, request);
+  }
+  if (path === '/drafts' && request.method === 'POST') {
+    if (!session) return json({ error: 'Not signed in' }, 401, request);
+    return createDraft(request, env, session);
+  }
+  const draftMatch = path.match(/^\/drafts\/(\d+)$/);
+  if (draftMatch && request.method === 'GET') {
+    if (!session) return json({ error: 'Not signed in' }, 401, request);
+    return getDraft(env, session, Number(draftMatch[1]), request);
+  }
+  if (draftMatch && (request.method === 'PATCH' || request.method === 'PUT')) {
+    if (!session) return json({ error: 'Not signed in' }, 401, request);
+    return updateDraft(request, env, session, Number(draftMatch[1]));
+  }
+  if (draftMatch && request.method === 'DELETE') {
+    if (!session) return json({ error: 'Not signed in' }, 401, request);
+    return deleteDraft(env, session, Number(draftMatch[1]), request);
+  }
+
   if (path.startsWith('/admin')) {
     if (!session) return json({ error: 'Not signed in' }, 401, request);
     if (!session.isAdmin) return json({ error: 'Admin only' }, 403, request);
@@ -316,6 +338,123 @@ async function duplicateOrder(env, session, id, request) {
       doors,
     },
   }, 200, request);
+}
+
+const MAX_DRAFTS = 100;
+
+function draftHeaderFields(body) {
+  return {
+    title: String(body.title || body.projectName || '').slice(0, 160),
+    projectName: String(body.projectName || '').slice(0, 160),
+    location: String(body.location || '').slice(0, 160),
+    poNumber: String(body.poNumber || '').slice(0, 80),
+    shipDate: String(body.shipDate || '').slice(0, 40),
+    shipTo: String(body.shipTo || '').slice(0, 400),
+    name: String(body.name || '').slice(0, 80),
+    email: normalizeEmail(body.email || ''),
+    phone: String(body.phone || '').slice(0, 40),
+  };
+}
+
+function formatDraft(row, includeDoors) {
+  const out = {
+    id: row.id,
+    title: row.title,
+    projectName: row.project_name,
+    location: row.location,
+    poNumber: row.po_number,
+    shipDate: row.ship_date,
+    shipTo: row.ship_to,
+    name: row.contact_name,
+    email: row.contact_email,
+    phone: row.contact_phone,
+    listTotal: row.list_total,
+    doorCount: row.door_count != null ? row.door_count : undefined,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+  if (includeDoors) {
+    try { out.doors = JSON.parse(row.doors_json || '[]'); } catch { out.doors = []; }
+  }
+  return out;
+}
+
+async function listDrafts(env, session, request) {
+  const { results } = await env.DB.prepare(
+    `SELECT id, title, project_name, location, po_number, list_total, created_at, updated_at,
+            (SELECT COUNT(*) FROM json_each(doors_json)) AS door_count
+     FROM drafts WHERE company_id = ? ORDER BY updated_at DESC, id DESC LIMIT 100`
+  ).bind(session.companyId).all();
+  return json({ drafts: (results || []).map((r) => formatDraft(r, false)) }, 200, request);
+}
+
+async function getDraft(env, session, id, request) {
+  const row = await env.DB.prepare('SELECT * FROM drafts WHERE id = ? AND company_id = ?')
+    .bind(id, session.companyId).first();
+  if (!row) return json({ error: 'Not found' }, 404, request);
+  return json({ draft: formatDraft(row, true) }, 200, request);
+}
+
+async function createDraft(request, env, session) {
+  const body = await readJson(request);
+  const doors = Array.isArray(body.doors) ? body.doors : [];
+  if (!doors.length) return json({ error: 'Add at least one door before saving.' }, 400, request);
+  const doorsJson = JSON.stringify(doors);
+  if (doorsJson.length > MAX_DOORS_JSON) return json({ error: 'Quote is too large to save.' }, 400, request);
+
+  const count = await env.DB.prepare('SELECT COUNT(*) AS n FROM drafts WHERE company_id = ?')
+    .bind(session.companyId).first();
+  if ((count?.n || 0) >= MAX_DRAFTS) {
+    return json({ error: 'You have reached the saved-quote limit. Delete a few and try again.' }, 409, request);
+  }
+
+  const h = draftHeaderFields(body);
+  const listTotal = Number(body.listTotal);
+  const row = await env.DB.prepare(
+    `INSERT INTO drafts (
+       company_id, user_id, title, project_name, location, po_number, ship_date, ship_to,
+       contact_name, contact_email, contact_phone, doors_json, list_total
+     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+     RETURNING id, title, project_name, updated_at`
+  ).bind(
+    session.companyId, session.id, h.title, h.projectName, h.location, h.poNumber,
+    h.shipDate, h.shipTo, h.name, h.email, h.phone, doorsJson,
+    Number.isFinite(listTotal) ? money(listTotal) : null
+  ).first();
+  return json({ draft: { id: row.id, title: row.title, projectName: row.project_name, updatedAt: row.updated_at } }, 201, request);
+}
+
+async function updateDraft(request, env, session, id) {
+  const existing = await env.DB.prepare('SELECT id FROM drafts WHERE id = ? AND company_id = ?')
+    .bind(id, session.companyId).first();
+  if (!existing) return json({ error: 'Not found' }, 404, request);
+  const body = await readJson(request);
+  const doors = Array.isArray(body.doors) ? body.doors : [];
+  if (!doors.length) return json({ error: 'Add at least one door before saving.' }, 400, request);
+  const doorsJson = JSON.stringify(doors);
+  if (doorsJson.length > MAX_DOORS_JSON) return json({ error: 'Quote is too large to save.' }, 400, request);
+
+  const h = draftHeaderFields(body);
+  const listTotal = Number(body.listTotal);
+  await env.DB.prepare(
+    `UPDATE drafts SET title = ?, project_name = ?, location = ?, po_number = ?, ship_date = ?,
+            ship_to = ?, contact_name = ?, contact_email = ?, contact_phone = ?,
+            doors_json = ?, list_total = ?, updated_at = datetime('now')
+     WHERE id = ? AND company_id = ?`
+  ).bind(
+    h.title, h.projectName, h.location, h.poNumber, h.shipDate, h.shipTo,
+    h.name, h.email, h.phone, doorsJson,
+    Number.isFinite(listTotal) ? money(listTotal) : null, id, session.companyId
+  ).run();
+  const row = await env.DB.prepare('SELECT id, title, project_name, updated_at FROM drafts WHERE id = ?').bind(id).first();
+  return json({ draft: { id: row.id, title: row.title, projectName: row.project_name, updatedAt: row.updated_at } }, 200, request);
+}
+
+async function deleteDraft(env, session, id, request) {
+  const res = await env.DB.prepare('DELETE FROM drafts WHERE id = ? AND company_id = ?')
+    .bind(id, session.companyId).run();
+  if (!res.meta?.changes) return json({ error: 'Not found' }, 404, request);
+  return json({ ok: true }, 200, request);
 }
 
 async function startPay(request, env, session, id) {
@@ -786,6 +925,6 @@ function cors(res, request) {
     headers.set('Vary', 'Origin');
   }
   headers.set('Access-Control-Allow-Headers', 'Authorization, Content-Type');
-  headers.set('Access-Control-Allow-Methods', 'GET, POST, PATCH, OPTIONS');
+  headers.set('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS');
   return new Response(res.body, { status: res.status, headers });
 }
