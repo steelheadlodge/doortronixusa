@@ -1193,7 +1193,7 @@ body.sheet-mode #plan-svg { background:#fff; }
               <input type="radio" name="swingPushBar" id="pb_none" value="none">
               <label for="pb_none">None / by others</label>
             </div>
-            <span class="hint" id="swing-pushbar-hint">Satin (brushed) finish flat push bar to match the pull, on the push face. Cut to the exact door width — stock push bars only come in fixed lengths, so custom-width doors need this. One per leaf.</span>
+            <span class="hint" id="swing-pushbar-hint">Satin (brushed) finish flat push bar to match the pull, on the push face. One per leaf.</span>
           </div>
         </div>
 
@@ -1858,20 +1858,37 @@ const SWING_MIN_H = 84.75; // 79" clear + 5-3/4" header
 const SWING_STD_H = 90;    // 7'6" standard header
 
 function clampSwingHeight() {
-  if (_currentDoorType !== 'swing') return;
   const ftSel = document.getElementById('f_hft');
   const inSel = document.getElementById('f_hin');
   const sSel = document.getElementById('f_h16');
   if (!ftSel || !inSel || !sSel) return;
+  const isSwing = _currentDoorType === 'swing';
+
+  // Header height for swing packages is capped at 9'6" (114").
+  Array.from(ftSel.options).forEach(opt => {
+    const block = isSwing && (parseInt(opt.value) || 0) > 9;
+    opt.disabled = block; opt.hidden = block;
+  });
+  if (isSwing && (parseInt(ftSel.value) || 0) > 9) ftSel.value = '9';
+
   const ft = parseInt(ftSel.value) || 0;
+  Array.from(inSel.options).forEach(opt => {
+    const block = isSwing && ft === 9 && (parseInt(opt.value) || 0) > 6;
+    opt.disabled = block; opt.hidden = block;
+  });
+  if (isSwing && ft === 9 && (parseInt(inSel.value) || 0) > 6) inSel.value = '6';
+
   const inches = parseInt(inSel.value) || 0;
   Array.from(sSel.options).forEach(opt => {
     const v = parseInt(opt.value);
-    const block = (ft === 7 && inches === 0 && v < 12);
-    opt.disabled = block;
-    opt.hidden = block;
+    // Min: 7'-3/4" floor (at 7'0", force ≥ 3/4"). Max: nothing past 9'6".
+    const blockMin = isSwing && ft === 7 && inches === 0 && v < 12;
+    const blockMax = isSwing && ft === 9 && inches === 6 && v > 0;
+    const block = blockMin || blockMax;
+    opt.disabled = block; opt.hidden = block;
   });
-  if (ft === 7 && inches === 0 && (parseInt(sSel.value) || 0) < 12) sSel.value = '12';
+  if (isSwing && ft === 7 && inches === 0 && (parseInt(sSel.value) || 0) < 12) sSel.value = '12';
+  if (isSwing && ft === 9 && inches === 6 && (parseInt(sSel.value) || 0) > 0) sSel.value = '0';
 }
 
 function syncSwingUi() {
@@ -2966,24 +2983,27 @@ function drawSwingLeafHardware(svg, o) {
 }
 // Satin (brushed) finish hardware. Colors are matte greys — not polished.
 const HW_SATIN = '#a6abb0', HW_EDGE = '#5f636a', HW_SHADE = '#8b9096';
-// Offset wire pull: standoff arms land ON the lock stile, vertical grip offset
-// just onto the glass edge — the recognizable "offset" pull.
+// Modern offset pull: a rounded tubular grip on two standoffs that mount to the
+// lock stile. The grip TOP starts at the muntin center (o.barY) and projects
+// downward; the grip is a full capsule (rounded ends) for a modern look.
 function drawOffsetPull(svg, o, pullSz) {
-  const cyMid = o.leafY + o.leafH - 42 * o.sc;
+  const muntinC = (o.barY != null) ? o.barY : (o.leafY + o.leafH - 42 * o.sc);
   const len = Math.max(o.sc * 8, pullSz * o.sc);
-  const top = cyMid - len / 2, bot = cyMid + len / 2;
+  const top = muntinC, bot = top + len;
   const glassDir = o.lockLeft ? 1 : -1;
   const stileCenter = o.lockLeft ? o.leafL + o.stileW / 2 : o.leafL + o.leafW - o.stileW / 2;
   const stileEdge = o.lockLeft ? o.leafL + o.stileW : o.leafL + o.leafW - o.stileW;
   const gripX = stileEdge + glassDir * Math.max(o.sc * 1.4, o.stileW * 0.55);
-  const barW = Math.max(2.2, o.sc * 1.1);
-  const armH = Math.max(1.6, o.sc * 0.9);
+  const barW = Math.max(2.4, o.sc * 1.15);
+  const armH = Math.max(1.4, o.sc * 0.7);
   const armX = Math.min(stileCenter, gripX), armW = Math.abs(gripX - stileCenter) + barW / 2;
-  [top + len * 0.14, bot - len * 0.14].forEach(ay => {
-    svgEl(svg, 'rect', { x: armX, y: ay - armH / 2, width: armW, height: armH, fill: HW_SHADE, stroke: HW_EDGE, 'stroke-width': 0.4 });
+  [top + barW / 2, bot - barW / 2].forEach(ay => {
+    svgEl(svg, 'rect', { x: armX, y: ay - armH / 2, width: armW, height: armH, rx: armH / 2, fill: HW_SHADE, stroke: HW_EDGE, 'stroke-width': 0.4 });
     svgEl(svg, 'circle', { cx: stileCenter, cy: ay, r: Math.max(0.9, o.sc * 0.5), fill: HW_EDGE });
   });
-  svgEl(svg, 'rect', { x: gripX - barW / 2, y: top, width: barW, height: len, rx: barW * 0.45, fill: HW_SATIN, stroke: HW_EDGE, 'stroke-width': 0.5 });
+  // Rounded tubular grip (capsule ends) with a soft highlight to read as round.
+  svgEl(svg, 'rect', { x: gripX - barW / 2, y: top, width: barW, height: len, rx: barW / 2, ry: barW / 2, fill: HW_SATIN, stroke: HW_EDGE, 'stroke-width': 0.5 });
+  svgEl(svg, 'rect', { x: gripX - barW * 0.18, y: top + barW * 0.5, width: Math.max(0.6, barW * 0.18), height: Math.max(0, len - barW), rx: barW * 0.09, fill: '#ffffff', opacity: 0.45 });
 }
 // Flat horizontal push bar, cut to width, with mounting pads on the stiles.
 // Centers on the 2" muntin (o.barY) when there is one; otherwise ~40" AFF.
@@ -3778,6 +3798,25 @@ function updateAddonVisibility() {
 }
 
 // ── Price calculation ───────────────────────────────────────────────
+// ── New-work pricing gate ───────────────────────────────────────────
+// Swing packages are new and not yet public. Their pricing is hidden from
+// the public site and unlocked only for the owner via a private link/code.
+// This is a display gate on a static site — the pricing math still ships to
+// the browser, so it deters casual viewing but is not hard security.
+const PRICE_UNLOCK_CODE = 'dtx-swing-2026';
+function pricingUnlocked() {
+  try {
+    const q = new URLSearchParams(location.search).get('unlock');
+    if (q !== null) {
+      if (q === PRICE_UNLOCK_CODE) localStorage.setItem('dtx_price_unlock', q);
+      else localStorage.removeItem('dtx_price_unlock');
+    }
+    return localStorage.getItem('dtx_price_unlock') === PRICE_UNLOCK_CODE;
+  } catch (e) { return false; }
+}
+function isNewWork(cfg) { return !!(cfg && cfg.isSwing); }
+function pricingGated(cfg) { return isNewWork(cfg) && !pricingUnlocked(); }
+
 function calcPrice() {
   const body = document.getElementById('price-body');
   try {
@@ -3980,10 +4019,11 @@ function calcPrice() {
       } else {
         lines.push({ label: 'Offset wire pull — by others', amount: 0 });
       }
-      lines.push({
-        label: swingPushBarOn() ? 'Cut-to-width push bar, satin' + nSuffix : 'Push bar — by others',
-        amount: 0
-      });
+      if (swingPushBarOn()) {
+        lines.push({ label: 'Cut-to-width push bar, satin' + nSuffix, amount: 0 });
+      } else {
+        lines.push({ label: 'Push bar — by others', amount: 0 });
+      }
     }
     if (!high && swingPlateKind()) {
       const n = swingPlateStations();
@@ -4098,6 +4138,9 @@ function calcPrice() {
         ? `⚠ Minimum frame height is 7'-3/4" (79" clear + 5-3/4" header)`
         : `⚠ Minimum header height is 7'6" — call us to confirm`;
       hNote.className = 'size-range-note warn';
+    } else if (cfg.isSwing && hIn >= 114) {
+      hNote.textContent = `Max header height for swing packages is 9'6". Over 8'0": +$200/ft`;
+      hNote.className = 'size-range-note ok';
     } else if (hIn > 96) {
       const ft = Math.ceil((hIn - 96) / 12);
       hNote.textContent = `+$200/ft over 8'0" — ${ft} ft added`;
@@ -4156,7 +4199,7 @@ function calcPrice() {
   // Render
   let html = '';
   lines.forEach(l => {
-    const pv = l.amount === 0 ? (/\bTBD\b/.test(l.label) ? 'TBD' : 'incl.') : (l.amount < 0 ? '−' + fmt(Math.abs(l.amount)) : '+' + fmt(l.amount));
+    const pv = l.amount === 0 ? (/\bTBD\b/.test(l.label) ? 'TBD' : (/by others/i.test(l.label) ? 'by others' : 'incl.')) : (l.amount < 0 ? '−' + fmt(Math.abs(l.amount)) : '+' + fmt(l.amount));
     html += `<div class="price-line"><span class="pl">${l.label}</span><span class="pv${l.amount > 0 ? ' add' : (l.amount < 0 ? ' credit' : '')}">${pv}</span></div>`;
   });
   html += '<hr class="price-divider">';
@@ -4171,18 +4214,25 @@ function calcPrice() {
     html += `<div class="price-total-row"><span class="pt-label">Your net (${_disc}% distributor)</span><span class="pt-value">${fmt(_your)}</span></div>`;
   }
   html += `<div class="price-note">${_disc ? 'Your distributor net is applied from your account — not from this page. ' : ''}Net contractor pricing. Does not include glass, freight, installation, or taxes. Doortronix will confirm final pricing and freight within 24 hours.</div>`;
+
+  // New-work (swing) pricing gate — suppress dollar amounts for the public
+  const _gated = pricingGated(cfg);
+  if (_gated) {
+    html = `<div class="price-call"><div class="pc-label">Pricing on request</div><div class="pc-phone">(888) 453-5196</div><div style="font-size:11px;color:var(--mgray);margin-top:8px;">Swing package pricing is being finalized. Contact Doortronix for a quote.</div></div>`;
+  }
+  const _totText = _gated ? 'Request' : fmt(_disc ? _your : grandTotal);
   body.innerHTML = html;
   const headerTotal = document.getElementById('price-header-total');
-  if (headerTotal) headerTotal.textContent = fmt(_disc ? _your : grandTotal);
+  if (headerTotal) headerTotal.textContent = _totText;
   const stickyTotal = document.getElementById('sticky-price-total');
-  if (stickyTotal) stickyTotal.textContent = fmt(_disc ? _your : grandTotal);
+  if (stickyTotal) stickyTotal.textContent = _totText;
   const formBody = document.getElementById('form-price-body');
   if (formBody) formBody.innerHTML = html;
   const formHeaderTotal = document.getElementById('form-price-header-total');
-  if (formHeaderTotal) formHeaderTotal.textContent = fmt(_disc ? _your : grandTotal);
+  if (formHeaderTotal) formHeaderTotal.textContent = _totText;
 
   // Store for confirmation
-  window._priceData = { lines, total, qty, grandTotal, yourTotal: _your, discountPct: _disc };
+  window._priceData = { lines, total, qty, grandTotal, yourTotal: _your, discountPct: _disc, gated: _gated };
   } catch(e) {
     if (body) body.innerHTML = `<div class="price-empty" style="color:red;">Price error: ${e.message}</div>`;
   }
@@ -4788,10 +4838,18 @@ function drawTwinSwingElevation(svg, vW, vH, isConf) {
     r(innerX + leafW - stileW, leafY, stileW, leafH, panelFill);
     if (hingeLeft) r(innerX, leafY, fgW, leafH, '#111');
     else r(innerX + leafW - fgW, leafY, fgW, leafH, '#111');
-    const cy = leafY + leafH - 40 * sc;
+    const bayBarY = (hasMuntin && muntAffs.length) ? muntinY(muntAffs.reduce((b, a) => Math.abs(a - 40) < Math.abs(b - 40) ? a : b, muntAffs[0])) + muntH / 2 : null;
+    const isLowBay = rv('swingEnergy') !== 'high';
+    let cy;
+    if (isLowBay) {
+      const refTop = (bayBarY != null) ? bayBarY : (leafY + leafH - 42 * sc);
+      cy = refTop + 5 * sc;
+    } else {
+      cy = leafY + leafH - 40 * sc;
+    }
     const cx = hingeLeft ? innerX + leafW - stileW / 2 : innerX + stileW / 2;
     svgEl(svg, 'circle', { cx, cy, r: Math.max(2.2, sc * 0.9), fill: '#2a2a2a', stroke: '#111', 'stroke-width': 0.7 });
-    drawSwingLeafHardware(svg, { leafL: innerX, leafW, leafY, leafH, stileW, sc, lockLeft: !hingeLeft, outSwing: bay.outSwing, barY: (hasMuntin && muntAffs.length) ? muntinY(muntAffs.reduce((b, a) => Math.abs(a - 40) < Math.abs(b - 40) ? a : b, muntAffs[0])) + muntH / 2 : null });
+    drawSwingLeafHardware(svg, { leafL: innerX, leafW, leafY, leafH, stileW, sc, lockLeft: !hingeLeft, outSwing: bay.outSwing, barY: bayBarY });
     bay.innerX = innerX;
     bay.leafW = leafW;
   }
@@ -5039,10 +5097,22 @@ function drawSwingElevation(svg, vW, vH, isConf) {
   } else {
     r(innerX + leafW - fgW, leafY, fgW, leafH, '#111');
   }
-  // Deadbolt: key cylinder on lock stile, ~40" AFF (thumbturn opposite face, not shown).
+  let pushBarY = null;
+  if (hasMuntin && muntAffs.length) {
+    const aff = muntAffs.reduce((b, a) => Math.abs(a - 40) < Math.abs(b - 40) ? a : b, muntAffs[0]);
+    pushBarY = muntinY(aff) + muntH / 2;
+  }
+  // Deadbolt: key cylinder on lock stile. For low energy it sits at the 10" offset
+  // pull's center (muntin top + 5") — held there whether or not a pull is chosen.
   (function drawDeadbolt() {
-    const lockAff = 40;
-    const cy = leafY + leafH - lockAff * sc;
+    const isLow = rv('swingEnergy') !== 'high';
+    let cy;
+    if (isLow) {
+      const refTop = (pushBarY != null) ? pushBarY : (leafY + leafH - 42 * sc);
+      cy = refTop + 5 * sc;
+    } else {
+      cy = leafY + leafH - 40 * sc;
+    }
     const rr = Math.max(2.2, sc * 0.9);
     let cx;
     if (isPair) cx = innerX + leafW + stileW / 2;
@@ -5050,11 +5120,6 @@ function drawSwingElevation(svg, vW, vH, isConf) {
     else cx = innerX + stileW / 2;
     svgEl(svg, 'circle', { cx, cy, r: rr, fill: '#2a2a2a', stroke: '#111', 'stroke-width': 0.7 });
   })();
-  let pushBarY = null;
-  if (hasMuntin && muntAffs.length) {
-    const aff = muntAffs.reduce((b, a) => Math.abs(a - 40) < Math.abs(b - 40) ? a : b, muntAffs[0]);
-    pushBarY = muntinY(aff) + muntH / 2;
-  }
   leafXs.forEach((lx, i) => {
     const lockLeft = isPair ? (i === 1) : !hingeOnLeft;
     drawSwingLeafHardware(svg, { leafL: lx, leafW, leafY, leafH, stileW, sc, lockLeft, outSwing, barY: pushBarY });
@@ -6045,7 +6110,7 @@ document.getElementById('quoteForm').addEventListener('submit', async function(e
     netOpening: getOpenStr(),
     alarmContacts: alarmContacts2,
     addons: addons.join(', ') || 'None',
-    estimatedTotal: pd ? '$' + pd.grandTotal.toLocaleString() : 'See notes',
+    estimatedTotal: (pd && pd.gated) ? 'Pricing on request' : (pd ? '$' + pd.grandTotal.toLocaleString() : 'See notes'),
     submissionType: 'single-door-direct',
     notes: fv('f_notes'),
   };
@@ -6128,6 +6193,7 @@ function buildSheetOrder() {
     transomVerticals: parseInt(rv('transomV') || '0', 10) || 0,
     ftthFt: transom ? (parseInt(fv('f_ftthft'), 10) || 0) : 0,
     ftthIn: transom ? (parseInt(fv('f_ftthin'), 10) || 0) : 0,
+    ftth16: transom ? (parseInt(fv('f_ftth16'), 10) || 0) : 0,
     stileWidth: (cfg && cfg.isSwing) ? 'medium' : rv('stileWidth'),
     bottomRail: rv('bottomRail'),
     muntin: rv('muntin'),
@@ -6271,7 +6337,12 @@ function showConf(data, pd) {
     .map(([k,v])=>`<div class="conf-spec-row"><span class="ck">${k}</span><span class="cv">${v||'—'}</span></div>`).join('');
 
   // Price box
-  if (pd) {
+  if (pd && pd.gated) {
+    document.getElementById('conf-price-box').innerHTML =
+      '<h3>Price Estimate</h3>' +
+      '<div class="conf-price-total"><span>Pricing on request</span><span>—</span></div>' +
+      '<p style="font-size:10px;color:var(--mgray);margin-top:8px;">Swing package pricing is being finalized. Contact Doortronix at (888) 453-5196 for a quote.</p>';
+  } else if (pd) {
     let ph = '<h3>Price Estimate</h3>';
     pd.lines.forEach(l => { ph += `<div class="conf-price-line"><span class="cpk">${l.label}</span><span class="cpv">+$${l.amount.toLocaleString()}</span></div>`; });
     if (pd.qty > 1) {
