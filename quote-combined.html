@@ -470,6 +470,11 @@ body.sheet-mode #plan-svg { background:#fff; }
           <textarea name="shipTo" id="f_shipto" rows="2" placeholder="Company / contact, street, city, state, ZIP"></textarea>
           <span class="hint">Where the doors ship. Leave blank to use the project city &amp; state.</span>
         </div>
+        <div class="field full" id="lead-time-field" style="display:none;">
+          <label>Lead Time (on drawing)</label>
+          <input type="text" name="leadTime" id="f_leadtime" value="3–4 weeks from cleared payment — call to confirm">
+          <span class="hint">Shows on the confirmation drawing. <b>Clear this box to leave lead time off.</b></span>
+        </div>
       </div>
 
       </div><!-- /project-section-wrapper -->
@@ -6273,7 +6278,7 @@ function buildSheetOrder() {
   return {
     ref: 'DTX-' + Date.now().toString().slice(-6),
     issuedDate: new Date().toISOString().slice(0, 10),
-    leadTime: '3–4 weeks from cleared payment — call to confirm',
+    leadTime: (window._portalUser && window._portalUser.isAdmin) ? fv('f_leadtime') : '3–4 weeks from cleared payment — call to confirm',
     customer: { name: fv('f_name'), company: fv('f_company') },
     project: {
       name: fv('f_project'),
@@ -6458,6 +6463,8 @@ portalMe().then(function (me) {
   window._portalUser = me;
   const jobField = document.getElementById('job-num-field');
   if (jobField) jobField.style.display = (me && me.isAdmin) ? '' : 'none';
+  const leadField = document.getElementById('lead-time-field');
+  if (leadField) leadField.style.display = (me && me.isAdmin) ? '' : 'none';
   const chip = document.getElementById('portal-chip');
   if (chip) {
     chip.textContent = '';

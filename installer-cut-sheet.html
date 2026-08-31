@@ -842,8 +842,9 @@ function renderSheet() {
     ['Door / tag', doorMarks()],
     ['Quantity', qty + (qty === 1 ? ' opening' : ' openings')],
     ['Location', p.location],
-    ['Lead time', ORDER.leadTime],
   ];
+  // Lead time is optional — omit the row entirely when blank.
+  if (ORDER.leadTime && String(ORDER.leadTime).trim()) cells.push(['Lead time', ORDER.leadTime]);
   const modelPrefix = isSwingCfg(cfg) ? 'DT-SWING' : 'DT-3000';
   const modelStr = !cfg ? '—'
     : cfg.isTwin
