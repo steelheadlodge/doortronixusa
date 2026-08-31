@@ -6292,13 +6292,16 @@ function printQuoteDrawing() {
     // Admins get the internal Factory cut list button on the drawing.
     if (window._portalUser && window._portalUser.isAdmin) url.searchParams.set('factory', '1');
     const href = url.href;
-    const a = document.createElement('a');
-    a.href = href;
-    a.target = '_blank';
-    a.rel = 'noopener';
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
+    // window.open keeps the opener link so the drawing tab can return here.
+    const win = window.open(href, '_blank');
+    if (!win) {
+      const a = document.createElement('a');
+      a.href = href;
+      a.target = '_blank';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
   } catch (err) {
     console.error(err);
     alert('Could not build the confirmation drawing.');

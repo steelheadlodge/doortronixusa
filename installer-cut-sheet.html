@@ -106,7 +106,10 @@ html.embed .sheet { margin:0 auto 0; }
 </head>
 <body>
 <div class="screen-bar">
-  <span style="font-size:11px;color:#667;">Tip: in the print window, set <b>Destination</b> to <b>“Save as PDF.”</b></span>
+  <span>
+    <button type="button" id="btn-back-quote" onclick="backToQuote()" style="background:#64748b;display:none;">← Back to quote</button>
+    <span style="font-size:11px;color:#667;margin-left:8px;">Tip: in the print window, set <b>Destination</b> to <b>“Save as PDF.”</b></span>
+  </span>
   <span>
     <button type="button" onclick="window.print()">Print</button>
     <button type="button" onclick="savePdf()">Save as PDF</button>
@@ -798,6 +801,17 @@ function showCutList(on) {
 // Save as PDF — uses the browser's print-to-PDF (highest quality; renders the
 // exact one-page sheet). Sets a helpful default filename, then opens the dialog
 // where the destination is "Save as PDF".
+// Return to the quote form: prefer closing this tab and refocusing the form
+// tab that launched it; otherwise go back in history, else open the quote form.
+function backToQuote() {
+  if (window.opener && !window.opener.closed) {
+    try { window.opener.focus(); } catch (e) {}
+    window.close();
+    return;
+  }
+  if (window.history.length > 1) { window.history.back(); return; }
+  window.location.href = 'quote-combined.html';
+}
 function savePdf() {
   try {
     const p = (ORDER && ORDER.project) || {};
@@ -2819,6 +2833,8 @@ else loadSample('fbo-single-rh', { widthFt:8, heightFt:8, heightIn:0, transom:tr
   const btn = document.getElementById('btn-cutlist');
   if (btn && internal) btn.style.display = '';
   if (q.get('cutlist') === '1') showCutList(true);
+  const backBtn = document.getElementById('btn-back-quote');
+  if (backBtn && ((window.opener && !window.opener.closed) || window.history.length > 1)) backBtn.style.display = '';
 })();
 window.addEventListener('resize', () => { if (ORDER) drawAll(); });
 window._encodeOrder = encodeOrder;
