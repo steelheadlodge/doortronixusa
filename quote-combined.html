@@ -1638,7 +1638,7 @@ body.sheet-mode #plan-svg { background:#fff; }
 <script>
 const FORMSPREE = "https://formspree.io/f/mykorzwy";
 const PORTAL_API = (location.hostname === 'localhost' || location.hostname === '127.0.0.1') && location.port !== '8788'
-  ? 'http://127.0.0.1:8788/api' : '/api';
+  ? 'http://127.0.0.1:8788/api' : 'https://doortronix-portal.misty-snow-1625.workers.dev/api';
 window._portalUser = null;
 
 async function portalMe() {

@@ -7,7 +7,7 @@
     {
       "binding": "DB",
       "database_name": "doortronix-portal",
-      "database_id": "REPLACE_AFTER_D1_CREATE",
+      "database_id": "3678059f-cd37-45a7-9af2-aa8bec6961e3",
       "migrations_dir": "migrations"
     }
   ]

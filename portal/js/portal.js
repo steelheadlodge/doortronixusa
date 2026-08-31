@@ -3,7 +3,7 @@
   const RESTORE_KEY = 'dtx_restore_order';
   const host = location.hostname;
   const localSite = (host === 'localhost' || host === '127.0.0.1') && location.port !== '8787';
-  const API = window.DTX_API || (localSite ? 'http://127.0.0.1:8788/api' : '/api');
+  const API = window.DTX_API || (localSite ? 'http://127.0.0.1:8788/api' : 'https://doortronix-portal.misty-snow-1625.workers.dev/api');
 
   const STATUS = {
     draft: 'Draft',
