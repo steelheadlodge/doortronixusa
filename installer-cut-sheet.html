@@ -106,23 +106,11 @@ html.embed .sheet { margin:0 auto 0; }
 </head>
 <body>
 <div class="screen-bar">
-  <span>Confirmation drawing (draft).</span>
+  <span></span>
   <span>
     <button type="button" onclick="window.print()">Print</button>
-    <button type="button" onclick="showCutList(true)" style="background:#7C2D12;color:#fff;">Factory cut list →</button>
-    <button type="button" onclick="loadSample('fbo-bi')">FBO Bi 10×7'6</button>
-    <button type="button" onclick="loadSample('fsl-bi')">FSL Bi</button>
-    <button type="button" onclick="loadSample('fbo-single-rh')">FBO RH</button>
-    <button type="button" onclick="loadSample('fbo-bi',{widthFt:14,heightFt:8,heightIn:0,transom:true,ftthFt:12,ftthIn:0,transomVerticals:2,frameFinish:'Clear Anodized'})">14×12 Clear</button>
-    <button type="button" onclick="loadSample('fbo-bi',{widthFt:14,heightFt:8,heightIn:0,transom:true,ftthFt:12,ftthIn:0,transomVerticals:2,frameFinish:'313 Dark Bronze'})">14×12 Bronze</button>
-    <button type="button" onclick="loadSample('fbo-single-rh',{widthFt:8,heightFt:8,heightIn:0,transom:true,ftthFt:10,ftthIn:0,transomVerticals:1,frameFinish:'Clear Anodized'})">RH 8×10 T</button>
-    <button type="button" onclick="loadSampleSwing('swing-single',{swingHand:'rh'})">Swing RH</button>
-    <button type="button" onclick="loadSampleSwing('swing-single',{swingHand:'lh'})">Swing LH</button>
-    <button type="button" onclick="loadSampleSwing('swing-pair',{widthFt:6,widthIn:0})">Swing Pair</button>
-    <button type="button" onclick="loadSampleSwing('swing-twin-center',{widthFt:3,widthIn:5,widthLFt:3,widthLIn:5,widthRFt:3,widthRIn:5,slWidthCFt:1,slWidthCIn:0,swingHandL:'rh',swingHandR:'rh',swingDirL:'out',swingDirR:'in',swingStopL:'fixed',swingStopR:'panic',swingRailsL:'both',swingRailsR:'wall'})">Twin + Center</button>
-    <button type="button" onclick="loadSampleSwing('swing-single',{swingHand:'rh',transom:true,ftthFt:9,ftthIn:0,heightFt:7,heightIn:6})">Swing RH + T</button>
-    <button type="button" onclick="loadSampleSwing('swing-single',{swingHand:'rh',transom:true,ftthFt:9,ftthIn:0,heightFt:7,heightIn:6,swingSidelite:'both',slWidthFt:3,slWidthIn:0})">Swing RH + SL + T</button>
-    <button type="button" onclick="loadSampleSwing('swing-single',{swingHand:'lh',swingSidelite:'left',slWidthFt:5,slWidthIn:0,slVerticals:2,doorGlassPrep:'1&quot;'})">Swing LH + 5' SL + 2V</button>
+    <button type="button" onclick="savePdf()">Save as PDF</button>
+    <button type="button" id="btn-cutlist" onclick="showCutList(true)" style="background:#7C2D12;color:#fff;display:none;">Factory cut list →</button>
   </span>
 </div>
 
@@ -805,6 +793,18 @@ function showCutList(on) {
   if (cs) cs.style.display = on ? '' : 'none';
   if (sh) sh.style.display = on ? 'none' : '';
   if (on) window.scrollTo(0, 0);
+}
+
+// Save as PDF = the browser print dialog with "Save as PDF" destination.
+// Set a helpful default filename from the order before printing.
+function savePdf() {
+  try {
+    const p = (ORDER && ORDER.project) || {};
+    const c = (ORDER && ORDER.customer) || {};
+    const parts = ['Doortronix Confirmation', p.po || p.name || c.company || c.name].filter(Boolean);
+    document.title = parts.join(' — ');
+  } catch (e) {}
+  window.print();
 }
 
 function renderSheet() {
@@ -2809,7 +2809,15 @@ else if (new URLSearchParams(location.search).get('type') === 'swing') {
 }
 else loadSample('fbo-single-rh', { widthFt:8, heightFt:8, heightIn:0, transom:true, ftthFt:10, ftthIn:0, transomVerticals:1, frameFinish:'Clear Anodized' });
 
-if (new URLSearchParams(location.search).get('cutlist') === '1') showCutList(true);
+// Factory cut list is internal — hidden from the customer-facing drawing.
+// Reveal the button (and optionally auto-open) only with ?factory=1 or ?cutlist=1.
+(function () {
+  const q = new URLSearchParams(location.search);
+  const internal = q.get('factory') === '1' || q.get('cutlist') === '1';
+  const btn = document.getElementById('btn-cutlist');
+  if (btn && internal) btn.style.display = '';
+  if (q.get('cutlist') === '1') showCutList(true);
+})();
 window.addEventListener('resize', () => { if (ORDER) drawAll(); });
 window._encodeOrder = encodeOrder;
 </script>
