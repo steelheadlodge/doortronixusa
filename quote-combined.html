@@ -441,15 +441,20 @@ body.sheet-mode #plan-svg { background:#fff; }
 
       <!-- ── PROJECT ── -->
       <div id="project-section-wrapper">
-      <div class="section-header">② Project Details</div>
+      <div class="section-header">② Project &amp; Shipping</div>
       <div class="form-grid">
         <div class="field">
           <label>Project Name</label>
           <input type="text" name="projectName" id="f_project" placeholder="e.g. Walmart #4321 or Hospital Lobby">
         </div>
         <div class="field">
-          <label>Project City &amp; State <span class="req">*</span></label>
-          <input type="text" name="projectLocation" id="f_location" placeholder="e.g. Dallas, TX" required>
+          <label>Customer PO #</label>
+          <input type="text" name="poNumber" id="f_po" placeholder="Customer PO or job reference #">
+        </div>
+        <div class="field" id="job-num-field" style="display:none;">
+          <label>Our Job # (Doortronix)</label>
+          <input type="text" name="jobNumber" id="f_job" placeholder="Internal job / order number">
+          <span class="hint">Doortronix internal — shows on the confirmation drawing.</span>
         </div>
         <div class="field">
           <label>Target Ship Date</label>
@@ -457,8 +462,13 @@ body.sheet-mode #plan-svg { background:#fff; }
           <span class="hint">Lead time from 3–4 weeks — call to confirm. Expedited orders available</span>
         </div>
         <div class="field">
-          <label>PO / Reference #</label>
-          <input type="text" name="poNumber" id="f_po" placeholder="Your PO or job reference number">
+          <label>Project City &amp; State <span class="req">*</span></label>
+          <input type="text" name="projectLocation" id="f_location" placeholder="e.g. Dallas, TX" required>
+        </div>
+        <div class="field full">
+          <label>Ship-to Address</label>
+          <textarea name="shipTo" id="f_shipto" rows="2" placeholder="Company / contact, street, city, state, ZIP"></textarea>
+          <span class="hint">Where the doors ship. Leave blank to use the project city &amp; state.</span>
         </div>
       </div>
 
@@ -6083,6 +6093,7 @@ document.getElementById('quoteForm').addEventListener('submit', async function(e
     name: fv('f_name'), company: fv('f_company'), role: fv('f_role'),
     phone: fv('f_phone'), email: fv('f_email'),
     projectName: fv('f_project'), location: fv('f_location'),
+    shipTo: fv('f_shipto') || fv('f_location'), jobNumber: fv('f_job'),
     poNumber: fv('f_po'), shipDate: fv('f_shipdate'), quantity: fv('f_qty'),
     configuration: cfg ? cfg.label + ' (' + cfg.code + ')' : rv('config'),
     packageType: cfg && cfg.isSwing ? 'Complete swing door and frame' : 'Sliding door',
@@ -6271,7 +6282,7 @@ function buildSheetOrder() {
       doorMark: fv('f_location_tags'),
       quantity: parseInt(fv('f_qty'), 10) || 1,
       location: fv('f_location'),
-      shipTo: fv('f_location'),
+      shipTo: fv('f_shipto') || fv('f_location'),
     },
     door: door,
     addons: addons,
@@ -6445,6 +6456,8 @@ renderCart();
 
 portalMe().then(function (me) {
   window._portalUser = me;
+  const jobField = document.getElementById('job-num-field');
+  if (jobField) jobField.style.display = (me && me.isAdmin) ? '' : 'none';
   const chip = document.getElementById('portal-chip');
   if (chip) {
     chip.textContent = '';
