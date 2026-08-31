@@ -573,39 +573,48 @@ function swingPushBarOn(d) {
 }
 function getSwingPullStr(d) {
   const sz = swingPullSize(d);
-  return sz ? sz + '" offset wire pull' : 'None / by others';
+  return sz ? sz + '" offset wire pull, satin' : 'None / by others';
 }
 function swingHardwareLabel(d) {
   if (d.swingEnergy === 'high') return '';
   const n = swingHwLeafCount(d);
-  return getSwingPullStr(d) + ' + ' + (swingPushBarOn(d) ? 'cut-to-width push bar' : 'push bar by others') + (n > 1 ? ' (×' + n + ')' : '');
+  return getSwingPullStr(d) + ' + ' + (swingPushBarOn(d) ? 'cut-to-width push bar, satin' : 'push bar by others') + (n > 1 ? ' (×' + n + ')' : '');
 }
 // Elevation is the exterior face: out-swing exterior is the pull side (offset wire
 // pull); in-swing exterior is the push side (cut-to-width push bar). Low energy only.
 function drawSwingLeafHardware(svg, o) {
   if (o.d.swingEnergy === 'high') return;
-  const metal = '#5a5f66', edge = '#2a2d31';
+  if (o.outSwing) { if (!swingPullSize(o.d)) return; drawOffsetPull(svg, o, swingPullSize(o.d)); }
+  else { if (!swingPushBarOn(o.d)) return; drawPushBar(svg, o); }
+}
+const HW_SATIN = '#a6abb0', HW_EDGE = '#5f636a', HW_SHADE = '#8b9096';
+function drawOffsetPull(svg, o, pullSz) {
+  const cyMid = o.leafY + o.leafH - 42 * o.sc;
+  const len = Math.max(o.sc * 8, pullSz * o.sc);
+  const top = cyMid - len / 2, bot = cyMid + len / 2;
+  const glassDir = o.lockLeft ? 1 : -1;
+  const stileCenter = o.lockLeft ? o.leafL + o.stileW / 2 : o.leafL + o.leafW - o.stileW / 2;
+  const stileEdge = o.lockLeft ? o.leafL + o.stileW : o.leafL + o.leafW - o.stileW;
+  const gripX = stileEdge + glassDir * Math.max(o.sc * 1.4, o.stileW * 0.55);
+  const barW = Math.max(2.2, o.sc * 1.1);
+  const armH = Math.max(1.6, o.sc * 0.9);
+  const armX = Math.min(stileCenter, gripX), armW = Math.abs(gripX - stileCenter) + barW / 2;
+  [top + len * 0.14, bot - len * 0.14].forEach(ay => {
+    svgEl(svg, 'rect', { x: armX, y: ay - armH / 2, width: armW, height: armH, fill: HW_SHADE, stroke: HW_EDGE, 'stroke-width': 0.4 });
+    svgEl(svg, 'circle', { cx: stileCenter, cy: ay, r: Math.max(0.9, o.sc * 0.5), fill: HW_EDGE });
+  });
+  svgEl(svg, 'rect', { x: gripX - barW / 2, y: top, width: barW, height: len, rx: barW * 0.45, fill: HW_SATIN, stroke: HW_EDGE, 'stroke-width': 0.5 });
+}
+function drawPushBar(svg, o) {
   const cyMid = o.leafY + o.leafH - 40 * o.sc;
-  if (o.outSwing) {
-    const pullSz = swingPullSize(o.d);
-    if (!pullSz) return;
-    const len = Math.max(o.sc * 6, pullSz * o.sc);
-    const px = o.lockLeft ? o.leafL + o.stileW : o.leafL + o.leafW - o.stileW;
-    const top = cyMid - len / 2, bot = cyMid + len / 2;
-    const bw = Math.max(1.6, o.sc * 0.9);
-    svgEl(svg, 'line', { x1: px, y1: top + len * 0.12, x2: px, y2: bot - len * 0.12, stroke: metal, 'stroke-width': bw, 'stroke-linecap': 'round' });
-    svgEl(svg, 'circle', { cx: px, cy: top + len * 0.12, r: Math.max(1, o.sc * 0.55), fill: edge });
-    svgEl(svg, 'circle', { cx: px, cy: bot - len * 0.12, r: Math.max(1, o.sc * 0.55), fill: edge });
-  } else {
-    if (!swingPushBarOn(o.d)) return;
-    const inset = o.stileW * 0.9;
-    const x1 = o.leafL + inset, x2 = o.leafL + o.leafW - inset;
-    if (x2 - x1 < 4) return;
-    const bh = Math.max(1.6, o.sc * 0.9);
-    svgEl(svg, 'line', { x1, y1: cyMid, x2, y2: cyMid, stroke: metal, 'stroke-width': bh, 'stroke-linecap': 'round' });
-    svgEl(svg, 'circle', { cx: x1 + (x2 - x1) * 0.06, cy: cyMid, r: Math.max(1, o.sc * 0.55), fill: edge });
-    svgEl(svg, 'circle', { cx: x2 - (x2 - x1) * 0.06, cy: cyMid, r: Math.max(1, o.sc * 0.55), fill: edge });
-  }
+  const inset = o.stileW * 0.55;
+  const x1 = o.leafL + inset, x2 = o.leafL + o.leafW - inset;
+  if (x2 - x1 < 4) return;
+  const barH = Math.max(2.6, o.sc * 1.5);
+  const padW = Math.max(2.4, o.sc * 1.3), padH = barH * 1.7;
+  svgEl(svg, 'rect', { x: x1 - padW * 0.35, y: cyMid - padH / 2, width: padW, height: padH, rx: padW * 0.2, fill: HW_SHADE, stroke: HW_EDGE, 'stroke-width': 0.4 });
+  svgEl(svg, 'rect', { x: x2 - padW * 0.65, y: cyMid - padH / 2, width: padW, height: padH, rx: padW * 0.2, fill: HW_SHADE, stroke: HW_EDGE, 'stroke-width': 0.4 });
+  svgEl(svg, 'rect', { x: x1, y: cyMid - barH / 2, width: x2 - x1, height: barH, rx: barH * 0.15, fill: HW_SATIN, stroke: HW_EDGE, 'stroke-width': 0.5 });
 }
 function swingPlateLabel(d) {
   if (!d.swingPlate || d.swingPlate === 'none') return '';
