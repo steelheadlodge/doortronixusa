@@ -2838,7 +2838,8 @@ else if (new URLSearchParams(location.search).get('type') === 'swing') {
 else loadSample('fbo-single-rh', { widthFt:8, heightFt:8, heightIn:0, transom:true, ftthFt:10, ftthIn:0, transomVerticals:1, frameFinish:'Clear Anodized' });
 
 // Factory cut list is internal — hidden from the customer-facing drawing.
-// Reveal the button (and optionally auto-open) only with ?factory=1 or ?cutlist=1.
+// Reveal the button (and optionally auto-open) with ?factory=1 / ?cutlist=1, OR
+// whenever a signed-in admin is viewing the drawing (independent of the URL).
 (function () {
   const q = new URLSearchParams(location.search);
   const internal = q.get('factory') === '1' || q.get('cutlist') === '1';
@@ -2847,6 +2848,20 @@ else loadSample('fbo-single-rh', { widthFt:8, heightFt:8, heightIn:0, transom:tr
   if (q.get('cutlist') === '1') showCutList(true);
   const backBtn = document.getElementById('btn-back-quote');
   if (backBtn && ((window.opener && !window.opener.closed) || window.history.length > 1)) backBtn.style.display = '';
+
+  // Admins always get the factory cut list, however they opened the drawing.
+  if (btn && !internal) {
+    const token = localStorage.getItem('dtx_session');
+    if (token) {
+      const host = location.hostname;
+      const local = (host === 'localhost' || host === '127.0.0.1') && location.port !== '8788';
+      const api = local ? 'http://127.0.0.1:8788/api' : 'https://doortronix-portal.misty-snow-1625.workers.dev/api';
+      fetch(api + '/me', { headers: { Authorization: 'Bearer ' + token } })
+        .then(r => r.ok ? r.json() : null)
+        .then(d => { if (d && d.user && d.user.isAdmin) btn.style.display = ''; })
+        .catch(() => {});
+    }
+  }
 })();
 window.addEventListener('resize', () => { if (ORDER) drawAll(); });
 window._encodeOrder = encodeOrder;

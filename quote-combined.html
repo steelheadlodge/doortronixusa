@@ -412,11 +412,11 @@ body.sheet-mode #plan-svg { background:#fff; }
       <div class="form-grid">
         <div class="field">
           <label>Full Name <span class="req">*</span></label>
-          <input type="text" name="name" id="f_name" placeholder="Your full name" required>
+          <input type="text" name="name" id="f_name" placeholder="Your full name" autocomplete="name" required>
         </div>
         <div class="field">
           <label>Company Name <span class="req">*</span></label>
-          <input type="text" name="company" id="f_company" placeholder="Your company" required>
+          <input type="text" name="company" id="f_company" placeholder="Your company" autocomplete="organization" required>
         </div>
         <div class="field">
           <label>Your Role <span class="req">*</span></label>
@@ -434,11 +434,11 @@ body.sheet-mode #plan-svg { background:#fff; }
         </div>
         <div class="field">
           <label>Phone Number <span class="req">*</span></label>
-          <input type="tel" name="phone" id="f_phone" placeholder="(555) 000-0000" required>
+          <input type="tel" name="phone" id="f_phone" placeholder="(555) 000-0000" autocomplete="tel" required>
         </div>
         <div class="field full">
           <label>Email Address <span class="req">*</span></label>
-          <input type="email" name="email" id="f_email" placeholder="you@yourcompany.com" required>
+          <input type="email" name="email" id="f_email" placeholder="you@yourcompany.com" autocomplete="email" required>
         </div>
       </div>
 
@@ -6569,6 +6569,18 @@ portalMe().then(function (me) {
     chip.appendChild(a);
   }
   syncAccountBox(me);
+  // Prefill the contact section from the signed-in account so there's nothing
+  // to retype (and the browser can't drop the name into the email box).
+  if (me) {
+    const setIfEmpty = (id, val) => {
+      const el = document.getElementById(id);
+      if (el && val && !el.value) el.value = val;
+    };
+    setIfEmpty('f_name', me.name);
+    setIfEmpty('f_company', me.company);
+    setIfEmpty('f_email', me.email);
+    setIfEmpty('f_phone', me.phone);
+  }
   // Reveal the "Save quote" button now that we know the user is signed in.
   renderCart();
   if (me) calcPrice();
