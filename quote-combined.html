@@ -6289,6 +6289,8 @@ function printQuoteDrawing() {
     const encoded = encodeSheetOrder(buildSheetOrder());
     const url = new URL('installer-cut-sheet.html', location.href);
     url.searchParams.set('d', encoded);
+    // Admins get the internal Factory cut list button on the drawing.
+    if (window._portalUser && window._portalUser.isAdmin) url.searchParams.set('factory', '1');
     const href = url.href;
     const a = document.createElement('a');
     a.href = href;
