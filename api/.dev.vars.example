@@ -1,0 +1,9 @@
+# Copy to .dev.vars (never commit .dev.vars)
+# Admin is a database flag — not “whoever signs up with this email.”
+# After you create your own login, promote it:
+#   npx wrangler d1 execute doortronix-portal --local --command="UPDATE users SET is_admin=1 WHERE email='you@doortronixusa.com'"
+# Or POST /api/admin/bootstrap with ADMIN_BOOTSTRAP.
+ADMIN_BOOTSTRAP=change-this-long-random-string
+# STRIPE_SECRET_KEY=sk_test_...
+# STRIPE_WEBHOOK_SECRET=whsec_...
+# PUBLIC_SITE_URL=http://127.0.0.1:8765

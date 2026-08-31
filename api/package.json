@@ -1,0 +1,12 @@
+{
+  "name": "doortronix-portal",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --port 8788",
+    "db:local": "wrangler d1 migrations apply doortronix-portal --local"
+  },
+  "devDependencies": {
+    "wrangler": "^4.37.0"
+  }
+}
