@@ -2986,8 +2986,9 @@ function drawOffsetPull(svg, o, pullSz) {
   svgEl(svg, 'rect', { x: gripX - barW / 2, y: top, width: barW, height: len, rx: barW * 0.45, fill: HW_SATIN, stroke: HW_EDGE, 'stroke-width': 0.5 });
 }
 // Flat horizontal push bar, cut to width, with mounting pads on the stiles.
+// Centers on the 2" muntin (o.barY) when there is one; otherwise ~40" AFF.
 function drawPushBar(svg, o) {
-  const cyMid = o.leafY + o.leafH - 40 * o.sc;
+  const cyMid = (o.barY != null) ? o.barY : (o.leafY + o.leafH - 40 * o.sc);
   const inset = o.stileW * 0.55;
   const x1 = o.leafL + inset, x2 = o.leafL + o.leafW - inset;
   if (x2 - x1 < 4) return;
@@ -4790,7 +4791,7 @@ function drawTwinSwingElevation(svg, vW, vH, isConf) {
     const cy = leafY + leafH - 40 * sc;
     const cx = hingeLeft ? innerX + leafW - stileW / 2 : innerX + stileW / 2;
     svgEl(svg, 'circle', { cx, cy, r: Math.max(2.2, sc * 0.9), fill: '#2a2a2a', stroke: '#111', 'stroke-width': 0.7 });
-    drawSwingLeafHardware(svg, { leafL: innerX, leafW, leafY, leafH, stileW, sc, lockLeft: !hingeLeft, outSwing: bay.outSwing });
+    drawSwingLeafHardware(svg, { leafL: innerX, leafW, leafY, leafH, stileW, sc, lockLeft: !hingeLeft, outSwing: bay.outSwing, barY: (hasMuntin && muntAffs.length) ? muntinY(muntAffs.reduce((b, a) => Math.abs(a - 40) < Math.abs(b - 40) ? a : b, muntAffs[0])) + muntH / 2 : null });
     bay.innerX = innerX;
     bay.leafW = leafW;
   }
@@ -5049,9 +5050,14 @@ function drawSwingElevation(svg, vW, vH, isConf) {
     else cx = innerX + stileW / 2;
     svgEl(svg, 'circle', { cx, cy, r: rr, fill: '#2a2a2a', stroke: '#111', 'stroke-width': 0.7 });
   })();
+  let pushBarY = null;
+  if (hasMuntin && muntAffs.length) {
+    const aff = muntAffs.reduce((b, a) => Math.abs(a - 40) < Math.abs(b - 40) ? a : b, muntAffs[0]);
+    pushBarY = muntinY(aff) + muntH / 2;
+  }
   leafXs.forEach((lx, i) => {
     const lockLeft = isPair ? (i === 1) : !hingeOnLeft;
-    drawSwingLeafHardware(svg, { leafL: lx, leafW, leafY, leafH, stileW, sc, lockLeft, outSwing });
+    drawSwingLeafHardware(svg, { leafL: lx, leafW, leafY, leafH, stileW, sc, lockLeft, outSwing, barY: pushBarY });
   });
 
   function drawStorefront(x, w, doorOnLeft) {
