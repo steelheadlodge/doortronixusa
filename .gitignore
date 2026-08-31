@@ -1,1 +1,18 @@
 TunedTV/
+api/node_modules/
+api/.wrangler/
+api/.dev.vars
+
+# OS / editor cruft
+.DS_Store
+**/.DS_Store
+
+# Session QA / verification artifacts (screenshots, scratch scripts)
+_review/
+_review2/
+_review3/
+_review4/
+_verify/
+
+# Build outputs / packaged zips
+*.zip
