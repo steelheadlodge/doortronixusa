@@ -106,7 +106,7 @@ html.embed .sheet { margin:0 auto 0; }
 </head>
 <body>
 <div class="screen-bar">
-  <span></span>
+  <span style="font-size:11px;color:#667;">Tip: in the print window, set <b>Destination</b> to <b>“Save as PDF.”</b></span>
   <span>
     <button type="button" onclick="window.print()">Print</button>
     <button type="button" onclick="savePdf()">Save as PDF</button>
@@ -795,14 +795,16 @@ function showCutList(on) {
   if (on) window.scrollTo(0, 0);
 }
 
-// Save as PDF = the browser print dialog with "Save as PDF" destination.
-// Set a helpful default filename from the order before printing.
+// Save as PDF — uses the browser's print-to-PDF (highest quality; renders the
+// exact one-page sheet). Sets a helpful default filename, then opens the dialog
+// where the destination is "Save as PDF".
 function savePdf() {
   try {
     const p = (ORDER && ORDER.project) || {};
     const c = (ORDER && ORDER.customer) || {};
-    const parts = ['Doortronix Confirmation', p.po || p.name || c.company || c.name].filter(Boolean);
-    document.title = parts.join(' — ');
+    const cutlistOn = document.getElementById('cutlist-sheet').style.display !== 'none';
+    const tag = (p.po || p.name || c.company || c.name || 'drawing').replace(/[^\w \-]/g, '').trim();
+    document.title = 'Doortronix ' + (cutlistOn ? 'Cut List' : 'Confirmation') + ' - ' + tag;
   } catch (e) {}
   window.print();
 }
