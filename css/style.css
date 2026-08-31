@@ -138,6 +138,14 @@ ul { list-style: none; }
   margin-left: 8px;
 }
 .nav-links .btn-nav-cta:hover { background: var(--dorange); }
+.nav-links .btn-nav-account {
+  color: var(--blue);
+  border: 2px solid var(--blue);
+  padding: 7px 14px;
+  border-radius: var(--radius);
+  font-weight: 700;
+}
+.nav-links .btn-nav-account:hover { background: var(--blue); color: #fff; text-decoration: none; }
 
 /* Dropdown */
 .nav-dropdown { position: relative; }

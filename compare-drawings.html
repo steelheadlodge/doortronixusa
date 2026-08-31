@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Compare confirmation drawings</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #163F6E; font-family: Arial, sans-serif; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; height: 100vh; }
+  .col { position: relative; min-width: 0; }
+  .col + .col { border-left: 3px solid #E87722; }
+  iframe { width: 100%; height: 100%; border: 0; background: #E8EEF4; }
+  .lbl {
+    position: absolute; top: 8px; left: 8px; z-index: 2;
+    background: #1B4F8A; color: #fff; padding: 5px 10px;
+    font-size: 11px; font-weight: 700; letter-spacing: .4px;
+    border-radius: 4px; pointer-events: none;
+  }
+  .col.swing .lbl { background: #E87722; }
+</style>
+</head>
+<body>
+<div class="row">
+  <div class="col">
+    <div class="lbl">SLIDER — reference</div>
+    <iframe src="order-confirmation.html?preview=fbo-bi&amp;sheet=1" title="Slider confirmation drawing"></iframe>
+  </div>
+  <div class="col swing">
+    <div class="lbl">SWING — in progress</div>
+    <iframe src="quote-combined.html?type=swing&amp;sheet=1" title="Swing confirmation drawing"></iframe>
+  </div>
+</div>
+</body>
+</html>

@@ -4,6 +4,24 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Order Confirmation — Doortronix USA</title>
+<meta name="description" content="Doortronix order confirmation drawing and approval portal.">
+
+<!-- Open Graph / Twitter share preview -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Doortronix USA">
+<meta property="og:url" content="https://doortronixusa.com/order-confirmation.html">
+<meta property="og:title" content="Order Confirmation — Doortronix USA">
+<meta property="og:description" content="Doortronix order confirmation drawing and approval portal.">
+<meta property="og:image" content="https://doortronixusa.com/images/revolution.jpg?v=3">
+<meta property="og:image:secure_url" content="https://doortronixusa.com/images/revolution.jpg?v=3">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1024">
+<meta property="og:image:height" content="585">
+<meta property="og:image:alt" content="Doortronix Revolution automatic sliding door">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Order Confirmation — Doortronix USA">
+<meta name="twitter:description" content="Doortronix order confirmation drawing and approval portal.">
+<meta name="twitter:image" content="https://doortronixusa.com/images/revolution.jpg?v=3">
 <style>
 *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
 body { font-family:Arial, Helvetica, sans-serif; font-size:14px; background:#F0F4F8; color:#111; min-height:100vh; }
@@ -160,17 +178,175 @@ body { font-family:Arial, Helvetica, sans-serif; font-size:14px; background:#F0F
 .btn-print { background:var(--blue); color:#fff; }
 .btn-secondary { background:var(--lgray); color:#111; border:1px solid var(--border)!important; }
 
+.print-bar { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;
+  background:#fff; border:1px solid var(--border); border-radius:6px; padding:12px 18px; margin-bottom:14px; }
+.print-bar p { font-size:12px; color:var(--mgray); margin:0; line-height:1.45; max-width:640px; }
+.print-bar .btn-print { border:none; padding:10px 18px; border-radius:4px; font-size:13px; font-weight:700;
+  cursor:pointer; font-family:inherit; white-space:nowrap; }
+.print-bar .btn-print:hover { background:var(--dblue); }
+.print-bar .btn-print.ghost { background:#fff; color:var(--blue); border:1px solid var(--blue); }
+
+body.mode-submittal .order-only { display:none !important; }
+body.mode-order .submittal-only { display:none !important; }
+
+/* Drawing-only preview (side-by-side with swing sheet) */
+body.sheet-mode { background:#E8EEF4; }
+body.sheet-mode .topbar,
+body.sheet-mode .doc-head,
+body.sheet-mode .doc-foot,
+body.sheet-mode .order-only,
+body.sheet-mode .print-bar,
+body.sheet-mode #spec-head,
+body.sheet-mode #door-grid-wrap,
+body.sheet-mode #empty-state { display:none !important; }
+body.sheet-mode .shell { max-width:900px; padding:12px; }
+body.sheet-mode #door-card { border:none; box-shadow:none; background:transparent; }
+body.sheet-mode .drawing-wrap { box-shadow:0 2px 10px rgba(0,0,0,.08); margin-bottom:12px; }
+
+body.mode-submittal .topbar { width:100%; }
+body.mode-submittal .shell { max-width:none; padding:8px 12px 0; }
+body.mode-submittal .doc-foot { display:none; }
+body.mode-submittal .doc-head { display:none; }
+body.mode-submittal #order-content {
+  display:flex !important; flex-direction:column;
+  height:calc(100vh - 72px);
+  min-height:0;
+}
+body.mode-submittal #door-card {
+  flex:1; min-height:0;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 280px;
+  grid-template-rows:auto minmax(0,1fr) auto;
+  grid-template-areas:
+    "head head"
+    "draw side"
+    "foot foot";
+  align-items:stretch; border:1.5px solid #111; border-radius:0; box-shadow:none; margin:0;
+}
+body.mode-submittal .cs-brand {
+  grid-area:head;
+  display:flex; justify-content:space-between; align-items:center; gap:16px;
+  background:#1B4F8A; color:#fff; padding:10px 14px;
+}
+body.mode-submittal .cs-draw-col {
+  grid-area:draw; min-width:0; min-height:0;
+  display:flex; flex-direction:column;
+  background:#fff;
+}
+body.mode-submittal .cs-drawings {
+  flex:1; min-height:0;
+  display:flex; flex-direction:column; justify-content:space-evenly;
+}
+body.mode-submittal .cs-drawings .drawing-wrap {
+  flex:1 1 0; min-height:0; border:none; outline:none;
+  display:flex; align-items:center; justify-content:center;
+  overflow:hidden;
+}
+body.mode-submittal .cs-drawings svg {
+  width:100%; height:100%; display:block;
+}
+body.mode-submittal .cs-sheet-foot {
+  grid-area:foot;
+  background:#1B4F8A; color:#fff;
+  padding:8px 14px;
+  border-top:2px solid #E87722;
+  display:flex; justify-content:space-between; align-items:flex-end; gap:12px;
+  font-size:10px; line-height:1.35;
+}
+body.mode-submittal .cs-sheet-foot .csf-sub { color:#B8CCE4; font-size:8px; margin-top:2px; }
+body.mode-submittal .cs-sheet-foot .csf-r { text-align:right; color:#E87722; font-weight:700; }
+body.mode-submittal #spec-head,
+body.mode-submittal #door-grid-wrap { display:none !important; }
+body.mode-submittal .cs-side {
+  grid-area:side; min-height:0; overflow:auto;
+  border-left:1.5px solid #111; background:#fff; padding:0;
+  display:flex; flex-direction:column; font-size:10px; line-height:1.35; color:#111;
+}
+body.mode-submittal .cs-brand .cs-sheet {
+  color:#B8CCE4; font-size:9px; text-align:right; text-transform:uppercase; letter-spacing:.4px; max-width:46%;
+}
+.cs-brand { background:#1B4F8A; color:#fff; padding:10px 12px; }
+.cs-brand .cs-co { font-size:13px; font-weight:800; letter-spacing:.4px; }
+.cs-brand .cs-prod { font-size:10px; color:#FED7AA; margin-top:2px; font-weight:700; }
+.cs-brand .cs-sheet { font-size:9px; color:#B8CCE4; margin-top:4px; text-transform:uppercase; letter-spacing:.5px; }
+.cs-h { background:#111; color:#fff; font-size:8px; font-weight:700; letter-spacing:.6px;
+  text-transform:uppercase; padding:4px 10px; }
+.cs-tbl { width:100%; border-collapse:collapse; }
+.cs-tbl td { padding:3px 10px; border-bottom:1px solid #E5E7EB; vertical-align:top; }
+.cs-tbl td:first-child { width:38%; color:#555; font-size:9px; text-transform:uppercase; letter-spacing:.3px; }
+.cs-tbl td:last-child { font-weight:700; font-size:10px; }
+.cs-notes { margin:6px 10px 8px 22px; padding:0; font-size:9px; line-height:1.4; color:#222; }
+.cs-notes li { margin-bottom:3px; }
+.cs-fill-note { background:#FEF3C7; color:#92400E; font-size:8px; font-weight:700;
+  letter-spacing:.35px; text-transform:uppercase; padding:5px 10px; }
+.cs-in, .cs-ta {
+  width:100%; box-sizing:border-box; border:1px solid #F59E0B; background:#FFFBEB;
+  font:inherit; font-weight:700; padding:2px 4px; border-radius:2px; color:#111;
+}
+.cs-ta { min-height:38px; resize:vertical; font-weight:600; line-height:1.35; }
+.cs-in::placeholder, .cs-ta::placeholder { color:#B45309; font-weight:600; opacity:.75; }
+.cs-stamp { margin-top:auto; border-top:1.5px solid #111; padding:8px 10px; font-size:9px; }
+.cs-stamp .st-checks { margin-bottom:8px; }
+.cs-stamp .st-line { border-bottom:1px solid #999; height:16px; margin:6px 0 2px; }
+
+@media (max-width:900px) {
+  body.mode-submittal #door-card { grid-template-columns:1fr; grid-template-rows:auto minmax(0,1fr) auto auto; grid-template-areas:"head" "draw" "side" "foot"; }
+  body.mode-submittal .cs-side { border-left:none; border-top:1.5px solid #111; }
+}
+
 /* Footer */
 .doc-foot { margin-top:30px; padding:24px 0; text-align:center;
   font-size:11px; color:var(--mgray); border-top:1px solid var(--border); }
 
 /* Print */
 @media print {
-  .topbar, .approve-card, .preview-actions, .success-actions, .doc-foot { display:none!important; }
-  body { background:#fff; }
-  .shell { max-width:100%; padding:0; }
-  .card, .doc-head { box-shadow:none; page-break-inside:avoid; }
-  .success-screen { border:none; padding:0; }
+  html, body { margin:0 !important; padding:0 !important; background:#fff !important; }
+  .card, .doc-head { box-shadow:none; }
+
+  body.mode-submittal .topbar,
+  body.mode-submittal .doc-foot,
+  body.mode-submittal .print-bar,
+  body.mode-submittal .center-msg,
+  body.mode-submittal .success-screen,
+  body.mode-submittal .shell > :not(#order-content),
+  body.mode-submittal #order-content > :not(#door-card) {
+    display:none !important;
+  }
+
+  body.mode-submittal .shell,
+  body.mode-submittal #order-content {
+    display:block !important;
+    height:auto !important;
+    max-width:none !important;
+    margin:0 !important;
+    padding:0 !important;
+    overflow:visible !important;
+  }
+
+  body.mode-submittal #door-card {
+    position:absolute !important;
+    top:0 !important; left:0 !important;
+    width:8in !important;
+    height:10in !important;
+    max-height:10in !important;
+    overflow:hidden !important;
+    margin:0 !important;
+    display:grid !important;
+    grid-template-rows:auto minmax(0,1fr) auto !important;
+    page-break-after:avoid; page-break-inside:avoid;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
+  }
+  body.mode-submittal .cs-draw-col,
+  body.mode-submittal .cs-drawings,
+  body.mode-submittal .cs-side {
+    min-height:0 !important;
+    overflow:hidden !important;
+  }
+  body.mode-submittal .cs-fill-note { display:none !important; }
+  body.mode-submittal .cs-ta { min-height:18px; max-height:36px; }
+  body.mode-submittal .cs-in, body.mode-submittal .cs-ta {
+    border:none; background:transparent; padding:0; resize:none;
+  }
 }
 
 /* Responsive */
@@ -222,9 +398,10 @@ body { font-family:Arial, Helvetica, sans-serif; font-size:14px; background:#F0F
 
     <!-- Document header -->
     <div class="doc-head">
-      <span class="status-banner status-pending" id="status-banner">Pending Customer Approval</span>
-      <div class="doc-title">Order Confirmation</div>
-      <div class="doc-sub">This is a binding order confirmation. Please review every line carefully. Your signature below authorizes Doortronix to begin fabrication.</div>
+      <span class="status-banner status-pending order-only" id="status-banner">Pending Customer Approval</span>
+      <div class="sub-banner submittal-only" style="display:none;"></div>
+      <div class="doc-title" id="doc-title">Order Confirmation</div>
+      <div class="doc-sub" id="doc-sub">This is a binding order confirmation. Please review every line carefully. Your signature below authorizes Doortronix to begin fabrication.</div>
       <div class="doc-meta">
         <div>
           <div class="item">Reference</div>
@@ -242,35 +419,65 @@ body { font-family:Arial, Helvetica, sans-serif; font-size:14px; background:#F0F
     </div>
 
     <!-- Customer & Project -->
-    <div class="card">
+    <div class="card order-only">
       <div class="card-head">Customer &amp; Project</div>
       <div class="card-body">
         <div class="spec-grid" id="customer-grid"></div>
       </div>
     </div>
 
-    <!-- Door specs + drawing combined -->
-    <div class="card">
-      <div class="card-head">Door System — Approved Specification</div>
-      <div class="card-body">
+    <!-- Door specs + drawing (order) / cut sheet (submittal) -->
+    <div class="card" id="door-card">
+      <div class="card-head" id="spec-head">Door System — Approved Specification</div>
+      <div class="card-body" id="door-grid-wrap">
         <div class="spec-grid" id="door-grid"></div>
       </div>
-      <div class="drawing-wrap">
-        <svg id="door-svg" viewBox="0 0 840 420" preserveAspectRatio="xMidYMid meet"></svg>
+      <div class="cs-brand submittal-only">
+        <div>
+          <div class="cs-co">DOORTRONIX USA</div>
+          <div class="cs-prod">DT-3000 Revolution — Shop Drawing / Submittal</div>
+        </div>
+        <div class="cs-sheet">One opening per sheet · CSI 08 42 29 · Scale: NTS · Malakoff, TX · (888) 453-5196</div>
       </div>
-      <div class="drawing-wrap">
-        <svg id="plan-svg" viewBox="0 0 840 480" preserveAspectRatio="xMidYMid meet"></svg>
+      <div class="cs-draw-col">
+        <div class="cs-drawings">
+          <div class="drawing-wrap">
+            <svg id="door-svg" viewBox="0 0 840 420" preserveAspectRatio="xMidYMid meet"></svg>
+          </div>
+          <div class="drawing-wrap">
+            <svg id="plan-svg" viewBox="0 0 840 480" preserveAspectRatio="xMidYMid meet"></svg>
+          </div>
+        </div>
       </div>
+      <aside class="cs-side submittal-only">
+        <div class="cs-fill-note">Yellow: glass spec, project names, and extra notes — complete before sending to architect. RO and power are from the Doortronix cut sheet.</div>
+        <div class="cs-h">Project / this opening</div>
+        <table class="cs-tbl" id="cs-job"></table>
+        <div class="cs-h">Specified data</div>
+        <table class="cs-tbl" id="cs-spec"></table>
+        <div class="cs-h">Notes</div>
+        <ol class="cs-notes" id="sub-notes"></ol>
+        <div class="cs-h">Additional / special notes</div>
+        <div style="padding:8px 10px;">
+          <textarea class="cs-ta" data-cs="extraNote" id="cs-extra-note" placeholder="Anything else for the architect — glass makeup details, lock function, access control, special conditions…"></textarea>
+        </div>
+        <div class="cs-stamp">
+          <div class="st-checks">☐ Approved &nbsp; ☐ Approved as noted &nbsp; ☐ Revise &amp; resubmit</div>
+          Arch / GC <span class="st-line" style="display:inline-block;width:46%;vertical-align:bottom;"></span>
+          Date <span class="st-line" style="display:inline-block;width:22%;vertical-align:bottom;"></span>
+        </div>
+      </aside>
+      <div class="cs-sheet-foot submittal-only" id="cs-sheet-foot"></div>
     </div>
 
     <!-- Add-ons -->
-    <div class="card" id="addons-card">
+    <div class="card order-only" id="addons-card">
       <div class="card-head">Add-Ons &amp; Options</div>
       <div class="card-body" id="addons-body"></div>
     </div>
 
     <!-- Pricing -->
-    <div class="card">
+    <div class="card order-only">
       <div class="card-head">Pricing — Final</div>
       <div class="card-body">
         <div id="price-lines"></div>
@@ -286,38 +493,53 @@ body { font-family:Arial, Helvetica, sans-serif; font-size:14px; background:#F0F
     </div>
 
     <!-- Terms -->
-    <div class="card">
-      <div class="card-head">Lead Time, Freight &amp; Terms</div>
+    <div class="card order-only">
+      <div class="card-head">Quote &amp; Order Terms</div>
       <div class="card-body">
-        <ul class="terms-list" id="terms-list"></ul>
+        <div id="dtx-terms-sign"></div>
+        <ul class="terms-list" id="terms-list" style="margin-top:12px;"></ul>
+        <p style="font-size:12px;color:var(--mgray);margin-top:12px;line-height:1.5;">Pay the deposit or full amount, track production, and reorder from your <a href="portal/signup.html">Doortronix account</a>. If you already have one, <a href="portal/login.html">sign in</a>.</p>
       </div>
     </div>
 
     <!-- Notes -->
-    <div class="card" id="notes-card" style="display:none;">
+    <div class="card order-only" id="notes-card" style="display:none;">
       <div class="card-head">Special Instructions / Notes</div>
       <div class="card-body">
         <div class="notes-box" id="notes-box"></div>
       </div>
     </div>
 
+    <div class="print-bar order-only" id="print-bar">
+      <p>Print the confirmation, or open the architect/GC submittal (plan, elevation, rough opening, power, hardware — no pricing). Printing does not approve the order.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button type="button" class="btn-print ghost" onclick="openSubmittal()">Open Submittal Drawing</button>
+        <button type="button" class="btn-print" onclick="window.print()">Print / Save PDF</button>
+      </div>
+    </div>
+    <div class="print-bar submittal-only">
+      <p>Print <strong>Portrait</strong>, one page. Uncheck Safari “Headers and footers.” Rough opening and power are from the cut sheet.</p>
+      <button type="button" class="btn-print" onclick="window.print()">Print Cut Sheet / Save PDF</button>
+    </div>
+
     <!-- Approval -->
-    <div class="card approve-card" id="approve-card">
+    <div class="card approve-card order-only" id="approve-card">
       <div class="card-head">Customer Approval &amp; Signature</div>
       <div class="card-body">
 
         <div class="attest">
           <strong>Read carefully before signing.</strong> By signing below, I confirm that:
           <ul style="margin:8px 0 8px 22px; line-height:1.65;">
-            <li>I am authorized to approve this order on behalf of the customer listed above.</li>
-            <li>All dimensions, finishes, glass, hardware, and configuration above are correct and final.</li>
-            <li>I authorize Doortronix to begin fabrication on receipt of this signed confirmation and the deposit shown above.</li>
-            <li>Changes requested after fabrication starts may incur re-engineering, restocking, or freight fees.</li>
-            <li>Standard lead times are quoted in business days from receipt of signed confirmation and cleared deposit.</li>
+            <li>I have read the Quote &amp; Order Terms on this page.</li>
+            <li>I am authorized to approve this order for the customer listed above.</li>
+            <li>I have checked field dimensions, handing, swing, finish, hardware, configuration, and glass sizes. This signed drawing is the drawing of record.</li>
+            <li>I will not cut glass from this sheet until it is signed. Glass is by others; the glazier must still verify sizes in the opening.</li>
+            <li>I authorize Doortronix to begin fabrication after this signature and cleared deposit or full payment.</li>
+            <li>Lead time starts when payment clears, not when I sign. Changes after fabrication starts may be billed.</li>
           </ul>
           <div class="req">
             <input type="checkbox" id="attest-check">
-            <label for="attest-check">I have read and agree to the terms above. The specifications shown are correct.</label>
+            <label for="attest-check">I agree to the Quote &amp; Order Terms. The drawing and sizes shown are correct and final.</label>
           </div>
         </div>
 
@@ -356,8 +578,9 @@ body { font-family:Arial, Helvetica, sans-serif; font-size:14px; background:#F0F
     <div class="check">✓</div>
     <h2>Order Approved</h2>
     <p>Your signed order confirmation has been transmitted to Doortronix.</p>
-    <p>You will receive an email copy for your records within a few minutes, along with a deposit invoice.</p>
-    <p>Fabrication will begin once the deposit clears. <strong>Lead time starts from that date.</strong></p>
+    <p>Pay the deposit or the full amount in your account to start fabrication.</p>
+    <p>Fabrication begins once payment clears. <strong>Lead time starts from that date.</strong></p>
+    <p><a href="portal/signup.html">Create an account</a> or <a href="portal/login.html">sign in</a> to pay, track this order, and reorder later.</p>
     <div class="success-ref" id="success-ref">DTX-—</div>
     <div class="success-actions">
       <button class="btn-print" onclick="window.print()">Print / Save PDF Copy</button>
@@ -371,6 +594,7 @@ body { font-family:Arial, Helvetica, sans-serif; font-size:14px; background:#F0F
 
 </div><!-- /.shell -->
 
+<script src="js/dtx-terms.js"></script>
 <script>
 // ════════════════════════════════════════════════════════════════════════
 //  ORDER CONFIRMATION — Doortronix USA
@@ -394,6 +618,14 @@ const CONFIGS = {
 
 // Current order state — populated from URL or sample
 let ORDER = null;
+const IS_SUBMITTAL = new URLSearchParams(location.search).get('mode') === 'submittal';
+document.body.classList.add(IS_SUBMITTAL ? 'mode-submittal' : 'mode-order');
+if (IS_SUBMITTAL) document.title = 'Shop Drawing / Submittal — Doortronix USA';
+if (IS_SUBMITTAL) {
+  const ps = document.createElement('style');
+  ps.textContent = '@page { size: letter portrait; margin: 0.25in; }';
+  document.head.appendChild(ps);
+}
 
 // ── Encode / decode helpers (URL-safe base64) ───────────────────────────
 function encodeOrder(obj) {
@@ -450,6 +682,9 @@ const SAMPLE_ORDER = {
     po: 'PO-24819',
     targetShip: '2026-07-15',
     quantity: 1,
+    doorMark: '101A',
+    architect: 'Example Architects',
+    gc: 'Acme Construction',
   },
 
   door: {
@@ -516,6 +751,13 @@ function renderOrder() {
   document.getElementById('ref-num').textContent = ORDER.ref || 'DTX-—';
   document.getElementById('issued-date').textContent = formatDate(ORDER.issuedDate);
   document.getElementById('lead-time').textContent = ORDER.leadTime || '—';
+
+  if (IS_SUBMITTAL) {
+    document.getElementById('doc-title').textContent = 'Shop Drawing / Submittal';
+    document.getElementById('doc-sub').textContent =
+      'DT-3000 Revolution automatic sliding door. Submit with project data for architect / GC approval. Verify all dimensions at the opening before fabrication.';
+    document.getElementById('spec-head').textContent = 'Door System — Specified Configuration';
+  }
 
   // Customer & project
   const c = ORDER.customer || {}, p = ORDER.project || {};
@@ -589,9 +831,10 @@ function renderOrder() {
       '$' + fmtNum(pr.depositAmount) + (pr.depositPct ? '  (' + pr.depositPct + '%)' : '');
   }
 
-  // Terms
-  const terms = ORDER.terms || [];
+  if (window.DTX_TERMS) DTX_TERMS.mount(document.getElementById('dtx-terms-sign'));
+  const terms = (ORDER.terms || []).filter(t => t && !/Glass is supplied/i.test(t) && !/Lead time of 3/i.test(t) && !/Freight not included/i.test(t));
   document.getElementById('terms-list').innerHTML = terms.map(t => `<li>${escHtml(t)}</li>`).join('');
+  document.getElementById('terms-list').style.display = terms.length ? '' : 'none';
 
   // Notes
   if (ORDER.notes && ORDER.notes.trim()) {
@@ -602,18 +845,155 @@ function renderOrder() {
   // Drawings — elevation + plan view
   drawDoor();
   drawPlanView();
+  if (IS_SUBMITTAL) fillSubmittal();
 
   // Init signature pad after layout
-  setTimeout(initSigPad, 0);
+  if (!IS_SUBMITTAL) setTimeout(initSigPad, 0);
 }
 
 function specRow(k, v) {
   return `<div class="spec-row"><span class="k">${escHtml(k)}</span><span class="v">${escHtml(v || '—')}</span></div>`;
 }
+function tbRows(el, pairs) {
+  if (!el) return;
+  el.innerHTML = pairs.map(([k, html, isHtml]) =>
+    `<tr><td>${escHtml(k)}</td><td>${isHtml ? html : escHtml(html == null || html === '' ? '—' : html)}</td></tr>`
+  ).join('');
+}
+function csInput(id, val, placeholder) {
+  return `<input class="cs-in" data-cs="${escAttr(id)}" value="${escAttr(val || '')}" placeholder="${escAttr(placeholder || '')}">`;
+}
+function csArea(id, val, placeholder) {
+  return `<textarea class="cs-ta" data-cs="${escAttr(id)}" placeholder="${escAttr(placeholder || '')}">${escHtml(val || '')}</textarea>`;
+}
+function addonText() {
+  return (ORDER.addons || []).map(a => a.qty > 1 ? `${a.name} (×${a.qty})` : a.name).join('; ');
+}
+function lockSpec() {
+  const hits = (ORDER.addons || []).filter(a => /lock|hookbolt|deadbolt|electric strike|maglock|adams rite/i.test(a.name || ''));
+  if (hits.length) return hits.map(a => a.qty > 1 ? `${a.name} (×${a.qty})` : a.name).join('; ');
+  return 'None specified';
+}
+function finishSpec(name) {
+  name = name || '—';
+  if (/clear/i.test(name)) return name + ' (AA-M10C22A31 typ.)';
+  if (/313|dark bronze/i.test(name)) return name + ' (AA-M10C22A44 typ.)';
+  if (/black/i.test(name)) return name + ' (anodized)';
+  if (/paint/i.test(name)) return name + ' — confirm color before fab';
+  return name;
+}
+function csStorageKey() { return 'dtx-submittal-' + (ORDER && ORDER.ref ? ORDER.ref : 'draft'); }
+function loadCsFields() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(csStorageKey()) || '{}');
+    document.querySelectorAll('[data-cs]').forEach(el => {
+      if (saved[el.dataset.cs] != null) el.value = saved[el.dataset.cs];
+    });
+  } catch (e) { /* ignore */ }
+}
+function bindCsFields() {
+  const save = () => {
+    const all = {};
+    document.querySelectorAll('[data-cs]').forEach(el => { all[el.dataset.cs] = el.value; });
+    try { localStorage.setItem(csStorageKey(), JSON.stringify(all)); } catch (e) { /* ignore */ }
+  };
+  document.querySelectorAll('[data-cs]').forEach(el => el.addEventListener('input', save));
+}
+function formatInchesTotal(totalIn) {
+  if (totalIn == null || isNaN(totalIn)) return '—';
+  let sixteenths = Math.round(totalIn * 16);
+  let ft = Math.floor(sixteenths / (12 * 16));
+  let rem16 = sixteenths - ft * 12 * 16;
+  let whole = Math.floor(rem16 / 16);
+  let frac = rem16 % 16;
+  if (whole === 12) { ft += 1; whole = 0; }
+  const fracStr = frac ? SIXTEENTH_LABELS[frac] : '';
+  if (whole === 0 && !frac) return ft + '\'-0"';
+  if (whole === 0) return ft + '\'-' + fracStr + '"';
+  if (!frac) return ft + '\'-' + whole + '"';
+  return ft + '\'-' + whole + '-' + fracStr + '"';
+}
+function fillSubmittal() {
+  const d = ORDER.door || {};
+  const c = ORDER.customer || {};
+  const p = ORDER.project || {};
+  const cfg = CONFIGS[d.configKey];
+  const w = getWidthStr();
+  const h = d.transom ? getFTTHStr() : getHeightStr();
+  const qty = p.quantity || 1;
+  const stile = d.stileWidth === 'medium' ? 'Medium 3-3/4"' : 'Narrow 2-1/2"';
+  const rail = d.bottomRail === '6in' ? '6" bottom rail' : d.bottomRail === '10in' ? '10" bottom rail' : '4" bottom rail';
+  const frameW = getWidthIn();
+  const frameH = d.transom ? (getFTTHIn() || getHeightIn()) : getHeightIn();
+  // Cut sheet: "ROUGH OPENING SHALL PROVIDE 1/4\" SHIM SPACE ON SIDES AND TOP OF PACKAGE."
+  const roW = frameW != null ? formatInchesTotal(frameW + 0.5) : '—';
+  const roH = frameH != null ? formatInchesTotal(frameH + 0.25) : '—';
+
+  tbRows(document.getElementById('cs-job'), [
+    ['Project', csInput('project', p.name, 'Project name'), true],
+    ['Location', csInput('location', p.location, 'City, ST'), true],
+    ['Door mark', csInput('doorMark', p.doorMark, 'e.g. 101A'), true],
+    ['This sheet', qty > 1 ? 'Typical of ' + qty + ' openings' : '1 opening'],
+    ['Contractor', c.company || '—'],
+    ['Architect', csInput('architect', p.architect, 'Architect / firm'), true],
+    ['GC', csInput('gc', p.gc, 'General contractor'), true],
+    ['Job / PO', csInput('po', p.po, 'Job or PO #'), true],
+    ['Ref / date', (ORDER.ref || '') + '  ·  ' + formatDate(ORDER.issuedDate)],
+  ]);
+
+  tbRows(document.getElementById('cs-spec'), [
+    ['Model', 'DT-3000 Revolution'],
+    ['Config', cfg ? cfg.label + '  ' + cfg.code : '—'],
+    ['Frame / package', w + ' W × ' + h + ' H'],
+    ['Rough opening', roW + ' W × ' + roH + ' H'],
+    ['RO rule', '¼" shim space each jamb and at head of package'],
+    ['Clear opening', getClearOpeningStr() || d.netOpening || '—'],
+    ['Finish', finishSpec(d.frameFinish)],
+    ['Glass spec', csArea('glass', d.doorGlassPrep || '', 'Type, thickness, temper, IG, coating — as installed on this opening'), true],
+    ['Stiles / rails', stile + ', ' + rail],
+    ['Muntin', d.muntin || '—'],
+    ['Threshold', d.threshold || '—'],
+    ['Sensors', d.sensor || '—'],
+    ['Power', '120 VAC, 5 A min to operator — by electrical contractor'],
+    ['Branch circuit', '120 VAC, 15 A to header (electric by others)'],
+    ['Electric lock', lockSpec()],
+    ['Options', addonText() || 'None'],
+    ['Header', 'I-beam operator, 8" high × 4-1/2" deep'],
+  ]);
+
+  document.getElementById('sub-notes').innerHTML = [
+    'Rough opening shall provide 1/4" [6 mm] shim space on sides and top of package (Doortronix cut sheet).',
+    'Electrical: 120 VAC, 5 amp min to power operator — by electrical contractor.',
+    'Activation and safety zones per ANSI/BHMA A156.10.',
+    'Do not scale. Written dimensions govern.',
+  ].map(n => `<li>${escHtml(n)}</li>`).join('');
+
+  loadCsFields();
+  const extra = document.getElementById('cs-extra-note');
+  if (extra && !(extra.value || '').trim() && ORDER.notes) extra.value = ORDER.notes;
+  bindCsFields();
+
+  const foot = document.getElementById('cs-sheet-foot');
+  if (foot) {
+    const d = ORDER.door || {};
+    const cfg = CONFIGS[d.configKey];
+    foot.innerHTML =
+      `<div><div>DOORTRONIX USA — SHOP DRAWING / SUBMITTAL</div>
+       <div class="csf-sub">Ref: ${escHtml(ORDER.ref || '—')}  ·  ${escHtml(formatDate(ORDER.issuedDate))}  ·  Malakoff, TX  ·  (888) 453-5196</div></div>
+       <div class="csf-r">${escHtml(cfg ? cfg.label + ' (' + cfg.code + ')' : '')}<br>
+       ${escHtml(getWidthStr() + ' W × ' + (d.transom ? getFTTHStr() : getHeightStr()) + ' H')}</div>`;
+  }
+}
+function openSubmittal() {
+  const u = new URL(location.href);
+  u.searchParams.set('mode', 'submittal');
+  window.open(u.toString(), '_blank');
+}
 function escHtml(s) {
   return String(s == null ? '' : s).replace(/[&<>"']/g, c =>
     ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
+function escAttr(s) { return escHtml(s).replace(/\n/g, ' '); }
 function fmtNum(n) { return Number(n || 0).toLocaleString('en-US'); }
 function formatDate(iso) {
   if (!iso) return '—';
@@ -711,7 +1091,7 @@ function drawDoor() {
   const isLH = cfg.code === 'O-SX' || cfg.code === 'SO-SX' || cfg.code === 'O-SX-SX-O';
   const isFBO = cfg.isFBO;
 
-  const titleH = 72;                     // header (40) + "EXTERIOR ELEVATION" (~32)
+  const titleH = IS_SUBMITTAL ? 28 : 72;
   const widthDimGap = 32;                // space from door bottom to width dim line
   const realW      = getWidthIn()  || (isBi ? 120 : 84);
   const realFrameH = getHeightIn() || 90;
@@ -782,16 +1162,18 @@ function drawDoor() {
     }
   }
 
-  // Top branded header bar
-  r(0, 0, vW, 40, '#1B4F8A');
-  t(16, 18, 'DOORTRONIX USA', 14, '#fff', 'start', '700');
-  t(16, 33, 'ORDER CONFIRMATION DRAWING', 9, '#B8CCE4', 'start', '700');
-  t(vW-14, 18, cfg.label + ' (' + cfg.code + ')', 11, '#E87722', 'end', '700');
-  t(vW-14, 33, getWidthStr() + ' W × ' + (hasTransom ? getFTTHStr() : getHeightStr()) + ' H  |  ' + (d.frameFinish || ''), 9, '#fff', 'end');
-
-  // Section title "EXTERIOR ELEVATION" — black on white, like the cut sheet
-  t(vW/2, 60, 'EXTERIOR ELEVATION', 13, '#111', 'middle', '700');
-  l(vW/2 - 90, 64, vW/2 + 90, 64, '#1B4F8A', 1);
+  if (!IS_SUBMITTAL) {
+    r(0, 0, vW, 40, '#1B4F8A');
+    t(16, 18, 'DOORTRONIX USA', 14, '#fff', 'start', '700');
+    t(16, 33, 'ORDER CONFIRMATION DRAWING', 9, '#B8CCE4', 'start', '700');
+    t(vW-14, 18, cfg.label + ' (' + cfg.code + ')', 11, '#E87722', 'end', '700');
+    t(vW-14, 33, getWidthStr() + ' W × ' + (hasTransom ? getFTTHStr() : getHeightStr()) + ' H  |  ' + (d.frameFinish || ''), 9, '#fff', 'end');
+    t(vW/2, 60, 'EXTERIOR ELEVATION', 13, '#111', 'middle', '700');
+    l(vW/2 - 90, 64, vW/2 + 90, 64, '#1B4F8A', 1);
+  } else {
+    t(vW/2, 18, 'EXTERIOR ELEVATION', 13, '#111', 'middle', '700');
+    l(vW/2 - 90, 22, vW/2 + 90, 22, '#1B4F8A', 1);
+  }
 
   // Outer frame
   r(dX, dY, dW, dH, '#E8EEF4', frame, 2);
@@ -826,8 +1208,6 @@ function drawDoor() {
     r(dX + dW - frameT, dY, frameT, transomH, frame);
     vertXs.forEach(vx => r(vx - frameT/2, tGlassY, frameT, tGlassH, frame));
     l(dX, tGlassY + tGlassH + glassStopH/2, dX + dW, tGlassY + tGlassH + glassStopH/2, frame, glassStopH);
-    const firstLiteW = vertXs.length > 0 ? (vertXs[0] - frameT/2) - tx : tw;
-    t(tx + firstLiteW/2, tGlassY + tGlassH/2 + 3, 'TRANSOM', 8, '#aaa', 'middle');
   }
 
   // Header
@@ -1237,13 +1617,18 @@ function drawPlanView() {
           : ('FSL — Only sliding (SX) panels break out; fixed panels (O) do not'),
     9.5, '#666', 'middle', '700');
 
-  const footY = vH - 38;
-  r(0, footY, vW, 38, '#1B4F8A');
-  l(0, footY, vW, footY, '#E87722', 2);
-  t(14, footY+15, 'DOORTRONIX USA — ORDER CONFIRMATION DRAWING', 10, '#fff', 'start', '700');
-  t(14, footY+29, 'Ref: ' + (ORDER.ref || '—') + '  |  ' + formatDate(ORDER.issuedDate) + '  |  Malakoff, TX  |  (888) 453-5196', 8, '#B8CCE4', 'start');
-  t(vW-14, footY+15, cfg.label + ' (' + cfg.code + ')  |  ' + (d.frameFinish || ''), 10, '#E87722', 'end', '700');
-  t(vW-14, footY+29, getWidthStr() + ' W × ' + (d.transom ? getFTTHStr() : getHeightStr()) + ' H', 9, '#fff', 'end', '700');
+  if (IS_SUBMITTAL) {
+    const contentH = Math.ceil(yBreakFootLbl + 16);
+    svg.setAttribute('viewBox', `0 0 ${vW} ${contentH}`);
+  } else {
+    const footY = vH - 38;
+    r(0, footY, vW, 38, '#1B4F8A');
+    l(0, footY, vW, footY, '#E87722', 2);
+    t(14, footY+15, 'DOORTRONIX USA — ORDER CONFIRMATION DRAWING', 10, '#fff', 'start', '700');
+    t(14, footY+29, 'Ref: ' + (ORDER.ref || '—') + '  |  ' + formatDate(ORDER.issuedDate) + '  |  Malakoff, TX  |  (888) 453-5196', 8, '#B8CCE4', 'start');
+    t(vW-14, footY+15, cfg.label + ' (' + cfg.code + ')  |  ' + (d.frameFinish || ''), 10, '#E87722', 'end', '700');
+    t(vW-14, footY+29, getWidthStr() + ' W × ' + (d.transom ? getFTTHStr() : getHeightStr()) + ' H', 9, '#fff', 'end', '700');
+  }
 }
 
 // ════════════════════════════════════════════════════════════════════════
@@ -1411,18 +1796,22 @@ function showSuccess() {
 // ════════════════════════════════════════════════════════════════════════
 //  Boot
 // ════════════════════════════════════════════════════════════════════════
+const _bootParams = new URLSearchParams(location.search);
+if (_bootParams.get('sheet') === '1') document.body.classList.add('sheet-mode');
+if (window.DTX_TERMS) DTX_TERMS.mount(document.getElementById('dtx-terms-sign'));
 if (loadFromURL()) {
   renderOrder();
 } else {
-  const preview = new URLSearchParams(location.search).get('preview');
+  const preview = _bootParams.get('preview');
   if (preview && CONFIGS[preview]) loadSample(preview);
+  else if (IS_SUBMITTAL || _bootParams.get('sheet') === '1') loadSample('fbo-bi');
 }
 
 // Re-render drawing on resize for crisp SVG
 window.addEventListener('resize', () => {
   if (ORDER) {
     // Re-init signature pad too — canvas needs resize
-    if (sigCanvas) {
+    if (sigCanvas && !IS_SUBMITTAL) {
       const data = sigHasInk ? sigCanvas.toDataURL() : null;
       initSigPad();
       if (data) {

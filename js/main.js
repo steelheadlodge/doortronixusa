@@ -19,6 +19,20 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
+  // Account / sign-in (portal)
+  if (links && !links.querySelector('.btn-nav-account')) {
+    const inProducts = /\/products\//.test(location.pathname);
+    const base = inProducts ? '../' : '';
+    const signedIn = !!localStorage.getItem('dtx_session');
+    const a = document.createElement('a');
+    a.className = 'btn-nav-account';
+    a.href = signedIn ? base + 'portal/index.html' : base + 'portal/login.html';
+    a.textContent = signedIn ? 'My Account' : 'Sign In';
+    const cta = links.querySelector('.btn-nav-cta');
+    if (cta) links.insertBefore(a, cta);
+    else links.appendChild(a);
+  }
+
   // Active nav link
   const path = window.location.pathname.split('/').pop() || 'index.html';
   document.querySelectorAll('.nav-links a').forEach(a => {

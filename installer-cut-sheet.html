@@ -62,10 +62,11 @@ html, body { background:#E8EEF4; color:var(--ink); font-family:Arial, Helvetica,
   letter-spacing:.5px; text-transform:uppercase; padding:4px 7px;
 }
 .tbl { width:100%; border-collapse:collapse; }
-.tbl td { padding:3px 7px; border-bottom:1px solid #E5E7EB; vertical-align:top; font-size:11px; }
+.tbl td { padding:2px 7px; border-bottom:1px solid #E5E7EB; vertical-align:top; font-size:10.5px; }
 .tbl td:first-child { width:42%; color:#555; }
 .tbl td:last-child { font-weight:700; }
-.note { font-size:10px; color:#666; padding:4px 7px 6px; line-height:1.3; }
+#glass-tbl td { padding:2px 7px; font-size:10px; }
+.note { font-size:9px; color:#666; padding:2px 7px 4px; line-height:1.25; }
 
 .side-foot { margin-top:auto; }
 .ship { font-size:12px; line-height:1.4; padding:7px 8px 8px; border-top:1px solid var(--line); }
@@ -76,11 +77,27 @@ html, body { background:#E8EEF4; color:var(--ink); font-family:Arial, Helvetica,
 .sign .ln { border-bottom:2px solid #111; min-height:26px; background:#fff; }
 .sign .k { font-size:9px; text-transform:uppercase; letter-spacing:.4px; color:#333; font-weight:700; margin-top:3px; }
 
+html.embed, html.embed body { background:#fff; }
+html.embed .screen-bar { display:none !important; }
+html.embed .sheet { margin:0 auto 0; }
+
+/* ── Factory cut list ── */
+.cutlist { background:#fff; }
+.cutlist .doc-title { color:#7C2D12; }
+.cutlist-band { background:#7C2D12; color:#fff; font-size:10px; font-weight:700; letter-spacing:.5px; text-transform:uppercase; padding:5px 12px; border-radius:5px; margin:2px 0 12px; }
+.cut-sec-h { font-size:12px; font-weight:800; color:#1B4F8A; text-transform:uppercase; letter-spacing:.5px; margin:14px 0 5px; border-bottom:2px solid #1B4F8A; padding-bottom:3px; }
+.cut-tbl { width:100%; border-collapse:collapse; font-size:10.5px; margin-bottom:6px; }
+.cut-tbl th, .cut-tbl td { border:1px solid #cbd5e1; padding:4px 7px; text-align:left; vertical-align:top; }
+.cut-tbl th { background:#1B4F8A; color:#fff; font-weight:700; }
+.cut-tbl td.num, .cut-tbl th.num { text-align:center; white-space:nowrap; }
+.cut-tbl tbody tr:nth-child(even) td { background:#f1f5f9; }
+.cut-note { font-size:9.5px; color:#64748b; margin:0 0 12px; }
+.cut-flag { background:#FEF3C7; border-left:4px solid #F59E0B; padding:8px 12px; font-size:10px; color:#78350F; border-radius:4px; margin:6px 0 14px; }
 @media print {
   html, body { background:#fff; }
-  .screen-bar { display:none !important; }
+  .screen-bar, .screen-only { display:none !important; }
   .sheet {
-    width:8.5in; height:11in; margin:0; border:none;
+    width:8.5in; min-height:11in; margin:0; border:none;
     page-break-after:avoid; page-break-inside:avoid;
   }
   @page { size: letter portrait; margin: 0; }
@@ -92,12 +109,20 @@ html, body { background:#E8EEF4; color:var(--ink); font-family:Arial, Helvetica,
   <span>Confirmation drawing (draft).</span>
   <span>
     <button type="button" onclick="window.print()">Print</button>
+    <button type="button" onclick="showCutList(true)" style="background:#7C2D12;color:#fff;">Factory cut list →</button>
     <button type="button" onclick="loadSample('fbo-bi')">FBO Bi 10×7'6</button>
     <button type="button" onclick="loadSample('fsl-bi')">FSL Bi</button>
     <button type="button" onclick="loadSample('fbo-single-rh')">FBO RH</button>
     <button type="button" onclick="loadSample('fbo-bi',{widthFt:14,heightFt:8,heightIn:0,transom:true,ftthFt:12,ftthIn:0,transomVerticals:2,frameFinish:'Clear Anodized'})">14×12 Clear</button>
     <button type="button" onclick="loadSample('fbo-bi',{widthFt:14,heightFt:8,heightIn:0,transom:true,ftthFt:12,ftthIn:0,transomVerticals:2,frameFinish:'313 Dark Bronze'})">14×12 Bronze</button>
     <button type="button" onclick="loadSample('fbo-single-rh',{widthFt:8,heightFt:8,heightIn:0,transom:true,ftthFt:10,ftthIn:0,transomVerticals:1,frameFinish:'Clear Anodized'})">RH 8×10 T</button>
+    <button type="button" onclick="loadSampleSwing('swing-single',{swingHand:'rh'})">Swing RH</button>
+    <button type="button" onclick="loadSampleSwing('swing-single',{swingHand:'lh'})">Swing LH</button>
+    <button type="button" onclick="loadSampleSwing('swing-pair',{widthFt:6,widthIn:0})">Swing Pair</button>
+    <button type="button" onclick="loadSampleSwing('swing-twin-center',{widthFt:3,widthIn:5,widthLFt:3,widthLIn:5,widthRFt:3,widthRIn:5,slWidthCFt:1,slWidthCIn:0,swingHandL:'rh',swingHandR:'rh',swingDirL:'out',swingDirR:'in',swingStopL:'fixed',swingStopR:'panic',swingRailsL:'both',swingRailsR:'wall'})">Twin + Center</button>
+    <button type="button" onclick="loadSampleSwing('swing-single',{swingHand:'rh',transom:true,ftthFt:9,ftthIn:0,heightFt:7,heightIn:6})">Swing RH + T</button>
+    <button type="button" onclick="loadSampleSwing('swing-single',{swingHand:'rh',transom:true,ftthFt:9,ftthIn:0,heightFt:7,heightIn:6,swingSidelite:'both',slWidthFt:3,slWidthIn:0})">Swing RH + SL + T</button>
+    <button type="button" onclick="loadSampleSwing('swing-single',{swingHand:'lh',swingSidelite:'left',slWidthFt:5,slWidthIn:0,slVerticals:2,doorGlassPrep:'1&quot;'})">Swing LH + 5' SL + 2V</button>
   </span>
 </div>
 
@@ -109,7 +134,7 @@ html, body { background:#E8EEF4; color:var(--ink); font-family:Arial, Helvetica,
     </div>
     <div class="doc">
       <div class="doc-title">Confirmation Drawing</div>
-      <div class="doc-sub">Sizes &amp; configuration</div>
+      <div class="doc-sub">Sizes &amp; configuration — not confirmed until signed</div>
       <div class="doc-ref" id="ref-line">—</div>
     </div>
   </header>
@@ -126,7 +151,8 @@ html, body { background:#E8EEF4; color:var(--ink); font-family:Arial, Helvetica,
           1. ELECTRICAL REQUIREMENTS: 120 VAC, 5 AMP MIN TO POWER OPERATOR BY ELECTRICAL CONTRACTOR.<br>
           2. ROUGH OPENING SHALL PROVIDE 1/4"[6] SHIM SPACE ON SIDES AND TOP OF PACKAGE.<br>
           3. LIMITS OF ACTIVATION AND SAFETY ZONES ARE FOR REFERENCE ONLY; SEE ANSI/BHMA A156.10 FOR DETAILED REQUIREMENTS.<br>
-          4. SEE SPECIFICATIONS FOR ADDITIONAL INFORMATION.
+          4. SEE SPECIFICATIONS FOR ADDITIONAL INFORMATION.<br>
+          5. GLASS SIZES, DIMENSIONS, AND ALL DETAILS ON THIS DRAWING ARE PRELIMINARY UNTIL THIS SHEET IS SIGNED AND RETURNED, OR A SIGNED ORDER CONFIRMATION IS ISSUED. DO NOT CUT GLASS FROM THIS DRAWING UNTIL CONFIRMED. GLASS BY OTHERS.
         </div>
       </div>
     </div>
@@ -135,7 +161,7 @@ html, body { background:#E8EEF4; color:var(--ink); font-family:Arial, Helvetica,
       <table class="tbl" id="particulars"></table>
       <h3 id="glass-h">Glass sizes</h3>
       <table class="tbl" id="glass-tbl"></table>
-      <div class="note" id="glass-note">Glass by others.</div>
+      <div class="note" id="glass-note">Glass by others. Do not cut until signed.</div>
       <h3>Options</h3>
       <table class="tbl" id="options-tbl"></table>
       <div class="side-foot">
@@ -145,7 +171,7 @@ html, body { background:#E8EEF4; color:var(--ink); font-family:Arial, Helvetica,
         </div>
         <h3>Approval</h3>
         <div class="approve-body">
-          <div class="approve-hint">Sign to confirm sizes and configuration</div>
+          <div class="approve-hint">Sign to confirm sizes, glass cuts, and configuration. Unsigned drawings are not released for fabrication or glass.</div>
           <div class="sign">
             <div>
               <div class="ln" id="appr-name"></div>
@@ -166,6 +192,44 @@ html, body { background:#E8EEF4; color:var(--ink); font-family:Arial, Helvetica,
   </div>
 </div>
 
+<!-- ══ FACTORY CUT LIST (internal — production) ══ -->
+<div class="sheet cutlist" id="cutlist-sheet" style="display:none;">
+  <header class="head">
+    <div>
+      <div class="co">DOORTRONIX<span>USA</span></div>
+      <div class="phone">Malakoff, TX · Production</div>
+    </div>
+    <div class="doc">
+      <div class="doc-title">Factory Cut List</div>
+      <div class="doc-sub">Internal — derived from the order confirmation</div>
+      <div class="doc-ref" id="cut-ref-line">—</div>
+    </div>
+  </header>
+
+  <div class="cutlist-band">Do not release for fabrication until the confirmation drawing is signed. Verify all sizes against shop standards.</div>
+
+  <div class="meta" id="cut-meta"></div>
+
+  <div class="cut-flag" id="cut-assumptions"></div>
+
+  <div class="cut-sec-h">Aluminum extrusions — cut per opening</div>
+  <table class="cut-tbl" id="cut-frame"></table>
+
+  <div class="cut-sec-h">Door leaves / panels</div>
+  <table class="cut-tbl" id="cut-panels"></table>
+
+  <div class="cut-sec-h">Glass — supplied by others (sizes for reference)</div>
+  <table class="cut-tbl" id="cut-glass"></table>
+  <div class="cut-note">Glass sizes carried from the confirmation drawing. Bottom-rail deductions and the over-8'0" muntin-hold rule are already applied.</div>
+
+  <div class="cut-sec-h">Notes for production</div>
+  <div class="cut-note" id="cut-prod-notes"></div>
+
+  <div style="margin-top:18px;">
+    <button type="button" class="screen-only" onclick="showCutList(false)" style="cursor:pointer;">← Back to confirmation</button>
+  </div>
+</div>
+
 <script>
 const SIXTEENTH_LABELS = ['','1/16','1/8','3/16','1/4','5/16','3/8','7/16','1/2','9/16','5/8','11/16','3/4','13/16','7/8','15/16'];
 const IS_SUBMITTAL = true; // compact drawing titles — same geometry as confirmation
@@ -178,6 +242,11 @@ const CONFIGS = {
   'fsl-single-lh': { label:'FSL Single — LH', code:'O-SX',        isFBO:false, isBi:false },
   'fbo-bi':        { label:'FBO Bi-Part',     code:'SO-SX-SX-SO', isFBO:true,  isBi:true  },
   'fsl-bi':        { label:'FSL Bi-Part',     code:'O-SX-SX-O',   isFBO:false, isBi:true  },
+  'swing-single':    { label:'Single Swing',      code:'OHC',      isFBO:false, isBi:false, isSwing:true },
+  'swing-single-rh': { label:'Single Swing — RH', code:'OHC RH',   isFBO:false, isBi:false, isSwing:true },
+  'swing-single-lh': { label:'Single Swing — LH', code:'OHC LH',   isFBO:false, isBi:false, isSwing:true },
+  'swing-pair':      { label:'Swing Pair',        code:'OHC Pair', isFBO:false, isBi:true,  isSwing:true },
+  'swing-twin-center': { label:'Entry/Exit Swings', code:'OHC Twin', isFBO:false, isBi:false, isSwing:true, isTwin:true },
 };
 
 function encodeOrder(obj) {
@@ -223,7 +292,7 @@ const SAMPLE_ORDER = {
     bottomRail: 'std',
     muntin: '2" Muntin (std)',
     threshold: '1/2" Standard',
-    sensor: 'Standard Optex (incl.)',
+    sensor: 'Standard (incl.)',
     locking: 'Standard hooklock',
     widthFt: 10, widthIn: 0, width16: 0,
     heightFt: 7, heightIn: 6, height16: 0,
@@ -233,11 +302,101 @@ const SAMPLE_ORDER = {
   ],
 };
 
+function splitInches(total) {
+  const n = parseFloat(total);
+  if (!isFinite(n) || n <= 0) return null;
+  const ft = Math.floor(n / 12);
+  let rem = Math.round((n - ft * 12) * 16) / 16;
+  if (rem >= 12) return { ft: ft + 1, inches: 0, six: 0 };
+  const inches = Math.floor(rem);
+  const six = Math.round((rem - inches) * 16);
+  return { ft, inches, six };
+}
+function normalizeOrder(raw) {
+  if (!raw || typeof raw !== 'object') return raw;
+  const wrapped = raw.door ? raw : { door: raw, customer: raw.customer || {}, project: raw.project || {} };
+  const d = wrapped.door || {};
+  if (!d.configKey && d.config) d.configKey = d.config;
+  if (d.glazing && !d.frameFinish) {
+    d.frameFinish = /bronze/i.test(d.glazing) ? '313 Dark Bronze' : 'Clear Anodized';
+  } else if (d.frameFinish === '204 Clear') {
+    d.frameFinish = 'Clear Anodized';
+  }
+  if (d.glassPrep && !d.doorGlassPrep) d.doorGlassPrep = d.glassPrep;
+  if (d.transom === 'yes' || d.transom === 'Yes' || d.transom === true) d.transom = true;
+  else if (d.transom === 'no' || d.transom === 'No' || d.transom === false) d.transom = false;
+  if (d.widthInParts != null) d.widthIn = parseInt(d.widthInParts, 10) || 0;
+  else if (typeof d.widthIn === 'number' && d.widthIn > 12) {
+    const p = splitInches(d.widthIn);
+    if (p) { d.widthFt = p.ft; d.widthIn = p.inches; d.width16 = d.width16 || p.six; }
+  }
+  if (d.heightInParts != null) d.heightIn = parseInt(d.heightInParts, 10) || 0;
+  else if (typeof d.heightIn === 'number' && d.heightIn > 12) {
+    const p = splitInches(d.heightIn);
+    if (p) { d.heightFt = p.ft; d.heightIn = p.inches; d.height16 = d.height16 || p.six; }
+  }
+  if ((d.slWidthFt == null || d.slWidthFt === '') && d.swingSideliteWIn) {
+    const p = splitInches(d.swingSideliteWIn);
+    if (p) { d.slWidthFt = p.ft || 3; d.slWidthIn = p.inches; }
+  }
+  if (d.slWidthLFt == null && d.swingSideliteWInL != null) {
+    const p = splitInches(d.swingSideliteWInL);
+    if (p) { d.slWidthLFt = p.ft || 3; d.slWidthLIn = p.inches; }
+  }
+  if (d.slWidthRFt == null && d.swingSideliteWInR != null) {
+    const p = splitInches(d.swingSideliteWInR);
+    if (p) { d.slWidthRFt = p.ft || 3; d.slWidthRIn = p.inches; }
+  }
+  if (d.slWidthCFt == null && d.swingSideliteWInC != null) {
+    const p = splitInches(d.swingSideliteWInC);
+    if (p) { d.slWidthCFt = p.ft; d.slWidthCIn = p.inches + (p.six || 0) / 16; }
+  }
+  if (d.widthRFt == null && d.twinDoorWInR != null) {
+    const p = splitInches(d.twinDoorWInR);
+    if (p) { d.widthRFt = p.ft; d.widthRIn = p.inches; }
+  }
+  if (d.widthLFt == null && d.twinDoorWInL != null) {
+    const p = splitInches(d.twinDoorWInL);
+    if (p) { d.widthLFt = p.ft; d.widthLIn = p.inches; }
+  }
+  if (d.slWidthLFt == null && d.slWidthFt != null) { d.slWidthLFt = d.slWidthFt; d.slWidthLIn = d.slWidthIn || 0; }
+  if (d.slWidthRFt == null && d.slWidthFt != null) { d.slWidthRFt = d.slWidthFt; d.slWidthRIn = d.slWidthIn || 0; }
+  if (d.crashHHi != null && d.crashHi == null) d.crashHi = d.crashHHi;
+  if (d.crashHLo != null && d.crashLo == null) d.crashLo = d.crashHLo;
+  if (d.muntinAffs && d.muntinAffs[0] != null && d.muntinAff == null) d.muntinAff = d.muntinAffs[0];
+  if (d.muntinAffs && d.muntinAffs[1] != null && d.muntinAff2 == null) d.muntinAff2 = d.muntinAffs[1];
+  if (d.transomV != null && d.transomVerticals == null) d.transomVerticals = d.transomV;
+  if (d.sideliteVerticals != null && d.slVerticals == null) d.slVerticals = d.sideliteVerticals;
+  function parseVerts(v) {
+    const n = parseInt(v, 10) || 0;
+    return (n === 1 || n === 2) ? n : 0;
+  }
+  if (d.slVerticalsL == null && d.slVerticalsR == null) {
+    const n = parseVerts(d.slVerticals);
+    const loc = d.swingSidelite || 'none';
+    const apply = (loc === 'left' || loc === 'right') ? loc
+      : (d.slVerticalsSide === 'left' || d.slVerticalsSide === 'right' ? d.slVerticalsSide : 'both');
+    d.slVerticalsL = (loc === 'left' || loc === 'both') && (apply === 'both' || apply === 'left') ? n : 0;
+    d.slVerticalsR = (loc === 'right' || loc === 'both') && (apply === 'both' || apply === 'right') ? n : 0;
+  }
+  d.slVerticalsL = parseVerts(d.slVerticalsL);
+  d.slVerticalsR = parseVerts(d.slVerticalsR);
+  d.slVerticalsC = parseVerts(d.slVerticalsC);
+  d.slVerticals = Math.max(d.slVerticalsL, d.slVerticalsR, d.slVerticalsC);
+  if (d.slVerticalsSide !== 'left' && d.slVerticalsSide !== 'right') d.slVerticalsSide = 'both';
+  if (!d.swingRailsL && !d.swingRailsR) {
+    if (d.swingRails === 'furnish' || d.swingRails === 'need') d.swingRails = 'both';
+    if (d.swingRails === 'wall1') d.swingRails = 'one';
+    if (d.swingRails === 'none') d.swingRails = 'wall';
+  }
+  wrapped.door = d;
+  return wrapped;
+}
 function loadFromURL() {
   const params = new URLSearchParams(location.search);
   const d = params.get('d');
   if (!d) return false;
-  try { ORDER = decodeOrder(d); return true; }
+  try { ORDER = normalizeOrder(decodeOrder(d)); return true; }
   catch (err) { console.error(err); return false; }
 }
 function loadSample(configKey, doorOverrides) {
@@ -246,9 +405,43 @@ function loadSample(configKey, doorOverrides) {
   if (doorOverrides) Object.assign(ORDER.door, doorOverrides);
   renderSheet();
 }
+function swingDefaults(extra) {
+  return Object.assign({
+    frameFinish: 'Clear Anodized',
+    stileWidth: 'medium',
+    bottomRail: '6in',
+    muntin: '2" Muntin (std)',
+    doorGlassPrep: '1/4"',
+    threshold: '1/2" Standard',
+    sensor: 'BEA SuperScan both sides + header approach',
+    locking: 'Adams Rite deadbolt',
+    swingDir: 'out',
+    swingEnergy: 'high',
+    swingScan: 'both',
+    swingApproach: 'bea',
+    swingHdrSafe: 'no',
+    swingRails: 'both',
+    swingSidelite: 'none',
+    widthFt: 3, widthIn: 6, width16: 0,
+    heightFt: 7, heightIn: 6, height16: 0,
+    transom: false,
+  }, extra || {});
+}
+function loadSampleSwing(configKey, doorOverrides) {
+  ORDER = JSON.parse(JSON.stringify(SAMPLE_ORDER));
+  ORDER.addons = [];
+  ORDER.door.configKey = configKey;
+  Object.assign(ORDER.door, swingDefaults(doorOverrides));
+  if (configKey === 'swing-pair') ORDER.door.locking = 'Deadbolt + flushbolts';
+  if (configKey === 'swing-twin-center') ORDER.door.locking = 'Deadbolt ×2';
+  renderSheet();
+}
+function isSwingCfg(cfg) { return !!(cfg && cfg.isSwing); }
 
 function stileLabel(d) {
-  return d.stileWidth === 'medium' ? 'Medium 3-3/4"' : 'Narrow 2-1/2"';
+  const cfg = CONFIGS[d.configKey];
+  if (isSwingCfg(cfg) || d.stileWidth === 'medium') return 'Medium 3-3/4"';
+  return 'Narrow 2-1/2"';
 }
 function railLabel(d) {
   if (d.bottomRail === '6in') return '6"';
@@ -267,7 +460,7 @@ function lockLabel() {
   return 'Standard hooklock';
 }
 function isSwitchAddon(name) {
-  return /key switch|knob switch|function switch/i.test(name || '');
+  return /rocker|key switch|knob switch|function switch/i.test(name || '');
 }
 function switchLabel() {
   const hits = (ORDER.addons || []).filter(a => isSwitchAddon(a.name));
@@ -290,10 +483,265 @@ function optionList() {
   if (!addons.length) return [['Options', 'None']];
   return addons.map(a => [a.name, a.qty > 1 ? '× ' + a.qty : 'Yes']);
 }
+function slideSensorStr(d) {
+  const s = (d && d.sensor) || '';
+  if (/i-oneXT/i.test(s)) return 'Optex i-oneXT';
+  if (/IXIO/i.test(s)) return 'BEA IXIO';
+  if (/BEA/i.test(s) && !/standard/i.test(s)) return 'BEA IXIO';
+  return 'Standard (incl.)';
+}
+function swingSensorStr(d) {
+  if (d.sensor) return String(d.sensor).replace(/both faces/gi, 'both sides');
+  const parts = [];
+  if (d.swingScan === 'both') parts.push('SuperScan both sides');
+  else if (d.swingScan === 'front') parts.push('SuperScan exterior');
+  else if (d.swingScan === 'back') parts.push('SuperScan interior');
+  else if (d.swingScan === 'swing') parts.push('SuperScan swing side');
+  if (d.swingApproach === 'bea') parts.push('BEA header approach');
+  if (d.swingHdrSafe === 'yes') parts.push('MS Sedco DH94');
+  return parts.length ? parts.join(' + ') : 'None';
+}
+function swingRailQty(need) {
+  if (need === 'both') return 2;
+  if (need === 'one') return 1;
+  return 0;
+}
+function swingRailLabel(d) {
+  const cfg = CONFIGS[d.configKey];
+  if (cfg && cfg.isTwin && (d.swingRailsL || d.swingRailsR)) {
+    const l = d.swingRailsL || 'both';
+    const r = d.swingRailsR || 'both';
+    if (l === 'others' && r === 'others') return 'By others';
+    const n = swingRailQty(l) + swingRailQty(r);
+    if (n === 0) return (l === 'others' || r === 'others') ? 'By others' : 'None';
+    return n + ' included';
+  }
+  if (d.swingRails === 'wall') return 'None';
+  if (d.swingRails === 'others') return 'By others';
+  if (d.swingRails === 'one') return '1 included';
+  return '2 included';
+}
+function swingStopLabel(d) {
+  if (d.swingStopL || d.swingStopR) {
+    const l = d.swingStopL === 'panic' ? 'panic latch' : 'fixed';
+    const r = d.swingStopR === 'panic' ? 'panic latch' : 'fixed';
+    if (l === r) return d.swingStopL === 'panic' ? 'Panic latch (breakout) ×2' : 'Fixed door stop';
+    return 'L ' + l + ' · R ' + r;
+  }
+  if (d.swingStop === 'panic') return 'Panic latch (breakout)';
+  if (typeof d.swingStop === 'string' && d.swingStop && d.swingStop !== 'hard' && d.swingStop !== 'fixed') return d.swingStop;
+  return 'Fixed door stop';
+}
+// Handing (RH/LH) is what the user selects. The label is simply handing + swing.
+function handStr(hand, isOut) {
+  return (hand === 'rh' ? 'RH' : 'LH') + ' ' + (isOut ? 'Outswing' : 'Inswing');
+}
+// Hinge side is DERIVED from handing + swing (auto-door convention):
+//   RH Outswing = hinge left   ·  RH Inswing  = hinge right
+//   LH Inswing  = hinge left   ·  LH Outswing = hinge right
+function hingeLeftFor(hand, isOut) { return (hand === 'rh') === isOut; }
+function singleHand(cfg) {
+  if (cfg && cfg.code === 'OHC LH') return 'lh';   // back-compat hand-specific config
+  if (cfg && cfg.code === 'OHC RH') return 'rh';   // back-compat hand-specific config
+  return (ORDER.door && ORDER.door.swingHand === 'lh') ? 'lh' : 'rh';
+}
+function swingDirLabel(d) {
+  const cfg = CONFIGS[d.configKey];
+  if (cfg && cfg.isTwin) {
+    // Twin (two doors either side of a lite): label the left door, then the right.
+    return handStr(twinHand('left'), twinOut('left')) + ' — ' +
+           handStr(twinHand('right'), twinOut('right'));
+  }
+  const isOut = d.swingDir !== 'in';
+  // Pairs are handed on both leaves — direction alone is sufficient.
+  if (cfg && cfg.isBi) return isOut ? 'Outswing' : 'Inswing';
+  return handStr(singleHand(cfg), isOut);
+}
+function swingPlateLabel(d) {
+  if (!d.swingPlate || d.swingPlate === 'none') return '';
+  const map = { '4.5sq': '4.5" square', vestibule: 'Vestibule two-button', jamb: 'Jamb mounted' };
+  const n = parseInt(d.swingPlateQty, 10);
+  const qty = n > 0 ? ' ×' + n : '';
+  const cfg = CONFIGS[d.configKey];
+  const rxN = (cfg && cfg.isTwin) ? 2 : 1;
+  const wire = d.swingPlateWireless === 'wireless'
+    ? ' · wireless (' + (n > 0 ? n : '?') + ' TX / ' + rxN + ' RX)'
+    : '';
+  return (map[d.swingPlate] || d.swingPlate) + qty + wire;
+}
+function slWidthInches(d, side) {
+  const ftKey = side === 'center' ? 'slWidthCFt' : side === 'right' ? 'slWidthRFt' : 'slWidthLFt';
+  const inKey = side === 'center' ? 'slWidthCIn' : side === 'right' ? 'slWidthRIn' : 'slWidthLIn';
+  function feet(v, fallback) {
+    const n = parseInt(v, 10);
+    return Number.isFinite(n) ? n : fallback;
+  }
+  function inches(v) {
+    const n = parseFloat(v);
+    return Number.isFinite(n) ? n : 0;
+  }
+  if (d[ftKey] != null && d[ftKey] !== '') return feet(d[ftKey], side === 'center' ? 0 : 3) * 12 + inches(d[inKey]);
+  if (side === 'center') return 12;
+  return feet(d.slWidthFt, 3) * 12 + inches(d.slWidthIn);
+}
+function twinDoorIn(side) {
+  const d = ORDER.door || {};
+  if (side === 'right') {
+    if (d.twinDoorWInR) return d.twinDoorWInR;
+    if (d.widthRFt != null) return (parseInt(d.widthRFt, 10) || 3) * 12 + (parseInt(d.widthRIn, 10) || 0);
+  } else {
+    if (d.twinDoorWInL) return d.twinDoorWInL;
+    if (d.widthLFt != null) return (parseInt(d.widthLFt, 10) || 3) * 12 + (parseInt(d.widthLIn, 10) || 0);
+  }
+  const ft = parseInt(d.widthFt, 10);
+  if (ft) return ft * 12 + (parseInt(d.widthIn, 10) || 0);
+  return 41;
+}
+function swingParticulars(d, h) {
+  const high = d.swingEnergy !== 'low';
+  const rows = [
+    ['Frame size', getOverallWidthStr() + ' W × ' + getOverallHeightStr() + ' H'],
+    ['Clear opening', getClearOpeningStr() || '—'],
+    ['Swing', swingDirLabel(d)],
+    ['Operation', high ? 'Fully automatic' : 'Low energy'],
+    ['Door stop', swingStopLabel(d)],
+    ...(high ? [] : [['Push plates', swingPlateLabel(d) || 'None / by others']]),
+    ['Finish', d.frameFinish],
+    ['Stile width', stileLabel(d)],
+    ['Muntin', muntinLabel(d)],
+    ['Sensors', swingSensorStr(d)],
+    ['Frame profile', swingSideliteProfileStr()],
+    ['Glass prep', d.doorGlassPrep || '1/4"'],
+    ['Threshold', d.threshold],
+    ['Locking', lockLabel()],
+    ['Bottom rail', railLabel(d)],
+    ['Guide rails', swingRailLabel(d)],
+    ['Fingerguard', '1"'],
+  ];
+  return rows;
+}
 
 function fillTable(id, rows) {
   document.getElementById(id).innerHTML = rows.map(([k,v]) =>
     '<tr><td>' + k + '</td><td>' + dash(v) + '</td></tr>').join('');
+}
+
+// ── Factory cut list ─────────────────────────────────────────────────
+function cutFmt(n) { return formatInches(n); }
+function calcCutList() {
+  const d = ORDER.door || {};
+  const cfg = CONFIGS[d.configKey];
+  const W = getWidthIn(), Hhdr = getHeightIn();
+  if (!cfg || W == null || Hhdr == null) return null;
+  const isSwing = !!cfg.isSwing;
+  const frameH = d.transom ? getFTTHIn() : Hhdr;
+  const transomH = d.transom ? Math.max(0, getFTTHIn() - Hhdr) : 0;
+  const railIn = d.bottomRail === '10in' ? 10 : d.bottomRail === '6in' ? 6 : 4;
+  const stileW = d.stileWidth === 'medium' ? 3.75 : 2.5;
+  const hasMuntin = !!(d.muntin && !/no muntin/i.test(d.muntin));
+  const finish = d.frameFinish || 'Clear Anodized';
+  const noThresh = /no threshold/i.test(d.threshold || '');
+  const g = calcGlass();
+  const frame = [], panels = [], notes = [];
+
+  if (isSwing) {
+    frame.push({ part: 'Jamb / frame tube', profile: '1-3/4" × 4-1/2"', qty: 2, len: frameH, note: 'Full frame height' });
+    frame.push({ part: 'Head', profile: '1-3/4" × 4-1/2"', qty: 1, len: W - 3.5, note: 'Between jambs' });
+    if (!noThresh) frame.push({ part: 'Threshold', profile: d.threshold || 'Per spec', qty: 1, len: W - 3.5, note: '' });
+    notes.push('Swing leaf, sidelite, and transom extrusion cuts are not yet formula-driven — confirm stile/rail cut sizes with production. Glass sizes below are complete.');
+    return { isSwing, frame, panels, glass: glassSizeRows(), meta: { W, frameH, Hhdr, transomH, railIn, stileW, finish, hasMuntin }, notes };
+  }
+
+  // Slider frame extrusions
+  frame.push({ part: 'Jamb tube', profile: '1-3/4" × 4-1/2"', qty: 2, len: frameH, note: 'Full frame height' + (d.transom ? ' (incl. transom)' : '') });
+  frame.push({ part: 'Header / operator housing', profile: '8" operator beam', qty: 1, len: W - 3.5, note: 'Between jambs' });
+  if (!noThresh) frame.push({ part: 'Threshold', profile: d.threshold || '1/2"', qty: 1, len: W - 3.5, note: '' });
+  if (d.transom && transomH > 0) {
+    frame.push({ part: 'Transom divider rail', profile: 'Head member', qty: 1, len: W - 3.5, note: 'Splits transom from header' });
+    const verts = parseInt(d.transomVerticals, 10) || 0;
+    if (verts > 0) frame.push({ part: 'Transom vertical mullion', profile: '1-3/4"', qty: verts, len: transomH - 2, note: 'Equal transom lites' });
+  }
+
+  // Leaves
+  const leafH = Hhdr - 8.5;   // stile length: header 8" + 1/2" threshold allowance
+  const railLen = g.liteW;    // between stiles ≈ glass width (add shop pocket allowance)
+  const nPanels = g.panels;
+  const nActive = cfg.isBi ? 2 : 1;
+  const nFixed = nPanels - nActive;
+  const panelW = g.liteW + 2 * stileW;
+  const stileTxt = stileW === 3.75 ? '3-3/4"' : '2-1/2"';
+  const mk = (leaf, qty) => ({ leaf, qty,
+    size: cutFmt(panelW) + ' × ' + cutFmt(leafH),
+    stiles: '2 × ' + cutFmt(leafH) + ' (' + stileTxt + ')',
+    rails: 'Top ' + cutFmt(railLen) + ' (4") · Bot ' + cutFmt(railLen) + ' (' + railIn + '")',
+    muntin: hasMuntin ? '1 × ' + cutFmt(railLen) + ' (2")' : '—' });
+  panels.push(mk('Active leaf (SX)', nActive));
+  panels.push(mk(cfg.isFBO ? 'Fixed leaf (SO)' : 'Fixed leaf (O)', nFixed));
+
+  notes.push('Stiles run full leaf height; top rail, bottom rail, and muntin are cut to fit between stiles (≈ glass width). Add your shop glass-pocket allowance to rail/muntin lengths.');
+  notes.push('Leaf height = header height − 8" header − 1/2" threshold. Panel width = glass width + 2 × stile.');
+  notes.push('Glass: two equal lites per leaf up to 8\u20320" header; above 8\u20320" the muntin holds at its 7\u20326" height and the top lite grows.');
+
+  return { isSwing, frame, panels, glass: glassSizeRows(), meta: { W, frameH, Hhdr, transomH, railIn, stileW, finish, hasMuntin }, notes };
+}
+
+function renderCutList() {
+  const setHTML = (id, h) => { const e = document.getElementById(id); if (e) e.innerHTML = h; };
+  const cl = calcCutList();
+  if (!cl) { ['cut-frame', 'cut-panels', 'cut-glass', 'cut-prod-notes', 'cut-meta'].forEach(id => setHTML(id, '')); return; }
+  const d = ORDER.door || {}, p = ORDER.project || {}, c = ORDER.customer || {};
+  const cfg = CONFIGS[d.configKey];
+  const qty = p.quantity || 1;
+  const refEl = document.getElementById('cut-ref-line');
+  if (refEl) refEl.textContent = formatDate(ORDER.issuedDate);
+
+  const metaCells = [
+    ['Customer', c.company || c.name],
+    ['Job', p.name],
+    ['Door / tag', doorMarks()],
+    ['Openings', qty],
+    ['Config', cfg ? cfg.label : '—'],
+    ['Finish', cl.meta.finish],
+    ['Frame size', cutFmt(cl.meta.W) + ' W × ' + cutFmt(cl.meta.frameH) + ' H'],
+    ['Header height', cutFmt(cl.meta.Hhdr)],
+  ];
+  setHTML('cut-meta', metaCells.map(([k, v]) => '<div class="cell"><div class="k">' + k + '</div><div class="v">' + dash(v) + '</div></div>').join(''));
+  setHTML('cut-assumptions', '<strong>Draft — verify with production.</strong> Extrusion lengths are derived from the drawing geometry, not a released cut sheet. Quantities are <em>per opening</em>; the Total column multiplies by ' + qty + ' opening' + (qty === 1 ? '' : 's') + '.');
+
+  let fh = '<thead><tr><th>Part</th><th>Profile</th><th class="num">Qty/opng</th><th class="num">Cut length</th><th class="num">Total (' + qty + ')</th><th>Notes</th></tr></thead><tbody>';
+  cl.frame.forEach(r => { fh += '<tr><td>' + r.part + '</td><td>' + r.profile + '</td><td class="num">' + r.qty + '</td><td class="num">' + cutFmt(r.len) + '</td><td class="num">' + (r.qty * qty) + '</td><td>' + (r.note || '') + '</td></tr>'; });
+  fh += '</tbody>';
+  setHTML('cut-frame', fh);
+
+  if (cl.panels.length && cl.panels.some(r => r.qty > 0)) {
+    let ph = '<thead><tr><th>Leaf</th><th class="num">Qty/opng</th><th class="num">Panel W × H</th><th>Stiles</th><th>Rails</th><th>Muntin</th></tr></thead><tbody>';
+    cl.panels.forEach(r => { if (r.qty > 0) ph += '<tr><td>' + r.leaf + '</td><td class="num">' + r.qty + '</td><td class="num">' + r.size + '</td><td>' + r.stiles + '</td><td>' + r.rails + '</td><td>' + r.muntin + '</td></tr>'; });
+    ph += '</tbody>';
+    setHTML('cut-panels', ph);
+  } else {
+    setHTML('cut-panels', '<tbody><tr><td style="border:1px solid #cbd5e1;padding:6px;">Swing leaf cuts pending production formulas — see notes.</td></tr></tbody>');
+  }
+
+  let gh = '<thead><tr><th>Lite</th><th class="num">Qty/opng</th><th class="num">Size</th><th class="num">Total (' + qty + ')</th></tr></thead><tbody>';
+  cl.glass.forEach(rw => {
+    const label = rw[0], val = rw[1];
+    const m = /\(Qty\s*(\d+)\)\s*(.*)/.exec(val);
+    const per = m ? parseInt(m[1], 10) : 1;
+    const size = m ? m[2] : val;
+    gh += '<tr><td>' + label + '</td><td class="num">' + per + '</td><td class="num">' + size + '</td><td class="num">' + (per * qty) + '</td></tr>';
+  });
+  gh += '</tbody>';
+  setHTML('cut-glass', gh);
+
+  setHTML('cut-prod-notes', cl.notes.map(n => '• ' + n).join('<br>'));
+}
+
+function showCutList(on) {
+  const cs = document.getElementById('cutlist-sheet');
+  const sh = document.getElementById('sheet');
+  if (cs) cs.style.display = on ? '' : 'none';
+  if (sh) sh.style.display = on ? 'none' : '';
+  if (on) window.scrollTo(0, 0);
 }
 
 function renderSheet() {
@@ -317,18 +765,25 @@ function renderSheet() {
     ['Location', p.location],
     ['Lead time', ORDER.leadTime],
   ];
-  const modelStr = 'DT-3000  ·  ' + (cfg ? cfg.label + ' (' + cfg.code + ')' : '—');
+  const modelPrefix = isSwingCfg(cfg) ? 'DT-SWING' : 'DT-3000';
+  const modelStr = !cfg ? '—'
+    : cfg.isTwin
+      ? modelPrefix + '  ·  ' + cfg.label + ' · ' + swingDirLabel(d)
+    : cfg.isSwing
+      ? modelPrefix + '  ·  ' + cfg.label.replace(/\s*—\s*(RH|LH)\s*$/i, '') + ' · ' + swingDirLabel(d)
+      : modelPrefix + '  ·  ' + cfg.label + ' (' + cfg.code + ')';
   document.getElementById('meta').innerHTML = cells.map(([k,v]) =>
     '<div class="cell"><div class="k">' + k + '</div><div class="v">' + dash(v) + '</div></div>').join('')
     + '<div class="cell wide"><div class="k">Model / config</div><div class="v">' + dash(modelStr) + '</div></div>';
 
-  fillTable('particulars', [
-    ['Frame size', getWidthStr() + ' W × ' + h + ' H'],
+  fillTable('particulars', isSwingCfg(cfg) ? swingParticulars(d, h) : [
+    ['Frame size', getOverallWidthStr() + ' W × ' + getOverallHeightStr() + ' H'],
+    ['Header height', getHeightStr()],
     ['Net slide (typ.)', getClearOpeningStr() || d.netOpening],
     ['Finish', d.frameFinish],
     ['Stile width', stileLabel(d)],
     ['Muntin', muntinLabel(d)],
-    ['Sensors', d.sensor],
+    ['Sensors', slideSensorStr(d)],
     ['Glass prep', d.doorGlassPrep],
     ['Threshold', d.threshold],
     ['Locking', lockLabel()],
@@ -337,6 +792,7 @@ function renderSheet() {
   ]);
 
   fillTable('glass-tbl', glassSizeRows());
+  renderCutList();
   const prep = (d.doorGlassPrep || '').trim();
   document.getElementById('glass-h').textContent = prep ? 'Glass sizes — ' + prep : 'Glass sizes';
 
@@ -358,6 +814,8 @@ function svgSize(el) {
 function drawAll() {
   drawDoor();
   drawPlanView();
+  const cfg = ORDER && CONFIGS[ORDER.door.configKey];
+  if (isSwingCfg(cfg)) return;
   centerSvgVertically(document.getElementById('door-svg'), 16);
   centerSvgVertically(document.getElementById('plan-svg'), 0);
 }
@@ -383,8 +841,12 @@ function centerSvgVertically(svg, extraDown) {
 // ── Dimension helpers ───────────────────────────────────────────────────
 function getWidthIn() {
   const d = ORDER.door;
-  const ft = parseInt(d.widthFt); if (!ft) return null;
-  return ft*12 + (parseInt(d.widthIn) || 0) + (parseInt(d.width16) || 0)/16;
+  const cfg = CONFIGS[d.configKey];
+  if (cfg && cfg.isTwin) return twinDoorIn('left');
+  const ft = parseInt(d.widthFt);
+  if (ft) return ft*12 + (parseInt(d.widthIn) || 0) + (parseInt(d.width16) || 0)/16;
+  if (cfg && cfg.isSwing) return 42;
+  return cfg && cfg.isBi ? 120 : 84;
 }
 function getHeightIn() {
   const d = ORDER.door;
@@ -397,24 +859,56 @@ function getFTTHIn() {
 }
 function getWidthStr() {
   const d = ORDER.door;
-  const ft = d.widthFt; if (!ft) return '—';
-  const i = parseInt(d.widthIn) || 0, s = parseInt(d.width16) || 0;
-  const inStr = i === 0 && s === 0 ? '' : i + (s ? '-' + SIXTEENTH_LABELS[s] : '') + '"';
-  return `${ft}'${inStr}`;
+  const cfg = CONFIGS[d.configKey];
+  if (cfg && cfg.isTwin) return formatFtIn(twinDoorIn('left')) + ' / ' + formatFtIn(twinDoorIn('right'));
+  const ft = parseInt(d.widthFt, 10);
+  if (ft) {
+    const i = parseInt(d.widthIn) || 0, s = parseInt(d.width16) || 0;
+    const inStr = i + (s ? '-' + SIXTEENTH_LABELS[s] : '') + '"';
+    return `${ft}'-${inStr}`;
+  }
+  return formatFtIn(getWidthIn());
 }
 function getHeightStr() {
   const d = ORDER.door;
   const ft = d.heightFt; if (!ft) return '—';
   const i = parseInt(d.heightIn) || 0, s = parseInt(d.height16) || 0;
-  const inStr = i === 0 && s === 0 ? '' : i + (s ? '-' + SIXTEENTH_LABELS[s] : '') + '"';
-  return `${ft}'${inStr}`;
+  const inStr = i + (s ? '-' + SIXTEENTH_LABELS[s] : '') + '"';
+  return `${ft}'-${inStr}`;
 }
 function getFTTHStr() {
   const d = ORDER.door;
   const ft = parseInt(d.ftthFt) || 0;
   if (!ft) return getHeightStr();
   const i = parseInt(d.ftthIn) || 0;
-  return `${ft}'${i ? i + '"' : ''}`;
+  return `${ft}'-${i}"`;
+}
+function formatFtIn(n) {
+  if (n == null || !isFinite(n) || n < 0) return '—';
+  const total16 = Math.round(n * 16);
+  let ft = Math.floor(total16 / 192);
+  let rem16 = total16 - ft * 192;
+  if (rem16 < 0) rem16 = 0;
+  const inches = Math.floor(rem16 / 16);
+  const six = rem16 % 16;
+  if (!ft) return inches + (six ? '-' + SIXTEENTH_LABELS[six] : '') + '"';
+  return ft + "'-" + inches + (six ? '-' + SIXTEENTH_LABELS[six] : '') + '"';
+}
+function getOverallWidthIn() {
+  const cfg = CONFIGS[ORDER.door.configKey];
+  if (cfg && cfg.isTwin) {
+    return twinDoorIn('left') + twinDoorIn('right') + swingSlIn('left') + swingSlIn('center') + swingSlIn('right');
+  }
+  const w = getWidthIn();
+  if (w == null) return null;
+  if (!cfg || !cfg.isSwing) return w;
+  return w + swingSlIn('left') + swingSlIn('right');
+}
+function getOverallWidthStr() {
+  return formatFtIn(getOverallWidthIn());
+}
+function getOverallHeightStr() {
+  return ORDER.door.transom ? getFTTHStr() : getHeightStr();
 }
 // Clear door opening (slide open) — cut-sheet formula; NOT full breakout opening
 function calcClearOpeningIn() {
@@ -425,11 +919,89 @@ function calcClearOpeningIn() {
   return cfg.isBi ? 36 + (wIn - 96) * 0.5 : 33 + (wIn - 78) * 0.5;
 }
 function getClearOpeningStr() {
+  const cfg = CONFIGS[ORDER.door.configKey];
+  if (isSwingCfg(cfg)) {
+    const h = calcSwingClearHeightIn();
+    if (cfg && cfg.isTwin) {
+      const leafTake = 3.75 + 1.75;
+      const l = Math.max(0, twinDoorIn('left') - swingFaceIn() * 2 - leafTake);
+      const r = Math.max(0, twinDoorIn('right') - swingFaceIn() * 2 - leafTake);
+      if (h == null || l <= 0 || r <= 0) return ORDER.door.netOpening || '';
+      if (Math.abs(l - r) < 0.02) return formatInches(l) + ' W × ' + formatInches(h) + ' H';
+      return 'L ' + formatInches(l) + ' / R ' + formatInches(r) + ' W × ' + formatInches(h) + ' H';
+    }
+    const w = calcSwingClearWidthIn();
+    if (w == null || h == null || w <= 0) return ORDER.door.netOpening || '';
+    return formatInches(w) + ' W × ' + formatInches(h) + ' H';
+  }
   const n = calcClearOpeningIn();
   if (n === null || n <= 0) return ORDER.door.netOpening || '';
   const ft = Math.floor(n / 12);
   const rem = Math.round(n - ft * 12);
   return rem === 0 ? `${ft}'-0"` : `${ft}'-${rem}"`;
+}
+function swingFaceIn() {
+  return (ORDER.door.doorGlassPrep === '1"') ? 2 : 1.75;
+}
+function swingFrameProfileStr() {
+  return swingFaceIn() === 2 ? '2" × 4-1/2" (1" glass)' : '1-3/4" × 4-1/2" (std)';
+}
+function swingSideliteProfileStr() {
+  return swingFaceIn() === 2 ? '2" × 4-1/2"' : '1-3/4" × 4-1/2"';
+}
+function defaultSwingMuntinAff() {
+  const hIn = getHeightIn() || 90;
+  const leafH = hIn - 5.75;
+  const glassIf4 = leafH - 4 - 4;
+  const fromTop = 4 + (glassIf4 - 2) / 2 + 1;
+  const aff = Math.round(leafH - fromTop);
+  return Math.max(30, Math.min(54, aff || 42));
+}
+// Slider default muntin AFF: centered (equal lites) up to 8'0"; held at the typical
+// 7'6" position above 8'0" so the muntin doesn't ride too high on tall doors.
+function defaultSliderMuntinAff() {
+  const H = getHeightIn() || 90;
+  const railIn = ORDER.door.bottomRail === '10in' ? 10 : ORDER.door.bottomRail === '6in' ? 6 : 4;
+  const Href = H > 96 ? 90 : H;
+  return Math.round((Href - 13.5 + railIn) / 2);
+}
+function sliderMuntinAffIn() {
+  const n = parseInt(ORDER.door.muntinAff, 10);
+  return n > 0 ? n : defaultSliderMuntinAff();
+}
+function swingMuntinAffs() {
+  const d = ORDER.door;
+  const hasMuntin = !!(d.muntin && !/no muntin/i.test(d.muntin));
+  const sl = swingSlLoc() !== 'none';
+  if (!hasMuntin && !sl) return [];
+  const a = parseInt(d.muntinAff, 10) || defaultSwingMuntinAff();
+  if (!hasMuntin || !/additional/i.test(d.muntin || '')) return [a];
+  const b = parseInt(d.muntinAff2, 10);
+  return [a, b > 0 ? b : 24];
+}
+function swingCrashQty(key) {
+  const n = parseInt(ORDER.door[key], 10);
+  return n > 0 ? n : 0;
+}
+function swingCrashAff(key, fallback) {
+  const n = parseInt(ORDER.door[key], 10);
+  return n > 0 ? n : fallback;
+}
+function swingRailsOn() {
+  const m = ORDER.door.swingRails;
+  return m === 'both' || m === 'one' || m === 'others' || m === 'furnish' || m === 'need' || m === 'wall1';
+}
+function calcSwingClearWidthIn() {
+  const cfg = CONFIGS[ORDER.door.configKey];
+  const wIn = getWidthIn();
+  if (!cfg || !cfg.isSwing || wIn == null) return null;
+  const leaves = cfg.isBi ? 2 : 1;
+  return Math.max(0, wIn - swingFaceIn() * 2 - (3.75 + 1.75) * leaves);
+}
+function calcSwingClearHeightIn() {
+  const hIn = getHeightIn();
+  if (hIn == null) return null;
+  return Math.max(0, hIn - 5.75);
 }
 
 function formatInches(n) {
@@ -454,6 +1026,7 @@ function calcGlass() {
   const W = getWidthIn();
   const Hhdr = getHeightIn();
   if (!cfg || W == null || Hhdr == null) return null;
+  if (cfg.isSwing) return calcSwingGlass(cfg, d, W, Hhdr);
   const isBi = cfg.isBi;
   const medium = d.stileWidth === 'medium';
   const hasMuntin = !!(d.muntin && !/no muntin/i.test(d.muntin));
@@ -469,9 +1042,22 @@ function calcGlass() {
 
   // Height from the 4" / 2" muntin sheets. Medium stile changes width only.
   const noMuntinH = Hhdr - 17.625;
-  const muntinH = Hhdr / 2 - 10;
-  const topH = hasMuntin ? muntinH : noMuntinH;
-  const botH = hasMuntin ? muntinH - railDeduct : noMuntinH - railDeduct;
+  // Standard cut sheet is dialed in at a 90" header (equal lites when a 4" rail is used).
+  const STD_TOP = 90 / 2 - 10; // 35" — typical top lite that sets the muntin's standard height
+  // ≤ 8'0": split the panel into two equal lites (muntin drifts up with height).
+  // > 8'0": hold the muntin at its typical height (bottom lite fixed) and grow the top lite.
+  let topBase, botBase;
+  if (Hhdr <= 96) {
+    topBase = Hhdr / 2 - 10;
+    botBase = topBase - railDeduct;
+  } else {
+    botBase = STD_TOP - railDeduct;              // held at typical → muntin stays ~41" AFF
+    topBase = (Hhdr - 20 - railDeduct) - botBase; // = Hhdr - 55; top lite absorbs the extra height
+  }
+  // Shift the top/bot lites when the buyer moves the muntin off the default AFF.
+  const muntDelta = hasMuntin ? (sliderMuntinAffIn() - defaultSliderMuntinAff()) : 0;
+  const topH = hasMuntin ? Math.max(1, topBase - muntDelta) : noMuntinH;
+  const botH = hasMuntin ? Math.max(1, botBase + muntDelta) : noMuntinH - railDeduct;
   const panels = isBi ? 4 : 2;
   const fixedLbl = cfg.isFBO ? 'SO' : 'O';
 
@@ -499,6 +1085,96 @@ function calcGlass() {
   }
   return out;
 }
+function calcSwingGlass(cfg, d, W, Hhdr) {
+  const face = swingFaceIn();
+  const stile = 3.75;
+  const fg = 1;
+  // Non-door frames (sidelites, transoms, center lites): cut glass = daylight opening + 5/8".
+  const GLASS_ADD = 0.625;
+  // Split a framed opening's daylight HEIGHT into rows at the horizontal muntin bar(s).
+  // frameH = full frame height (floor to head). Bars sit at their AFF centerline, member = face.
+  // Returns daylight row heights, bottom -> top (before the +5/8" is added).
+  function frameGlassRows(frameH) {
+    const affs = [...new Set(swingMuntinAffs())].filter(a => a > 0).sort((a, b) => a - b);
+    const top = frameH - face;
+    const rows = [];
+    let cursor = face;
+    affs.forEach(a => {
+      const lo = a - face / 2, hi = a + face / 2;
+      if (lo > cursor + 0.01 && hi < top - 0.01) { rows.push(lo - cursor); cursor = hi; }
+    });
+    rows.push(top - cursor);
+    return rows;
+  }
+  function pushFrameLite(out, prefix, verts, slW, frameH, glassOnly) {
+    if (!slW) return;
+    const lites = verts + 1;
+    const colDLO = glassOnly ? slW / lites : (slW - face * lites) / lites;
+    const liteNote = verts ? ' (' + lites + ' lites)' : '';
+    const rows = frameGlassRows(frameH).reverse(); // top -> bottom for display
+    const n = rows.length;
+    rows.forEach((h, i) => {
+      const suffix = n === 1 ? '' : n === 2 ? (i === 0 ? ' top' : ' bot') : ' (row ' + (i + 1) + ')';
+      out.transoms.push({ label: prefix + suffix + liteNote, qty: lites, w: colDLO + GLASS_ADD, h: h + GLASS_ADD });
+    });
+  }
+  if (cfg.isTwin) {
+    const hasMuntin = !!(d.muntin && !/no muntin/i.test(d.muntin));
+    const railDeduct = d.bottomRail === '10in' ? 6 : d.bottomRail === '6in' ? 2 : 0;
+    const leafH = Hhdr - 5.75;
+    const noMuntinH = leafH - 8;
+    const muntinH = (leafH - 4 - 4 - 2) / 2;
+    const topH = hasMuntin ? muntinH : noMuntinH;
+    const botH = hasMuntin ? muntinH - railDeduct : noMuntinH - railDeduct;
+    const out = { liteW: 0, topH, botH, hasMuntin, panels: 0, fixedLbl: 'leaf', isBi: false, transoms: [], swing: true, twin: true, doors: [] };
+    ['left', 'right'].forEach(side => {
+      const liteW = (twinDoorIn(side) - face * 2) - stile * 2 - fg;
+      out.doors.push({ label: side === 'left' ? 'Left door' : 'Right door', liteW, topH, botH });
+    });
+    if (d.transom) {
+      const ftth = d.ftthFt ? getFTTHIn() : Hhdr;
+      const tH = (ftth - Hhdr) - face * 2;
+      if (tH > 0) {
+        out.transoms.push({ label: 'Left transom', qty: 1, w: twinDoorIn('left') - face * 2 + GLASS_ADD, h: tH + GLASS_ADD });
+        out.transoms.push({ label: 'Right transom', qty: 1, w: twinDoorIn('right') - face * 2 + GLASS_ADD, h: tH + GLASS_ADD });
+      }
+    }
+    const slFrameH = (d.transom && d.ftthFt ? getFTTHIn() : Hhdr);
+    pushFrameLite(out, 'Center lite', swingSlVerticalsOn('center', d), swingSlIn('center'), slFrameH, true);
+    const slLoc = d.swingSidelite || 'none';
+    if (slLoc === 'left' || slLoc === 'both') pushFrameLite(out, slLoc === 'both' ? 'Left sidelite' : 'Sidelite', swingSlVerticalsOn('left', d), slWidthInches(d, 'left'), slFrameH, false);
+    if (slLoc === 'right' || slLoc === 'both') pushFrameLite(out, slLoc === 'both' ? 'Right sidelite' : 'Sidelite', swingSlVerticalsOn('right', d), slWidthInches(d, 'right'), slFrameH, false);
+    return out;
+  }
+  const isBi = cfg.isBi;
+  const hasMuntin = !!(d.muntin && !/no muntin/i.test(d.muntin));
+  const railDeduct = d.bottomRail === '10in' ? 6 : d.bottomRail === '6in' ? 2 : 0;
+  const leafW = isBi ? (W - face * 2) / 2 : (W - face * 2);
+  const liteW = leafW - stile * 2 - fg;
+  const leafH = Hhdr - 5.75;
+  const noMuntinH = leafH - 8;
+  const muntinH = (leafH - 4 - 4 - 2) / 2;
+  const topH = hasMuntin ? muntinH : noMuntinH;
+  const botH = hasMuntin ? muntinH - railDeduct : noMuntinH - railDeduct;
+  const panels = isBi ? 2 : 1;
+  const out = { liteW, topH, botH, hasMuntin, panels, fixedLbl: 'leaf', isBi, transoms: [], swing: true };
+  if (d.transom) {
+    const ftth = d.ftthFt ? getFTTHIn() : Hhdr;
+    const tH = (ftth - Hhdr) - face * 2;
+    if (tH > 0) out.transoms.push({ label: 'Transom', qty: 1, w: W - face * 2 + GLASS_ADD, h: tH + GLASS_ADD });
+  }
+  const slLoc = d.swingSidelite || 'none';
+  if (slLoc !== 'none') {
+    const slFrameH = (d.transom && d.ftthFt ? getFTTHIn() : Hhdr);
+    if (slLoc === 'left' || slLoc === 'both') {
+      pushFrameLite(out, slLoc === 'both' ? 'Left sidelite' : 'Sidelite', swingSlVerticalsOn('left', d), slWidthInches(d, 'left'), slFrameH, false);
+    }
+    if (slLoc === 'right' || slLoc === 'both') {
+      pushFrameLite(out, slLoc === 'both' ? 'Right sidelite' : 'Sidelite', swingSlVerticalsOn('right', d), slWidthInches(d, 'right'), slFrameH, false);
+    }
+  }
+  return out;
+}
 function glassSizeRows() {
   const g = calcGlass();
   if (!g) return [['Glass', '—']];
@@ -506,13 +1182,26 @@ function glassSizeRows() {
     return [label, '(Qty ' + qty + ')  ' + glassPair(w, h)];
   }
   const rows = [];
+  if (g.twin && g.doors) {
+    g.doors.forEach(dr => {
+      if (g.hasMuntin && Math.abs(dr.topH - dr.botH) > 0.01) {
+        rows.push(row(dr.label + ' top', 1, dr.liteW, dr.topH));
+        rows.push(row(dr.label + ' bot', 1, dr.liteW, dr.botH));
+      } else {
+        rows.push(row(dr.label, g.hasMuntin ? 2 : 1, dr.liteW, dr.topH));
+      }
+    });
+    g.transoms.forEach(t => rows.push(row(t.label, t.qty, t.w, t.h)));
+    return rows;
+  }
   const pcs = g.panels;
+  const doorLbl = g.swing ? (g.isBi ? 'Leaf' : 'Door') : ('SX / ' + g.fixedLbl);
   if (g.hasMuntin && Math.abs(g.topH - g.botH) > 0.01) {
-    rows.push(row('SX / ' + g.fixedLbl + ' top', pcs, g.liteW, g.topH));
-    rows.push(row('SX / ' + g.fixedLbl + ' bottom', pcs, g.liteW, g.botH));
+    rows.push(row(doorLbl + ' top', pcs, g.liteW, g.topH));
+    rows.push(row(doorLbl + ' bot', pcs, g.liteW, g.botH));
   } else {
     const n = g.hasMuntin ? pcs * 2 : pcs;
-    rows.push(row('SX / ' + g.fixedLbl, n, g.liteW, g.topH));
+    rows.push(row(doorLbl, n, g.liteW, g.topH));
   }
   g.transoms.forEach(t => {
     rows.push(row(t.label, t.qty, t.w, t.h));
@@ -541,6 +1230,922 @@ function getGlazeFill() {
 //  SVG drawing — adapted from quote-single.html drawDoor(isConf=true)
 //  Reads from ORDER object instead of form fields
 // ════════════════════════════════════════════════════════════════════════
+function swingScanFaces(outSwing) {
+  const d = ORDER.door;
+  const scan = d.swingScan;
+  if (!scan || scan === 'none' || scan === 'others') return { ext: false, int: false };
+  if (scan === 'both') return { ext: true, int: true };
+  if (scan === 'front') return { ext: true, int: false };
+  if (scan === 'back') return { ext: false, int: true };
+  if (scan === 'swing') {
+    const out = outSwing != null ? !!outSwing : d.swingDir !== 'in';
+    return { ext: out, int: !out };
+  }
+  return { ext: false, int: false };
+}
+function twinHand(side) {
+  const d = ORDER.door || {};
+  const v = side === 'right' ? d.swingHandR : d.swingHandL;
+  if (v === 'lh' || v === 'rh') return v;
+  return 'rh';
+}
+function twinOut(side) {
+  const d = ORDER.door || {};
+  const v = side === 'right' ? d.swingDirR : d.swingDirL;
+  if (v === 'in' || v === 'out') return v !== 'in';
+  return side !== 'right';
+}
+function twinRailNeed(side) {
+  const d = ORDER.door || {};
+  const v = side === 'right' ? d.swingRailsR : d.swingRailsL;
+  if (v === 'both' || v === 'one' || v === 'others' || v === 'wall') return v;
+  if (d.swingEnergy === 'low') return 'wall';
+  return 'both';
+}
+function twinRailSide(side) {
+  const d = ORDER.door || {};
+  const v = side === 'right' ? d.swingRailSideR : d.swingRailSideL;
+  return v === 'right' ? 'right' : 'left';
+}
+function swingSlLoc() { return ORDER.door.swingSidelite || 'none'; }
+function swingSlIn(side) {
+  const loc = swingSlLoc();
+  const cfg = CONFIGS[ORDER.door.configKey];
+  if (side === 'center') return (cfg && cfg.isTwin) ? slWidthInches(ORDER.door, 'center') : 0;
+  if (loc === 'none') return 0;
+  if (side === 'left') return (loc === 'left' || loc === 'both') ? slWidthInches(ORDER.door, 'left') : 0;
+  if (side === 'right') return (loc === 'right' || loc === 'both') ? slWidthInches(ORDER.door, 'right') : 0;
+  if (loc === 'left') return swingSlIn('left');
+  if (loc === 'right') return swingSlIn('right');
+  return swingSlIn('left');
+}
+function swingSlVerticalsOn(side, door) {
+  const d = door || (ORDER && ORDER.door) || {};
+  if (side === 'center') {
+    const n = parseInt(d.slVerticalsC, 10) || 0;
+    return (n === 1 || n === 2) ? n : 0;
+  }
+  const loc = d.swingSidelite || 'none';
+  if (loc !== side && loc !== 'both') return 0;
+  const key = side === 'right' ? 'slVerticalsR' : 'slVerticalsL';
+  if (d[key] != null && d[key] !== '') {
+    const n = parseInt(d[key], 10) || 0;
+    return (n === 1 || n === 2) ? n : 0;
+  }
+  const n = parseInt(d.slVerticals, 10) || 0;
+  if (n !== 1 && n !== 2) return 0;
+  if (loc === side) return n;
+  const apply = d.slVerticalsSide === 'left' || d.slVerticalsSide === 'right' ? d.slVerticalsSide : 'both';
+  return (apply === 'both' || apply === side) ? n : 0;
+}
+function svgEl(svg, name, attrs, text) {
+  const el = document.createElementNS('http://www.w3.org/2000/svg', name);
+  Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, v));
+  if (text != null) el.textContent = text;
+  svg.appendChild(el);
+  return el;
+}
+
+function drawTwinSwingElevation(svg, vW, vH) {
+  const d = ORDER.door;
+  const glaze = getGlazeFill();
+  const frame = getFrameColor();
+  const panelFill = getPanelFill();
+  const hasTransom = !!d.transom;
+  const faceIn = swingFaceIn();
+  const realDL = twinDoorIn('left');
+  const realDR = twinDoorIn('right');
+  const realSlL = swingSlIn('left');
+  const realSlC = swingSlIn('center') || 12;
+  const realSlR = swingSlIn('right');
+  const realUnitW = realSlL + realDL + realSlC + realDR + realSlR;
+  const realFrameH = getHeightIn() || 90;
+  const realFtth = hasTransom && d.ftthFt ? getFTTHIn() : realFrameH;
+  const realTransomIn = hasTransom ? Math.max(0, realFtth - realFrameH) : 0;
+  const realTotalH = realFtth;
+
+  const titleY = 16;
+  const ovGap = 30;
+  const mL = 72, mR = hasTransom ? 72 : 48, mT = 92, mB = 68;
+  const availW = vW - mL - mR, availH = vH - mT - mB;
+  const sc = Math.min(availW / realUnitW, availH / realTotalH);
+  const unitW = realUnitW * sc;
+  const dH = realTotalH * sc;
+  const unitX = mL + (availW - unitW) / 2;
+  const dY = mT + (availH - dH) / 2;
+
+  const jambW = Math.max(2, sc * faceIn);
+  const slMem = jambW;
+  const railIn = d.bottomRail === '10in' ? 10 : d.bottomRail === '6in' ? 6 : 4;
+  const stileW = Math.max(3, sc * 3.75);
+  const fgW = Math.max(2, sc * 1);
+  const topRH = Math.max(3, sc * 4.0);
+  const btmRH = Math.max(3, sc * railIn);
+  const muntH = Math.max(1.5, sc * 2.0);
+  const headerH = Math.max(8, sc * 5.75);
+  const transomH = realTransomIn * sc;
+  const doorH = dH - transomH;
+  const hasMuntin = !!(d.muntin && !/no muntin/i.test(d.muntin));
+  const muntAffs = swingMuntinAffs();
+
+  function r(x,y,w,h,fill,stroke,sw) {
+    svgEl(svg, 'rect', { x, y, width: Math.max(w,0), height: Math.max(h,0), fill: fill || 'none', stroke: stroke || 'none', 'stroke-width': sw || 0 });
+  }
+  function t(x,y,str,size,fill,anchor,weight) {
+    return svgEl(svg, 'text', { x, y, 'font-size': size || 13, fill: fill || '#111', 'text-anchor': anchor || 'middle', 'font-weight': weight || 'normal', 'font-family': 'Arial,sans-serif' }, str);
+  }
+  function dimLine(x1,y1,x2,y2,lbl,horiz,labelSide,fs) {
+    const aw = 5, off = 7, font = fs || 13;
+    if (horiz) {
+      svgEl(svg, 'line', { x1, y1, x2, y2, stroke: '#1B4F8A', 'stroke-width': 0.7 });
+      svgEl(svg, 'line', { x1, y1: y1 - off, x2: x1, y2: y1 + off, stroke: '#1B4F8A', 'stroke-width': 0.7 });
+      svgEl(svg, 'line', { x1: x2, y1: y1 - off, x2, y2: y1 + off, stroke: '#1B4F8A', 'stroke-width': 0.7 });
+      svgEl(svg, 'path', { d: `M${x1},${y1}l${aw},-3l0,6Z`, fill: '#1B4F8A' });
+      svgEl(svg, 'path', { d: `M${x2},${y1}l${-aw},-3l0,6Z`, fill: '#1B4F8A' });
+      t((x1 + x2) / 2, labelSide === 'above' ? y1 - 10 : y1 + 18, lbl, font, '#1B4F8A', 'middle', '700');
+    } else {
+      svgEl(svg, 'line', { x1, y1, x2, y2, stroke: '#1B4F8A', 'stroke-width': 0.7 });
+      svgEl(svg, 'line', { x1: x1 - off, y1, x2: x1 + off, y2: y1, stroke: '#1B4F8A', 'stroke-width': 0.7 });
+      svgEl(svg, 'line', { x1: x1 - off, y1: y2, x2: x1 + off, y2: y2, stroke: '#1B4F8A', 'stroke-width': 0.7 });
+      svgEl(svg, 'path', { d: `M${x1},${y1}l-3,${aw}l6,0Z`, fill: '#1B4F8A' });
+      svgEl(svg, 'path', { d: `M${x1},${y2}l-3,${-aw}l6,0Z`, fill: '#1B4F8A' });
+      const cx = x1 + (labelSide === 'left' ? -16 : 18);
+      const cy = (y1 + y2) / 2;
+      const el = t(cx, cy, lbl, font, '#1B4F8A', 'middle', '700');
+      el.setAttribute('transform', `rotate(-90,${cx},${cy})`);
+    }
+  }
+
+  t(unitX + unitW / 2, titleY, 'EXTERIOR ELEVATION', 16, '#111', 'middle', '700');
+  svgEl(svg, 'line', { x1: unitX + unitW / 2 - 110, y1: titleY + 5, x2: unitX + unitW / 2 + 110, y2: titleY + 5, stroke: '#1B4F8A', 'stroke-width': 1 });
+
+  const bays = [];
+  let x = unitX;
+  function push(type, side, inches, extra) {
+    const w = inches * sc;
+    bays.push(Object.assign({ type, side, x, w, inches }, extra || {}));
+    x += w;
+  }
+  if (realSlL) push('sl', 'left', realSlL);
+  push('door', 'left', realDL, { hingeLeft: hingeLeftFor(twinHand('left'), twinOut('left')), outSwing: twinOut('left'), railNeed: twinRailNeed('left'), railSide: twinRailSide('left') });
+  push('sl', 'center', realSlC);
+  push('door', 'right', realDR, { hingeLeft: hingeLeftFor(twinHand('right'), twinOut('right')), outSwing: twinOut('right'), railNeed: twinRailNeed('right'), railSide: twinRailSide('right') });
+  if (realSlR) push('sl', 'right', realSlR);
+
+  const leafY = dY + transomH + headerH;
+  const leafH = doorH - headerH;
+  function muntinY(aff) {
+    return Math.max(leafY + topRH, Math.min(leafY + leafH - btmRH - muntH, leafY + leafH - aff * sc - muntH / 2));
+  }
+  function drawStorefront(bay) {
+    const { x, w, side } = bay;
+    const numV = swingSlVerticalsOn(side);
+    const bothDoors = side === 'center';
+    const gx = bothDoors ? x - jambW : (side === 'right' ? x : x + slMem);
+    const gw = Math.max(0, bothDoors ? w + jambW * 2 : w - slMem);
+    const vertXs = [];
+    for (let i = 1; i <= numV; i++) vertXs.push((bothDoors ? x : gx) + (bothDoors ? w : gw) * i / (numV + 1));
+    const liteEdges = [gx, ...vertXs.flatMap(vx => [vx - slMem / 2, vx + slMem / 2]), gx + gw];
+    for (let i = 0; i < liteEdges.length - 1; i += 2) {
+      const lx = liteEdges[i], lw = liteEdges[i + 1] - liteEdges[i];
+      if (lw > 1) r(lx, dY + slMem, lw, dH - slMem * 2, glaze.fill);
+    }
+    r(bothDoors ? x - 1 : x, dY, bothDoors ? w + 2 : w, slMem, frame);
+    r(bothDoors ? x - 1 : x, dY + dH - slMem, bothDoors ? w + 2 : w, slMem, frame);
+    if (!bothDoors) {
+      if (side === 'right') r(x + w - slMem, dY, slMem, dH, frame);
+      else r(x, dY, slMem, dH, frame);
+    }
+    muntAffs.forEach(aff => {
+      const hy = Math.max(dY + slMem, Math.min(dY + dH - slMem * 2, dY + dH - aff * sc - slMem / 2));
+      for (let i = 0; i < liteEdges.length - 1; i += 2) {
+        const lx = liteEdges[i], lw = liteEdges[i + 1] - liteEdges[i];
+        if (lw > 2) r(lx, hy, lw, slMem, frame);
+      }
+    });
+    vertXs.forEach(vx => r(vx - slMem / 2, dY + slMem, slMem, dH - slMem * 2, frame));
+  }
+  function drawDoorBay(bay) {
+    const { x, w, hingeLeft } = bay;
+    r(x, dY, jambW, dH, frame);
+    r(x + w - jambW, dY, jambW, dH, frame);
+    r(x + jambW, dY + transomH, w - jambW * 2, headerH, frame);
+    svgEl(svg, 'line', {
+      x1: x + jambW, y1: dY + transomH + headerH, x2: x + w - jambW, y2: dY + transomH + headerH,
+      stroke: '#777', 'stroke-width': 0.8
+    });
+    if (hasTransom && transomH > 2) {
+      const tube = Math.max(2, sc * faceIn);
+      const glassH = Math.max(0, transomH - tube * 2);
+      if (glassH > 1) r(x + jambW, dY + tube, w - jambW * 2, glassH, glaze.fill);
+      r(x + jambW, dY, w - jambW * 2, tube, frame);
+      r(x + jambW, dY + transomH - tube, w - jambW * 2, tube, frame);
+    }
+    const innerX = x + jambW;
+    const leafW = w - jambW * 2;
+    r(innerX, leafY, leafW, leafH, panelFill, frame, 1.5);
+    const gx = innerX + stileW, gy = leafY + topRH;
+    const gw = Math.max(0, leafW - stileW * 2), gh = Math.max(0, leafH - topRH - btmRH);
+    if (gw > 2 && gh > 2) r(gx, gy, gw, gh, glaze.fill);
+    r(gx, leafY, gw, topRH, panelFill);
+    r(gx, leafY + leafH - btmRH, gw, btmRH, panelFill);
+    if (hasMuntin && gh > muntH * 3) muntAffs.forEach(aff => r(gx, muntinY(aff), gw, muntH, panelFill, frame, 0.4));
+    r(innerX, leafY, stileW, leafH, panelFill);
+    r(innerX + leafW - stileW, leafY, stileW, leafH, panelFill);
+    if (hingeLeft) r(innerX, leafY, fgW, leafH, '#111');
+    else r(innerX + leafW - fgW, leafY, fgW, leafH, '#111');
+    const cy = leafY + leafH - 40 * sc;
+    const cx = hingeLeft ? innerX + leafW - stileW / 2 : innerX + stileW / 2;
+    svgEl(svg, 'circle', { cx, cy, r: Math.max(2.2, sc * 0.9), fill: '#2a2a2a', stroke: '#111', 'stroke-width': 0.7 });
+    bay.innerX = innerX;
+    bay.leafW = leafW;
+  }
+  bays.filter(b => b.type === 'sl').forEach(drawStorefront);
+  bays.filter(b => b.type === 'door').forEach(drawDoorBay);
+
+  const high = d.swingEnergy === 'high';
+  bays.filter(b => b.type === 'door').forEach(bay => {
+    const scanFaces = swingScanFaces(bay.outSwing);
+    if (scanFaces.int || scanFaces.ext) {
+      const sw = bay.leafW * (2 / 3);
+      const sh = Math.min(topRH - sc * 0.4, sc * 1.5);
+      const sy = leafY + (topRH - sh) / 2;
+      const sx = bay.innerX + (bay.leafW - sw) / 2;
+      if (scanFaces.int) r(sx, sy, sw, sh, '#1a1a1a');
+      if (scanFaces.ext) r(sx, sy + (scanFaces.int ? sh * 0.15 : 0), sw, sh, scanFaces.int ? 'none' : '#1a1a1a', '#1a1a1a', 1.2);
+    }
+    const showHdr = bay.outSwing ? d.swingHdrSafe === 'yes' : (high && d.swingApproach === 'bea');
+    if (showHdr) {
+      const sw = sc * 8, sh = Math.min(headerH - 2, sc * 2);
+      r(bay.x + bay.w / 2 - sw / 2, dY + transomH + (headerH - sh) / 2, sw, sh, '#1a1a1a');
+    }
+  });
+  const innN = swingCrashQty('swingCrashIn');
+  const outN = swingCrashQty('swingCrashOut');
+  const hi = swingCrashAff('crashHi', 34);
+  const lo = swingCrashAff('crashLo', 24);
+  const inH = innN === 2 ? [hi, lo] : innN === 1 ? [hi] : [];
+  const outH = outN === 2 ? [hi, lo] : outN === 1 ? [hi] : [];
+  function crashY(aff) { return leafY + leafH - aff * sc; }
+  bays.filter(b => b.type === 'door').forEach(bay => {
+    const bh = Math.max(1.5, sc * 1.5);
+    const inset = sc * 1;
+    const slabL = bay.hingeLeft ? bay.innerX + fgW : bay.innerX;
+    const slabR = bay.hingeLeft ? bay.innerX + bay.leafW : bay.innerX + bay.leafW - fgW;
+    const bw = Math.max(8, slabR - slabL - inset * 2);
+    inH.forEach(aff => r(slabL + inset, crashY(aff) - bh / 2, bw, bh, frame, '#777', 1));
+    outH.forEach(aff => r(slabL + inset, crashY(aff + 0.15) - bh / 2, bw, bh, frame, '#777', 1));
+  });
+  const floorY = leafY + leafH;
+  const crashAffs = [...new Set([...inH, ...outH])];
+  const muntShown = [...new Set(muntAffs)].filter(a => a > 0);
+  const affShown = [...new Set([...crashAffs, ...muntShown])].sort((a, b) => a - b);
+  affShown.forEach((aff, i) => {
+    const yy = leafY + leafH - aff * sc;
+    const lx = unitX - 28 - i * 22;
+    const off = 5;
+    svgEl(svg, 'line', { x1: lx, y1: yy, x2: lx, y2: floorY, stroke: '#1B4F8A', 'stroke-width': 0.7 });
+    svgEl(svg, 'line', { x1: lx - off, y1: yy, x2: lx + off, y2: yy, stroke: '#1B4F8A', 'stroke-width': 0.7 });
+    svgEl(svg, 'line', { x1: lx - off, y1: floorY, x2: lx + off, y2: floorY, stroke: '#1B4F8A', 'stroke-width': 0.7 });
+    svgEl(svg, 'line', {
+      x1: lx + off, y1: yy, x2: unitX - 4, y2: yy,
+      stroke: '#1B4F8A', 'stroke-width': 0.55, 'stroke-dasharray': '3,2'
+    });
+    t(lx - 8, yy + 4, aff + '" CL', 11, '#1B4F8A', 'end', '700');
+  });
+
+  dimLine(unitX, dY - ovGap, unitX + unitW, dY - ovGap, getOverallWidthStr() + ' overall', true, 'above', 12);
+  const bayY = dY + dH + 36;
+  function dimSideliteBay(x, w, overallIn, side, numV) {
+    const liteIn = numV > 0 ? overallIn / (numV + 1) : overallIn;
+    const showLites = numV > 0 && liteIn >= 18 && w / (numV + 1) >= 48;
+    if (!showLites) {
+      dimLine(x, bayY, x + w, bayY, formatFtIn(overallIn), true, 'below', 12);
+      return;
+    }
+    const gx = side === 'center' ? x : (side === 'right' ? x : x + slMem);
+    const gw = Math.max(0, side === 'center' ? w : w - slMem);
+    const xs = [];
+    for (let i = 1; i <= numV; i++) xs.push(gx + gw * i / (numV + 1));
+    const edges = [x, ...xs, x + w];
+    for (let i = 0; i < edges.length - 1; i++) dimLine(edges[i], bayY, edges[i + 1], bayY, formatFtIn(liteIn), true, 'below', 11);
+  }
+  bays.forEach(b => {
+    if (b.type === 'door') dimLine(b.x, bayY, b.x + b.w, bayY, formatFtIn(b.inches), true, 'below', 12);
+    else dimSideliteBay(b.x, b.w, b.inches, b.side, swingSlVerticalsOn(b.side));
+  });
+  const hDimX = Math.min(unitX + unitW + 28, vW - (hasTransom && transomH > 2 ? 60 : 36));
+  dimLine(hDimX, dY + transomH, hDimX, dY + dH, getHeightStr() + ' header', false, 'right', 13);
+  if (hasTransom && transomH > 2) {
+    dimLine(hDimX + 24, dY, hDimX + 24, dY + dH, getOverallHeightStr() + ' overall', false, 'right', 13);
+  }
+
+  const doorBays = bays.filter(b => b.type === 'door');
+  _doorScale = {
+    dX: doorBays[0].x, dW: doorBays[0].w, sc, vW, unitX, unitW,
+    slL: realSlL * sc, slR: realSlR * sc, slC: realSlC * sc,
+    twin: true,
+    doors: doorBays.map(b => ({ x: b.x, w: b.w, innerX: b.innerX, leafW: b.leafW, hingeLeft: b.hingeLeft, outSwing: b.outSwing, railNeed: b.railNeed, railSide: b.railSide }))
+  };
+}
+
+function drawSwingElevation(svg, vW, vH) {
+  const d = ORDER.door;
+  const cfg = CONFIGS[d.configKey];
+  if (cfg && cfg.isTwin) {
+    drawTwinSwingElevation(svg, vW, vH);
+    return;
+  }
+  const glaze = getGlazeFill();
+  const frame = getFrameColor();
+  const panelFill = getPanelFill();
+  const hasTransom = !!d.transom;
+  const isPair = !!cfg.isBi;
+  const outSwing = d.swingDir !== 'in';
+  const hingeOnLeft = hingeLeftFor(singleHand(cfg), outSwing);
+  const faceIn = swingFaceIn();
+
+  const realW = getWidthIn() || (isPair ? 72 : 36);
+  const slLoc = swingSlLoc();
+  const slLeft = slLoc === 'left' || slLoc === 'both';
+  const slRight = slLoc === 'right' || slLoc === 'both';
+  const realSlL = slLeft ? swingSlIn('left') : 0;
+  const realSlR = slRight ? swingSlIn('right') : 0;
+  const hasSl = !!(realSlL || realSlR);
+  const slVertsL = slLeft ? swingSlVerticalsOn('left') : 0;
+  const slVertsR = slRight ? swingSlVerticalsOn('right') : 0;
+  const realUnitW = realW + realSlL + realSlR;
+  const realFrameH = getHeightIn() || 90;
+  const realFtth = hasTransom && d.ftthFt ? getFTTHIn() : realFrameH;
+  const realTransomIn = hasTransom ? Math.max(0, realFtth - realFrameH) : 0;
+  const realTotalH = realFtth;
+
+  const titleY = 16;
+  const ovGap = 30;
+  const mL = 72, mR = hasTransom ? 72 : 48, mT = hasSl ? 92 : titleY + 28, mB = 58;
+  const availW = vW - mL - mR, availH = vH - mT - mB;
+  const sc = Math.min(availW / realUnitW, availH / realTotalH);
+  const unitW = realUnitW * sc;
+  const dW = realW * sc;
+  const dH = realTotalH * sc;
+  const unitX = mL + (availW - unitW) / 2;
+  const dX = unitX + (slLeft ? realSlL * sc : 0);
+  const dY = mT + (availH - dH) / 2;
+  const slWL = realSlL * sc;
+  const slWR = realSlR * sc;
+
+  const jambW = Math.max(2, sc * faceIn);
+  const slMem = jambW;
+  const railIn = d.bottomRail === '10in' ? 10 : d.bottomRail === '6in' ? 6 : 4;
+  const stileW = Math.max(3, sc * 3.75);
+  const fgW = Math.max(2, sc * 1);
+  const topRH = Math.max(3, sc * 4.0);
+  const btmRH = Math.max(3, sc * railIn);
+  const muntH = Math.max(1.5, sc * 2.0);
+  const headerH = Math.max(8, sc * 5.75);
+  const transomH = realTransomIn * sc;
+  const doorH = dH - transomH;
+  const hasMuntin = !!(d.muntin && !/no muntin/i.test(d.muntin));
+  const muntAffs = swingMuntinAffs();
+
+  function r(x,y,w,h,fill,stroke,sw) {
+    svgEl(svg, 'rect', { x, y, width: Math.max(w,0), height: Math.max(h,0), fill: fill || 'none', stroke: stroke || 'none', 'stroke-width': sw || 0 });
+  }
+  function t(x,y,str,size,fill,anchor,weight) {
+    return svgEl(svg, 'text', { x, y, 'font-size': size || 13, fill: fill || '#111', 'text-anchor': anchor || 'middle', 'font-weight': weight || 'normal', 'font-family': 'Arial,sans-serif' }, str);
+  }
+  function dimLine(x1,y1,x2,y2,lbl,horiz,labelSide,fs) {
+    const aw = 5, off = 7, font = fs || 13;
+    if (horiz) {
+      svgEl(svg, 'line', { x1, y1, x2, y2, stroke: '#1B4F8A', 'stroke-width': 0.7 });
+      svgEl(svg, 'line', { x1, y1: y1 - off, x2: x1, y2: y1 + off, stroke: '#1B4F8A', 'stroke-width': 0.7 });
+      svgEl(svg, 'line', { x1: x2, y1: y1 - off, x2, y2: y1 + off, stroke: '#1B4F8A', 'stroke-width': 0.7 });
+      svgEl(svg, 'path', { d: `M${x1},${y1}l${aw},-3l0,6Z`, fill: '#1B4F8A' });
+      svgEl(svg, 'path', { d: `M${x2},${y1}l${-aw},-3l0,6Z`, fill: '#1B4F8A' });
+      t((x1 + x2) / 2, labelSide === 'above' ? y1 - 10 : y1 + 18, lbl, font, '#1B4F8A', 'middle', '700');
+    } else {
+      svgEl(svg, 'line', { x1, y1, x2, y2, stroke: '#1B4F8A', 'stroke-width': 0.7 });
+      svgEl(svg, 'line', { x1: x1 - off, y1, x2: x1 + off, y2: y1, stroke: '#1B4F8A', 'stroke-width': 0.7 });
+      svgEl(svg, 'line', { x1: x1 - off, y1: y2, x2: x1 + off, y2: y2, stroke: '#1B4F8A', 'stroke-width': 0.7 });
+      svgEl(svg, 'path', { d: `M${x1},${y1}l-3,${aw}l6,0Z`, fill: '#1B4F8A' });
+      svgEl(svg, 'path', { d: `M${x1},${y2}l-3,${-aw}l6,0Z`, fill: '#1B4F8A' });
+      const cx = x1 + (labelSide === 'left' ? -16 : 18);
+      const cy = (y1 + y2) / 2;
+      const el = t(cx, cy, lbl, font, '#1B4F8A', 'middle', '700');
+      el.setAttribute('transform', `rotate(-90,${cx},${cy})`);
+    }
+  }
+
+  t(unitX + unitW / 2, titleY, 'EXTERIOR ELEVATION', 16, '#111', 'middle', '700');
+  svgEl(svg, 'line', { x1: unitX + unitW / 2 - 110, y1: titleY + 5, x2: unitX + unitW / 2 + 110, y2: titleY + 5, stroke: '#1B4F8A', 'stroke-width': 1 });
+
+  const transomTubeH = hasTransom ? Math.max(2, sc * faceIn) : 0;
+  r(dX + jambW, dY + transomH, dW - jambW * 2, headerH, frame);
+  if (hasTransom && transomH > 2) {
+    const glassY = dY + transomTubeH;
+    const glassH = Math.max(0, transomH - transomTubeH * 2);
+    if (glassH > 1) r(dX + jambW, glassY, dW - jambW * 2, glassH, glaze.fill);
+    r(dX + jambW, dY, dW - jambW * 2, transomTubeH, frame);
+    r(dX + jambW, dY + transomH - transomTubeH, dW - jambW * 2, transomTubeH, frame);
+    svgEl(svg, 'line', { x1: dX + jambW, y1: dY + transomH, x2: dX + dW - jambW, y2: dY + transomH, stroke: '#777', 'stroke-width': 0.7 });
+  }
+
+  const leafY = dY + transomH + headerH;
+  const leafH = doorH - headerH;
+  const innerX = dX + jambW;
+  const innerW = dW - jambW * 2;
+  const leaves = isPair ? 2 : 1;
+  const leafW = innerW / leaves;
+  const leafXs = isPair ? [innerX, innerX + leafW] : [innerX];
+  function muntinY(aff) {
+    return Math.max(leafY + topRH, Math.min(leafY + leafH - btmRH - muntH, leafY + leafH - aff * sc - muntH / 2));
+  }
+
+  function drawLeaf(x) {
+    r(x, leafY, leafW, leafH, panelFill, frame, 1.5);
+    const gx = x + stileW, gy = leafY + topRH;
+    const gw = Math.max(0, leafW - stileW * 2), gh = Math.max(0, leafH - topRH - btmRH);
+    if (gw > 2 && gh > 2) r(gx, gy, gw, gh, glaze.fill);
+    r(gx, leafY, gw, topRH, panelFill);
+    r(gx, leafY + leafH - btmRH, gw, btmRH, panelFill);
+    if (hasMuntin && gh > muntH * 3) {
+      muntAffs.forEach(aff => r(gx, muntinY(aff), gw, muntH, panelFill, frame, 0.4));
+    }
+    r(x, leafY, stileW, leafH, panelFill);
+    r(x + leafW - stileW, leafY, stileW, leafH, panelFill);
+  }
+  leafXs.forEach(drawLeaf);
+  if (isPair) {
+    r(innerX, leafY, fgW, leafH, '#111');
+    r(innerX + innerW - fgW, leafY, fgW, leafH, '#111');
+  } else if (hingeOnLeft) {
+    r(innerX, leafY, fgW, leafH, '#111');
+  } else {
+    r(innerX + leafW - fgW, leafY, fgW, leafH, '#111');
+  }
+
+  const lockCy = leafY + leafH - 40 * sc;
+  const lockR = Math.max(2.2, sc * 0.9);
+  let lockCx;
+  if (isPair) lockCx = innerX + leafW + stileW / 2;
+  else if (hingeOnLeft) lockCx = innerX + leafW - stileW / 2;
+  else lockCx = innerX + stileW / 2;
+  svgEl(svg, 'circle', { cx: lockCx, cy: lockCy, r: lockR, fill: '#2a2a2a', stroke: '#111', 'stroke-width': 0.7 });
+
+  function drawStorefront(x, w, doorOnLeft) {
+    if (w <= 1) return;
+    const gx = doorOnLeft ? x : x + slMem;
+    const gw = Math.max(0, w - slMem);
+    const numV = doorOnLeft ? swingSlVerticalsOn('right') : swingSlVerticalsOn('left');
+    const vertXs = [];
+    for (let i = 1; i <= numV; i++) vertXs.push(gx + gw * i / (numV + 1));
+    const liteEdges = [gx, ...vertXs.flatMap(vx => [vx - slMem / 2, vx + slMem / 2]), gx + gw];
+    for (let i = 0; i < liteEdges.length - 1; i += 2) {
+      const lx = liteEdges[i], lw = liteEdges[i + 1] - liteEdges[i];
+      if (lw > 1) r(lx, dY + slMem, lw, dH - slMem * 2, glaze.fill);
+    }
+    r(x, dY, w, slMem, frame);
+    r(x, dY + dH - slMem, w, slMem, frame);
+    if (doorOnLeft) r(x + w - slMem, dY, slMem, dH, frame);
+    else r(x, dY, slMem, dH, frame);
+    muntAffs.forEach(aff => {
+      const hy = Math.max(dY + slMem, Math.min(dY + dH - slMem * 2, dY + dH - aff * sc - slMem / 2));
+      for (let i = 0; i < liteEdges.length - 1; i += 2) {
+        const lx = liteEdges[i], lw = liteEdges[i + 1] - liteEdges[i];
+        if (lw > 2) r(lx, hy, lw, slMem, frame);
+      }
+    });
+    vertXs.forEach(vx => r(vx - slMem / 2, dY + slMem, slMem, dH - slMem * 2, frame));
+  }
+  if (slLeft) drawStorefront(unitX, slWL, false);
+  if (slRight) drawStorefront(dX + dW, slWR, true);
+  r(dX, dY, jambW, dH, frame);
+  r(dX + dW - jambW, dY, jambW, dH, frame);
+  if (!slLeft) r(unitX, dY, jambW, dH, frame);
+  if (!slRight) r(unitX + unitW - jambW, dY, jambW, dH, frame);
+
+  const scanFaces = swingScanFaces();
+  if (scanFaces.int || scanFaces.ext) {
+    const sw = leafW * (2 / 3);
+    const sh = Math.min(topRH - sc * 0.4, sc * 1.5);
+    const sy = leafY + (topRH - sh) / 2;
+    leafXs.forEach(x => {
+      const sx = x + (leafW - sw) / 2;
+      if (scanFaces.int) r(sx, sy, sw, sh, '#1a1a1a');
+      if (scanFaces.ext) r(sx, sy + (scanFaces.int ? sh * 0.15 : 0), sw, sh, scanFaces.int ? 'none' : '#1a1a1a', '#1a1a1a', 1.2);
+    });
+  }
+  const high = d.swingEnergy === 'high';
+  const showHdrOnElev = outSwing ? d.swingHdrSafe === 'yes' : (high && d.swingApproach === 'bea');
+  if (showHdrOnElev) {
+    const sw = sc * 8;
+    const sh = Math.min(headerH - 2, sc * 2);
+    r(dX + dW / 2 - sw / 2, dY + transomH + (headerH - sh) / 2, sw, sh, '#1a1a1a');
+  }
+
+  const innN = swingCrashQty('swingCrashIn');
+  const outN = swingCrashQty('swingCrashOut');
+  function crashY(aff) { return leafY + leafH - aff * sc; }
+  function drawCrash(x, aff, fill, stroke) {
+    const bh = Math.max(1.5, sc * 1.5);
+    const inset = sc * 1;
+    const heelLeft = isPair ? x === leafXs[0] : hingeOnLeft;
+    const slabL = heelLeft ? x + fgW : x;
+    const slabR = heelLeft ? x + leafW : x + leafW - fgW;
+    const bw = Math.max(8, slabR - slabL - inset * 2);
+    r(slabL + inset, crashY(aff) - bh / 2, bw, bh, fill, stroke || 'none', stroke ? 1 : 0);
+  }
+  const hi = swingCrashAff('crashHi', 34);
+  const lo = swingCrashAff('crashLo', 24);
+  const inH = innN === 2 ? [hi, lo] : innN === 1 ? [hi] : [];
+  const outH = outN === 2 ? [hi, lo] : outN === 1 ? [hi] : [];
+  leafXs.forEach(x => {
+    inH.forEach(aff => drawCrash(x, aff, frame, '#777'));
+    outH.forEach(aff => drawCrash(x, aff + 0.15, frame, '#777'));
+  });
+  const floorY = leafY + leafH;
+  const crashAffs = [...new Set([...inH, ...outH])];
+  const muntShown = [...new Set(muntAffs)].filter(a => a > 0);
+  const affShown = [...new Set([...crashAffs, ...muntShown])].sort((a, b) => a - b);
+  affShown.forEach((aff, i) => {
+    const yy = leafY + leafH - aff * sc;
+    const lx = unitX - 28 - i * 22;
+    const off = 5;
+    svgEl(svg, 'line', { x1: lx, y1: yy, x2: lx, y2: floorY, stroke: '#1B4F8A', 'stroke-width': 0.7 });
+    svgEl(svg, 'line', { x1: lx - off, y1: yy, x2: lx + off, y2: yy, stroke: '#1B4F8A', 'stroke-width': 0.7 });
+    svgEl(svg, 'line', { x1: lx - off, y1: floorY, x2: lx + off, y2: floorY, stroke: '#1B4F8A', 'stroke-width': 0.7 });
+    svgEl(svg, 'line', {
+      x1: lx + off, y1: yy, x2: unitX - 4, y2: yy,
+      stroke: '#1B4F8A', 'stroke-width': 0.55, 'stroke-dasharray': '3,2'
+    });
+    t(lx - 8, yy + 4, aff + '" CL', 11, '#1B4F8A', 'end', '700');
+  });
+
+  const bayY = dY + dH + 36;
+  if (hasSl) dimLine(unitX, dY - ovGap, unitX + unitW, dY - ovGap, getOverallWidthStr() + ' overall', true, 'above', 12);
+  function slVertCenters(x, w, doorOnLeft, numV) {
+    const gx = doorOnLeft ? x : x + slMem;
+    const gw = Math.max(0, w - slMem);
+    const xs = [];
+    for (let i = 1; i <= numV; i++) xs.push(gx + gw * i / (numV + 1));
+    return xs;
+  }
+  function dimSideliteBay(x, w, overallIn, doorOnLeft, numV) {
+    const liteIn = numV > 0 ? overallIn / (numV + 1) : overallIn;
+    const showLites = numV > 0 && liteIn >= 18 && w / (numV + 1) >= 48;
+    if (!showLites) {
+      dimLine(x, bayY, x + w, bayY, formatFtIn(overallIn), true, 'below', 12);
+      return;
+    }
+    const xs = slVertCenters(x, w, doorOnLeft, numV);
+    const edges = [x, ...xs, x + w];
+    const liteLbl = formatFtIn(liteIn);
+    for (let i = 0; i < edges.length - 1; i++) {
+      dimLine(edges[i], bayY, edges[i + 1], bayY, liteLbl, true, 'below', 11);
+    }
+  }
+  if (slLeft) dimSideliteBay(unitX, slWL, realSlL, false, slVertsL);
+  dimLine(dX, bayY, dX + dW, bayY, getWidthStr(), true, 'below', 13);
+  if (slRight) dimSideliteBay(dX + dW, slWR, realSlR, true, slVertsR);
+  const hDimX = Math.min(unitX + unitW + 28, vW - (hasTransom && transomH > 2 ? 60 : 36));
+  dimLine(hDimX, dY + transomH, hDimX, dY + dH, getHeightStr() + ' header', false, 'right', 13);
+  if (hasTransom && transomH > 2) {
+    dimLine(hDimX + 24, dY, hDimX + 24, dY + dH, getOverallHeightStr() + ' overall', false, 'right', 13);
+  }
+
+  _doorScale = { dX, dW, sc, vW, unitX, unitW, slL: slWL, slR: slWR };
+}
+
+function drawTwinSwingPlan(svg) {
+  const d = ORDER.door;
+  const { sc, unitX, unitW, doors, vW } = _doorScale || {};
+  if (!doors || !doors.length) return;
+  const frame = getFrameColor();
+  const glaze = getGlazeFill();
+  const panelFill = getPanelFill();
+  const thick = Math.max(3, sc * 4.5);
+  const fgIn = sc * 1;
+  const pivotInset = sc * 3.75;
+  const jambW = Math.max(2, sc * swingFaceIn());
+  const slFace = Math.max(2, sc * swingFaceIn());
+  const glassTh = Math.max(1, sc * 0.25);
+  const y = 28;
+  const maxLeaf = Math.max.apply(null, doors.map(door => door.leafW));
+  const noseR = Math.max(sc * 4, maxLeaf - pivotInset);
+  const heelR = pivotInset - fgIn;
+  const anyOut = doors.some(door => door.outSwing);
+  const anyIn = doors.some(door => !door.outSwing);
+  const railsOn = doors.some(door => door.railNeed === 'both' || door.railNeed === 'one' || door.railNeed === 'others');
+  const railLen = noseR;
+  const railTh = Math.max(1.2, sc * 1.5);
+  const padTop = ((anyIn ? noseR : heelR)) + 16;
+  const padBot = Math.max(anyOut ? noseR : heelR, railsOn ? railLen : 0) + 44;
+  const vH = Math.ceil(y + thick + padTop + padBot);
+  svg.setAttribute('viewBox', `0 0 ${vW} ${vH}`);
+  const frameY = y + padTop;
+  const hy = frameY + thick / 2;
+  function t(x, yy, str, size, fill, anchor, weight) {
+    svgEl(svg, 'text', { x, y: yy, 'font-size': size || 13, fill: fill || '#111', 'text-anchor': anchor || 'middle', 'font-weight': weight || 'normal', 'font-family': 'Arial,sans-serif' }, str);
+  }
+  function jambLeg(x) {
+    svgEl(svg, 'rect', { x, y: frameY, width: jambW, height: thick, fill: frame, stroke: '#777', 'stroke-width': 0.6 });
+  }
+  function headerBar(x, w) {
+    if (w <= 1) return;
+    svgEl(svg, 'rect', { x, y: frameY, width: w, height: thick, fill: frame, stroke: '#888', 'stroke-width': 0.7 });
+  }
+  function storefrontPost(x) {
+    svgEl(svg, 'rect', { x, y: frameY, width: slFace, height: thick, fill: frame, stroke: '#777', 'stroke-width': 0.6 });
+  }
+  function storefrontBay(x, w, numV) {
+    if (w <= 1) return;
+    headerBar(x, w);
+    const n = numV || 0;
+    const xs = [];
+    for (let i = 1; i <= n; i++) xs.push(x + w * i / (n + 1));
+    const edges = [x, ...xs.flatMap(vx => [vx - slFace / 2, vx + slFace / 2]), x + w];
+    for (let i = 0; i < edges.length - 1; i += 2) {
+      const lx = edges[i], lw = edges[i + 1] - edges[i];
+      if (lw > 1) {
+        svgEl(svg, 'rect', {
+          x: lx + 1, y: frameY + (thick - glassTh) / 2, width: Math.max(0, lw - 2), height: glassTh,
+          fill: glaze.fill, stroke: glaze.stroke, 'stroke-width': 0.35
+        });
+      }
+    }
+    xs.forEach(vx => storefrontPost(vx - slFace / 2));
+  }
+
+  t(unitX + unitW / 2, 12, 'PLAN', 16, '#111', 'middle', '700');
+  svgEl(svg, 'line', { x1: unitX + unitW / 2 - 40, y1: 17, x2: unitX + unitW / 2 + 40, y2: 17, stroke: '#1B4F8A', 'stroke-width': 1 });
+
+  const uL = unitX, uR = unitX + unitW;
+  const leftDoor = doors[0];
+  const rightDoor = doors[1];
+  if (leftDoor.x > uL + 1) {
+    storefrontBay(uL + slFace, leftDoor.x - (uL + slFace), swingSlVerticalsOn('left'));
+    storefrontPost(uL);
+  }
+  if (rightDoor) {
+    const cX = leftDoor.x + leftDoor.w;
+    const cW = rightDoor.x - cX;
+    const nC = swingSlVerticalsOn('center');
+    headerBar(cX - jambW, Math.max(0, cW + jambW * 2));
+    if (cW > 1) {
+      svgEl(svg, 'rect', {
+        x: cX, y: frameY + (thick - glassTh) / 2, width: cW, height: glassTh,
+        fill: glaze.fill, stroke: glaze.stroke, 'stroke-width': 0.35
+      });
+    }
+    for (let i = 1; i <= nC; i++) storefrontPost(cX + cW * i / (nC + 1) - slFace / 2);
+  }
+  if (rightDoor && rightDoor.x + rightDoor.w < uR - 1) {
+    const postX = uR - slFace;
+    storefrontBay(rightDoor.x + rightDoor.w, postX - (rightDoor.x + rightDoor.w), swingSlVerticalsOn('right'));
+    storefrontPost(postX);
+  }
+
+  doors.forEach(door => {
+    headerBar(door.x + jambW, door.w - jambW * 2);
+    jambLeg(door.x);
+    jambLeg(door.x + door.w - jambW);
+  });
+
+  const doorTh = sc * 1.75;
+  const high = d.swingEnergy === 'high';
+  doors.forEach(door => {
+    const heelLeft = door.hingeLeft;
+    const out = !!door.outSwing;
+    const ax = heelLeft ? door.innerX + fgIn : door.innerX;
+    svgEl(svg, 'rect', { x: ax, y: hy - doorTh / 2, width: door.leafW - fgIn, height: doorTh, fill: panelFill, stroke: frame, 'stroke-width': 1 });
+    svgEl(svg, 'rect', { x: heelLeft ? door.innerX : door.innerX + door.leafW - fgIn, y: hy - doorTh / 2, width: fgIn, height: doorTh, fill: '#111' });
+    const hx = heelLeft ? door.innerX + pivotInset : door.innerX + door.leafW - pivotInset;
+    const nxRest = heelLeft ? door.innerX + door.leafW : door.innerX;
+    const sweep = heelLeft ? (out ? 1 : 0) : (out ? 0 : 1);
+    const nR = Math.max(sc * 4, door.leafW - pivotInset);
+    const openY = hy + (out ? 1 : -1) * nR;
+    svgEl(svg, 'path', { d: `M ${nxRest} ${hy} A ${nR} ${nR} 0 0 ${sweep} ${hx} ${openY}`, fill: 'none', stroke: '#1B4F8A', 'stroke-width': 1.3, 'stroke-dasharray': '4,4' });
+    const slabLen = door.leafW - fgIn;
+    const oy = out ? hy - heelR : hy - nR;
+    svgEl(svg, 'rect', { x: hx - doorTh / 2, y: oy, width: doorTh, height: slabLen, fill: panelFill, stroke: frame, 'stroke-width': 1 });
+    svgEl(svg, 'circle', { cx: hx, cy: hy, r: Math.max(1.6, sc * 0.35), fill: '#1B4F8A' });
+    const scanFaces = swingScanFaces(out);
+    if (scanFaces.int || scanFaces.ext) {
+      const scanLen = slabLen * (2 / 3);
+      const scanD = sc * 1.5;
+      const sy = oy + (slabLen - scanLen) / 2;
+      const extOnLeft = out ? heelLeft : !heelLeft;
+      if (scanFaces.ext) svgEl(svg, 'rect', { x: extOnLeft ? hx - doorTh / 2 - scanD : hx + doorTh / 2, y: sy, width: scanD, height: scanLen, fill: '#1a1a1a' });
+      if (scanFaces.int) svgEl(svg, 'rect', { x: extOnLeft ? hx + doorTh / 2 : hx - doorTh / 2 - scanD, y: sy, width: scanD, height: scanLen, fill: '#1a1a1a' });
+    }
+    const planSensors = [];
+    if (high && d.swingApproach === 'bea') planSensors.push({ w: sc * 8, dep: sc * 2, fill: '#1a1a1a', face: 'ext' });
+    if (d.swingHdrSafe === 'yes') planSensors.push({ w: sc * 8, dep: sc * 2, fill: '#333', face: 'swing' });
+    planSensors.forEach(s => {
+      const onSwingFace = s.face === 'swing';
+      const sy = onSwingFace
+        ? (out ? frameY + thick : frameY - s.dep)
+        : (out ? frameY - s.dep : frameY + thick);
+      svgEl(svg, 'rect', { x: door.x + door.w / 2 - s.w / 2, y: sy, width: s.w, height: s.dep, fill: s.fill });
+    });
+  });
+
+  doors.forEach(door => {
+    const need = door.railNeed || 'wall';
+    if (need !== 'both' && need !== 'one' && need !== 'others') return;
+    const dash = need === 'others' ? '3,2' : null;
+    const railY = door.outSwing ? frameY + thick : frameY - railLen;
+    const leftX = door.x + (jambW - railTh) / 2;
+    const rightX = door.x + door.w - jambW + (jambW - railTh) / 2;
+    let railXs = [leftX, rightX];
+    if (need === 'one') railXs = (door.railSide === 'right') ? [rightX] : [leftX];
+    railXs.forEach(rx => {
+      const attrs = { x: rx, y: railY, width: railTh, height: railLen, fill: frame, stroke: '#777', 'stroke-width': 0.6 };
+      if (dash) attrs['stroke-dasharray'] = dash;
+      svgEl(svg, 'rect', attrs);
+    });
+  });
+  if (railsOn) {
+    t(unitX + unitW / 2, frameY + thick + padBot - 28, 'GUIDE RAILS', 11, '#1B4F8A', 'middle', '700');
+  }
+}
+
+function drawSwingPlan(svg) {
+  const d = ORDER.door;
+  const cfg = CONFIGS[d.configKey];
+  if (cfg && cfg.isTwin) {
+    drawTwinSwingPlan(svg);
+    return;
+  }
+  if (!cfg || !_doorScale) return;
+  const { dX, dW, sc, unitX, unitW, slL, slR } = _doorScale;
+  const vW = _doorScale.vW;
+  const isPair = cfg.isBi;
+  const outSwing = d.swingDir !== 'in';
+  const hingeOnLeft = hingeLeftFor(singleHand(cfg), outSwing);
+  const jambW = Math.max(2, sc * swingFaceIn());
+  const leafW = isPair ? (dW - jambW * 2) / 2 : (dW - jambW * 2);
+  const y = 28;
+  const frame = getFrameColor();
+  const thick = Math.max(3, sc * 4.5);
+  const fgIn = sc * 1;
+  const pivotInset = sc * 3.75;
+  const heelR = pivotInset - fgIn;
+  const slabLen = leafW - fgIn;
+  const noseR = Math.max(sc * 4, leafW - pivotInset);
+  const railsOn = swingRailsOn();
+  const railLen = noseR;
+  const railTh = Math.max(1.2, sc * 1.5);
+  const swingSign = outSwing ? 1 : -1;
+  const padTop = (outSwing ? heelR : noseR) + 16;
+  const padBot = Math.max(outSwing ? noseR : heelR, railsOn ? railLen : 0) + 36;
+  const vH = Math.ceil(y + thick + padTop + padBot);
+  svg.setAttribute('viewBox', `0 0 ${vW} ${vH}`);
+
+  function t(x, yy, str, size, fill, anchor, weight) {
+    svgEl(svg, 'text', { x, y: yy, 'font-size': size || 13, fill: fill || '#111', 'text-anchor': anchor || 'middle', 'font-weight': weight || 'normal', 'font-family': 'Arial,sans-serif' }, str);
+  }
+
+  const uX = unitX != null ? unitX : dX;
+  const uW = unitW != null ? unitW : dW;
+  const frameY = y + padTop;
+  const jambDepth = thick;
+  const faceW = jambW;
+  const doorL = dX;
+  const doorR = dX + dW - faceW;
+  const slFace = Math.max(2, sc * swingFaceIn());
+  const glassTh = Math.max(1, sc * 0.25);
+  const glaze = getGlazeFill();
+
+  t(uX + uW / 2, 12, 'PLAN', 16, '#111', 'middle', '700');
+  svgEl(svg, 'line', { x1: uX + uW / 2 - 40, y1: 17, x2: uX + uW / 2 + 40, y2: 17, stroke: '#1B4F8A', 'stroke-width': 1 });
+
+  function headerBar(x, w) {
+    if (w <= 1) return;
+    svgEl(svg, 'rect', { x, y: frameY, width: w, height: jambDepth, fill: frame, stroke: '#888', 'stroke-width': 0.7 });
+  }
+  function storefrontPost(x) {
+    svgEl(svg, 'rect', { x, y: frameY, width: slFace, height: jambDepth, fill: frame, stroke: '#777', 'stroke-width': 0.6 });
+  }
+  function storefrontBay(x, w, numV) {
+    if (w <= 1) return;
+    headerBar(x, w);
+    const n = numV || 0;
+    const xs = [];
+    for (let i = 1; i <= n; i++) xs.push(x + w * i / (n + 1));
+    const edges = [x, ...xs.flatMap(vx => [vx - slFace / 2, vx + slFace / 2]), x + w];
+    for (let i = 0; i < edges.length - 1; i += 2) {
+      const lx = edges[i], lw = edges[i + 1] - edges[i];
+      if (lw > 1) {
+        svgEl(svg, 'rect', {
+          x: lx + 1, y: frameY + (jambDepth - glassTh) / 2, width: Math.max(0, lw - 2), height: glassTh,
+          fill: glaze.fill, stroke: glaze.stroke, 'stroke-width': 0.35
+        });
+      }
+    }
+    xs.forEach(vx => storefrontPost(vx - slFace / 2));
+  }
+  headerBar(doorL + faceW, dW - faceW * 2);
+  if (slL) {
+    storefrontBay(uX + slFace, dX - (uX + slFace), swingSlVerticalsOn('left'));
+    storefrontPost(uX);
+  }
+  if (slR) {
+    const postX = uX + uW - slFace;
+    storefrontBay(dX + dW, postX - (dX + dW), swingSlVerticalsOn('right'));
+    storefrontPost(postX);
+  }
+  svgEl(svg, 'rect', { x: doorL, y: frameY, width: faceW, height: jambDepth, fill: frame, stroke: '#777', 'stroke-width': 0.6 });
+  svgEl(svg, 'rect', { x: doorR, y: frameY, width: faceW, height: jambDepth, fill: frame, stroke: '#777', 'stroke-width': 0.6 });
+  if (slL || slR) {
+    const dimX = slR ? uX + uW + 10 : uX - 12;
+    svgEl(svg, 'line', { x1: dimX, y1: frameY, x2: dimX, y2: frameY + jambDepth, stroke: '#1B4F8A', 'stroke-width': 0.9 });
+    svgEl(svg, 'line', { x1: dimX - 4, y1: frameY, x2: dimX + 4, y2: frameY, stroke: '#1B4F8A', 'stroke-width': 0.9 });
+    svgEl(svg, 'line', { x1: dimX - 4, y1: frameY + jambDepth, x2: dimX + 4, y2: frameY + jambDepth, stroke: '#1B4F8A', 'stroke-width': 0.9 });
+    t(dimX + (slR ? 8 : -8), frameY + jambDepth / 2 + 4, '4-1/2"', 12, '#1B4F8A', slR ? 'start' : 'end', '700');
+  }
+
+  const openX = dX + faceW;
+  const panelFill = getPanelFill();
+  const doorTh = sc * 1.75;
+  const hy = frameY + jambDepth / 2;
+  const openY = hy + swingSign * noseR;
+
+  function closedLeaf(x, w, heelLeft) {
+    const ax = heelLeft ? x + fgIn : x;
+    svgEl(svg, 'rect', { x: ax, y: hy - doorTh / 2, width: w - fgIn, height: doorTh, fill: panelFill, stroke: frame, 'stroke-width': 1 });
+    svgEl(svg, 'rect', { x: heelLeft ? x : x + w - fgIn, y: hy - doorTh / 2, width: fgIn, height: doorTh, fill: '#111' });
+  }
+  if (isPair) {
+    closedLeaf(openX, leafW, true);
+    closedLeaf(openX + leafW, leafW, false);
+  } else {
+    closedLeaf(openX, leafW, hingeOnLeft);
+  }
+
+  const scanFaces = swingScanFaces();
+  function noseArc(hx, nxRest, sweep, hingeLeft) {
+    svgEl(svg, 'path', {
+      d: `M ${nxRest} ${hy} A ${noseR} ${noseR} 0 0 ${sweep} ${hx} ${openY}`,
+      fill: 'none', stroke: '#1B4F8A', 'stroke-width': 1.3, 'stroke-dasharray': '4,4'
+    });
+    const ox = hx - doorTh / 2;
+    const oy = outSwing ? hy - heelR : hy - noseR;
+    svgEl(svg, 'rect', { x: ox, y: oy, width: doorTh, height: slabLen, fill: panelFill, stroke: frame, 'stroke-width': 1 });
+    svgEl(svg, 'circle', { cx: hx, cy: hy, r: Math.max(1.6, sc * 0.35), fill: '#1B4F8A' });
+    if (scanFaces.int || scanFaces.ext) {
+      const scanLen = slabLen * (2 / 3);
+      const scanD = sc * 1.5;
+      const sy = oy + (slabLen - scanLen) / 2;
+      const extOnLeft = outSwing ? hingeLeft : !hingeLeft;
+      if (scanFaces.ext) svgEl(svg, 'rect', { x: extOnLeft ? hx - doorTh / 2 - scanD : hx + doorTh / 2, y: sy, width: scanD, height: scanLen, fill: '#1a1a1a' });
+      if (scanFaces.int) svgEl(svg, 'rect', { x: extOnLeft ? hx + doorTh / 2 : hx - doorTh / 2 - scanD, y: sy, width: scanD, height: scanLen, fill: '#1a1a1a' });
+    }
+  }
+  if (isPair) {
+    noseArc(openX + pivotInset, openX + leafW, outSwing ? 1 : 0, true);
+    noseArc(openX + leafW * 2 - pivotInset, openX + leafW, outSwing ? 0 : 1, false);
+  } else if (hingeOnLeft) {
+    noseArc(openX + pivotInset, openX + leafW, outSwing ? 1 : 0, true);
+  } else {
+    noseArc(openX + leafW - pivotInset, openX, outSwing ? 0 : 1, false);
+  }
+
+  if (railsOn) {
+    const one = d.swingRails === 'one';
+    const byOthers = d.swingRails === 'others';
+    const railY = outSwing ? frameY + jambDepth : frameY - railLen;
+    const leftX = doorL + (faceW - railTh) / 2;
+    const rightX = doorR + (faceW - railTh) / 2;
+    let railXs = [leftX, rightX];
+    if (one) railXs = d.swingRailSide === 'right' ? [rightX] : [leftX];
+    railXs.forEach(rx => {
+      const attrs = { x: rx, y: railY, width: railTh, height: railLen, fill: frame, stroke: '#777', 'stroke-width': 0.6 };
+      if (byOthers) attrs['stroke-dasharray'] = '3,2';
+      svgEl(svg, 'rect', attrs);
+    });
+    const lblY = outSwing ? railY + railLen + 16 : railY - 12;
+    const lx = railXs.length === 1 ? railXs[0] + railTh / 2 : (railXs[0] + railXs[1] + railTh) / 2;
+    const lbl = one
+      ? (byOthers ? 'GUIDE RAIL (by others)' : 'GUIDE RAIL')
+      : (byOthers ? 'GUIDE RAILS (by others)' : 'GUIDE RAILS');
+    t(lx, lblY, lbl, 12, '#1B4F8A', 'middle', '700');
+  }
+
+  const high = d.swingEnergy === 'high';
+  const planSensors = [];
+  if (high && d.swingApproach === 'bea') planSensors.push({ w: sc * 8, dep: sc * 2, fill: '#1a1a1a', face: 'ext' });
+  if (d.swingHdrSafe === 'yes') planSensors.push({ w: sc * 8, dep: sc * 2, fill: '#333', face: 'swing' });
+  planSensors.forEach(s => {
+    const onSwingFace = s.face === 'swing';
+    const sy = onSwingFace
+      ? (outSwing ? frameY + jambDepth : frameY - s.dep)
+      : (outSwing ? frameY - s.dep : frameY + jambDepth);
+    svgEl(svg, 'rect', { x: dX + dW / 2 - s.w / 2, y: sy, width: s.w, height: s.dep, fill: s.fill });
+  });
+}
+
+
 function drawDoor() {
   const svg = document.getElementById('door-svg');
   if (!svg) return;
@@ -550,6 +2155,7 @@ function drawDoor() {
   const d = ORDER.door;
   const cfg = CONFIGS[d.configKey];
   if (!cfg) return;
+  if (cfg.isSwing) { drawSwingElevation(svg, vW, vH); return; }
 
   const glaze = getGlazeFill();
   const frame = getFrameColor();
@@ -566,7 +2172,10 @@ function drawDoor() {
   const realTransomIn = hasTransom ? Math.max(0, realFtth - realFrameH) : 0;
   const realTotalH = realFtth;
 
-  const mL = 36, mR = 28, mT = titleH + 12;
+  const hasMuntinBar = !!(d.muntin && d.muntin !== 'No Muntin');
+  // Muntin CL label sits on the left; frame-height dims sit on the right
+  // (transom needs room for nested header + overall dimensions).
+  const mL = hasMuntinBar ? 90 : 44, mR = hasTransom ? 84 : 52, mT = titleH + 12;
   // Bottom margin: width dim gap + label/tick clearance below door
   const mB = widthDimGap + 16;
   const availW = vW - mL - mR, availH = vH - mT - mB;
@@ -612,19 +2221,19 @@ function drawDoor() {
     if(dash) el.setAttribute('stroke-dasharray',dash);
     svg.appendChild(el);
   }
-  function dimLine(x1,y1,x2,y2,lbl,horiz) {
-    const aw=5, off=7;
+  function dimLine(x1,y1,x2,y2,lbl,horiz,labelSide,fs) {
+    const aw=5, off=7, font=fs||13;
     if (horiz) {
       l(x1,y1,x2,y2,'#1B4F8A',0.7);
       l(x1,y1-off,x1,y1+off,'#1B4F8A',0.7); l(x2,y1-off,x2,y1+off,'#1B4F8A',0.7);
       path(`M${x1},${y1}l${aw},-3l0,6Z`,'#1B4F8A'); path(`M${x2},${y1}l${-aw},-3l0,6Z`,'#1B4F8A');
-      t((x1+x2)/2, y1-8, lbl, 13, '#1B4F8A','middle','700');
+      t((x1+x2)/2, y1-8, lbl, font, '#1B4F8A','middle','700');
     } else {
       l(x1,y1,x2,y2,'#1B4F8A',0.7);
       l(x1-off,y1,x1+off,y1,'#1B4F8A',0.7); l(x1-off,y2,x1+off,y2,'#1B4F8A',0.7);
       path(`M${x1},${y1}l-3,${aw}l6,0Z`,'#1B4F8A'); path(`M${x1},${y2}l-3,${-aw}l6,0Z`,'#1B4F8A');
-      const cx=x1-4, cy=(y1+y2)/2;
-      const el = t(cx, cy, lbl, 13, '#1B4F8A','middle','700');
+      const cx = x1 + (labelSide==='right' ? 18 : labelSide==='left' ? -16 : -4), cy=(y1+y2)/2;
+      const el = t(cx, cy, lbl, font, '#1B4F8A','middle','700');
       el.setAttribute('transform',`rotate(-90,${cx},${cy})`);
     }
   }
@@ -675,8 +2284,6 @@ function drawDoor() {
     r(dX + dW - frameT, dY, frameT, transomH, frame);
     vertXs.forEach(vx => r(vx - frameT/2, tGlassY, frameT, tGlassH, frame));
     l(dX, tGlassY + tGlassH + glassStopH/2, dX + dW, tGlassY + tGlassH + glassStopH/2, frame, glassStopH);
-    const firstLiteW = vertXs.length > 0 ? (vertXs[0] - frameT/2) - tx : tw;
-    t(tx + firstLiteW/2, tGlassY + tGlassH/2 + 3, 'TRANSOM', 11, '#aaa', 'middle');
   }
 
   // Header — sensor on the header face, centered (standard location)
@@ -696,9 +2303,8 @@ function drawDoor() {
   // Panel zone
   const pY = dY+transomH+headerH+2, pH = dH-transomH-headerH-sillH-4;
   const pX = dX+frameT, pW = dW-frameT*2;
-  const muntY = realFrameH > 96
-    ? (pY + pH) - (42 * sc) - muntH / 2
-    : pY + topRH + (pH - topRH - btmRH) / 2 - muntH / 2;
+  const sliderMuntAff = sliderMuntinAffIn();
+  const muntY = (pY + pH) - (sliderMuntAff * sc) - muntH / 2;
 
   let panels = [];
   let junctionFace = null; // { x, y1, y2 } — drawn after muntins
@@ -818,8 +2424,17 @@ function drawDoor() {
     }
   }
 
+  const floorY = pY + pH;
   if (panels.length > 0 && d.muntin && d.muntin !== 'No Muntin') {
     panels.forEach(({x, w}) => r(x, muntY, w, muntH, panelFill, frame, 0.4));
+    const muntAff = sliderMuntAff;
+    const lx = Math.max(40, dX - 34);
+    const yy = muntY + muntH / 2;
+    l(lx, yy, lx, floorY, '#1B4F8A', 0.7);
+    l(lx - 6, yy, lx + 6, yy, '#1B4F8A', 0.7);
+    l(lx - 6, floorY, lx + 6, floorY, '#1B4F8A', 0.7);
+    l(lx + 6, yy, dX - 4, yy, '#1B4F8A', 0.55, '3,2');
+    t(Math.max(6, lx - 8), yy + 4, muntAff + '" CL', 11, '#1B4F8A', 'end', '700');
   }
 
   // Junction face line: two short segments in the rail zones (not the glass zone)
@@ -829,9 +2444,14 @@ function drawDoor() {
     l(jfX, jfStY + jfStH,  jfX, jfStY + jfStH + btmRH, frame, 1.5); // bottom rail
   }
 
-  // Dim lines — width below the door, height on left
+  // Dim lines — width below the door; frame heights on the right, matching the
+  // swing drawings: inner = header height, outer = overall frame height.
   dimLine(dX, widthDimY, dX+dW, widthDimY, getWidthStr(), true);
-  dimLine(dX-32, dY, dX-32, dY+dH, hasTransom ? getFTTHStr() : getHeightStr(), false);
+  const hDimX = Math.min(dX + dW + 28, vW - (hasTransom && transomH > 2 ? 60 : 36));
+  dimLine(hDimX, dY + transomH, hDimX, dY + dH, getHeightStr() + ' header', false, 'right', 13);
+  if (hasTransom && transomH > 2) {
+    dimLine(hDimX + 24, dY, hDimX + 24, dY + dH, getFTTHStr() + ' overall', false, 'right', 13);
+  }
 
   // Share horizontal scale with plan view so they line up
   _doorScale = { dX, dY, dW, dH, sc, vW };
@@ -852,6 +2472,7 @@ function drawPlanView() {
   const d = ORDER.door;
   const cfg = CONFIGS[d.configKey];
   if (!cfg || !_doorScale) return;
+  if (cfg.isSwing) { drawSwingPlan(svg, vW, vH); return; }
 
   const frame = getFrameColor();
   const panelFill = getPanelFill();
@@ -866,7 +2487,7 @@ function drawPlanView() {
   const jambW  = Math.max(2, sc * 1.75);
   const openX  = frameX + jambW;
   const openW  = frameW - jambW * 2;
-  const titleH = 30, stateGap = 16, openDimGap = 16, footGap = 16;
+  const titleH = 30, stateGap = 22, openDimGap = 22, footGap = 22;
 
   // Panel depth in plan = 1-3/4" at same scale as elevation width
   const panH  = Math.max(2, sc * 1.75);
@@ -901,7 +2522,7 @@ function drawPlanView() {
     l(x1,y1,x2,y2,'#1B4F8A',0.7);
     l(x1,y1-off,x1,y1+off,'#1B4F8A',0.7); l(x2,y1-off,x2,y1+off,'#1B4F8A',0.7);
     path(`M${x1},${y1}l${aw},-3l0,6Z`,'#1B4F8A'); path(`M${x2},${y1}l${-aw},-3l0,6Z`,'#1B4F8A');
-    t((x1+x2)/2, y1+16, lbl, 13, '#1B4F8A','middle','700');
+    t((x1+x2)/2, y1+20, lbl, 12, '#1B4F8A','middle','700');
   }
   function inlineArrow(centerX, y, color, pointsLeft) {
     color = color || '#1B4F8A';
@@ -963,9 +2584,6 @@ function drawPlanView() {
     const stroke = (isSO && !isFBO) ? '#7E96AE' : frame;
     const sw = (isSO && !isFBO) ? 1.2 : 1.6;
     r(x + 0.5, y, w - 1, panH, panelFill, stroke, sw);
-    if (w > 28 && panH >= 7) {
-      t(x + w/2, y + panH/2 + 3.5, label, Math.min(12, panH + 2), '#fff', 'middle', '700');
-    }
   }
 
   // Jamb profile in plan: 1-3/4" × 4-1/2" — outer faces align with elevation frame
@@ -979,8 +2597,8 @@ function drawPlanView() {
   }
 
   // ── CLOSED ──────────────────────────────────────────────────────────
-  const yClosedBase = titleH + 6;
-  t(stateLblX, yStateLbl(yClosedBase), 'Closed', 14, '#1B4F8A', 'end', '700');
+  const yClosedBase = titleH + 18;
+  t(stateLblX, yStateLbl(yClosedBase), 'Closed', 12, '#1B4F8A', 'end', '700');
   jambMarks(yClosedBase);
 
   if (isBi) {
@@ -1003,8 +2621,8 @@ function drawPlanView() {
   // ── OPEN — SX stops 3" short of fully open; fixed panels stay at jambs ─
   const yOpenBase = yFront(yClosedBase) + panH + stateGap;
   const yOpenBottom = Math.max(ySlideTrack(yOpenBase), yFixedTrack(yOpenBase)) + panH;
-  const yOpenDim  = yOpenBottom + 12;
-  t(stateLblX, yStateLbl(yOpenBase), 'Open', 14, '#1B4F8A', 'end', '700');
+  const yOpenDim  = yOpenBottom + 16;
+  t(stateLblX, yStateLbl(yOpenBase), 'Open', 12, '#1B4F8A', 'end', '700');
   jambMarks(yOpenBase);
 
   if (isBi) {
@@ -1031,10 +2649,10 @@ function drawPlanView() {
   }
 
   // ── BREAKAWAY — footprints + SX nose arcs (fixed panels: FBO only) ───
-  const yBreakBase = yOpenDim + 26;
+  const yBreakBase = yOpenDim + 44;
+  t(stateLblX, yStateLbl(yBreakBase), 'Breakaway', 12, '#1B4F8A', 'end', '700');
   const swingR = isBi ? panelLen : Math.max(fixedPanelLen, sxPanelLen);
   const yBreakFootLbl = ySlideTrack(yBreakBase) + panH + swingR + footGap;
-  t(stateLblX, yStateLbl(yBreakBase), 'Breakaway', 14, '#1B4F8A', 'end', '700');
   jambMarks(yBreakBase);
 
   if (isBi) {
@@ -1086,13 +2704,23 @@ function drawPlanView() {
           : ('FSL — Only sliding (SX) panels break out; fixed panels (O) do not'),
     12, '#666', 'middle', '700');
 
+  svg.setAttribute('viewBox', `0 0 ${vW} ${Math.ceil(yBreakFootLbl + 18)}`);
 }
 
 // ════════════════════════════════════════════════════════════════════════
 
+if (new URLSearchParams(location.search).get('embed') === '1') {
+  document.documentElement.classList.add('embed');
+}
 if (loadFromURL()) renderSheet();
+else if (new URLSearchParams(location.search).get('type') === 'swing') {
+  const demo = new URLSearchParams(location.search).get('demo');
+  if (demo === 'slt') loadSampleSwing('swing-single', { swingHand:'rh', transom:true, ftthFt:9, ftthIn:0, heightFt:7, heightIn:6, swingSidelite:'both', slWidthFt:3, slWidthIn:0 });
+  else loadSampleSwing('swing-single', { swingHand:'rh' });
+}
 else loadSample('fbo-single-rh', { widthFt:8, heightFt:8, heightIn:0, transom:true, ftthFt:10, ftthIn:0, transomVerticals:1, frameFinish:'Clear Anodized' });
 
+if (new URLSearchParams(location.search).get('cutlist') === '1') showCutList(true);
 window.addEventListener('resize', () => { if (ORDER) drawAll(); });
 window._encodeOrder = encodeOrder;
 </script>

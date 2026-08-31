@@ -119,7 +119,7 @@ textarea { resize:vertical; min-height:60px; }
     <div class="links">
       <a href="quote.html" target="_blank">Quote (Bipart) →</a>
       <a href="quote-single.html" target="_blank">Quote (Single) →</a>
-      <a href="order-confirmation.html?d=" target="_blank" id="preview-link">Preview Customer Page →</a>
+      <a href="order-confirmation-v2.html?d=" target="_blank" id="preview-link">Preview Customer Page →</a>
     </div>
   </div>
 
@@ -165,6 +165,9 @@ textarea { resize:vertical; min-height:60px; }
         <div><label>Project Name</label><input type="text" id="g_proj_name"></div>
         <div><label>Location (City, State)</label><input type="text" id="g_proj_loc"></div>
         <div><label>PO # / Job #</label><input type="text" id="g_proj_po"></div>
+        <div><label>Door Mark</label><input type="text" id="g_door_mark" placeholder="e.g. 101A"></div>
+        <div><label>Architect</label><input type="text" id="g_architect"></div>
+        <div><label>General Contractor</label><input type="text" id="g_gc"></div>
         <div><label>Target Ship Date</label><input type="date" id="g_proj_ship"></div>
         <div><label>Quantity (openings) *</label><input type="number" id="g_proj_qty" value="1" min="1"></div>
       </div>
@@ -347,6 +350,7 @@ Standard 1-year limited warranty against defects in materials and workmanship.</
         <button class="btn btn-orange btn-large" onclick="generate()">Generate URL</button>
         <button class="btn btn-primary" onclick="copyUrl()">Copy URL</button>
         <button class="btn btn-secondary" onclick="openPreview()">Open Customer Page →</button>
+        <button class="btn btn-secondary" onclick="openSubmittal()">Open Submittal Drawing →</button>
         <button class="btn btn-secondary" onclick="showEmail()">Show Email Template</button>
         <span class="copied-flash" id="copied-flash"></span>
       </div>
@@ -503,6 +507,9 @@ function buildOrder() {
       po: document.getElementById('g_proj_po').value.trim(),
       targetShip: document.getElementById('g_proj_ship').value,
       quantity: qty,
+      doorMark: document.getElementById('g_door_mark').value.trim(),
+      architect: document.getElementById('g_architect').value.trim(),
+      gc: document.getElementById('g_gc').value.trim(),
     },
     door,
     addons,
@@ -525,13 +532,17 @@ function validate(order) {
   return errs;
 }
 
-// ── Encode helpers (must match order-confirmation.html) ──
+// ── Encode helpers (must match order-confirmation-v2.html / installer-cut-sheet.html) ──
 function encodeOrder(obj) {
   const json = JSON.stringify(obj);
   return btoa(unescape(encodeURIComponent(json))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
 }
+function pageBase(file) {
+  return location.origin + location.pathname.replace(/[^/]+$/, '') + file;
+}
 
 let _lastUrl = '';
+let _lastDrawUrl = '';
 function generate() {
   const order = buildOrder();
   const errs = validate(order);
@@ -540,8 +551,8 @@ function generate() {
     return;
   }
   const encoded = encodeOrder(order);
-  const base = location.origin + location.pathname.replace(/[^/]+$/, '') + 'order-confirmation.html';
-  _lastUrl = base + '?d=' + encoded;
+  _lastUrl = pageBase('order-confirmation-v2.html') + '?d=' + encoded;
+  _lastDrawUrl = pageBase('installer-cut-sheet.html') + '?d=' + encoded;
   document.getElementById('g_url').textContent = _lastUrl;
   document.getElementById('json-box').textContent = JSON.stringify(order, null, 2);
   document.getElementById('preview-link').href = _lastUrl;
@@ -559,6 +570,10 @@ function copyUrl() {
 function openPreview() {
   if (!_lastUrl) { alert('Click Generate URL first.'); return; }
   window.open(_lastUrl, '_blank');
+}
+function openSubmittal() {
+  if (!_lastDrawUrl) { alert('Click Generate URL first.'); return; }
+  window.open(_lastDrawUrl, '_blank');
 }
 
 function toggleJson() {
@@ -583,6 +598,9 @@ Total: $${order.pricing.grandTotal.toLocaleString()} USD${order.pricing.depositA
 Please review every detail carefully — dimensions, finish, hardware, glass, and pricing — at the link below. When you're satisfied, sign and authorize fabrication directly on the page:
 
 ${_lastUrl}
+
+Confirmation drawing (sizes and configuration — no pricing):
+${_lastDrawUrl}
 
 Once signed, we will send a deposit invoice. ${order.leadTime ? 'Lead time of ' + order.leadTime + ' starts from cleared deposit.' : ''}
 

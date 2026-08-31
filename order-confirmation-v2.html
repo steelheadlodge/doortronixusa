@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Order Confirmation — Doortronix USA</title>
+<style>
+*, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+:root {
+  --blue:#1B4F8A; --dblue:#163F6E; --orange:#E87722;
+  --lgray:#F2F4F7; --mgray:#6B7280; --border:#D0D5DD;
+  --green:#166534; --lgreen:#DCFCE7; --amber:#92400E; --lamber:#FEF3C7; --red:#DC2626;
+}
+body { font-family:Arial, Helvetica, sans-serif; font-size:14px; background:#F0F4F8; color:#111; min-height:100vh; }
+
+.topbar { background:var(--blue); color:#fff; padding:14px 28px;
+  display:flex; align-items:center; justify-content:space-between;
+  box-shadow:0 2px 8px rgba(0,0,0,.25); position:sticky; top:0; z-index:100; }
+.topbar .brand { font-size:20px; font-weight:700; letter-spacing:.5px; }
+.topbar .brand span { color:var(--orange); }
+.topbar .sub, .topbar .tagline { font-size:12px; color:#B8CCE4; }
+.topbar .tagline { text-align:right; }
+
+.shell { max-width:980px; margin:0 auto; padding:20px 16px 60px; }
+
+.status-banner { display:inline-block; padding:6px 14px; border-radius:20px;
+  font-size:11px; font-weight:700; letter-spacing:.5px; text-transform:uppercase; margin-bottom:12px; }
+.status-pending { background:var(--lamber); color:var(--amber); }
+.status-signed { background:var(--lgreen); color:var(--green); }
+
+.intro { background:#fff; border:1px solid var(--border); border-top:4px solid var(--blue);
+  padding:20px 24px; margin-bottom:16px; border-radius:6px; }
+.intro h1 { font-size:22px; font-weight:800; color:var(--blue); letter-spacing:.3px; }
+.intro p { font-size:13px; color:var(--mgray); margin-top:6px; line-height:1.5; }
+
+.draw-frame-wrap { background:#fff; border:1px solid var(--border); border-radius:6px;
+  margin-bottom:16px; overflow:auto; }
+.draw-frame-wrap iframe {
+  display:block; width:8.5in; height:11in; border:0; margin:0 auto;
+  background:#fff;
+}
+
+.card { background:#fff; border:1px solid var(--border); border-radius:6px;
+  margin-bottom:14px; overflow:hidden; }
+.card-head { background:var(--lgray); padding:11px 20px; border-bottom:1px solid var(--border);
+  font-size:11px; text-transform:uppercase; letter-spacing:.7px; color:var(--blue); font-weight:700; }
+.card-body { padding:20px 24px; }
+
+.price-line { display:flex; justify-content:space-between; padding:7px 0;
+  border-bottom:1px dashed #EEE; font-size:13px; }
+.price-line .pv { font-weight:600; font-variant-numeric:tabular-nums; }
+.price-total { background:var(--blue); color:#fff; padding:14px 18px; margin:14px -24px -20px;
+  display:flex; justify-content:space-between; align-items:center;
+  font-size:17px; font-weight:700; }
+.price-total .pv { color:var(--orange); font-size:22px; font-variant-numeric:tabular-nums; }
+.deposit-callout { background:var(--lamber); color:var(--amber);
+  padding:14px 18px; border-radius:4px; margin-top:14px;
+  display:flex; justify-content:space-between; align-items:center; font-size:13px; }
+.deposit-callout .amount { font-size:18px; font-weight:800; font-variant-numeric:tabular-nums; }
+
+.terms-list { font-size:12px; color:var(--mgray); line-height:1.7; padding:0 0 0 18px; }
+.notes-box { background:#FFFBEB; border:1px solid #FDE68A; padding:14px 18px; border-radius:4px;
+  font-size:13px; color:#78350F; white-space:pre-wrap; line-height:1.6; }
+
+.approve-card { border:2px solid var(--orange); }
+.approve-card .card-head { background:var(--orange); color:#fff; }
+.attest { background:#FFF7ED; border:1px solid #FED7AA; padding:16px 18px;
+  border-radius:4px; margin-bottom:16px; font-size:13px; line-height:1.65; color:#7C2D12; }
+.attest .req { display:flex; gap:10px; margin-top:12px; }
+.attest input[type=checkbox] { width:18px; height:18px; flex-shrink:0; margin-top:1px;
+  accent-color:var(--orange); cursor:pointer; }
+.attest label { cursor:pointer; user-select:none; font-weight:600; color:#451A03; }
+.signer-fields { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; }
+.signer-fields .full { grid-column:1/-1; }
+.field-label { display:block; font-size:11px; text-transform:uppercase; letter-spacing:.5px;
+  color:var(--mgray); margin-bottom:4px; font-weight:700; }
+.field-input { width:100%; padding:9px 12px; border:1px solid var(--border); border-radius:4px;
+  font-size:14px; font-family:inherit; }
+.field-input:focus { outline:none; border-color:var(--blue); box-shadow:0 0 0 3px rgba(27,79,138,.1); }
+.sig-wrap { border:2px dashed var(--border); border-radius:6px; background:#FAFBFC; position:relative; touch-action:none; }
+.sig-wrap.signed { border-color:var(--green); background:#fff; border-style:solid; }
+.sig-canvas { display:block; width:100%; height:180px; cursor:crosshair; touch-action:none; }
+.sig-placeholder { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  color:#BBB; font-size:14px; pointer-events:none; font-style:italic; }
+.sig-wrap.signed .sig-placeholder { display:none; }
+.sig-toolbar { display:flex; justify-content:space-between; align-items:center;
+  padding:8px 14px; background:#F8FAFC; border-top:1px solid var(--border);
+  border-radius:0 0 6px 6px; font-size:12px; color:var(--mgray); }
+.sig-toolbar button { background:none; border:none; color:var(--blue); cursor:pointer; font-size:12px; padding:4px 10px; font-family:inherit; }
+
+.btn-approve { width:100%; padding:18px; background:var(--orange); color:#fff;
+  border:none; border-radius:6px; font-size:16px; font-weight:800; cursor:pointer;
+  margin-top:18px; text-transform:uppercase; letter-spacing:.5px; }
+.btn-approve:hover:not(:disabled) { background:#CF6A1A; }
+.btn-approve:disabled { background:#CBD5E1; cursor:not-allowed; }
+.btn-approve.loading { background:#666; pointer-events:none; }
+
+.print-bar { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;
+  background:#fff; border:1px solid var(--border); border-radius:6px; padding:12px 18px; margin-bottom:14px; }
+.print-bar p { font-size:12px; color:var(--mgray); margin:0; line-height:1.45; max-width:640px; }
+.btn-print { background:var(--blue); color:#fff; border:none; padding:10px 18px; border-radius:4px;
+  font-size:13px; font-weight:700; cursor:pointer; font-family:inherit; }
+.btn-print.ghost { background:#fff; color:var(--blue); border:1px solid var(--blue); }
+
+.doc-foot { text-align:center; font-size:11px; color:var(--mgray); line-height:1.55; margin-top:8px; }
+
+.success-screen { display:none; background:#fff; border:2px solid var(--green);
+  padding:40px 30px; border-radius:8px; text-align:center; }
+.success-screen .check { font-size:48px; color:var(--green); margin-bottom:14px; }
+.success-screen h2 { color:var(--green); margin-bottom:8px; }
+.success-screen p { color:var(--mgray); margin-bottom:6px; max-width:540px; margin-left:auto; margin-right:auto; }
+.success-ref { background:var(--lgreen); color:var(--green); padding:8px 18px;
+  border-radius:20px; font-weight:700; display:inline-block; margin-top:14px; }
+
+@media print {
+  .topbar, .print-bar, .doc-foot { display:none !important; }
+  body { background:#fff; }
+  .shell { max-width:none; padding:0; }
+  .intro { display:none; }
+  .draw-frame-wrap { border:none; border-radius:0; overflow:visible; page-break-after:always; }
+  .draw-frame-wrap iframe { width:8.5in; height:11in; }
+  .approve-card { break-inside:avoid; }
+  @page { size: letter portrait; margin: 0.4in; }
+}
+@media (max-width:720px) {
+  .topbar { flex-direction:column; gap:6px; padding:12px 16px; text-align:center; }
+  .topbar .tagline { text-align:center; }
+  .signer-fields { grid-template-columns:1fr; }
+  .draw-frame-wrap { overflow-x:auto; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div>
+    <div class="brand">Doortronix<span>USA</span></div>
+    <div class="sub">Order confirmation — drawing, price, and signature</div>
+  </div>
+  <div>
+    <div class="tagline"><strong>(888) 453-5196</strong></div>
+    <div class="tagline">orders@doortronixusa.com</div>
+  </div>
+</div>
+
+<div class="shell">
+  <div id="order-content">
+    <div class="intro">
+      <span class="status-banner status-pending" id="status-banner">Pending Customer Approval</span>
+      <h1>Order Confirmation</h1>
+      <p>Review the drawing and sizes below. Until you sign, this drawing is preliminary — do not cut glass from it. Signing plus cleared deposit or full payment is what starts fabrication. Pay, track, and reorder from your Doortronix account.</p>
+    </div>
+
+    <div class="print-bar">
+      <p>Page 1 is the confirmation drawing (same sheet you can send to installers). Pricing and signature print after it.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <a class="btn-print ghost" id="open-drawing" href="installer-cut-sheet.html" target="_blank" rel="noopener">Open drawing only</a>
+        <button type="button" class="btn-print" onclick="window.print()">Print / Save PDF</button>
+      </div>
+    </div>
+
+    <div class="draw-frame-wrap">
+      <iframe id="draw-frame" title="Confirmation drawing" src="installer-cut-sheet.html?embed=1"></iframe>
+    </div>
+
+    <div class="card">
+      <div class="card-head">Pricing — Final</div>
+      <div class="card-body">
+        <div id="price-lines"></div>
+        <div class="price-total">
+          <span>Order Total</span>
+          <span class="pv" id="grand-total">$—</span>
+        </div>
+        <div class="deposit-callout" id="deposit-callout" style="display:none;">
+          <span class="label">Deposit due to begin fabrication</span>
+          <span class="amount" id="deposit-amount">—</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">Quote &amp; Order Terms</div>
+      <div class="card-body">
+        <div id="dtx-terms-sign"></div>
+        <ul class="terms-list" id="terms-list" style="margin-top:12px;"></ul>
+        <p style="font-size:12px;color:var(--mgray);margin-top:12px;line-height:1.5;">Pay the deposit or full amount, track production, and reorder from your <a href="portal/signup.html">Doortronix account</a>. If you already have one, <a href="portal/login.html">sign in</a>.</p>
+      </div>
+    </div>
+
+    <div class="card" id="notes-card" style="display:none;">
+      <div class="card-head">Special Instructions / Notes</div>
+      <div class="card-body">
+        <div class="notes-box" id="notes-box"></div>
+      </div>
+    </div>
+
+    <div class="card approve-card" id="approve-card">
+      <div class="card-head">Customer Approval &amp; Signature</div>
+      <div class="card-body">
+        <div class="attest">
+          <strong>Read carefully before signing.</strong> By signing below, I confirm that:
+          <ul style="margin:8px 0 8px 22px; line-height:1.65;">
+            <li>I have read the Quote &amp; Order Terms on this page.</li>
+            <li>I am authorized to approve this order for the customer listed on the drawing.</li>
+            <li>I have checked field dimensions, handing, swing, finish, hardware, configuration, and glass sizes. This signed drawing is the drawing of record.</li>
+            <li>I will not cut glass from this sheet until it is signed. Glass is by others; the glazier must still verify sizes in the opening.</li>
+            <li>I authorize Doortronix to begin fabrication after this signature and cleared deposit or full payment.</li>
+            <li>Lead time starts when payment clears, not when I sign. Changes after fabrication starts may be billed.</li>
+          </ul>
+          <div class="req">
+            <input type="checkbox" id="attest-check">
+            <label for="attest-check">I agree to the Quote &amp; Order Terms. The drawing and sizes shown are correct and final.</label>
+          </div>
+        </div>
+        <div class="signer-fields">
+          <div>
+            <label class="field-label" for="signer-name">Your Full Name *</label>
+            <input type="text" class="field-input" id="signer-name" placeholder="First and last name" autocomplete="name">
+          </div>
+          <div>
+            <label class="field-label" for="signer-title">Title / Role *</label>
+            <input type="text" class="field-input" id="signer-title" placeholder="e.g. Project Manager" autocomplete="organization-title">
+          </div>
+          <div class="full">
+            <label class="field-label">Signature *</label>
+            <div class="sig-wrap" id="sig-wrap">
+              <canvas class="sig-canvas" id="sig-canvas"></canvas>
+              <div class="sig-placeholder" id="sig-placeholder">Sign here with mouse, finger, or stylus</div>
+              <div class="sig-toolbar">
+                <span>Signed on <span id="sig-date">—</span></span>
+                <button type="button" onclick="clearSig()">Clear signature</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button type="button" class="btn-approve" id="btn-approve" onclick="submitApproval()" disabled>
+          Approve &amp; Authorize Fabrication →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="success-screen" id="success-screen">
+    <div class="check">✓</div>
+    <h2>Order Approved</h2>
+    <p>Your signed order confirmation has been transmitted to Doortronix.</p>
+    <p>Pay the deposit or the full amount in your account to start fabrication.</p>
+    <p>Fabrication begins once payment clears. <strong>Lead time starts from that date.</strong></p>
+    <p><a href="portal/signup.html">Create an account</a> or <a href="portal/login.html">sign in</a> to pay, track this order, and reorder later.</p>
+    <div class="success-ref" id="success-ref">DTX-—</div>
+    <div style="margin-top:24px;">
+      <button class="btn-print" onclick="window.print()">Print / Save PDF Copy</button>
+    </div>
+  </div>
+
+  <div class="doc-foot">
+    Doortronix USA · Manufactured in Malakoff, Texas · (888) 453-5196 · doortronixusa.com<br>
+    Binding agreement upon electronic signature pursuant to the E-SIGN Act and applicable state UETA.
+  </div>
+</div>
+
+<script src="js/dtx-terms.js"></script>
+<script>
+const FORMSPREE = "https://formspree.io/f/mykorzwy";
+let ORDER = null;
+
+function encodeOrder(obj) {
+  const json = JSON.stringify(obj);
+  return btoa(unescape(encodeURIComponent(json))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+}
+function decodeOrder(str) {
+  const b64 = str.replace(/-/g,'+').replace(/_/g,'/');
+  const pad = b64.length % 4 ? '='.repeat(4 - b64.length % 4) : '';
+  return JSON.parse(decodeURIComponent(escape(atob(b64 + pad))));
+}
+function escHtml(s) {
+  return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function fmtNum(n) { return Number(n || 0).toLocaleString('en-US'); }
+
+const SAMPLE_ORDER = {
+  ref: 'DTX-V2001',
+  issuedDate: new Date().toISOString().slice(0,10),
+  leadTime: '3–4 weeks from cleared deposit — call to confirm',
+  customer: {
+    name: 'Adam Mannino',
+    company: 'Mannino Glass Co.',
+    role: 'Project Manager',
+    phone: '(555) 123-4567',
+    email: 'sample@example.com',
+  },
+  project: {
+    name: 'Walgreens Renovation — Tyler Plaza',
+    jobNumber: 'J-24819',
+    po: 'PO-24819',
+    doorMark: '101A',
+    quantity: 1,
+    location: 'Tyler, TX',
+    shipTo: 'Walgreens — Tyler Plaza\n4121 S Broadway Ave\nTyler, TX 75703',
+  },
+  door: {
+    configKey: 'fbo-single-rh',
+    frameFinish: 'Clear Anodized',
+    doorGlassPrep: '1/4"',
+    transom: true,
+    transomVerticals: 1,
+    ftthFt: 10, ftthIn: 0,
+    stileWidth: 'narrow',
+    bottomRail: 'std',
+    muntin: '2" Muntin (std)',
+    threshold: '1/2" Standard',
+    sensor: 'Standard Optex (incl.)',
+    locking: 'Standard hooklock',
+    widthFt: 8, widthIn: 0, width16: 0,
+    heightFt: 8, heightIn: 0, height16: 0,
+  },
+  addons: [
+    { name: 'Key Switch', qty: 1 },
+  ],
+  pricing: {
+    lines: [
+      { label: 'FBO Single RH (SX-SO)', amount: 3200 },
+      { label: 'Transom', amount: 250 },
+      { label: 'Key Switch', amount: 50 },
+    ],
+    unitTotal: 3500,
+    qty: 1,
+    grandTotal: 3500,
+    depositPct: 50,
+    depositAmount: 1750,
+    currency: 'USD',
+  },
+  terms: [
+    'Lead time of 3–4 weeks begins from cleared deposit payment, not signed confirmation date.',
+    'Freight not included. Estimate will be quoted at ship time based on destination. FOB Malakoff, TX.',
+    'Glass is supplied by others. Glass sizes, dimensions, and all details on the drawing are preliminary until this confirmation is signed. Do not cut glass or fabricate from an unsigned drawing.',
+    'Electrical: 120 VAC, 5 A min to power operator by electrical contractor.',
+    'Title transfers and risk of loss passes to buyer at our shipping dock.',
+    'Standard 1-year limited warranty against defects in materials and workmanship.',
+  ],
+  notes: '',
+};
+
+function drawingSrc(order) {
+  return 'installer-cut-sheet.html?embed=1&d=' + encodeOrder(order);
+}
+
+function renderOrder() {
+  if (!ORDER) return;
+  document.getElementById('draw-frame').src = drawingSrc(ORDER);
+  document.getElementById('open-drawing').href = 'installer-cut-sheet.html?d=' + encodeOrder(ORDER);
+
+  const pr = ORDER.pricing || {};
+  const lines = pr.lines || [];
+  document.getElementById('price-lines').innerHTML = lines.map(l =>
+    '<div class="price-line"><span>' + escHtml(l.label) + '</span><span class="pv">$' + fmtNum(l.amount) + '</span></div>'
+  ).join('') + (pr.qty > 1 ? '<div class="price-line"><span>× ' + pr.qty + ' openings</span><span class="pv">$' + fmtNum(pr.grandTotal) + '</span></div>' : '');
+  document.getElementById('grand-total').textContent = '$' + fmtNum(pr.grandTotal || 0);
+
+  if (pr.depositAmount) {
+    document.getElementById('deposit-callout').style.display = 'flex';
+    document.getElementById('deposit-amount').textContent =
+      '$' + fmtNum(pr.depositAmount) + (pr.depositPct ? '  (' + pr.depositPct + '%)' : '');
+  }
+
+  if (window.DTX_TERMS) DTX_TERMS.mount(document.getElementById('dtx-terms-sign'));
+  const extra = (ORDER.terms || []).filter(t => t && !/Glass is supplied/i.test(t) && !/Lead time of 3/i.test(t) && !/Freight not included/i.test(t));
+  document.getElementById('terms-list').innerHTML = extra.map(t => '<li>' + escHtml(t) + '</li>').join('');
+  document.getElementById('terms-list').style.display = extra.length ? '' : 'none';
+  if (ORDER.notes && String(ORDER.notes).trim()) {
+    document.getElementById('notes-card').style.display = 'block';
+    document.getElementById('notes-box').textContent = ORDER.notes;
+  }
+
+  setTimeout(initSigPad, 0);
+}
+
+function loadFromURL() {
+  const d = new URLSearchParams(location.search).get('d');
+  if (!d) return false;
+  try { ORDER = decodeOrder(d); return true; }
+  catch (err) { console.error(err); return false; }
+}
+
+// ── Signature ──────────────────────────────────────────────────────────
+let sigCanvas, sigCtx, sigDrawing = false, sigHasInk = false, sigSignedAt = null;
+
+function initSigPad() {
+  sigCanvas = document.getElementById('sig-canvas');
+  if (!sigCanvas || sigCanvas.dataset.ready) return;
+  sigCanvas.dataset.ready = '1';
+  const dpr = window.devicePixelRatio || 1;
+  const rect = sigCanvas.getBoundingClientRect();
+  sigCanvas.width = rect.width * dpr;
+  sigCanvas.height = rect.height * dpr;
+  sigCtx = sigCanvas.getContext('2d');
+  sigCtx.scale(dpr, dpr);
+  sigCtx.lineWidth = 2.2;
+  sigCtx.lineCap = 'round';
+  sigCtx.lineJoin = 'round';
+  sigCtx.strokeStyle = '#0F172A';
+
+  const start = e => {
+    sigDrawing = true;
+    const { x, y } = sigPoint(e);
+    sigCtx.beginPath();
+    sigCtx.moveTo(x, y);
+    e.preventDefault();
+  };
+  const move = e => {
+    if (!sigDrawing) return;
+    const { x, y } = sigPoint(e);
+    sigCtx.lineTo(x, y);
+    sigCtx.stroke();
+    if (!sigHasInk) {
+      sigHasInk = true;
+      sigSignedAt = new Date();
+      document.getElementById('sig-wrap').classList.add('signed');
+      document.getElementById('sig-date').textContent =
+        sigSignedAt.toLocaleString('en-US', { dateStyle:'medium', timeStyle:'short' });
+      checkApproveBtn();
+    }
+    e.preventDefault();
+  };
+  const end = () => { sigDrawing = false; };
+
+  sigCanvas.addEventListener('mousedown', start);
+  sigCanvas.addEventListener('mousemove', move);
+  sigCanvas.addEventListener('mouseup', end);
+  sigCanvas.addEventListener('mouseleave', end);
+  sigCanvas.addEventListener('touchstart', start, { passive:false });
+  sigCanvas.addEventListener('touchmove', move, { passive:false });
+  sigCanvas.addEventListener('touchend', end);
+  document.getElementById('attest-check').addEventListener('change', checkApproveBtn);
+  document.getElementById('signer-name').addEventListener('input', checkApproveBtn);
+  document.getElementById('signer-title').addEventListener('input', checkApproveBtn);
+}
+function sigPoint(e) {
+  const rect = sigCanvas.getBoundingClientRect();
+  const touch = e.touches ? e.touches[0] : e;
+  return { x: touch.clientX - rect.left, y: touch.clientY - rect.top };
+}
+function clearSig() {
+  if (!sigCtx) return;
+  const dpr = window.devicePixelRatio || 1;
+  sigCtx.clearRect(0, 0, sigCanvas.width / dpr, sigCanvas.height / dpr);
+  sigHasInk = false;
+  sigSignedAt = null;
+  document.getElementById('sig-wrap').classList.remove('signed');
+  document.getElementById('sig-date').textContent = '—';
+  checkApproveBtn();
+}
+function checkApproveBtn() {
+  const ok =
+    document.getElementById('attest-check').checked &&
+    document.getElementById('signer-name').value.trim().length > 0 &&
+    document.getElementById('signer-title').value.trim().length > 0 &&
+    sigHasInk;
+  document.getElementById('btn-approve').disabled = !ok;
+}
+
+async function submitApproval() {
+  const name = document.getElementById('signer-name').value.trim();
+  const title = document.getElementById('signer-title').value.trim();
+  if (!name || !title || !document.getElementById('attest-check').checked || !sigHasInk) {
+    alert('Please complete all required fields, accept the terms, and sign before submitting.');
+    return;
+  }
+  const btn = document.getElementById('btn-approve');
+  btn.classList.add('loading');
+  btn.textContent = 'Submitting…';
+  const pr = ORDER.pricing || {};
+  const fmt = n => '$' + Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const payload = {
+    _subject: 'SIGNED Order Confirmation — ' + (ORDER.ref || ''),
+    ref: ORDER.ref,
+    issuedDate: ORDER.issuedDate,
+    signedAt: new Date().toISOString(),
+    signedBy: name,
+    signedByTitle: title,
+    customer: ORDER.customer,
+    project: ORDER.project,
+    door: ORDER.door,
+    addons: ORDER.addons,
+    pricing: {
+      lines: (pr.lines || []).map(l => ({ label: l.label, amount: fmt(l.amount) })),
+      grandTotal: fmt(pr.grandTotal),
+      deposit: (pr.depositPct || 50) + '% — ' + fmt(pr.depositAmount),
+    },
+    notes: ORDER.notes,
+    signatureCaptured: 'Yes — view in Formspree dashboard',
+    pageUrl: location.href.split('?')[0],
+  };
+  if (FORMSPREE && !FORMSPREE.includes('YOUR_FORM_ID')) {
+    try {
+      await fetch(FORMSPREE, {
+        method: 'POST',
+        headers: { 'Content-Type':'application/json', 'Accept':'application/json' },
+        body: JSON.stringify(payload),
+      });
+    } catch (err) { console.warn(err); }
+  }
+  document.getElementById('order-content').style.display = 'none';
+  document.getElementById('success-screen').style.display = 'block';
+  document.getElementById('success-ref').textContent = ORDER.ref || '—';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+if (loadFromURL()) renderOrder();
+else { ORDER = JSON.parse(JSON.stringify(SAMPLE_ORDER)); renderOrder(); }
+
+window._encodeOrder = encodeOrder;
+</script>
+</body>
+</html>
