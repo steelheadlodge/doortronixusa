@@ -11,15 +11,15 @@ customer-facing page.
 
 - The **live site** is GitHub Pages, served from the **`main`** branch of
   `github.com/steelheadlodge/doortronixusa`.
-- **Nothing goes live until `main` is pushed to `origin`.**
-- All current work lives on the **`staging`** branch (off-machine backup, NOT live).
-- Local `main` is set to track `origin/staging`, so a plain `git push` goes to
-  **staging (safe)**, not to the live site.
+- **Nothing goes live until `origin/main` is updated.**
+- We work on local `main`; the off-machine backup is the **`staging`** branch
+  (NOT live). A plain `git push` is intentionally rejected (branch names differ),
+  so nothing deploys by accident — always use the explicit commands below.
 
 ### To back up work (safe, never live)
 ```bash
 git add -A && git commit -m "…"
-git push            # goes to origin/staging
+git push origin main:staging      # backup only, never touches the live site
 ```
 
 ### To publish to the LIVE site (only when we're ready)
