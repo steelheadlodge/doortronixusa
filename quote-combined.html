@@ -401,7 +401,7 @@ body.sheet-mode #plan-svg { background:#fff; }
         </div>
         <div class="cart-header-right">
           <button type="button" class="btn-clear-cart" onclick="clearCart()">Clear All</button>
-          <button type="button" class="btn-save-quote" id="btn-save-quote" onclick="savePortalDraft()" style="display:none;">💾 Save quote</button>
+          <button type="button" class="btn-save-quote" id="btn-save-quote" onclick="savePortalDraft()" style="display:none;">Save quote</button>
           <button type="button" class="btn-submit-all" onclick="submitAllDoors()">Submit Full Project Quote →</button>
         </div>
       </div>
@@ -1577,7 +1577,7 @@ body.sheet-mode #plan-svg { background:#fff; }
     <div id="sticky-price-bar" style="position:sticky;bottom:0;background:var(--blue);color:#fff;padding:10px 20px;display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:700;border-top:2px solid var(--dblue);z-index:10;gap:12px;">
       <span>Net Contractor Price</span>
       <span id="sticky-price-total" style="font-size:18px;margin-left:auto;">—</span>
-      <button type="button" class="btn-save-quote" id="btn-save-quote-sticky" onclick="savePortalDraft()" style="display:none;">💾 Save quote</button>
+      <button type="button" class="btn-save-quote" id="btn-save-quote-sticky" onclick="savePortalDraft()" style="display:none;">Save quote</button>
     </div>
     <div id="sticky-save-status" style="display:none;position:sticky;bottom:0;background:#f0fdf4;color:#166534;font-size:12px;font-weight:600;padding:8px 20px;border-top:1px solid #86efac;z-index:9;"></div>
   </div><!-- /form-panel -->
@@ -1726,7 +1726,7 @@ function saveQuoteBtns() {
 function syncSaveQuoteButtons() {
   // Always show Save — signed-out users get prompted to sign in when they click,
   // so the option is discoverable instead of hidden.
-  const txt = _currentDraftId ? '💾 Update saved quote' : '💾 Save quote';
+  const txt = _currentDraftId ? 'Update saved quote' : 'Save quote';
   saveQuoteBtns().forEach(b => { b.style.display = ''; b.textContent = txt; });
 }
 
