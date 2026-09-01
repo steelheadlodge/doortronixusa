@@ -638,6 +638,34 @@ body.sheet-mode #plan-svg { background:#fff; }
             </div>
             <span class="hint" id="swing-energy-hint">Fully automatic $4,500 / $6,800 / $9,450 (two packages + center lite) includes approach, SuperScan both faces, and double-line rails. Low energy is $700 per door less: push/pull and plates, no approach / SuperScan / rails.</span>
           </div>
+          <div class="field">
+            <label>Mounting &amp; arm</label>
+            <div class="chip-group" style="flex-wrap:wrap;">
+              <input type="radio" name="swingArm" id="sa_ohc_center" value="ohc-center" checked>
+              <label for="sa_ohc_center">Overhead concealed — center-hung</label>
+              <input type="radio" name="swingArm" id="sa_ohc_offset" value="ohc-offset">
+              <label for="sa_ohc_offset">Overhead concealed — offset pivot</label>
+              <input type="radio" name="swingArm" id="sa_surf_push" value="surface-push">
+              <label for="sa_surf_push">Surface — push arm (out-swing)</label>
+              <input type="radio" name="swingArm" id="sa_surf_pull" value="surface-pull">
+              <label for="sa_surf_pull">Surface — pull arm (in-swing)</label>
+            </div>
+            <span class="hint">Overhead concealed hides the operator in the header. Surface-applied mounts on the header face — push arm for out-swing, pull arm for in-swing (8" max reveal push / 4" pull).</span>
+          </div>
+          <div class="field">
+            <label>Activation switch</label>
+            <div class="chip-group" style="flex-wrap:wrap;">
+              <input type="radio" name="swingSwitch" id="sw_none" value="none" checked>
+              <label for="sw_none">None</label>
+              <input type="radio" name="swingSwitch" id="sw_rocker3" value="rocker3">
+              <label for="sw_rocker3">3-position rocker</label>
+              <input type="radio" name="swingSwitch" id="sw_key3" value="key3">
+              <label for="sw_key3">3-position key</label>
+              <input type="radio" name="swingSwitch" id="sw_rocker2" value="rocker2">
+              <label for="sw_rocker2">2-position rocker</label>
+            </div>
+            <span class="hint">Optional wall switch: On / Off / Hold-open (3-position) or On / Off (2-position). Priced separately.</span>
+          </div>
         </div>
 
         <div id="swing-low-energy-note" style="display:none;background:#FFF7ED;border:1.5px solid #FDBA74;border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:12px;line-height:1.55;color:#7C2D12;">
@@ -2381,6 +2409,8 @@ function captureCurrentDoor() {
     swingDir:      rv('swingDir'),
     swingHand:     rv('swingHand'),
     swingEnergy:   rv('swingEnergy'),
+    swingArm:      rv('swingArm'),
+    swingSwitch:   rv('swingSwitch'),
     swingStop:     isSwingTwin() ? getSwingStopStr() : rv('swingStop'),
     swingStopL:    isSwingTwin() ? getTwinStop('left') : '',
     swingStopR:    isSwingTwin() ? getTwinStop('right') : '',
@@ -2594,7 +2624,7 @@ function loadDoorIntoForm(door) {
   } else if (door.swingSideliteWIn) {
     slWidthSetIds('sl_rwft', 'sl_rwin', door.swingSideliteWIn);
   }
-  ['glazing','transom','transomGlassPrep','glassPrep','stileWidth','bottomRail','muntin','threshold','sensor','swingDir','swingHand','swingEnergy','swingStop','swingCrashIn','swingCrashOut','swingScan','swingApproach','swingHdrSafe','swingPlate','swingPlateLogo','swingPlateFinish','swingPlateWireless','swingPull','swingPushBar','swingSidelite','swingSideliteGlass'].forEach(name => {
+  ['glazing','transom','transomGlassPrep','glassPrep','stileWidth','bottomRail','muntin','threshold','sensor','swingDir','swingHand','swingEnergy','swingArm','swingSwitch','swingStop','swingCrashIn','swingCrashOut','swingScan','swingApproach','swingHdrSafe','swingPlate','swingPlateLogo','swingPlateFinish','swingPlateWireless','swingPull','swingPushBar','swingSidelite','swingSideliteGlass'].forEach(name => {
     const v = door[name]; if (!v && v !== '0') return;
     const el = document.querySelector(`input[name="${name}"][value='${v}']`);
     if (el) el.checked = true;
@@ -2685,7 +2715,7 @@ function resetDoorForm() {
   document.getElementById('f_hft').value = '7';
   document.getElementById('f_hin').value = '6';
   document.getElementById('f_h16').value = '0';
-  const defaults = {glazing:'204 Clear',transom:'no',glassPrep:'1/4"',stileWidth:'narrow',bottomRail:'std',muntin:'2" Muntin (std)',threshold:'Standard 1/2"',sensor:'Standard (incl.)',swingSidelite:'none'};
+  const defaults = {glazing:'204 Clear',transom:'no',glassPrep:'1/4"',stileWidth:'narrow',bottomRail:'std',muntin:'2" Muntin (std)',threshold:'Standard 1/2"',sensor:'Standard (incl.)',swingSidelite:'none',swingArm:'ohc-center',swingSwitch:'none'};
   Object.entries(defaults).forEach(([name, val]) => { const el = document.querySelector(`input[name="${name}"][value='${val}']`); if(el) el.checked=true; });
   setSlVertRadio('left', 0);
   setSlVertRadio('right', 0);
@@ -4421,6 +4451,8 @@ function updateSpecSummary() {
     ...(cfg && cfg.isSwing ? [
       ['Swing', cfg.isTwin ? getTwinSwingStr() : getSwingStr() + (rv('swingDir') === 'in' ? ' (breaks out)' : '')],
       ['Operation', rv('swingEnergy') === 'high' ? 'Fully automatic' : 'Low energy (ADA) — push/pull for manual use'],
+      ['Mounting & arm', swingArmStr()],
+      ['Activation switch', swingSwitchStr()],
       ['Frame profile', getSwingFrameProfileStr()],
       ['Fingerguard', '1" black at heel'],
       ['Locking', (cfg.isBi ? 'Deadbolt + flushbolts' : cfg.isTwin ? 'Deadbolt ×2' : 'Adams Rite deadbolt') + ' — key cylinder ext., thumbturn int.'],
@@ -4445,6 +4477,51 @@ function updateSpecSummary() {
   document.getElementById('spec-summary').innerHTML = specs.map(([k,v]) =>
     `<div class="spec-row"><span class="sk">${k}</span><span class="sv">${v}</span></div>`
   ).join('');
+}
+
+// ── Automatic swing operator (Condor) — mounting/arm, switch, factory SKU ──
+const SWING_ARM_LABELS = {
+  'ohc-center':   'Overhead concealed — center-hung',
+  'ohc-offset':  'Overhead concealed — offset pivot',
+  'surface-push': 'Surface-applied — push arm (out-swing)',
+  'surface-pull': 'Surface-applied — pull arm (in-swing)',
+};
+const SWING_SWITCH_LABELS = {
+  'none':    'None',
+  'rocker3': '3-position rocker',
+  'key3':    '3-position key',
+  'rocker2': '2-position rocker',
+};
+// Motion Access Condor arm-type digit: 1 push, 2 pull, 3 center-hung, 4 offset pivot.
+const SWING_ARM_CODE = { 'surface-push': '1', 'surface-pull': '2', 'ohc-center': '3', 'ohc-offset': '4' };
+const SWING_SWITCH_CODE = { 'rocker3': 'R', 'key3': 'K', 'rocker2': 'T' };
+
+function swingArmStr(v)    { return SWING_ARM_LABELS[v || rv('swingArm')] || SWING_ARM_LABELS['ohc-center']; }
+function swingSwitchStr(v) { return SWING_SWITCH_LABELS[v || rv('swingSwitch')] || 'None'; }
+
+// Build the Condor unit SKU: MAC-[Energy][Hand/Pair][Arm][Finish]-[HeaderWidth]
+// plus any additional option codes. Header width = door width (rounded).
+function condorSku(door) {
+  const cfg = door ? CONFIGS[door.configKey || door.config] : getConfig();
+  if (!cfg || !cfg.isSwing) return '';
+  const energy = (door ? door.swingEnergy : rv('swingEnergy'));
+  const E = /high/i.test(energy || '') || energy === 'high' ? 'H' : 'L';
+  let HP;
+  if (cfg.isTwin) HP = 'P';
+  else {
+    const hand = door ? (door.swingHand || (/lh/i.test(door.handing || '') ? 'lh' : 'rh')) : rv('swingHand');
+    HP = (hand === 'lh') ? 'L' : 'R';
+  }
+  const arm = door ? door.swingArm : rv('swingArm');
+  const A = SWING_ARM_CODE[arm] || '3';
+  const finishDark = door ? /bronze/i.test(door.frameFinish || '') : isDarkBronze();
+  const F = finishDark ? 'D' : 'C';
+  const wIn = door ? (door.widthIn || door.twinDoorWInL || 0)
+                   : (getWidthIn() || 0);
+  const w = wIn ? Math.round(wIn) : '';
+  const sw = door ? door.swingSwitch : rv('swingSwitch');
+  const opt = SWING_SWITCH_CODE[sw];
+  return `MAC-${E}${HP}${A}${F}-${w}` + (opt ? ` (opt: ${opt})` : '');
 }
 
 // ── SVG Drawing ─────────────────────────────────────────────────────
@@ -6252,6 +6329,9 @@ document.getElementById('quoteForm').addEventListener('submit', async function(e
     packageType: cfg && cfg.isSwing ? 'Complete swing door and frame' : 'Sliding door',
     swingDirection: cfg && cfg.isSwing ? getSwingStr() + (!cfg.isTwin && !cfg.isBi && rv('swingDir') === 'in' ? ' (breakout)' : '') : 'N/A',
     swingEnergy: cfg && cfg.isSwing ? (rv('swingEnergy') === 'high' ? 'Fully automatic' : 'Low energy') : 'N/A',
+    swingMountArm: cfg && cfg.isSwing ? swingArmStr() : 'N/A',
+    swingSwitch: cfg && cfg.isSwing ? swingSwitchStr() : 'N/A',
+    operatorSku: cfg && cfg.isSwing ? condorSku() : 'N/A',
     swingStop: cfg && cfg.isSwing ? getSwingStopStr() : 'N/A',
     swingHardware: cfg && cfg.isSwing ? [
       (cfg.isBi ? 'Deadbolt + flushbolts' : cfg.isTwin ? 'Adams Rite deadbolt ×2' : 'Adams Rite deadbolt') + ' (key cylinder exterior, thumbturn interior)',
@@ -6376,6 +6456,8 @@ function buildSheetOrder() {
     height16: parseInt(fv('f_h16'), 10) || 0,
     swingDir: rv('swingDir') || 'out',
     swingEnergy: rv('swingEnergy') || 'high',
+    swingArm: rv('swingArm') || 'ohc-center',
+    swingSwitch: rv('swingSwitch') || 'none',
     swingStop: (cfg && cfg.isTwin) ? getSwingStopStr() : rv('swingStop'),
     swingStopL: (cfg && cfg.isTwin) ? getTwinStop('left') : undefined,
     swingStopR: (cfg && cfg.isTwin) ? getTwinStop('right') : undefined,
@@ -6493,7 +6575,7 @@ function showConf(data, pd) {
   const doorSpecs = [
     ['Configuration',data.configuration],
     ...(data.packageType ? [['Package',data.packageType]] : []),
-    ...(data.swingDirection && data.swingDirection !== 'N/A' ? [['Swing',data.swingDirection],['Operation',data.swingEnergy],['Door stop',data.swingStop],['Hardware',data.swingHardware],['Push plates',data.swingPlates],['Sidelites',data.swingSidelites]] : []),
+    ...(data.swingDirection && data.swingDirection !== 'N/A' ? [['Swing',data.swingDirection],['Operation',data.swingEnergy],['Mounting & arm',data.swingMountArm],['Activation switch',data.swingSwitch],['Door stop',data.swingStop],['Hardware',data.swingHardware],['Push plates',data.swingPlates],['Sidelites',data.swingSidelites]] : []),
     ['Frame Finish',data.frameFinish],
     [data.swingDirection && data.swingDirection !== 'N/A' ? 'Glass Prep' : 'Door Glass Prep', data.doorGlassPrep],
     ...(data.transom === 'Yes' && data.transomGlassPrep && data.transomGlassPrep !== data.doorGlassPrep && data.transomGlassPrep !== 'N/A' ? [['Transom Glass Prep',data.transomGlassPrep]] : []),
