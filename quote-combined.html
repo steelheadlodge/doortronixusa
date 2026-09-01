@@ -6495,7 +6495,6 @@ if (_startParams.get('sheet') === '1') {
 }
 (function initDoorFamily() {
   const sheet = _startParams.get('sheet') === '1';
-  const hasCart = getCart().length > 0;
   const restoringDup = !!localStorage.getItem('dtx_restore_order');
   if (sheet) {
     // Confirmation-sheet render: no chooser, honor the URL type directly.
@@ -6507,11 +6506,13 @@ if (_startParams.get('sheet') === '1') {
   } else if (['slide', 'slide-single', 'single', 'bipart', 'bi-part'].includes(_startType)) {
     chooseDoorFamily('slide');
     if (_startType === 'single' || _startType === 'slide-single') setDoorType('single');
-  } else if (hasCart || restoringDup) {
-    // Returning to an in-progress project — skip the chooser, land on the form.
+  } else if (restoringDup) {
+    // Reopening a saved quote or duplicating an order — land on the form with
+    // the restored cart, no chooser.
     chooseDoorFamily('slide');
   }
-  // Otherwise: leave the first-step chooser visible with the neutral header.
+  // Otherwise (any normal visit, even with a leftover in-progress cart): always
+  // show the first-step Sliding/Swing chooser at the top.
 })();
 
 // Restore project header and lock if a saved cart exists

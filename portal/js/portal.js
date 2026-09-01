@@ -144,8 +144,13 @@
   async function dashboard() {
     const me = await requireAuth();
     if (!me) return;
-    const [ordersRes, settings] = await Promise.all([api('/orders'), api('/settings')]);
+    const [ordersRes, settings, draftsRes] = await Promise.all([
+      api('/orders'),
+      api('/settings'),
+      api('/drafts').catch(() => ({ drafts: [] })),
+    ]);
     const orders = ordersRes.orders || [];
+    const drafts = draftsRes.drafts || [];
     document.getElementById('hello').textContent = 'Hello, ' + me.name.split(' ')[0];
     document.getElementById('co').textContent = me.company;
     document.getElementById('price-line').textContent = me.discountPct > 0
@@ -154,11 +159,22 @@
     document.getElementById('lead-line').textContent = settings.leadTime || '—';
     document.getElementById('stat-open').textContent = orders.filter((o) => !['shipped', 'cancelled'].includes(o.status)).length;
     document.getElementById('stat-due').textContent = orders.filter((o) => o.status === 'confirmed' && !o.deposit_paid).length;
+    const draftStat = document.getElementById('stat-drafts');
+    if (draftStat) draftStat.textContent = drafts.length;
     const recent = document.getElementById('recent-body');
     if (!orders.length) {
       recent.innerHTML = '<tr><td colspan="5" class="muted">No orders yet. Start a quote and submit it to your account.</td></tr>';
     } else {
       recent.innerHTML = orders.slice(0, 8).map(orderRow).join('');
+    }
+    const dbody = document.getElementById('dash-drafts-body');
+    if (dbody) {
+      if (!drafts.length) {
+        dbody.innerHTML = '<tr><td colspan="5" class="muted">No saved quotes yet. Start a quote, add doors, and hit “Save quote.”</td></tr>';
+      } else {
+        dbody.innerHTML = drafts.slice(0, 6).map(draftRow).join('');
+        wireDraftActions(dbody);
+      }
     }
   }
 
@@ -194,6 +210,10 @@
       return;
     }
     body.innerHTML = drafts.map(draftRow).join('');
+    wireDraftActions(body);
+  }
+
+  function wireDraftActions(body) {
     body.addEventListener('click', async (e) => {
       const openId = e.target.getAttribute('data-open');
       const delId = e.target.getAttribute('data-del');

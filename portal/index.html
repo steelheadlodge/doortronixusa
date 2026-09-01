@@ -34,10 +34,24 @@
         <div class="k">Deposits due</div>
         <div class="v" id="stat-due">—</div>
       </div>
+      <div class="stat">
+        <div class="k">Saved quotes</div>
+        <div class="v" id="stat-drafts">—</div>
+        <div class="s">Work in progress</div>
+      </div>
     </div>
     <div class="row-actions" style="margin:0 0 22px">
       <a class="btn btn-primary" href="../quote-combined.html">Create an order</a>
       <a class="btn btn-outline" href="orders.html">All orders</a>
+      <a class="btn btn-outline" href="quotes.html">Saved quotes</a>
+    </div>
+    <div class="card" style="margin-bottom:22px">
+      <h2>Saved quotes</h2>
+      <p class="muted" style="margin:-6px 0 12px;font-size:13px;">Quotes you saved while building an order. Reopen to edit and submit.</p>
+      <table>
+        <thead><tr><th>Quote</th><th>Doors</th><th>Est. total</th><th>Last saved</th><th></th></tr></thead>
+        <tbody id="dash-drafts-body"></tbody>
+      </table>
     </div>
     <div class="card">
       <h2>Recent orders</h2>
