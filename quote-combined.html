@@ -1779,7 +1779,7 @@ async function savePortalDraft() {
   // "Save" captures in-progress work without them having to click "Add" too.
   let inProgressNote = '';
   if (hasInProgressDoor()) {
-    const ok = addDoorToCart();
+    const ok = addDoorToCart({ lenient: true });
     if (!ok) {
       if (getCart().length === 0) return; // addDoorToCart already flagged the problem
       inProgressNote = ' The door you were editing needs a bit more info — finish it and save again to include it.';
@@ -2432,20 +2432,23 @@ function captureCurrentDoor() {
   };
 }
 
-function addDoorToCart() {
+function addDoorToCart(opts) {
   const _btn = document.getElementById('btn-add-to-cart');
   if (_btn) { _btn.style.opacity = '0.6'; setTimeout(() => _btn.style.opacity = '', 400); }
-  try { return _addDoorToCartImpl() === true; } catch(err) { showCartError('Error: ' + err.message); console.error(err); return false; }
+  try { return _addDoorToCartImpl(opts) === true; } catch(err) { showCartError('Error: ' + err.message); console.error(err); return false; }
 }
 
-function _addDoorToCartImpl() {
+function _addDoorToCartImpl(opts) {
+  opts = opts || {};
   // Restore header from storage if lost (e.g. after page reload)
   if (!_projectHeader) _projectHeader = getHeader();
 
   const cart = getCart();
 
-  // Validate contact — use saved header if fields are locked (cart already has doors)
-  if (cart.length === 0 && _editingDoorId === null) {
+  // Validate contact — use saved header if fields are locked (cart already has doors).
+  // Saving a draft is lenient: don't force role or project city, so a signed-in
+  // user can stash work-in-progress without filling out the whole header.
+  if (cart.length === 0 && _editingDoorId === null && !opts.lenient) {
     const requiredIds = ['f_name','f_company','f_role','f_phone','f_email','f_location'];
     let firstMissing = null;
     requiredIds.forEach(id => {
