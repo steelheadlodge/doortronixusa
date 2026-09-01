@@ -411,8 +411,6 @@ function swingDefaults(extra) {
     locking: 'Adams Rite deadbolt',
     swingDir: 'out',
     swingEnergy: 'high',
-    swingArm: 'ohc-center',
-    swingSwitch: 'none',
     swingScan: 'both',
     swingApproach: 'bea',
     swingHdrSafe: 'no',
@@ -655,31 +653,6 @@ function twinDoorIn(side) {
   if (ft) return ft * 12 + (parseInt(d.widthIn, 10) || 0);
   return 41;
 }
-// Automatic swing operator (Condor) — mounting/arm, switch, factory SKU.
-const SWING_ARM_LABELS = {
-  'ohc-center':   'Overhead concealed — center-hung',
-  'ohc-offset':  'Overhead concealed — offset pivot',
-  'surface-push': 'Surface-applied — push arm (out-swing)',
-  'surface-pull': 'Surface-applied — pull arm (in-swing)',
-};
-const SWING_SWITCH_LABELS = { 'none':'None','rocker3':'3-position rocker','key3':'3-position key','rocker2':'2-position rocker' };
-const SWING_ARM_CODE = { 'surface-push':'1','surface-pull':'2','ohc-center':'3','ohc-offset':'4' };
-const SWING_SWITCH_CODE = { 'rocker3':'R','key3':'K','rocker2':'T' };
-function swingArmLabel(d)    { return SWING_ARM_LABELS[d && d.swingArm] || SWING_ARM_LABELS['ohc-center']; }
-function swingSwitchLabel(d) { return SWING_SWITCH_LABELS[(d && d.swingSwitch) || 'none'] || 'None'; }
-function condorSkuFor(d) {
-  const cfg = d && CONFIGS[d.configKey];
-  if (!cfg || !cfg.isSwing) return '';
-  const E = (d.swingEnergy === 'high') ? 'H' : 'L';
-  let HP;
-  if (cfg.isTwin) HP = 'P';
-  else HP = ((d.swingHand || 'rh') === 'lh') ? 'L' : 'R';
-  const A = SWING_ARM_CODE[d.swingArm] || '3';
-  const F = /bronze/i.test(d.frameFinish || '') ? 'D' : 'C';
-  const w = Math.round(getWidthIn() || 0) || '';
-  const opt = SWING_SWITCH_CODE[d.swingSwitch];
-  return `MAC-${E}${HP}${A}${F}-${w}` + (opt ? ` (opt: ${opt})` : '');
-}
 function swingParticulars(d, h) {
   const high = d.swingEnergy !== 'low';
   const rows = [
@@ -687,8 +660,6 @@ function swingParticulars(d, h) {
     ['Clear opening', getClearOpeningStr() || '—'],
     ['Swing', swingDirLabel(d)],
     ['Operation', high ? 'Fully automatic' : 'Low energy'],
-    ['Mounting & arm', swingArmLabel(d)],
-    ['Activation switch', swingSwitchLabel(d)],
     ['Door stop', swingStopLabel(d)],
     ...(high ? [] : [['Push plates', swingPlateLabel(d) || 'None / by others']]),
     ...(high ? [] : [['Manual hardware', swingHardwareLabel(d)]]),
@@ -787,11 +758,6 @@ function renderCutList() {
     ['Door / tag', doorMarks()],
     ['Openings', qty],
     ['Config', cfg ? cfg.label : '—'],
-    ...(isSwingCfg(cfg) ? [
-      ['Operator (Condor)', condorSkuFor(d)],
-      ['Mounting & arm', swingArmLabel(d)],
-      ['Activation switch', swingSwitchLabel(d)],
-    ] : []),
     ['Finish', cl.meta.finish],
     ['Frame size', cutFmt(cl.meta.W) + ' W × ' + cutFmt(cl.meta.frameH) + ' H'],
     ['Header height', cutFmt(cl.meta.Hhdr)],
