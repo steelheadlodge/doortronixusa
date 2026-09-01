@@ -348,7 +348,7 @@ body.sheet-mode #plan-svg { background:#fff; }
       <div class="section-header" style="margin-top:0;">What Are You Quoting?</div>
       <p style="font-size:13px;color:var(--mgray);margin:0 0 14px;">Pick a door family to begin. You can switch types anytime.</p>
       <div class="type-choice-grid">
-        <button type="button" class="type-choice" onclick="chooseDoorFamily('slide')">
+        <button type="button" class="type-choice" onclick="chooseDoorFamily('slide', true)">
           <svg viewBox="0 0 96 52" width="96" height="52" aria-hidden="true">
             <rect x="0" y="0" width="96" height="52" fill="#EEF4FB" rx="4"/>
             <rect x="0" y="0" width="96" height="8" fill="#1B4F8A"/>
@@ -363,7 +363,7 @@ body.sheet-mode #plan-svg { background:#fff; }
           <div class="tc-desc">Bi-Part &amp; Single Slide · automatic operators</div>
           <div class="tc-price">from $3,900</div>
         </button>
-        <button type="button" class="type-choice" onclick="chooseDoorFamily('swing')">
+        <button type="button" class="type-choice" onclick="chooseDoorFamily('swing', true)">
           <svg viewBox="0 0 96 52" width="96" height="52" aria-hidden="true">
             <rect x="0" y="0" width="96" height="52" fill="#EEF4FB" rx="4"/>
             <rect x="24" y="0" width="48" height="8" fill="#1B4F8A"/>
@@ -2015,7 +2015,11 @@ function setDoorType(type) {
 }
 
 // Reveal the full quote form and lock in a door family from the first-step chooser.
-function chooseDoorFamily(fam) {
+function chooseDoorFamily(fam, fresh) {
+  // A deliberate pick from the "Request a Quote" chooser (or a product-page
+  // "Get a quote" deep link) starts a clean new project. Restoring a saved
+  // quote / duplicating an order passes fresh=false so the cart survives.
+  if (fresh) startNewProject();
   const chooser = document.getElementById('type-chooser');
   if (chooser) chooser.style.display = 'none';
   const flow = document.getElementById('quote-flow');
@@ -2362,6 +2366,22 @@ function clearCart() {
   _editingDoorId = null;
   unlockContactSection();
   renderCart();
+}
+
+// Start a brand-new project (used when the buyer picks a door type from the
+// "Request a Quote" chooser). Wipes the in-progress cart and project-specific
+// fields so they aren't dropped back into a previous project. Saved quotes are
+// untouched — those live only under Saved quotes / the dashboard and are
+// reopened deliberately, never auto-loaded here. Contact info is kept so a
+// signed-in buyer doesn't have to retype it.
+function startNewProject() {
+  clearCart();
+  _currentDraftId = null;
+  ['f_project', 'f_po', 'f_location', 'f_shipto', 'f_location_tags'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  if (typeof resetDoorForm === 'function') resetDoorForm();
 }
 
 function captureCurrentDoor() {
@@ -6634,15 +6654,16 @@ if (_startParams.get('sheet') === '1') {
     const flow = document.getElementById('quote-flow');
     if (flow) flow.style.display = '';
     setDoorType(_startType === 'swing' ? 'swing' : 'bi-part');
-  } else if (_startType === 'swing') {
-    chooseDoorFamily('swing');
-  } else if (['slide', 'slide-single', 'single', 'bipart', 'bi-part'].includes(_startType)) {
-    chooseDoorFamily('slide');
-    if (_startType === 'single' || _startType === 'slide-single') setDoorType('single');
   } else if (restoringDup) {
     // Reopening a saved quote or duplicating an order — land on the form with
-    // the restored cart, no chooser.
-    chooseDoorFamily('slide');
+    // the restored cart, no chooser, and DON'T start a new project.
+    chooseDoorFamily('slide', false);
+  } else if (_startType === 'swing') {
+    // Product-page "Get a quote" deep link → fresh new project.
+    chooseDoorFamily('swing', true);
+  } else if (['slide', 'slide-single', 'single', 'bipart', 'bi-part'].includes(_startType)) {
+    chooseDoorFamily('slide', true);
+    if (_startType === 'single' || _startType === 'slide-single') setDoorType('single');
   }
   // Otherwise (any normal visit, even with a leftover in-progress cart): always
   // show the first-step Sliding/Swing chooser at the top.
