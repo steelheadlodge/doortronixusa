@@ -39,10 +39,11 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
 .topbar .tagline { font-size:12px; color:#B8CCE4; text-align:right; }
 
 /* ── Layout ── */
-.layout { display:grid; grid-template-columns:1fr 440px; gap:0; max-width:1340px; margin:0 auto; min-height:calc(100vh - 56px); }
+.layout { display:grid; grid-template-columns:1fr 440px; gap:0; max-width:1340px; margin:0 auto; min-height:calc(100vh - 76px); }
 
 /* ── Form panel ── */
-.form-panel { background:var(--white); padding:28px 32px 48px; overflow-y:auto; border-right:1px solid var(--border); }
+.form-panel { background:var(--white); padding:28px 32px 0; overflow-y:auto; border-right:1px solid var(--border); height:calc(100vh - 76px); }
+#quote-flow { padding-bottom:20px; }
 .form-panel h1 { font-size:21px; font-weight:700; color:var(--blue); margin-bottom:4px; }
 .form-panel .intro { font-size:13px; color:var(--mgray); margin-bottom:20px; line-height:1.5; }
 .trust-bar { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:22px; }
@@ -131,7 +132,7 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
 .btn-submit:active { transform:scale(.99); }
 
 /* ── Preview panel ── */
-.preview-panel { background:var(--lgray); padding:20px 18px; position:sticky; top:56px; height:calc(100vh - 56px); overflow-y:auto; display:flex; flex-direction:column; gap:14px; }
+.preview-panel { background:var(--lgray); padding:20px 18px; position:sticky; top:76px; height:calc(100vh - 76px); overflow-y:auto; display:flex; flex-direction:column; gap:14px; }
 .preview-title { font-size:12px; font-weight:700; color:var(--blue); text-transform:uppercase; letter-spacing:.6px; display:flex; align-items:center; gap:8px; }
 .preview-title::after { content:""; flex:1; height:2px; background:var(--blue); opacity:.2; }
 .btn-print-draw { flex:0 0 auto; padding:6px 12px; background:#fff; color:var(--blue); border:1.5px solid var(--blue); border-radius:6px; font-size:11px; font-weight:700; cursor:pointer; letter-spacing:.3px; text-transform:uppercase; }
@@ -206,6 +207,8 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
 @media (max-width:960px) {
   .layout { grid-template-columns:1fr; }
   .preview-panel { position:static; height:auto; }
+  .form-panel { height:auto; overflow:visible; padding-bottom:32px; }
+  #sticky-price-bar { position:sticky; }
   #configGrid-bipart, #configGrid-single, #configGrid-swing { grid-template-columns:repeat(2,1fr); }
   #form-price-section { display:none !important; }
 }
@@ -1562,7 +1565,7 @@ body.sheet-mode #plan-svg { background:#fff; }
             </div>
           </div>
         </div>
-        <button type="button" class="btn-add-cart" id="btn-add-to-cart" onclick="addDoorToCart()">Add This Door to Project</button>
+        <button type="button" class="btn-add-cart" id="btn-add-to-cart" onclick="addDoorToCart()">Add to project &amp; configure another</button>
         <button type="submit" class="btn-submit" style="background:#6B7280;margin-top:0;">Submit Quote (this door only) →</button>
         <p style="font-size:10px;color:var(--mgray);margin-top:8px;text-align:center;">Single door only? Use "Submit Quote" above. Multiple doors? Add each to the project cart, then submit all at once.</p>
       </div>
@@ -1571,10 +1574,12 @@ body.sheet-mode #plan-svg { background:#fff; }
     </div><!-- /quote-flow -->
 
     <!-- Sticky price bar — always visible at bottom of form panel -->
-    <div id="sticky-price-bar" style="position:sticky;bottom:0;background:var(--blue);color:#fff;padding:10px 20px;display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:700;border-top:2px solid var(--dblue);z-index:10;">
+    <div id="sticky-price-bar" style="position:sticky;bottom:0;background:var(--blue);color:#fff;padding:10px 20px;display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:700;border-top:2px solid var(--dblue);z-index:10;gap:12px;">
       <span>Net Contractor Price</span>
-      <span id="sticky-price-total" style="font-size:18px;">—</span>
+      <span id="sticky-price-total" style="font-size:18px;margin-left:auto;">—</span>
+      <button type="button" class="btn-save-quote" id="btn-save-quote-sticky" onclick="savePortalDraft()" style="display:none;">💾 Save quote</button>
     </div>
+    <div id="sticky-save-status" style="display:none;position:sticky;bottom:0;background:#f0fdf4;color:#166534;font-size:12px;font-weight:600;padding:8px 20px;border-top:1px solid #86efac;z-index:9;"></div>
   </div><!-- /form-panel -->
 
   <!-- ══ PREVIEW PANEL ══ -->
@@ -1711,6 +1716,32 @@ function shipTimelineStr() {
 // project and reopen it later from the portal.
 let _currentDraftId = null;
 
+// Both Save buttons (cart header + sticky bottom bar) stay in sync.
+function saveQuoteBtns() {
+  return [
+    document.getElementById('btn-save-quote'),
+    document.getElementById('btn-save-quote-sticky'),
+  ].filter(Boolean);
+}
+function syncSaveQuoteButtons() {
+  // Always show Save — signed-out users get prompted to sign in when they click,
+  // so the option is discoverable instead of hidden.
+  const txt = _currentDraftId ? '💾 Update saved quote' : '💾 Save quote';
+  saveQuoteBtns().forEach(b => { b.style.display = ''; b.textContent = txt; });
+}
+
+// Is the user mid-configuring a door that isn't in the cart yet? If so, Save
+// should fold that work in first so nothing gets lost.
+function hasInProgressDoor() {
+  if (_editingDoorId !== null) return true;
+  if (!rv('config')) return false;
+  const cfg = getConfig();
+  const doors = (cfg && cfg.isTwin)
+    ? [getTwinDoorIn('left'), getTwinDoorIn('right')]
+    : [getWidthIn()];
+  return doors.every(w => !!w);
+}
+
 function buildDraftHeader() {
   const h = _projectHeader || {};
   return {
@@ -1727,17 +1758,36 @@ function buildDraftHeader() {
 
 async function savePortalDraft() {
   const t = localStorage.getItem('dtx_session');
-  const btn = document.getElementById('btn-save-quote');
   const statusEl = document.getElementById('save-quote-status');
+  const stickyStatus = document.getElementById('sticky-save-status');
   const setStatus = (msg, ok) => {
-    if (!statusEl) return;
-    statusEl.style.display = 'block';
-    statusEl.style.color = ok ? '#166534' : '#B91C1C';
-    statusEl.innerHTML = msg;
+    [statusEl, stickyStatus].forEach(el => {
+      if (!el) return;
+      el.style.display = 'block';
+      el.style.background = ok ? '#f0fdf4' : '#fef2f2';
+      el.style.borderTopColor = ok ? '#86efac' : '#fca5a5';
+      el.style.color = ok ? '#166534' : '#B91C1C';
+      el.innerHTML = msg;
+    });
   };
-  if (!t) { setStatus('Sign in to save quotes to your account.', false); return; }
+  if (!t) {
+    setStatus('To save this quote and reopen it later, <a href="portal/login.html" style="color:#166534;font-weight:700;">sign in</a> or <a href="portal/signup.html" style="color:#166534;font-weight:700;">create a free account</a>. It only takes a minute.', false);
+    return;
+  }
+
+  // Fold the door the user is currently configuring into the project first, so
+  // "Save" captures in-progress work without them having to click "Add" too.
+  let inProgressNote = '';
+  if (hasInProgressDoor()) {
+    const ok = addDoorToCart();
+    if (!ok) {
+      if (getCart().length === 0) return; // addDoorToCart already flagged the problem
+      inProgressNote = ' The door you were editing needs a bit more info — finish it and save again to include it.';
+    }
+  }
+
   const cart = getCart();
-  if (!cart.length) { setStatus('Add at least one door before saving.', false); return; }
+  if (!cart.length) { setStatus('Add or configure at least one door before saving.', false); return; }
 
   const hdr = buildDraftHeader();
   const listTotal = cart.reduce((s, d) => s + (d.estimatedTotal || 0), 0);
@@ -1749,7 +1799,7 @@ async function savePortalDraft() {
     doors: cart, listTotal,
   };
 
-  if (btn) { btn.disabled = true; btn.textContent = 'Saving…'; }
+  saveQuoteBtns().forEach(b => { b.disabled = true; b.textContent = 'Saving…'; });
   try {
     const editing = !!_currentDraftId;
     const res = await fetch(PORTAL_API + '/drafts' + (editing ? '/' + _currentDraftId : ''), {
@@ -1760,11 +1810,12 @@ async function savePortalDraft() {
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(data.error || 'Could not save this quote.');
     if (data.draft && data.draft.id) _currentDraftId = data.draft.id;
-    setStatus('✓ Saved to your account. Find it under <a href="portal/quotes.html" style="color:#166534;font-weight:700;">Saved quotes →</a>', true);
+    setStatus('✓ Saved to your account.' + inProgressNote + ' Find it under <a href="portal/quotes.html" style="color:#166534;font-weight:700;">Saved quotes →</a>', true);
   } catch (err) {
     setStatus(err.message || 'Could not save this quote.', false);
   } finally {
-    if (btn) { btn.disabled = false; btn.textContent = _currentDraftId ? '💾 Update saved quote' : '💾 Save quote'; }
+    saveQuoteBtns().forEach(b => { b.disabled = false; });
+    syncSaveQuoteButtons();
   }
 }
 
@@ -2384,7 +2435,7 @@ function captureCurrentDoor() {
 function addDoorToCart() {
   const _btn = document.getElementById('btn-add-to-cart');
   if (_btn) { _btn.style.opacity = '0.6'; setTimeout(() => _btn.style.opacity = '', 400); }
-  try { _addDoorToCartImpl(); } catch(err) { showCartError('Error: ' + err.message); console.error(err); }
+  try { return _addDoorToCartImpl() === true; } catch(err) { showCartError('Error: ' + err.message); console.error(err); return false; }
 }
 
 function _addDoorToCartImpl() {
@@ -2492,6 +2543,7 @@ function _addDoorToCartImpl() {
       setTimeout(() => cartEl.classList.remove('flash'), 700);
     }, 400);
   }
+  return true;
 }
 
 function editCartDoor(id) {
@@ -2704,7 +2756,7 @@ function updateQtyUI() {
     if (input) input.placeholder = 'e.g. Main Entry';
   }
   if (addBtn && !addBtn.textContent.includes('Update')) {
-    addBtn.textContent = qty > 1 ? `Add ${qty} Doors to Project` : 'Add This Door to Project';
+    addBtn.textContent = qty > 1 ? `Add ${qty} doors to project` : 'Add to project & configure another';
   }
 }
 
@@ -2748,6 +2800,7 @@ function unlockContactSection() {
 }
 
 function renderCart() {
+  syncSaveQuoteButtons();
   const cart = getCart();
   const cartSection = document.getElementById('project-cart-section');
   const cartCards   = document.getElementById('cart-cards');
@@ -2757,18 +2810,13 @@ function renderCart() {
   if (cart.length === 0) {
     cartSection.style.display = 'none';
     if (lbl) lbl.textContent  = 'Configuring Door #1';
-    if (addBtn) addBtn.textContent = 'Add This Door to Project';
+    if (addBtn) addBtn.textContent = 'Add to project & configure another';
     return;
   }
 
   cartSection.style.display = 'block';
   const projTotal = cart.reduce((s, d) => s + (d.estimatedTotal || 0), 0);
   document.getElementById('cart-total-badge').textContent = 'Est. Total: ' + (projTotal > 0 ? '$' + projTotal.toLocaleString() : '—');
-  const saveBtn = document.getElementById('btn-save-quote');
-  if (saveBtn) {
-    saveBtn.style.display = window._portalUser ? '' : 'none';
-    saveBtn.textContent = _currentDraftId ? '💾 Update saved quote' : '💾 Save quote';
-  }
 
   cartCards.innerHTML = cart.map((d, i) => {
     const isEditing = d.id === _editingDoorId;
@@ -2792,7 +2840,7 @@ function renderCart() {
   if (lbl) lbl.textContent = _editingDoorId !== null
     ? `Editing Door #${nextNum}` : `Configuring Door #${nextNum}`;
   if (addBtn) addBtn.textContent = _editingDoorId !== null
-    ? 'Update Door in Project' : 'Add This Door to Project';
+    ? 'Update Door in Project' : 'Add to project & configure another';
 }
 
 async function submitAllDoors() {
