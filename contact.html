@@ -23,6 +23,16 @@
   <meta name="twitter:description" content="Contact Doortronix USA. Factory-direct automatic door systems from Malakoff, Texas. Call (888) 453-5196 or email info@doortronixusa.com.">
   <meta name="twitter:image" content="https://doortronixusa.com/images/revolution.jpg?v=3">
   <link rel="stylesheet" href="css/style.css">
+  <style>
+    .hp-wrap {
+      position: absolute !important;
+      left: -9999px !important;
+      top: -9999px !important;
+      height: 1px;
+      width: 1px;
+      overflow: hidden;
+    }
+  </style>
 </head>
 <body>
 
@@ -78,8 +88,11 @@
         <h2 style="font-size:22px; font-weight:700; color:var(--blue); margin-bottom:20px;">Send Us a Message</h2>
         <div class="form-card" style="max-width:100%;">
           <form id="contact-form" action="https://formspree.io/f/mykorzwy" method="POST">
-            <!-- Honeypot: hidden from humans, bots fill it → Formspree silently drops the submission. -->
-            <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute !important; left:-9999px !important; top:-9999px !important; width:1px; height:1px; opacity:0; pointer-events:none;">
+            <div class="hp-wrap" aria-hidden="true">
+              <label for="company_website">Company website</label>
+              <input type="text" id="company_website" name="website" tabindex="-1" autocomplete="off">
+              <input type="text" name="_gotcha" tabindex="-1" autocomplete="off">
+            </div>
             <div class="form-row">
               <div class="form-group">
                 <label for="fname">First Name *</label>
@@ -123,6 +136,10 @@
             <button type="submit" class="btn btn-primary" style="width:100%; font-size:15px; padding:14px;">Send Message</button>
             <p style="font-size:12px; color:var(--mgray); text-align:center; margin-top:12px;">We typically respond within one business day. For urgent service issues, call us directly.</p>
           </form>
+          <div id="form-success" style="display:none; background:#DCFCE7; border:1px solid #86EFAC; border-radius:8px; padding:24px; text-align:center;">
+            <div style="font-weight:700; color:#166534; font-size:16px;">Message sent</div>
+            <div style="color:#166534; margin-top:6px; font-size:14px;">We typically respond within one business day. For urgent service issues, call us directly.</div>
+          </div>
         </div>
       </div>
 
@@ -245,5 +262,50 @@
 </footer>
 
 <script src="js/main.js"></script>
+<script>
+(function () {
+  const form = document.getElementById('contact-form');
+  if (!form) return;
+  const openedAt = Date.now();
+  function fakeOk() {
+    form.style.display = 'none';
+    document.getElementById('form-success').style.display = 'block';
+  }
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const website = (form.querySelector('[name="website"]') || {}).value || '';
+    const gotcha = (form.querySelector('[name="_gotcha"]') || {}).value || '';
+    const msg = String((form.message || {}).value || '');
+    const digits = String((form.phone || {}).value || '').replace(/\D/g, '');
+    const badPhone = digits && !(digits.length === 10 || (digits.length === 11 && digits[0] === '1'));
+    const latinCount = (msg.match(/[A-Za-z]/g) || []).length;
+    const noEnglish = latinCount < 8;
+    const kipName = /kipgm$/i.test(String((form.first_name || {}).value || '') + String((form.last_name || {}).value || ''));
+    const tooFast = Date.now() - openedAt < 4000;
+    if (website.trim() || gotcha.trim() || tooFast || noEnglish || badPhone || kipName) {
+      fakeOk();
+      return;
+    }
+    const btn = form.querySelector('button[type="submit"]');
+    btn.textContent = 'Sending…';
+    btn.disabled = true;
+    try {
+      const res = await fetch(form.action, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: { Accept: 'application/json' }
+      });
+      if (res.ok) fakeOk();
+      else {
+        btn.textContent = 'Error — please call us directly';
+        btn.disabled = false;
+      }
+    } catch {
+      btn.textContent = 'Error — please call us directly';
+      btn.disabled = false;
+    }
+  });
+})();
+</script>
 </body>
 </html>
