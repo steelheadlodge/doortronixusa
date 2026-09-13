@@ -40,6 +40,83 @@
       <p id="olead">—</p>
       <p class="muted" id="ostart"></p>
     </div>
+    <div class="card" id="ship-card">
+      <h2>Shipping</h2>
+      <div id="oship" class="muted">Not shipped yet.</div>
+    </div>
+    <div class="card" id="warranty-card">
+      <h2>Warranty</h2>
+      <div id="owarranty" class="muted">Starts the day the order ships. One year from that date.</div>
+    </div>
+    <div class="card hidden" id="admin-ship-card">
+      <h2>Factory — ship &amp; warranty</h2>
+      <p class="muted" style="margin-bottom:10px;">Shipped on starts the customer’s 1-year clock (America/Chicago). Enter the carrier and tracking or PRO so they can follow the freight.</p>
+      <div class="two">
+        <div>
+          <label for="ad_shipped">Shipped on</label>
+          <input type="date" id="ad_shipped">
+        </div>
+        <div>
+          <label for="ad_warr_end">Warranty ends</label>
+          <input type="date" id="ad_warr_end">
+        </div>
+      </div>
+      <div class="two">
+        <div>
+          <label for="ad_freight">How it ships</label>
+          <select id="ad_freight">
+            <option value="">—</option>
+            <option value="ltl">LTL / motor freight</option>
+            <option value="parcel">Parcel (UPS / FedEx / USPS)</option>
+            <option value="pickup">Customer pickup</option>
+          </select>
+        </div>
+        <div>
+          <label for="ad_carrier">Carrier</label>
+          <input id="ad_carrier" placeholder="Estes, SAIA, FedEx Freight, UPS…">
+        </div>
+      </div>
+      <div class="two">
+        <div>
+          <label for="ad_track">Tracking number</label>
+          <input id="ad_track" placeholder="Parcel tracking">
+        </div>
+        <div>
+          <label for="ad_pro">PRO number</label>
+          <input id="ad_pro" placeholder="LTL freight PRO">
+        </div>
+      </div>
+      <div class="two">
+        <div>
+          <label for="ad_freight_cost">Factory freight cost — never shown to customer</label>
+          <input id="ad_freight_cost" type="number" min="0" step="0.01" placeholder="What we paid the carrier">
+        </div>
+        <div>
+          <label for="ad_shipnotes">Customer ship notes (liftgate, appointment, pieces — no rates)</label>
+          <textarea id="ad_shipnotes" rows="2"></textarea>
+        </div>
+      </div>
+      <h3 style="font-size:13px;color:var(--blue);margin:16px 0 8px;">Serials</h3>
+      <div id="ad-serials"></div>
+      <h3 style="font-size:13px;color:var(--blue);margin:16px 0 8px;">Warranty claims</h3>
+      <div id="ad-claims" class="muted">None yet.</div>
+      <div class="two" style="margin-top:8px;">
+        <div>
+          <label for="ad_claim_what">New claim — what failed</label>
+          <input id="ad_claim_what">
+        </div>
+        <div>
+          <label for="ad_claim_part">Part shipped</label>
+          <input id="ad_claim_part">
+        </div>
+      </div>
+      <label for="ad_claim_notes">Claim notes</label>
+      <input id="ad_claim_notes">
+      <div class="err" id="ad-ship-err"></div>
+      <div class="row-actions">
+        <button class="btn btn-blue" type="button" id="ad-ship-save">Save ship &amp; warranty</button>
+      </div>
+    </div>
     <div class="card">
       <h2>Doors</h2>
       <div id="odoors"></div>

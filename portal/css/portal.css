@@ -65,7 +65,7 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 
 table { width: 100%; border-collapse: collapse; font-size: 13px; }
 th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .4px; color: var(--mgray); padding: 8px 8px 8px 0; border-bottom: 2px solid var(--border); }
-td { padding: 10px 8px 10px 0; border-bottom: 1px solid #EEF1F5; vertical-align: middle; }
+td { padding: 10px 8px 10px 0; border-bottom: 1px solid #EEF1F5; vertical-align: top; }
 tr:hover td { background: #FAFBFC; }
 
 .badge { display: inline-block; font-size: 11px; font-weight: 700; border-radius: 20px; padding: 3px 9px; }
@@ -76,6 +76,8 @@ tr:hover td { background: #FAFBFC; }
 .st-ready_to_ship { background: #FFEDD5; color: #9A3412; }
 .st-shipped { background: var(--lgreen); color: var(--green); }
 .st-cancelled { background: #F3F4F6; color: #4B5563; }
+.st-covered { background: var(--lgreen); color: var(--green); }
+.st-expired { background: #FEE2E2; color: #991B1B; }
 .st-draft { background: #F3F4F6; color: #4B5563; }
 
 .row-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }

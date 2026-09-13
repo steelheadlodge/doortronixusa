@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Parts Catalog | Doortronix USA</title>
+  <meta name="description" content="Doortronix replacement parts and decals. Factory-direct from Malakoff, Texas.">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .parts-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:20px; }
+    .parts-card { background:#fff; border:1px solid var(--border); border-radius:10px; overflow:hidden; display:flex; flex-direction:column; }
+    .parts-card img { width:100%; height:180px; object-fit:contain; background:#F8FAFC; padding:12px; cursor:pointer; }
+    .parts-card-body { padding:14px 16px 16px; display:flex; flex-direction:column; gap:8px; flex:1; }
+    .parts-sku { font-size:11px; font-weight:700; color:var(--mgray); letter-spacing:.3px; }
+    .parts-name { font-size:15px; font-weight:700; color:var(--blue); }
+    .parts-note { font-size:12px; color:var(--mgray); line-height:1.4; flex:1; }
+    .parts-row { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:4px; }
+    .parts-price { font-size:18px; font-weight:800; color:var(--orange); }
+    .parts-actions { display:flex; gap:6px; }
+    .parts-btn { border:1.5px solid var(--border); background:#fff; color:var(--blue); border-radius:7px; padding:7px 10px; font-size:12px; font-weight:700; cursor:pointer; font-family:inherit; }
+    .parts-btn:hover { border-color:var(--blue); }
+    .parts-btn.primary { background:var(--blue); color:#fff; border-color:var(--blue); }
+    .parts-btn.primary:hover { background:var(--dblue); }
+    .parts-cart { background:#EEF4FB; border:2px solid var(--blue); border-radius:10px; padding:14px 16px; margin-bottom:28px; }
+    .parts-cart h2 { font-size:14px; color:var(--blue); margin:0 0 8px; }
+    .parts-cart-empty { font-size:13px; color:var(--mgray); }
+    .parts-cart-line { display:flex; justify-content:space-between; gap:12px; font-size:13px; padding:5px 0; border-bottom:1px solid #D6E4F2; }
+    .parts-cart-total { font-weight:800; color:var(--orange); margin-top:8px; }
+    .parts-cart-note { font-size:12px; color:var(--mgray); margin-top:8px; }
+    #qv-modal { position:fixed; inset:0; z-index:4000; display:flex; align-items:center; justify-content:center; padding:16px; }
+    #qv-modal[hidden] { display:none !important; }
+    .qv-back { position:absolute; inset:0; background:rgba(15,23,42,.55); }
+    .qv-card { position:relative; background:#fff; border-radius:12px; padding:18px 20px 16px; max-width:460px; width:100%; }
+    .qv-card img { width:100%; max-height:340px; object-fit:contain; background:#F8FAFC; border:1px solid var(--border); border-radius:8px; }
+    .qv-card h3 { margin:12px 0 4px; font-size:16px; color:var(--blue); }
+    .qv-price { font-size:18px; font-weight:800; color:var(--orange); }
+    .qv-close { position:absolute; top:10px; right:10px; width:32px; height:32px; border:none; background:#EEF4FB; color:var(--blue); border-radius:16px; font-size:18px; font-weight:700; cursor:pointer; }
+  </style>
+</head>
+<body>
+<div class="topbar">
+  <div class="container">
+    <strong>Factory-Direct from Malakoff, Texas</strong> &nbsp;|&nbsp;
+    <a href="portal/login.html">Sign In</a> &nbsp;|&nbsp;
+    <a href="tel:+18884535196">(888) 453-5196</a>
+  </div>
+</div>
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo" style="text-decoration:none;">
+      <img src="images/logo-mark.png" alt="" class="nav-logo-mark" width="215" height="112">
+      <div>
+        <div class="brand">Doortronix<span>USA</span></div>
+        <div class="tagline">Manufactured in Malakoff, Texas</div>
+      </div>
+    </a>
+    <div class="nav-toggle"><span></span><span></span><span></span></div>
+    <div class="nav-links">
+      <a href="quote-combined.html">Quote a door</a>
+      <a href="parts.html" class="active">Parts</a>
+      <a href="portal/login.html">Account</a>
+      <a href="contact.html">Contact</a>
+    </div>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="container">
+    <h1>Parts catalog</h1>
+    <p>Replacement decals and extras. A new swing operator already includes the owners pack — order these only if you need more.</p>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container">
+    <div class="parts-cart" id="parts-cart"></div>
+    <div id="parts-sections"></div>
+  </div>
+</section>
+
+<div id="qv-modal" hidden>
+  <div class="qv-back" data-close></div>
+  <div class="qv-card" role="dialog" aria-modal="true">
+    <button type="button" class="qv-close" data-close aria-label="Close">×</button>
+    <img id="qv-img" alt="">
+    <h3 id="qv-title"></h3>
+    <div class="qv-price" id="qv-price"></div>
+  </div>
+</div>
+
+<script src="js/main.js"></script>
+<script src="js/parts-catalog.js"></script>
+<script>
+(function () {
+  const KEY = 'dtx_parts_cart';
+  const money = (n) => '$' + Number(n).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+  const parts = window.DTX_PARTS || [];
+  function cart() { try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch (e) { return []; } }
+  function save(c) { localStorage.setItem(KEY, JSON.stringify(c)); renderCart(); }
+  function add(id) {
+    const c = cart();
+    const row = c.find((x) => x.id === id);
+    if (row) row.qty += 1;
+    else c.push({ id, qty: 1 });
+    save(c);
+  }
+  function remove(id) { save(cart().filter((x) => x.id !== id)); }
+  function find(id) { return parts.find((p) => p.id === id); }
+
+  function renderCart() {
+    const el = document.getElementById('parts-cart');
+    const c = cart();
+    if (!c.length) {
+      el.innerHTML = '<h2>Cart</h2><p class="parts-cart-empty">Empty. Add extras below.</p>';
+      return;
+    }
+    let total = 0;
+    const lines = c.map((row) => {
+      const p = find(row.id);
+      if (!p) return '';
+      const amt = p.sell * row.qty;
+      total += amt;
+      return '<div class="parts-cart-line"><span>' + p.sku + ' × ' + row.qty + '</span><span>' + money(amt) + ' <button type="button" class="parts-btn" data-rm="' + p.id + '">Remove</button></span></div>';
+    }).join('');
+    el.innerHTML = '<h2>Cart</h2>' + lines +
+      '<div class="parts-cart-total">Total ' + money(total) + '</div>' +
+      '<p class="parts-cart-note">Checkout (pay in full, like a parts ticket) is next. Call (888) 453-5196 to place this order today.</p>';
+  }
+
+  const groups = {};
+  parts.forEach((p) => { (groups[p.category] || (groups[p.category] = [])).push(p); });
+  document.getElementById('parts-sections').innerHTML = Object.keys(groups).map((cat) => {
+    const cards = groups[cat].map((p) => {
+      const price = p.sell != null ? money(p.sell) : '—';
+      return '<article class="parts-card">' +
+        '<img src="' + p.img + '" alt="' + p.name + '" data-qv="' + p.id + '">' +
+        '<div class="parts-card-body">' +
+          '<div class="parts-sku">' + p.sku + '</div>' +
+          '<div class="parts-name">' + p.name + '</div>' +
+          '<p class="parts-note">' + (p.note || '') + '</p>' +
+          '<div class="parts-row"><span class="parts-price">' + price + '</span>' +
+            '<div class="parts-actions">' +
+              '<button type="button" class="parts-btn" data-qv="' + p.id + '">Quick view</button>' +
+              (p.sell != null ? '<button type="button" class="parts-btn primary" data-add="' + p.id + '">Add to cart</button>' : '') +
+            '</div></div></div></article>';
+    }).join('');
+    return '<h2 class="section-title" style="margin:28px 0 16px;">' + cat + '</h2><div class="parts-grid">' + cards + '</div>';
+  }).join('');
+
+  function openQv(id) {
+    const p = find(id);
+    if (!p) return;
+    document.getElementById('qv-img').src = p.img;
+    document.getElementById('qv-img').alt = p.name;
+    document.getElementById('qv-title').textContent = p.sku + ' — ' + p.name;
+    document.getElementById('qv-price').textContent = p.sell != null ? money(p.sell) : 'Quoted';
+    document.getElementById('qv-modal').hidden = false;
+  }
+  document.addEventListener('click', function (e) {
+    const addId = e.target.getAttribute && e.target.getAttribute('data-add');
+    const qv = e.target.getAttribute && e.target.getAttribute('data-qv');
+    const rm = e.target.getAttribute && e.target.getAttribute('data-rm');
+    if (addId) add(addId);
+    if (qv) openQv(qv);
+    if (rm) remove(rm);
+    if (e.target.closest && e.target.closest('[data-close]')) document.getElementById('qv-modal').hidden = true;
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') document.getElementById('qv-modal').hidden = true;
+  });
+  renderCart();
+})();
+</script>
+</body>
+</html>

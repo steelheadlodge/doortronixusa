@@ -66,26 +66,59 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
 .field .hint { font-size:11px; color:var(--mgray); margin-top:2px; }
 
 /* ── Chip groups ── */
-.chip-group { display:flex; flex-wrap:wrap; gap:7px; }
+.op-opt-h { font-size:11px; font-weight:700; color:var(--blue); text-transform:uppercase; letter-spacing:.4px; margin:12px 0 6px; }
+.op-opt-h:first-child { margin-top:0; }
+.op-opt-note { font-size:11px; color:var(--mgray); margin:4px 0 0; line-height:1.4; }
+.op-opt-group + .op-opt-group { margin-top:14px; }
 .chip-group input[type=radio], .chip-group input[type=checkbox] { display:none; }
 .chip-group label { border:1.5px solid var(--border); border-radius:20px; padding:5px 13px; font-size:12px; font-weight:600; color:var(--mgray); cursor:pointer; transition:all .15s; user-select:none; }
 .chip-group input:checked + label { border-color:var(--blue); background:var(--blue); color:#fff; }
 .chip-group input:disabled + label { opacity:.4; cursor:not-allowed; pointer-events:none; }
 .chip-group label:hover { border-color:var(--blue); color:var(--blue); }
+.op-qv-item { display:inline-flex; align-items:center; gap:4px; margin:2px 6px 2px 0; }
+.op-qv-btn {
+  border:1.5px solid var(--border); background:#fff; color:var(--blue);
+  border-radius:20px; padding:5px 10px; font-size:11px; font-weight:700;
+  cursor:pointer; font-family:inherit; line-height:1.2;
+}
+.op-qv-btn:hover { border-color:var(--orange); color:var(--orange); background:#FFF8F3; }
+.op-qty {
+  display:none; border:1.5px solid var(--blue); background:#EEF4FB; color:var(--blue);
+  border-radius:16px; padding:4px 8px; font-size:11px; font-weight:700;
+  font-family:inherit; min-width:52px;
+}
+.op-qv-item input:checked ~ .op-qty, .op-qty.always { display:inline-block; }
+#op-qv-modal { position:fixed; inset:0; z-index:4000; display:flex; align-items:center; justify-content:center; padding:16px; }
+#op-qv-modal[hidden] { display:none !important; }
+.op-qv-back { position:absolute; inset:0; background:rgba(15,23,42,.55); }
+.op-qv-card {
+  position:relative; background:#fff; border-radius:12px; padding:18px 20px 16px;
+  max-width:460px; width:100%; box-shadow:0 16px 48px rgba(0,0,0,.28);
+}
+.op-qv-card img { width:100%; max-height:340px; object-fit:contain; background:#F8FAFC; border:1px solid var(--border); border-radius:8px; }
+.op-qv-card h3 { margin:12px 0 4px; font-size:16px; color:var(--blue); }
+.op-qv-card .op-qv-price { font-size:18px; font-weight:800; color:var(--orange); }
+.op-qv-close {
+  position:absolute; top:10px; right:10px; width:32px; height:32px; border:none;
+  background:#EEF4FB; color:var(--blue); border-radius:16px; font-size:18px;
+  font-weight:700; cursor:pointer; line-height:1;
+}
+.op-qv-close:hover { background:var(--blue); color:#fff; }
+.op-need-style { outline:2px solid var(--orange); outline-offset:4px; border-radius:8px; }
 
 /* ── Config cards ── */
 .config-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:4px; }
 .config-grid input[type=radio] { display:none; }
 .config-card { border:2px solid var(--border); border-radius:10px; padding:10px 8px; cursor:pointer; transition:all .15s; text-align:center; background:#fff; display:block; }
 .config-card:hover { border-color:var(--blue); }
-.type-choice-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.type-choice-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
 .type-choice { border:2px solid var(--border); border-radius:12px; padding:20px 14px; background:#fff; cursor:pointer; text-align:center; transition:all .15s; display:flex; flex-direction:column; align-items:center; gap:2px; font-family:inherit; }
 .type-choice:hover { border-color:var(--blue); background:#EEF4FB; box-shadow:0 4px 14px rgba(27,79,138,.14); transform:translateY(-2px); }
 .type-choice svg { margin-bottom:8px; }
 .type-choice .tc-name { font-size:16px; font-weight:800; color:var(--blue); }
 .type-choice .tc-desc { font-size:12px; color:var(--mgray); line-height:1.35; margin-top:2px; }
 .type-choice .tc-price { font-size:13px; font-weight:700; color:var(--orange); margin-top:6px; }
-@media (max-width:520px){ .type-choice-grid { grid-template-columns:1fr; } }
+@media (max-width:760px){ .type-choice-grid { grid-template-columns:1fr; } }
 .config-grid input[type=radio]:checked + .config-card { border-color:var(--blue); background:#EEF4FB; box-shadow:0 0 0 2px rgba(27,79,138,.15); }
 .config-card .cc-icon { display:block; margin:0 auto 5px; height:36px; width:auto; max-width:100%; flex-shrink:0; }
 .config-card .cc-name { font-size:12px; font-weight:700; color:var(--blue); line-height:1.2; }
@@ -356,8 +389,6 @@ body.sheet-mode #plan-svg { background:#fff; }
             <rect x="27" y="9" width="20" height="39" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1.3"/>
             <rect x="49" y="9" width="20" height="39" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1.3"/>
             <rect x="70" y="9" width="20" height="39" fill="#B8D4F0" stroke="#1B4F8A" stroke-width="1.3"/>
-            <line x1="16" y1="16" x2="8" y2="34" stroke="#1B4F8A" stroke-width="1.3" stroke-dasharray="3,2"/>
-            <line x1="80" y1="16" x2="88" y2="34" stroke="#1B4F8A" stroke-width="1.3" stroke-dasharray="3,2"/>
           </svg>
           <div class="tc-name">Sliding Doors</div>
           <div class="tc-desc">Bi-Part &amp; Single Slide · automatic operators</div>
@@ -382,14 +413,29 @@ body.sheet-mode #plan-svg { background:#fff; }
           <div class="tc-desc">Single, Pair &amp; Entry/Exit · low-energy operators</div>
           <div class="tc-price">from $4,500</div>
         </button>
+        <button type="button" class="type-choice" onclick="chooseDoorFamily('operator', true)">
+          <svg viewBox="0 0 96 52" width="96" height="52" aria-hidden="true">
+            <rect x="0" y="0" width="96" height="52" fill="#EEF4FB" rx="4"/>
+            <!-- operator header — 2px past each jamb, same overlap as Swing Doors -->
+            <rect x="36" y="0" width="24" height="8" fill="#5B8FC7" rx="1"/>
+            <!-- one leaf, same size as a Swing Doors panel -->
+            <rect x="38" y="9" width="20" height="39" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1.3"/>
+            <line x1="38" y1="9" x2="38" y2="48" stroke="#1B4F8A" stroke-width="2.4"/>
+            <path d="M58,48 A20,20 0 0,1 38,28" fill="none" stroke="#1B4F8A" stroke-width="1.3" stroke-dasharray="3,2"/>
+            <circle cx="56" cy="30" r="1.4" fill="#1B4F8A"/>
+          </svg>
+          <div class="tc-name">Swing Operators</div>
+          <div class="tc-desc">Condor auto operator — unit only, no door/frame</div>
+          <div class="tc-price">Call for pricing</div>
+        </button>
       </div>
     </div>
 
     <div id="quote-flow" style="display:none;">
 
     <div id="scope-notice" style="background:#FFF7ED;border:1.5px solid #FDBA74;border-left:5px solid var(--orange);border-radius:8px;padding:12px 16px;margin:14px 0 4px;font-size:13px;line-height:1.5;color:#7C2D12;">
-      <strong style="display:block;margin-bottom:4px;font-size:13px;">📦 Door Package Only — Material Supply</strong>
-      We manufacture and supply the <strong>aluminum door package</strong> (frame, panels, hardware, and operating system). Pricing <strong>does not include glass/glazing, freight, installation, or taxes</strong>. Glass is supplied and installed by others; frames are prepped for your specified glass thickness.
+      <strong id="scope-notice-title" style="display:block;margin-bottom:4px;font-size:13px;">📦 Door Package Only — Material Supply</strong>
+      <span id="scope-notice-body">We manufacture and supply the <strong>aluminum door package</strong> (frame, panels, hardware, and operating system). Pricing <strong>does not include glass/glazing, freight, installation, or taxes</strong>. Glass is supplied and installed by others; frames are prepped for your specified glass thickness.</span>
     </div>
 
     <!-- ── PROJECT CART ── -->
@@ -428,20 +474,6 @@ body.sheet-mode #plan-svg { background:#fff; }
           <input type="text" name="company" id="f_company" placeholder="Your company" autocomplete="organization" required>
         </div>
         <div class="field">
-          <label>Your Role <span class="req">*</span></label>
-          <select name="role" id="f_role" required>
-            <option value="">— Select your role —</option>
-            <option>General Contractor</option>
-            <option>Glazier</option>
-            <option>Automatic Door Company / Installer</option>
-            <option>Locksmith</option>
-            <option>Architect / Specifier</option>
-            <option>Facility Manager</option>
-            <option>Owner / Developer</option>
-            <option>Other</option>
-          </select>
-        </div>
-        <div class="field">
           <label>Phone Number <span class="req">*</span></label>
           <input type="tel" name="phone" id="f_phone" placeholder="(555) 000-0000" autocomplete="tel" required>
         </div>
@@ -478,14 +510,10 @@ body.sheet-mode #plan-svg { background:#fff; }
           </select>
           <span class="hint">Standard lead time is 3–4 weeks from cleared payment. Need it sooner? Choose expedited and we’ll confirm availability and any rush fee.</span>
         </div>
-        <div class="field">
-          <label>Project City &amp; State <span class="req">*</span></label>
-          <input type="text" name="projectLocation" id="f_location" placeholder="e.g. Dallas, TX" required>
-        </div>
         <div class="field full">
           <label>Ship-to Address</label>
           <textarea name="shipTo" id="f_shipto" rows="2" placeholder="Company / contact, street, city, state, ZIP"></textarea>
-          <span class="hint">Where the doors ship. Leave blank to use the project city &amp; state.</span>
+          <span class="hint">Where the doors ship — company / contact, street, city, state, ZIP.</span>
         </div>
         <div class="field full" id="lead-time-field" style="display:none;">
           <label>Lead Time (on drawing)</label>
@@ -496,16 +524,19 @@ body.sheet-mode #plan-svg { background:#fff; }
 
       </div><!-- /project-section-wrapper -->
 
-      <!-- ── DOOR CONFIGURATION ── -->
+      <!-- ── CONFIGURATION (door types + swing operator) ── -->
       <p id="door-section-label" style="font-size:15px;font-weight:700;color:var(--blue);margin:20px 0 4px;">Configuring Door #1</p>
-      <div class="section-header">③ Door Configuration</div>
 
-      <!-- Door type toggle -->
-      <div class="door-type-toggle" style="margin-bottom:14px;">
+      <!-- Family toggle: door types + standalone swing operator -->
+      <div class="door-type-toggle" style="margin-bottom:14px;flex-wrap:wrap;">
         <button type="button" class="door-type-tab active" id="tab-bipart" onclick="setDoorType('bi-part')">Bi-Part Slide</button>
         <button type="button" class="door-type-tab" id="tab-single" onclick="setDoorType('single')">Single Slide</button>
-        <button type="button" class="door-type-tab" id="tab-swing" onclick="setDoorType('swing')">Swing</button>
+        <button type="button" class="door-type-tab" id="tab-swing" onclick="setDoorType('swing')">Swing Doors</button>
+        <button type="button" class="door-type-tab" id="tab-operator" onclick="setOperatorMode(true)">Swing Operator</button>
       </div>
+
+      <div id="door-config-block">
+      <div class="section-header">③ Door Configuration</div>
 
       <div class="field full" style="margin-bottom:12px;">
         <label>Select Configuration <span class="req">*</span></label>
@@ -517,7 +548,7 @@ body.sheet-mode #plan-svg { background:#fff; }
 
           <input type="radio" name="config" id="cfg_fbo_bi" value="fbo-bi" checked>
           <label for="cfg_fbo_bi" class="config-card">
-            <svg class="cc-icon" width="70" height="36" viewBox="0 0 70 36"><rect x="0" y="0" width="70" height="36" fill="#EEF4FB" rx="3"/><rect x="0" y="0" width="70" height="6" fill="#1B4F8A"/><rect x="4" y="6" width="15" height="28" fill="#B8D4F0" stroke="#1B4F8A" stroke-width="1"/><rect x="20" y="6" width="15" height="28" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1"/><rect x="36" y="6" width="15" height="28" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1"/><rect x="52" y="6" width="15" height="28" fill="#B8D4F0" stroke="#1B4F8A" stroke-width="1"/><line x1="11" y1="11" x2="5" y2="25" stroke="#1B4F8A" stroke-width="1" stroke-dasharray="2,1"/><line x1="59" y1="11" x2="65" y2="25" stroke="#1B4F8A" stroke-width="1" stroke-dasharray="2,1"/></svg>
+            <svg class="cc-icon" width="70" height="36" viewBox="0 0 70 36"><rect x="0" y="0" width="70" height="36" fill="#EEF4FB" rx="3"/><rect x="0" y="0" width="70" height="6" fill="#1B4F8A"/><rect x="4" y="6" width="15" height="28" fill="#B8D4F0" stroke="#1B4F8A" stroke-width="1"/><rect x="20" y="6" width="15" height="28" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1"/><rect x="36" y="6" width="15" height="28" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1"/><rect x="52" y="6" width="15" height="28" fill="#B8D4F0" stroke="#1B4F8A" stroke-width="1"/><text x="11.5" y="23" font-size="7" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">SO</text><text x="27.5" y="23" font-size="7" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">SX</text><text x="43.5" y="23" font-size="7" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">SX</text><text x="59.5" y="23" font-size="7" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">SO</text></svg>
             <div class="cc-name">FBO Bi-Part</div>
             <div class="cc-code">SO-SX-SX-SO</div>
             <div class="cc-price">from $3,900</div>
@@ -525,7 +556,7 @@ body.sheet-mode #plan-svg { background:#fff; }
 
           <input type="radio" name="config" id="cfg_fsl_bi" value="fsl-bi">
           <label for="cfg_fsl_bi" class="config-card">
-            <svg class="cc-icon" width="70" height="36" viewBox="0 0 70 36"><rect x="0" y="0" width="70" height="36" fill="#EEF4FB" rx="3"/><rect x="0" y="0" width="70" height="6" fill="#1B4F8A"/><rect x="4" y="6" width="15" height="28" fill="#C8E0F8" stroke="#1B4F8A" stroke-width="1"/><rect x="20" y="6" width="15" height="28" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1"/><rect x="36" y="6" width="15" height="28" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1"/><rect x="52" y="6" width="15" height="28" fill="#C8E0F8" stroke="#1B4F8A" stroke-width="1"/><text x="11" y="24" font-size="9" fill="#1B4F8A" text-anchor="middle" font-family="Arial">↔</text><text x="59" y="24" font-size="9" fill="#1B4F8A" text-anchor="middle" font-family="Arial">↔</text></svg>
+            <svg class="cc-icon" width="70" height="36" viewBox="0 0 70 36"><rect x="0" y="0" width="70" height="36" fill="#EEF4FB" rx="3"/><rect x="0" y="0" width="70" height="6" fill="#1B4F8A"/><rect x="4" y="6" width="15" height="28" fill="#B8D4F0" stroke="#1B4F8A" stroke-width="1"/><rect x="20" y="6" width="15" height="28" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1"/><rect x="36" y="6" width="15" height="28" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1"/><rect x="52" y="6" width="15" height="28" fill="#B8D4F0" stroke="#1B4F8A" stroke-width="1"/><text x="11.5" y="23" font-size="7" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">O</text><text x="27.5" y="23" font-size="7" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">SX</text><text x="43.5" y="23" font-size="7" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">SX</text><text x="59.5" y="23" font-size="7" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">O</text></svg>
             <div class="cc-name">FSL Bi-Part</div>
             <div class="cc-code">O-SX-SX-O</div>
             <div class="cc-price">from $3,900</div>
@@ -540,7 +571,7 @@ body.sheet-mode #plan-svg { background:#fff; }
 
           <input type="radio" name="config" id="cfg_fbo_ss_rh" value="fbo-single-rh">
           <label for="cfg_fbo_ss_rh" class="config-card">
-            <svg class="cc-icon" width="70" height="36" viewBox="0 0 70 36"><rect x="0" y="0" width="70" height="36" fill="#EEF4FB" rx="3"/><rect x="0" y="0" width="70" height="6" fill="#1B4F8A"/><rect x="2" y="6" width="32" height="28" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1"/><rect x="37" y="6" width="32" height="28" fill="#B8D4F0" stroke="#1B4F8A" stroke-width="1"/><text x="18" y="23" font-size="11" fill="#1B4F8A" text-anchor="middle" font-family="Arial">→</text><line x1="50" y1="11" x2="56" y2="25" stroke="#1B4F8A" stroke-width="1" stroke-dasharray="2,1"/></svg>
+            <svg class="cc-icon" width="70" height="36" viewBox="0 0 70 36"><rect x="0" y="0" width="70" height="36" fill="#EEF4FB" rx="3"/><rect x="0" y="0" width="70" height="6" fill="#1B4F8A"/><rect x="2" y="6" width="32" height="28" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1"/><rect x="37" y="6" width="32" height="28" fill="#B8D4F0" stroke="#1B4F8A" stroke-width="1"/><text x="18" y="21" font-size="8" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">SX</text><text x="18" y="31" font-size="10" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">→</text><text x="53" y="21" font-size="8" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">SO</text></svg>
             <div class="cc-name">FBO Single — RH</div>
             <div class="cc-code">SX-SO → ext.</div>
             <div class="cc-price">from $3,200</div>
@@ -548,7 +579,7 @@ body.sheet-mode #plan-svg { background:#fff; }
 
           <input type="radio" name="config" id="cfg_fbo_ss_lh" value="fbo-single-lh">
           <label for="cfg_fbo_ss_lh" class="config-card">
-            <svg class="cc-icon" width="70" height="36" viewBox="0 0 70 36"><rect x="0" y="0" width="70" height="36" fill="#EEF4FB" rx="3"/><rect x="0" y="0" width="70" height="6" fill="#1B4F8A"/><rect x="2" y="6" width="32" height="28" fill="#B8D4F0" stroke="#1B4F8A" stroke-width="1"/><rect x="37" y="6" width="32" height="28" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1"/><line x1="20" y1="11" x2="14" y2="25" stroke="#1B4F8A" stroke-width="1" stroke-dasharray="2,1"/><text x="53" y="23" font-size="11" fill="#1B4F8A" text-anchor="middle" font-family="Arial">←</text></svg>
+            <svg class="cc-icon" width="70" height="36" viewBox="0 0 70 36"><rect x="0" y="0" width="70" height="36" fill="#EEF4FB" rx="3"/><rect x="0" y="0" width="70" height="6" fill="#1B4F8A"/><rect x="2" y="6" width="32" height="28" fill="#B8D4F0" stroke="#1B4F8A" stroke-width="1"/><rect x="37" y="6" width="32" height="28" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1"/><text x="18" y="21" font-size="8" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">SO</text><text x="53" y="21" font-size="8" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">SX</text><text x="53" y="31" font-size="10" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">←</text></svg>
             <div class="cc-name">FBO Single — LH</div>
             <div class="cc-code">SO-SX → ext.</div>
             <div class="cc-price">from $3,200</div>
@@ -556,7 +587,7 @@ body.sheet-mode #plan-svg { background:#fff; }
 
           <input type="radio" name="config" id="cfg_fsl_ss_rh" value="fsl-single-rh">
           <label for="cfg_fsl_ss_rh" class="config-card">
-            <svg class="cc-icon" width="70" height="36" viewBox="0 0 70 36"><rect x="0" y="0" width="70" height="36" fill="#EEF4FB" rx="3"/><rect x="0" y="0" width="70" height="6" fill="#1B4F8A"/><rect x="2" y="6" width="32" height="28" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1"/><rect x="37" y="6" width="32" height="28" fill="#C8E0F8" stroke="#1B4F8A" stroke-width="1"/><text x="18" y="23" font-size="11" fill="#1B4F8A" text-anchor="middle" font-family="Arial">→</text><text x="53" y="24" font-size="9" fill="#1B4F8A" text-anchor="middle" font-family="Arial">↔</text></svg>
+            <svg class="cc-icon" width="70" height="36" viewBox="0 0 70 36"><rect x="0" y="0" width="70" height="36" fill="#EEF4FB" rx="3"/><rect x="0" y="0" width="70" height="6" fill="#1B4F8A"/><rect x="2" y="6" width="32" height="28" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1"/><rect x="37" y="6" width="32" height="28" fill="#B8D4F0" stroke="#1B4F8A" stroke-width="1"/><text x="18" y="21" font-size="8" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">SX</text><text x="18" y="31" font-size="10" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">→</text><text x="53" y="21" font-size="8" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">O</text></svg>
             <div class="cc-name">FSL Single — RH</div>
             <div class="cc-code">SX-O → ext.</div>
             <div class="cc-price">from $3,200</div>
@@ -564,7 +595,7 @@ body.sheet-mode #plan-svg { background:#fff; }
 
           <input type="radio" name="config" id="cfg_fsl_ss_lh" value="fsl-single-lh">
           <label for="cfg_fsl_ss_lh" class="config-card">
-            <svg class="cc-icon" width="70" height="36" viewBox="0 0 70 36"><rect x="0" y="0" width="70" height="36" fill="#EEF4FB" rx="3"/><rect x="0" y="0" width="70" height="6" fill="#1B4F8A"/><rect x="2" y="6" width="32" height="28" fill="#C8E0F8" stroke="#1B4F8A" stroke-width="1"/><rect x="37" y="6" width="32" height="28" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1"/><text x="18" y="24" font-size="9" fill="#1B4F8A" text-anchor="middle" font-family="Arial">↔</text><text x="53" y="23" font-size="11" fill="#1B4F8A" text-anchor="middle" font-family="Arial">←</text></svg>
+            <svg class="cc-icon" width="70" height="36" viewBox="0 0 70 36"><rect x="0" y="0" width="70" height="36" fill="#EEF4FB" rx="3"/><rect x="0" y="0" width="70" height="6" fill="#1B4F8A"/><rect x="2" y="6" width="32" height="28" fill="#B8D4F0" stroke="#1B4F8A" stroke-width="1"/><rect x="37" y="6" width="32" height="28" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1"/><text x="18" y="21" font-size="8" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">O</text><text x="53" y="21" font-size="8" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">SX</text><text x="53" y="31" font-size="10" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">←</text></svg>
             <div class="cc-name">FSL Single — LH</div>
             <div class="cc-code">O-SX → ext.</div>
             <div class="cc-price">from $3,200</div>
@@ -636,7 +667,7 @@ body.sheet-mode #plan-svg { background:#fff; }
               <input type="radio" name="swingEnergy" id="se_low" value="low">
               <label for="se_low">Low energy (ADA)</label>
             </div>
-            <span class="hint" id="swing-energy-hint">Fully automatic $4,500 / $6,800 / $9,450 (two packages + center lite) includes approach, SuperScan both faces, and double-line rails. Low energy is $700 per door less: push/pull and plates, no approach / SuperScan / rails.</span>
+            <span class="hint" id="swing-energy-hint">Fully automatic $4,500 / $6,800 / $9,450 (two packages + center lite) includes approach, SuperScan both faces, and double-line rails. Low energy is $700 per door less: push/pull and plates. Approach and SuperScan are not included. Guide rails are an optional add below.</span>
           </div>
         </div>
 
@@ -701,6 +732,7 @@ body.sheet-mode #plan-svg { background:#fff; }
               <label for="trl_others">By others</label>
             </div>
             <div id="swing-rail-one-L" style="display:none;margin-top:4px;">
+              <label>Which side (as viewed from exterior)</label>
               <div class="chip-group">
                 <input type="radio" name="swingRailSideL" id="trls_left" value="left" checked>
                 <label for="trls_left">Left</label>
@@ -708,7 +740,7 @@ body.sheet-mode #plan-svg { background:#fff; }
                 <label for="trls_right">Right</label>
               </div>
             </div>
-            <span class="hint">Default out-swing RH — hinge left, lock toward the center. In-swing defaults to a panic latch. Rails default on for fully automatic, off for low energy. 3'5"–4'4", 32" clear.</span>
+            <span class="hint">Default out-swing RH — hinge left, lock toward the center. In-swing defaults to a panic latch. Rails default on for fully automatic. Low energy: none unless you add them (+$250 both / +$125 one). 3'5"–4'4", 32" clear.</span>
           </div>
           <div class="field sl-side-card">
             <label>Right door</label>
@@ -757,6 +789,7 @@ body.sheet-mode #plan-svg { background:#fff; }
               <label for="trr_others">By others</label>
             </div>
             <div id="swing-rail-one-R" style="display:none;margin-top:4px;">
+              <label>Which side (as viewed from exterior)</label>
               <div class="chip-group">
                 <input type="radio" name="swingRailSideR" id="trrs_left" value="left" checked>
                 <label for="trrs_left">Left</label>
@@ -764,7 +797,7 @@ body.sheet-mode #plan-svg { background:#fff; }
                 <label for="trrs_right">Right</label>
               </div>
             </div>
-            <span class="hint">Default in-swing LH — hinge right, lock toward the center. Panic latch is on for this in-swing leaf. Rails default on for fully automatic, off for low energy. 3'5"–4'4", 32" clear.</span>
+            <span class="hint">Default in-swing LH — hinge right, lock toward the center. Panic latch is on for this in-swing leaf. Rails default on for fully automatic. Low energy: none unless you add them (+$250 both / +$125 one). 3'5"–4'4", 32" clear.</span>
           </div>
         </div>
 
@@ -1085,7 +1118,7 @@ body.sheet-mode #plan-svg { background:#fff; }
             </div>
           </div>
           <div class="field" id="swing-rails-field">
-            <label>Guide Rails (swing side)</label>
+            <label id="swing-rails-label">Guide Rails (exterior)</label>
             <div class="chip-group">
               <input type="radio" name="swingRails" id="gr_wall" value="wall">
               <label for="gr_wall">Not needed (walls both sides)</label>
@@ -1097,7 +1130,7 @@ body.sheet-mode #plan-svg { background:#fff; }
               <label for="gr_others">Customer furnishes</label>
             </div>
             <div id="swing-rail-one-block" style="display:none;margin-top:10px;">
-              <label>Which side (exterior)</label>
+              <label>Which side (as viewed from exterior)</label>
               <div class="chip-group">
                 <input type="radio" name="swingRailSide" id="grs_left" value="left" checked>
                 <label for="grs_left">Left</label>
@@ -1511,6 +1544,232 @@ body.sheet-mode #plan-svg { background:#fff; }
           </select>
         </div>
       </div>
+      </div><!-- /door-config-block -->
+
+      <!-- ── SWING OPERATOR (unit only) ── -->
+      <div id="operator-config-block" style="display:none;">
+        <div class="section-header">③ Swing Operator — Unit Only</div>
+        <p style="font-size:12px;color:var(--mgray);margin:-6px 0 14px;line-height:1.5;">Automatic swing operator supplied on its own — header, operator, control box, arm and brackets. <strong>No door leaf or frame.</strong> Order it by itself, or add it to a project alongside other items.</p>
+
+        <div class="field">
+          <label>Energy <span class="req">*</span></label>
+          <div class="chip-group" style="flex-wrap:wrap;">
+            <input type="radio" name="opEnergy" id="op_e_low" value="low" checked><label for="op_e_low">Low energy (ADA)</label>
+            <input type="radio" name="opEnergy" id="op_e_high" value="high"><label for="op_e_high">High energy (full auto)</label>
+            <input type="radio" name="opEnergy" id="op_e_lowforce" value="lowforce"><label for="op_e_lowforce">Low-force (spring/clutch)</label>
+          </div>
+        </div>
+
+        <div class="field" id="op-config-field">
+          <label>Configuration <span class="req">*</span></label>
+          <div class="chip-group">
+            <input type="radio" name="opConfig" id="op_c_single" value="single" checked><label for="op_c_single">Single leaf</label>
+            <input type="radio" name="opConfig" id="op_c_pair" value="pair"><label for="op_c_pair">Pair</label>
+          </div>
+        </div>
+
+        <div class="field" id="op-hand-field">
+          <label>Handing (from exterior)</label>
+          <div class="chip-group">
+            <input type="radio" name="opHand" id="op_h_rh" value="rh" checked><label for="op_h_rh">RH</label>
+            <input type="radio" name="opHand" id="op_h_lh" value="lh"><label for="op_h_lh">LH</label>
+          </div>
+          <span class="hint">Single operators only. A pair runs both leaves.</span>
+        </div>
+
+        <div class="field">
+          <label>Mounting &amp; arm <span class="req">*</span></label>
+          <div class="chip-group" style="flex-wrap:wrap;">
+            <input type="radio" name="opArm" id="op_a_surf_push" value="surface-push" checked><label for="op_a_surf_push">Push arm — out-swing</label>
+            <input type="radio" name="opArm" id="op_a_surf_pull" value="surface-pull"><label for="op_a_surf_pull">Pull arm — in-swing</label>
+            <input type="radio" name="opArm" id="op_a_ohc_center" value="ohc-center"><label for="op_a_ohc_center">Center arm — center-hung</label>
+            <input type="radio" name="opArm" id="op_a_ohc_offset" value="ohc-offset"><label for="op_a_ohc_offset">Concealed offset pivot</label>
+            <input type="radio" name="opArm" id="op_a_de_rh" value="de-rh"><label for="op_a_de_rh">Double Egress — RH</label>
+            <input type="radio" name="opArm" id="op_a_de_lh" value="de-lh"><label for="op_a_de_lh">Double Egress — LH</label>
+          </div>
+          <span class="hint">Surface-applied (push/pull) or concealed in the header (center-hung / offset pivot). Double egress is a pair (one leaf in, one out).</span>
+        </div>
+
+        <div class="field">
+          <label>Finish <span class="req">*</span></label>
+          <div class="chip-group">
+            <input type="radio" name="opFinish" id="op_f_clear" value="clear" checked><label for="op_f_clear">Clear / silver / gray</label>
+            <input type="radio" name="opFinish" id="op_f_bronze" value="bronze"><label for="op_f_bronze">Dark bronze</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label id="op-header-label">Header size in inches <span class="req">*</span></label>
+          <div style="display:flex;align-items:center;gap:8px;max-width:200px;">
+            <input type="number" id="op_header_in" min="30" max="96" step="0.125" value="36" style="width:110px;">
+            <span style="color:var(--mgray);font-size:13px;">inches</span>
+          </div>
+          <span class="hint" id="op-header-hint">Header size equals the door width the operator serves. Single: 30–96". Pair: 60–96".</span>
+        </div>
+
+        <div class="field full">
+          <label>Additional options <span style="font-weight:400;color:var(--mgray);">(priced separately — codes append to the model)</span></label>
+          <div style="background:#F8FAFC;border:1px solid var(--border);border-radius:8px;padding:12px 14px;">
+            <p class="op-opt-note" style="margin:0 0 10px;">Only options that apply to the mounting &amp; arm above are shown.</p>
+
+            <div class="op-opt-group">
+              <div class="op-opt-h">Switches</div>
+              <div class="chip-group" style="flex-wrap:wrap;">
+                <input type="radio" name="opSwitch" id="op_sw_none" value="none" checked><label for="op_sw_none">None</label>
+                <span class="op-qv-item">
+                  <input type="radio" name="opSwitch" id="op_sw_rocker3" value="rocker3"><label for="op_sw_rocker3">R — 3-pos rocker — $66</label>
+                  <button type="button" class="op-qv-btn" data-qv="sw-rocker3">Quick view</button>
+                </span>
+                <span class="op-qv-item">
+                  <input type="radio" name="opSwitch" id="op_sw_key3" value="key3"><label for="op_sw_key3">K — 3-pos key — $87</label>
+                  <button type="button" class="op-qv-btn" data-qv="sw-key3">Quick view</button>
+                </span>
+                <span class="op-qv-item">
+                  <input type="radio" name="opSwitch" id="op_sw_rocker2" value="rocker2"><label for="op_sw_rocker2">T — 2-pos rocker — $66</label>
+                  <button type="button" class="op-qv-btn" data-qv="sw-rocker2">Quick view</button>
+                </span>
+                <span class="op-qv-item">
+                  <input type="radio" name="opSwitch" id="op_sw_key4" value="key4"><label for="op_sw_key4">F — 4-pos key — $104</label>
+                  <button type="button" class="op-qv-btn" data-qv="sw-key4">Quick view</button>
+                </span>
+              </div>
+              <p class="op-opt-note">R / K / T / F append to the Condor model. Key/knob combos are not used.</p>
+            </div>
+
+            <div class="op-opt-group" id="op-opts-header-x" hidden>
+              <div class="op-opt-h">Longer single header</div>
+              <p class="op-opt-note" id="op-x-note">This header is over 48". An extended-header charge is added for each foot over 4′ and X is added to the model.</p>
+            </div>
+
+            <div class="op-opt-group" id="op-opts-header-n">
+              <div class="op-opt-h">Header exception</div>
+              <div class="chip-group">
+                <input type="checkbox" id="op_opt_N" value="N"><label for="op_opt_N">N — Independent pair</label>
+              </div>
+              <p class="op-opt-note">Independent pair is N on the model so it doesn’t collide with Fixed Stop F.</p>
+            </div>
+
+            <div class="op-opt-group" id="op-opts-push">
+              <div class="op-opt-h">Push arm — singles &amp; pairs</div>
+              <div class="chip-group">
+                <span class="op-qv-item">
+                  <input type="checkbox" id="op_opt_E" value="E"><label for="op_opt_E">E — Extended reveal (over 8") — $25</label>
+                  <button type="button" class="op-qv-btn" data-qv="ext-kit">Quick view</button>
+                </span>
+                <input type="checkbox" id="op_opt_Z" value="Z"><label for="op_opt_Z">Z — Balanced-door spindle 12.25"</label>
+              </div>
+              <p class="op-opt-note">One kit per leaf (1 on a single, 2 on a pair). Finish matches the operator. Surface push arms only. Balanced-door spindle: call to confirm pricing.</p>
+            </div>
+
+            <div class="op-opt-group" id="op-opts-ohc-center">
+              <div class="op-opt-h">OHC center-hung header</div>
+              <div class="chip-group">
+                <input type="checkbox" id="op_opt_B" value="B"><label for="op_opt_B">B — Breakaway stop &amp; prep</label>
+                <input type="checkbox" id="op_opt_F" value="F"><label for="op_opt_F">F — Fixed stop &amp; prep</label>
+                <input type="checkbox" id="op_opt_S" value="S"><label for="op_opt_S">S — Move spindle 3.75" → 2.75"</label>
+              </div>
+              <p class="op-opt-note">Stops and header prep apply only to center-hung OHC. Spindle move is no charge (center-hung default is 3.75").</p>
+            </div>
+
+            <div class="op-opt-group" id="op-opts-endcaps">
+              <div class="op-opt-h">Surface-applied header</div>
+              <div class="chip-group">
+                <span class="op-qv-item">
+                  <input type="checkbox" id="op_opt_P" value="P"><label for="op_opt_P">P — Black plastic end caps — $36</label>
+                  <button type="button" class="op-qv-btn" data-qv="end-plates">Quick view</button>
+                </span>
+              </div>
+              <p class="op-opt-note">Surface-applied push or pull only. Concealed headers (center-hung and offset pivot) do not use end caps.</p>
+            </div>
+
+            <div class="op-opt-group" id="op-opts-pull">
+              <div class="op-opt-h">Pull arm</div>
+              <div class="chip-group">
+                <input type="checkbox" id="op_opt_W" value="W"><label for="op_opt_W">W — Wood door screw pack</label>
+                <input type="checkbox" id="op_opt_Y" value="Y"><label for="op_opt_Y">Y — Fire door screw pack</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="field full" id="op-low-acc">
+          <label>Activation &amp; accessories <span style="font-weight:400;color:var(--mgray);">(low energy — knowing-act)</span></label>
+          <div style="background:#F8FAFC;border:1px solid var(--border);border-radius:8px;padding:12px 14px;">
+            <div class="op-opt-h">Push plate kit</div>
+            <div class="chip-group" style="flex-wrap:wrap;">
+              <input type="radio" name="opPlateKit" id="op_kit_none" value="none" checked><label for="op_kit_none">None</label>
+              <input type="radio" name="opPlateKit" id="op_kit_one" value="one"><label for="op_kit_one">Kit 1 — 1 plate + transmitter + receiver — $165</label>
+              <input type="radio" name="opPlateKit" id="op_kit_two" value="two"><label for="op_kit_two">Kit 2 — 2 plates + 2 transmitters + receiver — $275</label>
+            </div>
+            <p class="op-opt-note">Kit 1 is one door: 1 plate, 1 transmitter, 1 receiver.<br>Kit 2 is a pair: 1 plate each side (styles can differ), 2 transmitters, 1 receiver.<br>Extras and replacements are on the <a href="parts.html">parts catalog</a>.</p>
+
+            <div id="op-plate-style-wrap" hidden>
+              <div class="op-opt-h" id="op-plate-style-h">Plate — required</div>
+              <div id="op-style-a" class="chip-group" style="flex-wrap:wrap;"></div>
+              <div id="op-style-b-block" hidden>
+                <div class="op-opt-h">Plate 2 — required (can be a different style)</div>
+                <div id="op-style-b" class="chip-group" style="flex-wrap:wrap;"></div>
+              </div>
+              <p class="op-opt-note" id="op-plate-style-need" hidden>Pick a plate style for each station in this kit.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="field full" id="op-high-acc" style="display:none;">
+          <label>Full automatic safety <span style="font-weight:400;color:var(--mgray);">(A156.10 — recommended)</span></label>
+          <div style="background:#FFF7ED;border:1px solid #FDBA74;border-radius:8px;padding:12px 14px;">
+            <p class="op-opt-note" style="margin-top:0;">Recommended for high-energy / full automatic. Not required on low-energy ADA.</p>
+            <div class="op-opt-h">Guide rails</div>
+            <div class="chip-group">
+              <input type="radio" name="opRails" id="op_rail_both" value="both" checked><label for="op_rail_both">Both sides (double-line)</label>
+              <input type="radio" name="opRails" id="op_rail_one" value="one"><label for="op_rail_one">One side</label>
+              <input type="radio" name="opRails" id="op_rail_none" value="none"><label for="op_rail_none">None / by others</label>
+            </div>
+            <div class="op-opt-h">Approach sensor</div>
+            <div class="chip-group">
+              <input type="radio" name="opApproach" id="op_ap_bea" value="bea" checked><label for="op_ap_bea">BEA approach</label>
+              <input type="radio" name="opApproach" id="op_ap_none" value="none"><label for="op_ap_none">None / by others</label>
+            </div>
+            <div class="op-opt-h">Door-mounted presence (SuperScan)</div>
+            <div class="chip-group">
+              <input type="radio" name="opScan" id="op_sc_both" value="both" checked><label for="op_sc_both">Both faces</label>
+              <input type="radio" name="opScan" id="op_sc_swing" value="swing"><label for="op_sc_swing">Swing face only</label>
+              <input type="radio" name="opScan" id="op_sc_none" value="none"><label for="op_sc_none">None / by others</label>
+            </div>
+            <div class="op-opt-h">Header safety</div>
+            <div class="chip-group">
+              <input type="radio" name="opHdrSafe" id="op_hs_no" value="no" checked><label for="op_hs_no">None</label>
+              <input type="radio" name="opHdrSafe" id="op_hs_yes" value="yes"><label for="op_hs_yes">MS Sedco DH94 (+$245)</label>
+            </div>
+            <p class="op-opt-note">If SuperScan is on the swing face only, add the DH94 so the overhead + door-mounted combo is complete.</p>
+            <p id="op-scan-warn" style="display:none;font-size:11px;color:#B45309;font-weight:700;margin:8px 0 0;">A156.10: swing-side SuperScan alone is not a complete safety zone unless you also add the MS Sedco DH94 header safety sensor.</p>
+          </div>
+        </div>
+
+        <div class="field full" id="op-product-details" style="background:#F8FAFC;border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-top:6px;">
+          <label style="margin-bottom:6px;">Product details</label>
+          <p style="font-size:13px;line-height:1.5;color:var(--ink);margin:0 0 10px;">Condor automatic door swing operator. Includes: housing, motor/gearbox, control, arm, and mounting brackets. No door leaf or frame.</p>
+          <div style="font-size:12px;font-weight:700;color:var(--blue);margin-bottom:4px;">Standard configurations</div>
+          <ul style="margin:0;padding-left:18px;font-size:12px;line-height:1.55;color:#334155;">
+            <li>2.75" spindle location on surface-applied units (push arm / pull arm).</li>
+            <li>3.75" spindle location on center-hung units (center arm / concealed offset pivot).</li>
+            <li>8" maximum reveal on push arms.</li>
+            <li>4" maximum reveal on pull arms.</li>
+            <li>Pairs operate simultaneously.</li>
+            <li>Double egress pairs: RH (PR) or LH (PL) in the model number — in place of P1 / P2.</li>
+            <li>Contact Doortronix for special requirements.</li>
+          </ul>
+          <div style="margin-top:12px;padding-top:10px;border-top:1px solid #E5EAF0;">
+            <div style="font-size:12px;font-weight:700;color:var(--blue);margin-bottom:4px;">Cross reference numbers</div>
+            <p style="font-size:12px;line-height:1.5;color:#334155;margin:0 0 10px;">Dor-O-Matic, LCN, Astro, Mid and Senior Swing: 2810, 2850, 2860, 9530, 9540, 9550, 9560.</p>
+            <div style="font-size:12px;font-weight:700;color:var(--blue);margin-bottom:6px;">Drawings &amp; specs</div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px 16px;font-size:13px;">
+              <a id="op-spec-doc" href="docs/condor/single-out-push.pdf" target="_blank" rel="noopener" style="font-weight:700;color:var(--blue);">Spec drawing for this model →</a>
+              <a href="docs/condor/spec-general.pdf" target="_blank" rel="noopener" style="font-weight:700;color:var(--blue);">General specification →</a>
+            </div>
+          </div>
+        </div>
+      </div><!-- /operator-config-block -->
 
       <!-- Notes -->
       <div class="section-header">⑥ Notes &amp; Special Requirements for This Door</div>
@@ -1548,7 +1807,7 @@ body.sheet-mode #plan-svg { background:#fff; }
             <span class="hint" id="location-tags-hint">Label this opening for your reference.</span>
           </div>
         </div>
-        <p>This quote is for the <strong>aluminum door package only</strong>. Prices are net contractor pricing and <strong>do not include glass/glazing, freight, installation, or applicable taxes</strong>. Submitting a quote does not start fabrication. Next we send a confirmation drawing; you approve it and pay the deposit or full amount in your account; then we build and ship.</p>
+        <p id="quote-terms-scope">This quote is for the <strong>aluminum door package only</strong>. Prices <strong>do not include glass/glazing, freight, installation, or applicable taxes</strong>. Submitting a quote does not start fabrication. Next we send a confirmation drawing; you approve it and pay the deposit or full amount in your account; then we build and ship.</p>
         <div id="dtx-terms-quote"></div>
         <div class="account-create-box" id="account-create-box">
           <div class="ac-title">Your Doortronix account</div>
@@ -1556,7 +1815,7 @@ body.sheet-mode #plan-svg { background:#fff; }
           <div id="account-guest-fields">
             <div class="ac-row">
               <input type="checkbox" id="f_create_account" checked>
-              <label for="f_create_account">Create a free account now so you can pay, track this order, and reorder later. Uses the contact info above.</label>
+              <label for="f_create_account">Create an account now so you can pay, track this order, and reorder later. Uses the contact info above.</label>
             </div>
             <div class="field" id="account-pass-field">
               <label>Account password (8+ characters)</label>
@@ -1566,8 +1825,8 @@ body.sheet-mode #plan-svg { background:#fff; }
           </div>
         </div>
         <button type="button" class="btn-add-cart" id="btn-add-to-cart" onclick="addDoorToCart()">Add to project &amp; configure another</button>
-        <button type="submit" class="btn-submit" style="background:#6B7280;margin-top:0;">Submit Quote (this door only) →</button>
-        <p style="font-size:10px;color:var(--mgray);margin-top:8px;text-align:center;">Single door only? Use "Submit Quote" above. Multiple doors? Add each to the project cart, then submit all at once.</p>
+        <button type="submit" class="btn-submit" id="btn-submit-one" style="background:#6B7280;margin-top:0;">Submit Quote (this door only) →</button>
+        <p id="quote-submit-hint" style="font-size:10px;color:var(--mgray);margin-top:8px;text-align:center;">Single door only? Use "Submit Quote" above. Multiple doors? Add each to the project cart, then submit all at once.</p>
       </div>
 
     </form>
@@ -1605,6 +1864,13 @@ body.sheet-mode #plan-svg { background:#fff; }
         <span id="pf-dims" style="color:#555;font-size:12px;"></span>
       </div>
       <p class="draw-disclaimer">Preliminary drawing only. Glass sizes, dimensions, and all details are not confirmed until Doortronix issues a signed order confirmation. Do not cut glass or fabricate from this preview. Glass is supplied by others.</p>
+    </div>
+
+    <div id="operator-drawing-wrap" style="display:none;">
+      <img id="operator-photo" src="images/swingdoor.jpg" alt="Automatic swing operator" style="width:100%;height:auto;display:block;border-radius:6px;">
+      <svg id="operator-svg" viewBox="0 0 600 360" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="display:none;width:100%;height:auto;"></svg>
+      <div id="operator-sku-line" style="text-align:center;font-weight:700;color:#1B4F8A;padding:8px 10px 2px;font-family:Arial,sans-serif;font-size:14px;"></div>
+      <p class="draw-disclaimer">Representative photo of a surface-applied automatic swing operator. Your configured model is shown above; the final arm, mounting, and dimensions are issued on the order confirmation.</p>
     </div>
 
     <div class="spec-card">
@@ -1665,6 +1931,17 @@ body.sheet-mode #plan-svg { background:#fff; }
       </div>
     </div>
     <div class="orange-bar"></div>
+  </div>
+</div>
+
+<div id="op-qv-modal" hidden>
+  <div class="op-qv-back" data-qv-close></div>
+  <div class="op-qv-card" role="dialog" aria-modal="true" aria-labelledby="op-qv-title">
+    <button type="button" class="op-qv-close" data-qv-close aria-label="Close">×</button>
+    <img id="op-qv-img" alt="">
+    <h3 id="op-qv-title"></h3>
+    <div class="op-qv-price" id="op-qv-price"></div>
+    <p class="op-opt-note" id="op-qv-note" hidden></p>
   </div>
 </div>
 
@@ -1771,14 +2048,18 @@ async function savePortalDraft() {
     });
   };
   if (!t) {
-    setStatus('To save this quote and reopen it later, <a href="portal/login.html" style="color:#166534;font-weight:700;">sign in</a> or <a href="portal/signup.html" style="color:#166534;font-weight:700;">create a free account</a>. It only takes a minute.', false);
+    setStatus('To save this quote and reopen it later, <a href="portal/login.html" style="color:#166534;font-weight:700;">sign in</a> or <a href="portal/signup.html" style="color:#166534;font-weight:700;">create an account</a>. It only takes a minute.', false);
     return;
   }
 
   // Fold the door the user is currently configuring into the project first, so
   // "Save" captures in-progress work without them having to click "Add" too.
   let inProgressNote = '';
-  if (hasInProgressDoor()) {
+  if (_orderKind === 'operator') {
+    // Operators always have valid defaults; only fold in the current one when
+    // the project is otherwise empty, so repeated saves don't duplicate it.
+    if (getCart().length === 0 && _editingDoorId === null) addDoorToCart({ lenient: true });
+  } else if (hasInProgressDoor()) {
     const ok = addDoorToCart({ lenient: true });
     if (!ok) {
       if (getCart().length === 0) return; // addDoorToCart already flagged the problem
@@ -1938,11 +2219,13 @@ const CONFIGS = {
 
 // ── Door Type Toggle ────────────────────────────────────────────────
 let _currentDoorType = 'bi-part';
+let _orderKind = 'door'; // 'door' (slider/swing package) or 'operator' (Condor unit only)
 
 function isSwingCfg(cfg) { return !!(cfg && cfg.isSwing); }
 function isSwingTwin(cfg) { return !!((cfg || getConfig()) && (cfg || getConfig()).isTwin); }
 
 function setDoorType(type) {
+  if (_orderKind === 'operator') setOperatorMode(false);
   _currentDoorType = type;
   document.getElementById('configGrid-bipart').style.display = type === 'bi-part' ? '' : 'none';
   document.getElementById('configGrid-single').style.display  = type === 'single'   ? '' : 'none';
@@ -1950,6 +2233,7 @@ function setDoorType(type) {
   document.getElementById('tab-bipart').classList.toggle('active', type === 'bi-part');
   document.getElementById('tab-single').classList.toggle('active', type === 'single');
   document.getElementById('tab-swing').classList.toggle('active', type === 'swing');
+  const tOp = document.getElementById('tab-operator'); if (tOp) tOp.classList.remove('active');
   const title = document.getElementById('form-main-title');
   const intro = document.getElementById('form-intro');
   if (type === 'swing') {
@@ -1984,6 +2268,7 @@ function setDoorType(type) {
   if (mAff2 && mAff2.options.length) mAff2.value = '24';
   syncSwingUi();
   updateAll();
+  syncProjectScopeCopy();
 }
 
 // Reveal the full quote form and lock in a door family from the first-step chooser.
@@ -1996,7 +2281,949 @@ function chooseDoorFamily(fam, fresh) {
   if (chooser) chooser.style.display = 'none';
   const flow = document.getElementById('quote-flow');
   if (flow) flow.style.display = '';
+  if (fam === 'operator') { setOperatorMode(true); return; }
   setDoorType(fam === 'swing' ? 'swing' : 'bi-part');
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// Swing operator (Condor) — a standalone unit-only item that shares the
+// same project cart / account / save flow as sliding & swing door packages.
+// ══════════════════════════════════════════════════════════════════════
+// Labels + Motion Access "Condor" order codes.
+// SKU: MAC-[Energy][Handing][Arm#][Finish]-[HeaderInches] [switch options]
+const OP_ENERGY_LABEL = { low:'Low energy (ADA)', high:'High energy (full auto)', lowforce:'Low-force / clutch' };
+const OP_ARM_LABEL    = { 'surface-push':'Push arm — out-swing (surface)', 'surface-pull':'Pull arm — in-swing (surface)', 'ohc-center':'Center arm — center-hung (concealed)', 'ohc-offset':'Concealed offset pivot', 'de-rh':'Double Egress — RH', 'de-lh':'Double Egress — LH' };
+const OP_FINISH_LABEL = { clear:'Clear / silver', bronze:'Dark bronze' };
+const OP_SWITCH_LABEL = { none:'None', rocker3:'3-position rocker', key3:'3-position key', rocker2:'2-position rocker', key4:'4-position key' };
+const OP_RAIL_LABEL    = { both:'Guide rails — both sides (double-line)', one:'Guide rails — one side', none:'Guide rails — none / by others' };
+const OP_APPROACH_LABEL = { bea:'BEA approach sensor', none:'Approach sensor — none / by others' };
+const OP_SCAN_LABEL    = { both:'BEA SuperScan — both faces', swing:'BEA SuperScan — swing face only', none:'SuperScan — none / by others' };
+const OP_HDRSAFE_LABEL = { no:'None', yes:'MS Sedco DH94 header safety' };
+
+// Low-energy activation / decals. `cost` = Motion net (markup applies).
+// `sell` = Doortronix catalog price from the swing-package list (no second markup).
+// `call` = confirm on the quote.
+const OP_ACC = [];
+const OP_PLATE_STYLE = {
+  p1191: { sku: '1191', label: '4×4 logo + PUSH TO OPEN',    sell: 55, img: 'images/operator/plate-1191.jpg' },
+  p1198: { sku: '1198', label: '4×4 text only',              sell: 55, img: 'images/operator/plate-1198.jpg' },
+  p1199: { sku: '1199', label: '4×4 logo only',              sell: 55, img: 'images/operator/plate-1199.jpg' },
+  p1192: { sku: '1192', label: 'Jamb switch, logo + text',   sell: 55, img: 'images/operator/plate-1192.jpg' },
+  p1200: { sku: '1200', label: 'Jamb switch, text only',     sell: 55, img: 'images/operator/plate-1200.jpg' },
+};
+// BEA nets from Doortronix C000460 book (Sept 2024). Sell is the catalog price.
+const OP_BEA = {
+  tx: { sku: '10TD900PB', label: 'BEA 900 MHz transmitter', cost: 31.98, list: 76.40, sell: 55, img: 'images/operator/bea-10td900pb.jpg' },
+  rx: { sku: '10RD900',   label: 'BEA 900 MHz receiver',    cost: 31.47, list: 79.78, sell: 55, img: 'images/operator/bea-10rd900.jpg' },
+};
+const OP_PLATE_TX = OP_BEA.tx.sell;
+const OP_PLATE_RX = OP_BEA.rx.sell;
+
+const OP_ENERGY_CODE = { low:'L', high:'H', lowforce:'M' };
+const OP_ARM_CODE    = { 'surface-push':'1', 'surface-pull':'2', 'ohc-center':'3', 'ohc-offset':'4' };
+const OP_FINISH_CODE = { clear:'C', bronze:'D' };
+const OP_SWITCH_CODE = { rocker3:'R', key3:'K', rocker2:'T', key4:'F' };
+const OP_OPT_ORDER = ['E','B','F','X','N','P','W','Y','S','Z'];
+const OP_OPT_LABEL = {
+  E: 'Push rod extension kit (reveals over 8")',
+  B: 'Breakaway stop & prep',
+  F: 'Fixed stop & prep',
+  X: 'Extended single (over 48")',
+  N: 'Independent pair',
+  P: 'Black plastic end caps',
+  W: 'Wood door screw pack',
+  Y: 'Fire door screw pack',
+  S: 'OHC spindle 3.75" → 2.75"',
+  Z: 'Balanced-door spindle 12.25"',
+};
+const OP_OPT_COST = { B: 34.50, F: 19.90, N: 531.50, W: 7.90, Y: 7.90, S: 0, Z: 0 };
+const OP_EXT_KIT = {
+  sku: 'MA-EXT-KIT',
+  label: 'Push rod extension kit',
+  sell: 25,
+  img: 'images/operator/ma-ext-kit.jpg',
+  note: 'For push-arm reveals over 8″. One kit per leaf. Finish (clear or dark bronze) matches the operator. Fits Condor and Dor-O-Matic / LCN Astro, Senior, and Mid push arms.',
+};
+const OP_END_PLATES = {
+  sku: 'MA-END-PLATES',
+  label: 'Header end dress plates (plastic)',
+  sell: 36,
+  img: 'images/operator/ma-end-plates.jpg',
+  note: 'Two black ABS plates and eight screws. For tight mounts when L-brackets are not used. Fits Condor and Dor-O-Matic / LCN Astro, Senior, and Mid Swing.',
+};
+
+function operatorOptApplies(code) {
+  const arm = rv('opArm') || 'surface-push';
+  const isPush = arm === 'surface-push';
+  const isPull = arm === 'surface-pull';
+  const isOhcCenter = arm === 'ohc-center';
+  const isPair = isOpPair();
+  const de = isOpDoubleEgress();
+  if (code === 'E' || code === 'Z') return isPush;
+  if (code === 'B' || code === 'F' || code === 'S') return isOhcCenter;
+  if (code === 'P') return isPush || isPull || de;
+  if (code === 'W' || code === 'Y') return isPull || de;
+  if (code === 'X') return false;
+  if (code === 'N') return isPair;
+  return true;
+}
+function syncOperatorOptVisibility() {
+  const arm = rv('opArm') || 'surface-push';
+  const isPush = arm === 'surface-push';
+  const isPull = arm === 'surface-pull';
+  const isOhcCenter = arm === 'ohc-center';
+  const isPair = isOpPair();
+  const de = isOpDoubleEgress();
+  const show = (id, on) => { const el = document.getElementById(id); if (el) el.hidden = !on; };
+  show('op-opts-push', isPush);
+  show('op-opts-ohc-center', isOhcCenter);
+  show('op-opts-endcaps', isPush || isPull || de);
+  show('op-opts-pull', isPull || de);
+  show('op-opts-header-x', !isPair && operatorHeaderIn() > 48);
+  show('op-opts-header-n', isPair);
+  OP_OPT_ORDER.forEach(code => {
+    if (operatorOptApplies(code)) return;
+    const el = document.getElementById('op_opt_' + code);
+    if (el && !el.disabled) el.checked = false;
+  });
+}
+function operatorExtendedFt() {
+  if (isOpPair()) return 0;
+  const hin = operatorHeaderIn();
+  if (hin <= 48) return 0;
+  return Math.ceil((hin - 48) / 12);
+}
+function operatorOptCodes() {
+  const codes = [];
+  const sw = OP_SWITCH_CODE[rv('opSwitch') || 'none'];
+  if (sw) codes.push(sw);
+  const extraFt = operatorExtendedFt();
+  if (extraFt) codes.push('X');
+  OP_OPT_ORDER.forEach(code => {
+    if (code === 'X') return;
+    if (!operatorOptApplies(code)) return;
+    const el = document.getElementById('op_opt_' + code);
+    if (el && el.checked) codes.push(code);
+  });
+  return codes;
+}
+function operatorSku() {
+  const e  = OP_ENERGY_CODE[rv('opEnergy') || 'low'];
+  const arm = rv('opArm') || 'surface-push';
+  const f  = OP_FINISH_CODE[rv('opFinish') || 'clear'];
+  // Pair + arm 1/2 would read P1 / P2. Double egress uses PR / PL in that slot instead.
+  let hpA;
+  if (arm === 'de-rh') hpA = 'PR';
+  else if (arm === 'de-lh') hpA = 'PL';
+  else {
+    const hp = isOpPair() ? 'P' : ((rv('opHand') || 'rh') === 'lh' ? 'L' : 'R');
+    hpA = hp + (OP_ARM_CODE[arm] || '1');
+  }
+  let sku = 'MAC-' + e + hpA + f + '-' + operatorHeaderIn();
+  const opts = operatorOptCodes();
+  if (opts.length) sku += '-' + opts.join('-');
+  return sku;
+}
+
+const OP_HEADER_SINGLE_MIN = 30;
+const OP_HEADER_PAIR_MIN   = 60;
+const OP_HEADER_MAX        = 96;
+const OP_HEADER_SINGLE_DEFAULT = 36;
+const OP_HEADER_PAIR_DEFAULT   = 72;
+let _opHeaderIsPair = false;
+
+function operatorHeaderLimits() {
+  return isOpPair()
+    ? { min: OP_HEADER_PAIR_MIN, max: OP_HEADER_MAX }
+    : { min: OP_HEADER_SINGLE_MIN, max: OP_HEADER_MAX };
+}
+function clampOperatorHeader() {
+  const el = document.getElementById('op_header_in');
+  if (!el) return;
+  const lim = operatorHeaderLimits();
+  el.min = String(lim.min);
+  el.max = String(lim.max);
+  let v = parseFloat(el.value);
+  if (!isFinite(v)) v = lim.min;
+  if (v < lim.min) v = lim.min;
+  if (v > lim.max) v = lim.max;
+  if (String(el.value) !== String(v)) el.value = String(v);
+}
+function operatorHeaderIn() {
+  const lim = operatorHeaderLimits();
+  const v = parseFloat(fv('op_header_in'));
+  if (!isFinite(v) || v <= 0) return isOpPair() ? OP_HEADER_PAIR_DEFAULT : OP_HEADER_SINGLE_DEFAULT;
+  if (v < lim.min) return lim.min;
+  if (v > lim.max) return lim.max;
+  return v;
+}
+function operatorHeaderStr() {
+  const t = operatorHeaderIn();
+  // Match Motion Access: header size is stated in inches.
+  return (Number.isInteger(t) ? t : t.toFixed(3).replace(/\.?0+$/, '')) + '"';
+}
+function isOpDoubleEgress() {
+  const a = rv('opArm') || '';
+  return a === 'de-rh' || a === 'de-lh';
+}
+function isOpPair() {
+  return isOpDoubleEgress() || rv('opConfig') === 'pair';
+}
+function operatorSpecDoc() {
+  const pair = isOpPair();
+  const arm = rv('opArm') || 'surface-push';
+  if (isOpDoubleEgress()) return { href: 'docs/condor/pair-double-egress.pdf', label: 'Spec drawing — double egress pair →' };
+  if (arm === 'surface-pull') return { href: pair ? 'docs/condor/pair-in-pull.pdf' : 'docs/condor/single-in-pull.pdf', label: pair ? 'Spec drawing — pair in-swing / pull arm →' : 'Spec drawing — single in-swing / pull arm →' };
+  if (arm === 'ohc-center') return { href: pair ? 'docs/condor/pair-ohc-center.pdf' : 'docs/condor/single-ohc-center.pdf', label: pair ? 'Spec drawing — pair OHC center-hung →' : 'Spec drawing — single OHC center-hung →' };
+  if (arm === 'ohc-offset') return { href: pair ? 'docs/condor/pair-ohc-offset.pdf' : 'docs/condor/single-ohc-offset.pdf', label: pair ? 'Spec drawing — pair OHC offset pivot →' : 'Spec drawing — single OHC offset pivot →' };
+  return { href: pair ? 'docs/condor/pair-out-push.pdf' : 'docs/condor/single-out-push.pdf', label: pair ? 'Spec drawing — pair out-swing / push arm →' : 'Spec drawing — single out-swing / push arm →' };
+}
+function syncOperatorLiterature() {
+  const doc = operatorSpecDoc();
+  const a = document.getElementById('op-spec-doc');
+  if (a) { a.href = doc.href; a.textContent = doc.label; }
+}
+
+// Motion Access Condor net pricing (dealer COST). Base includes arm + finish per suffix.
+const OP_BASE_PRICE   = { single: 1218, pair: 2268 };
+// Motion nets: MA40011 $44, MA40111 $58, MA20011 $44, MA44111 $69.
+// Sell = ceil(net × 1.50). Key/knob SKUs (MA40111K, MA44111K) are not used.
+const OP_SWITCH_PRICE = { rocker3: 66, key3: 87, rocker2: 66, key4: 104, none: 0 };
+const OP_SWITCH_QV = {
+  rocker3: { sku: 'MA40011', label: '3-position rocker', sell: 66, img: 'images/operator/ma-40011.jpg', note: 'ON / OFF / HOLD OPEN. Universal rocker. Code R on the Condor model.' },
+  key3:    { sku: 'MA40111', label: '3-position key',    sell: 87, img: 'images/operator/ma-40111.jpg', note: 'Key only (no knob). Universal. Code K on the Condor model.' },
+  rocker2: { sku: 'MA20011', label: '2-position rocker', sell: 66, img: 'images/operator/ma-20011.jpg', note: 'OFF / ON. Universal rocker. Code T on the Condor model.' },
+  key4:    { sku: 'MA44111', label: '4-position key',    sell: 104, img: 'images/operator/ma-44111.jpg', note: '4- and 3-position key only (no knob). Universal. Code F on the Condor model.' },
+};
+const OP_EXT_PER_FT   = 57; // <X> extended single over 4'
+// Two price tiers, both markups on our net cost:
+//   Contractor (must apply / be approved): 33% markup  → cost × 1.33
+//   Retail (everyone else, default):       50% markup  → cost × 1.50
+const OP_MARKUP_CONTRACTOR = 1.33;
+const OP_MARKUP_RETAIL     = 1.50;
+
+// An account gets contractor pricing once approved. Until the backend has a
+// dedicated flag, we treat admins and accounts with a set distributor discount
+// (i.e. approved accounts) as contractor tier.
+function isContractorTier() {
+  const u = window._portalUser;
+  return !!(u && (u.isAdmin || u.contractorApproved || u.priceTier === 'contractor' || u.discountPct > 0));
+}
+function operatorMarkup() { return isContractorTier() ? OP_MARKUP_CONTRACTOR : OP_MARKUP_RETAIL; }
+function opMoney(n) { return Math.round(Number(n) * 100) / 100; }
+function operatorAccSell(acc, markup) {
+  if (!acc) return 0;
+  if (acc.sell) return acc.sell;
+  if (!acc.cost) return 0;
+  return opMoney(acc.cost * (markup || operatorMarkup()));
+}
+function syncOperatorAccLabels() {
+  const mu = operatorMarkup();
+  OP_ACC.forEach(a => {
+    if (a.call) return;
+    const lab = document.querySelector('label[for="' + a.id + '"]');
+    if (!lab) return;
+    const name = a.chip || a.label;
+    lab.textContent = (a.sku ? a.sku + ' — ' : '') + name + ' — ' + fmt(operatorAccSell(a, mu));
+  });
+}
+
+function operatorExtKitQty() { return isOpPair() ? 2 : 1; }
+function operatorExtKitFinish() {
+  return (rv('opFinish') || 'clear') === 'bronze' ? 'Dark bronze' : 'Clear';
+}
+function operatorExtKitSell() { return OP_EXT_KIT.sell * operatorExtKitQty(); }
+function operatorExtKitLabel() {
+  const qty = operatorExtKitQty();
+  return OP_EXT_KIT.label + ' — ' + operatorExtKitFinish() + (qty > 1 ? ' ×' + qty : '');
+}
+function syncOperatorExtKitLabel() {
+  const lab = document.querySelector('label[for="op_opt_E"]');
+  if (!lab) return;
+  const qty = operatorExtKitQty();
+  lab.textContent = 'E — Extended reveal (over 8") — ' + operatorExtKitFinish() + ' — ' + fmt(operatorExtKitSell()) + (qty > 1 ? ' (' + qty + ' kits)' : '');
+}
+
+function opQuickViewItem(key) {
+  if (key && key.indexOf('sw-') === 0) {
+    const sw = OP_SWITCH_QV[key.slice(3)];
+    if (!sw) return null;
+    return { title: sw.sku + ' — ' + sw.label, price: sw.sell, img: sw.img, note: sw.note };
+  }
+  if (key === 'ext-kit') {
+    const qty = operatorExtKitQty();
+    return {
+      title: OP_EXT_KIT.sku + ' — ' + OP_EXT_KIT.label,
+      price: operatorExtKitSell(),
+      img: OP_EXT_KIT.img,
+      note: OP_EXT_KIT.note + ' This operator: ' + operatorExtKitFinish() + (qty > 1 ? ', ' + qty + ' kits.' : '.'),
+    };
+  }
+  if (key === 'end-plates') return { title: OP_END_PLATES.sku + ' — ' + OP_END_PLATES.label, price: OP_END_PLATES.sell, img: OP_END_PLATES.img, note: OP_END_PLATES.note };
+  if (key === 'bea-tx') return { title: OP_BEA.tx.sku + ' — ' + OP_BEA.tx.label, price: OP_BEA.tx.sell, img: OP_BEA.tx.img };
+  if (key === 'bea-rx') return { title: OP_BEA.rx.sku + ' — ' + OP_BEA.rx.label, price: OP_BEA.rx.sell, img: OP_BEA.rx.img };
+  if (OP_PLATE_STYLE[key]) {
+    const p = OP_PLATE_STYLE[key];
+    return { title: p.sku + ' — ' + p.label, price: p.sell, img: p.img };
+  }
+  const a = OP_ACC.find(x => x.id === key);
+  if (!a || !a.img) return null;
+  return { title: (a.sku ? a.sku + ' — ' : '') + (a.chip || a.label), price: a.sell, img: a.img };
+}
+function openOpQuickView(key) {
+  const item = opQuickViewItem(key);
+  const modal = document.getElementById('op-qv-modal');
+  if (!item || !modal) return;
+  const img = document.getElementById('op-qv-img');
+  img.src = item.img;
+  img.alt = item.title;
+  document.getElementById('op-qv-title').textContent = item.title;
+  document.getElementById('op-qv-price').textContent = item.price != null ? fmt(item.price) : '';
+  const note = document.getElementById('op-qv-note');
+  if (note) {
+    note.textContent = item.note || '';
+    note.hidden = !item.note;
+  }
+  modal.hidden = false;
+  document.body.style.overflow = 'hidden';
+}
+function closeOpQuickView() {
+  const modal = document.getElementById('op-qv-modal');
+  if (!modal) return;
+  modal.hidden = true;
+  document.body.style.overflow = '';
+}
+document.addEventListener('click', function (e) {
+  const btn = e.target.closest && e.target.closest('.op-qv-btn');
+  if (btn) {
+    e.preventDefault();
+    e.stopPropagation();
+    openOpQuickView(btn.getAttribute('data-qv'));
+    return;
+  }
+  if (e.target.closest && e.target.closest('[data-qv-close]')) closeOpQuickView();
+});
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Escape') closeOpQuickView();
+});
+
+function operatorAccQty(id) {
+  const el = document.getElementById(id);
+  if (!el || !el.checked) return 0;
+  const sel = document.getElementById(id + '_qty');
+  const n = sel ? parseInt(sel.value, 10) : 1;
+  return (n > 0 && n <= 8) ? n : 1;
+}
+function operatorAccRows() {
+  return OP_ACC.map(a => ({ acc: a, qty: operatorAccQty(a.id) })).filter(r => r.qty > 0);
+}
+function operatorAccChecked() { return operatorAccRows().map(r => r.acc); }
+function operatorAccSave() { return operatorAccRows().map(r => ({ id: r.acc.id, qty: r.qty })); }
+function operatorPlateKitN() {
+  if (rv('opEnergy') === 'high') return 0;
+  const kit = rv('opPlateKit') || 'none';
+  if (kit === 'two') return 2;
+  if (kit === 'one') return 1;
+  return 0;
+}
+function ensureOpPlateStyleChips() {
+  function fill(id, name, prefix) {
+    const el = document.getElementById(id);
+    if (!el || el.dataset.ready) return;
+    el.innerHTML = Object.keys(OP_PLATE_STYLE).map(key => {
+      const p = OP_PLATE_STYLE[key];
+      const rid = prefix + key;
+      return '<span class="op-qv-item"><input type="radio" name="' + name + '" id="' + rid + '" value="' + key + '"><label for="' + rid + '">' + p.sku + ' — ' + p.label + ' — $55</label><button type="button" class="op-qv-btn" data-qv="' + key + '">Quick view</button></span>';
+    }).join('');
+    el.dataset.ready = '1';
+  }
+  fill('op-style-a', 'opPlateStyle', 'op_st_');
+  fill('op-style-b', 'opPlateStyleB', 'op_stb_');
+}
+function operatorPlateStyle(name) {
+  const key = rv(name || 'opPlateStyle');
+  return (key && OP_PLATE_STYLE[key]) || null;
+}
+function operatorPlateStyleB() { return operatorPlateStyle('opPlateStyleB'); }
+function operatorKitNeedsStyle() {
+  const n = operatorPlateKitN();
+  if (!n) return false;
+  if (!operatorPlateStyle()) return true;
+  return n === 2 && !operatorPlateStyleB();
+}
+function operatorPlateKitSell() {
+  const n = operatorPlateKitN();
+  const a = operatorPlateStyle();
+  if (!n || !a) return 0;
+  if (n === 1) return a.sell + OP_PLATE_TX + OP_PLATE_RX;
+  const b = operatorPlateStyleB();
+  if (!b) return 0;
+  return a.sell + b.sell + 2 * OP_PLATE_TX + OP_PLATE_RX;
+}
+function operatorPlateKitLabel() {
+  const n = operatorPlateKitN();
+  if (!n) return '';
+  const a = operatorPlateStyle();
+  if (n === 1) {
+    if (!a) return 'Push plate kit 1 — select plate style';
+    return 'Push plate kit 1 — ' + a.sku + ' + transmitter + receiver';
+  }
+  const b = operatorPlateStyleB();
+  if (!a || !b) return 'Push plate kit 2 — select plate styles';
+  return 'Push plate kit 2 — ' + a.sku + ' + ' + b.sku + ' + 2 transmitters + receiver';
+}
+function operatorAccsLabel() {
+  const parts = [];
+  const kit = operatorPlateKitLabel();
+  if (kit) parts.push(kit);
+  operatorAccRows().forEach(r => parts.push(r.acc.label + (r.qty > 1 ? ' ×' + r.qty : '')));
+  return parts.length ? parts.join('; ') : 'None';
+}
+
+function operatorPrice() {
+  const isPair = isOpPair();
+  const de = isOpDoubleEgress();
+  const lines = [];
+  let cost = 0;
+  let extrasSell = 0;
+  let fixedExtras = 0;
+  const base = isPair ? OP_BASE_PRICE.pair : OP_BASE_PRICE.single;
+  cost += base;
+  lines.push({ label: de ? ('Condor swing operator — double egress pair (' + (rv('opArm') === 'de-lh' ? 'LH' : 'RH') + ')') : (isPair ? 'Condor swing operator — pair' : 'Condor swing operator — single'), amount: base });
+  const extraFt = operatorExtendedFt();
+  if (extraFt) {
+    const amt = extraFt * OP_EXT_PER_FT;
+    cost += amt;
+    lines.push({ label: 'Extended single header +' + extraFt + '′ over 48″ (X)', amount: amt, kind: 'size' });
+  }
+  const sw = rv('opSwitch') || 'none';
+  const swCode = OP_SWITCH_CODE[sw];
+  if (swCode) {
+    const amt = OP_SWITCH_PRICE[sw] || 0;
+    extrasSell += amt;
+    fixedExtras += amt;
+    lines.push({ label: OP_SWITCH_LABEL[sw] + ' (' + swCode + ')', amount: amt, kind: 'sell' });
+  }
+  let skippedSwitch = false;
+  operatorOptCodes().forEach(code => {
+    if (code === 'X') return;
+    if (swCode && code === swCode && !skippedSwitch) {
+      skippedSwitch = true;
+      return;
+    }
+    if (code === 'Z') {
+      lines.push({ label: OP_OPT_LABEL.Z + ' (Z) — call', amount: 0, call: true });
+      return;
+    }
+    if (code === 'E') {
+      const amt = operatorExtKitSell();
+      extrasSell += amt;
+      fixedExtras += amt;
+      lines.push({ label: operatorExtKitLabel() + ' (E)', amount: amt, kind: 'sell' });
+      return;
+    }
+    if (code === 'P') {
+      extrasSell += OP_END_PLATES.sell;
+      fixedExtras += OP_END_PLATES.sell;
+      lines.push({ label: OP_OPT_LABEL.P + ' (' + code + ')', amount: OP_END_PLATES.sell, kind: 'sell' });
+      return;
+    }
+    const amt = OP_OPT_COST[code] || 0;
+    cost += amt;
+    lines.push({ label: OP_OPT_LABEL[code] + ' (' + code + ')', amount: amt });
+  });
+  const kitAmt = operatorPlateKitSell();
+  if (kitAmt) {
+    fixedExtras += kitAmt;
+    extrasSell += kitAmt;
+    lines.push({ label: operatorPlateKitLabel(), amount: kitAmt, kind: 'sell' });
+  }
+  let decalCost = 0;
+  operatorAccRows().forEach(({ acc, qty }) => {
+    const name = (acc.sku ? acc.sku + ' — ' : '') + acc.label + (qty > 1 ? ' ×' + qty : '');
+    if (acc.call) {
+      lines.push({ label: name + ' — call', amount: 0, call: true });
+      return;
+    }
+    const unit = operatorAccSell(acc);
+    const sellAmt = unit * qty;
+    extrasSell += sellAmt;
+    if (acc.cost) decalCost += acc.cost * qty;
+    if (acc.sell) fixedExtras += acc.sell * qty;
+    lines.push({ label: name, amount: sellAmt, kind: 'sell' });
+  });
+  if (rv('opEnergy') === 'high') {
+    const addFixed = (label, a) => { fixedExtras += a; extrasSell += a; lines.push({ label, amount: a, kind: 'sell' }); };
+    const rails = rv('opRails') || 'both';
+    if (rails === 'both') addFixed(OP_RAIL_LABEL.both, isPair ? 350 : 250);
+    else if (rails === 'one') addFixed(OP_RAIL_LABEL.one, isPair ? 175 : 125);
+    else lines.push({ label: OP_RAIL_LABEL.none, amount: 0, kind: 'sell' });
+
+    const ap = rv('opApproach') || 'bea';
+    if (ap === 'bea') addFixed(OP_APPROACH_LABEL.bea, 160);
+    else lines.push({ label: OP_APPROACH_LABEL.none, amount: 0, kind: 'sell' });
+
+    const scan = rv('opScan') || 'both';
+    if (scan === 'both') addFixed(isPair ? 'BEA SuperScan both faces — 4 strips' : 'BEA SuperScan both faces — 2 strips', isPair ? 960 : 480);
+    else if (scan === 'swing') addFixed(isPair ? 'BEA SuperScan swing face — 2 strips' : 'BEA SuperScan swing face', isPair ? 480 : 240);
+    else lines.push({ label: OP_SCAN_LABEL.none, amount: 0, kind: 'sell' });
+
+    if (rv('opHdrSafe') === 'yes') addFixed('MS Sedco DH94 header safety', 245);
+  }
+  const tier = isContractorTier() ? 'contractor' : 'retail';
+  const decalContractor = operatorAccRows().reduce((s, r) => s + operatorAccSell(r.acc, OP_MARKUP_CONTRACTOR) * r.qty, 0);
+  const decalRetail = operatorAccRows().reduce((s, r) => s + operatorAccSell(r.acc, OP_MARKUP_RETAIL) * r.qty, 0);
+  const sell = Math.round(cost * operatorMarkup()) + extrasSell;
+  const contractorPrice = Math.round(cost * OP_MARKUP_CONTRACTOR) + fixedExtras + decalContractor;
+  const retailPrice = Math.round(cost * OP_MARKUP_RETAIL) + fixedExtras + decalRetail;
+  // total = the viewer's tier sell price (used for cart / submitted quotes); cost is admin-only.
+  return { lines, cost: cost + decalCost, extrasSell, sell, tier, contractorPrice, retailPrice, total: sell };
+}
+
+function setOperatorMode(on) {
+  _orderKind = on ? 'operator' : 'door';
+  const dcb = document.getElementById('door-config-block');
+  const ocb = document.getElementById('operator-config-block');
+  if (dcb) dcb.style.display = on ? 'none' : '';
+  if (ocb) ocb.style.display = on ? '' : 'none';
+  const dw = document.getElementById('drawing-wrap');          if (dw) dw.style.display = on ? 'none' : '';
+  const ow = document.getElementById('operator-drawing-wrap'); if (ow) ow.style.display = on ? '' : 'none';
+  const pb = document.getElementById('btn-print-drawing');     if (pb) pb.style.display = on ? 'none' : '';
+  ['tab-bipart','tab-single','tab-swing'].forEach(id => { const t = document.getElementById(id); if (t) t.classList.remove('active'); });
+  const tOp = document.getElementById('tab-operator'); if (tOp) tOp.classList.toggle('active', on);
+  if (on) {
+    const title = document.getElementById('form-main-title');
+    const intro = document.getElementById('form-intro');
+    if (title) title.textContent = 'Swing Operator Quote';
+    document.title = 'Swing Operator Quote — Doortronix USA';
+    if (intro) intro.innerHTML = 'Configure an automatic swing operator supplied on its own — no door or frame. Order it by itself, or add it to a project alongside other items.<br>Our team in Malakoff, Texas will confirm your quote within <strong>24 hours</strong>.';
+    updateOperator();
+  }
+  syncProjectScopeCopy();
+}
+
+// Banner + terms follow what's actually being quoted: operator only, door
+// packages only, or a mixed project (doors + operators on the same job).
+function projectScopeKind() {
+  const cart = (typeof getCart === 'function') ? getCart() : [];
+  const hasOp = cart.some(d => d.kind === 'operator') || _orderKind === 'operator';
+  const hasDoor = cart.some(d => d.kind !== 'operator') || _orderKind !== 'operator';
+  if (hasOp && hasDoor) return 'mixed';
+  if (hasOp) return 'operator';
+  return 'door';
+}
+
+function syncProjectScopeCopy() {
+  const kind = projectScopeKind();
+  const title = document.getElementById('scope-notice-title');
+  const body = document.getElementById('scope-notice-body');
+  const terms = document.getElementById('quote-terms-scope');
+  const hint = document.getElementById('quote-submit-hint');
+  const oneBtn = document.getElementById('btn-submit-one');
+  const notice = document.getElementById('scope-notice');
+  if (notice) notice.style.display = '';
+
+  if (kind === 'operator') {
+    if (title) title.textContent = '⚙️ Swing Operator — Unit Only';
+    if (body) body.innerHTML = 'We supply the automatic swing operator (header, motor/control, arm, and brackets). <strong>No door leaf or frame.</strong> Pricing <strong>does not include freight, installation, or taxes</strong>. Selected accessories are listed on the quote.';
+    if (terms) terms.innerHTML = 'This quote is for the <strong>swing operator only — no door or frame</strong>. Prices <strong>do not include freight, installation, or applicable taxes</strong>. Submitting a quote does not start fabrication. Next we confirm the model and options; you approve and pay the deposit or full amount in your account; then we order and ship.';
+    if (hint) hint.textContent = 'One operator? Use “Submit Quote” above. Adding doors or more operators? Add each to the project cart, then submit all at once.';
+    if (oneBtn) oneBtn.textContent = 'Submit Quote (this operator only) →';
+  } else if (kind === 'mixed') {
+    if (title) title.textContent = '📦 Project Quote — Doors & Operators';
+    if (body) body.innerHTML = 'This project can include door packages and standalone swing operators. Door-package pricing <strong>does not include glass/glazing</strong>. Operators are supplied <strong>without a door or frame</strong>. Freight, installation, and taxes are extra on all items.';
+    if (terms) terms.innerHTML = 'This quote may include <strong>aluminum door packages</strong> and <strong>standalone swing operators</strong>. Door packages do not include glass/glazing. Operators are supplied without a door or frame. Prices <strong>do not include freight, installation, or applicable taxes</strong>. Submitting a quote does not start fabrication. Next we send a confirmation; you approve it and pay the deposit or full amount in your account; then we build and ship.';
+    if (hint) hint.textContent = 'Add each door or operator to the project cart, then submit all at once. Or submit the item you’re configuring now.';
+    if (oneBtn) oneBtn.textContent = _orderKind === 'operator' ? 'Submit Quote (this operator only) →' : 'Submit Quote (this door only) →';
+  } else {
+    if (title) title.textContent = '📦 Door Package Only — Material Supply';
+    if (body) body.innerHTML = 'We manufacture and supply the <strong>aluminum door package</strong> (frame, panels, hardware, and operating system). Pricing <strong>does not include glass/glazing, freight, installation, or taxes</strong>. Glass is supplied and installed by others; frames are prepped for your specified glass thickness.';
+    if (terms) terms.innerHTML = 'This quote is for the <strong>aluminum door package only</strong>. Prices <strong>do not include glass/glazing, freight, installation, or applicable taxes</strong>. Submitting a quote does not start fabrication. Next we send a confirmation drawing; you approve it and pay the deposit or full amount in your account; then we build and ship.';
+    if (hint) hint.textContent = 'Single door only? Use “Submit Quote” above. Multiple doors? Add each to the project cart, then submit all at once.';
+    if (oneBtn) oneBtn.textContent = 'Submit Quote (this door only) →';
+  }
+}
+
+function updateOperator() {
+  if (_orderKind !== 'operator') return;
+  const de = isOpDoubleEgress();
+  if (de) {
+    const pairEl = document.getElementById('op_c_pair');
+    if (pairEl) pairEl.checked = true;
+  }
+  const isPair = isOpPair();
+  if (isPair !== _opHeaderIsPair) {
+    const hEl = document.getElementById('op_header_in');
+    if (hEl) hEl.value = String(isPair ? OP_HEADER_PAIR_DEFAULT : OP_HEADER_SINGLE_DEFAULT);
+    _opHeaderIsPair = isPair;
+  }
+  clampOperatorHeader();
+  syncOperatorOptVisibility();
+  const extraFt = operatorExtendedFt();
+  const xNote = document.getElementById('op-x-note');
+  if (xNote && extraFt) {
+    xNote.textContent = 'This header is ' + operatorHeaderStr() + ' — ' + extraFt + '′ over the 48″ single. That footage is added to the price and X is added to the model.';
+  }
+  const cfgField = document.getElementById('op-config-field');
+  if (cfgField) cfgField.style.display = de ? 'none' : '';
+  const handField = document.getElementById('op-hand-field');
+  if (handField) handField.style.display = isPair ? 'none' : '';
+  const hdrHint = document.getElementById('op-header-hint');
+  if (hdrHint) hdrHint.textContent = isPair
+    ? 'Header size equals the overall opening width for the pair. Pair headers: 60–96".'
+    : 'Header size equals the door width the operator serves. Single headers: 30–96". Over 48" adds a per-foot charge.';
+  const skuLine = document.getElementById('operator-sku-line');
+  if (skuLine) skuLine.textContent = 'Model ' + operatorSku();
+  const high = rv('opEnergy') === 'high';
+  const loAcc = document.getElementById('op-low-acc');
+  if (loAcc) loAcc.style.display = high ? 'none' : '';
+  ensureOpPlateStyleChips();
+  const styleWrap = document.getElementById('op-plate-style-wrap');
+  if (styleWrap) {
+    styleWrap.hidden = high || operatorPlateKitN() === 0;
+    styleWrap.classList.toggle('op-need-style', !high && operatorKitNeedsStyle());
+  }
+  const styleH = document.getElementById('op-plate-style-h');
+  if (styleH) styleH.textContent = operatorPlateKitN() === 2 ? 'Plate 1 — required' : 'Plate — required';
+  const styleB = document.getElementById('op-style-b-block');
+  if (styleB) styleB.hidden = high || operatorPlateKitN() !== 2;
+  const styleNeed = document.getElementById('op-plate-style-need');
+  if (styleNeed) styleNeed.hidden = high || !operatorKitNeedsStyle();
+  syncOperatorExtKitLabel();
+  const hiAcc = document.getElementById('op-high-acc');
+  if (hiAcc) hiAcc.style.display = high ? '' : 'none';
+  const scanWarn = document.getElementById('op-scan-warn');
+  if (scanWarn) scanWarn.style.display = (high && rv('opScan') === 'swing' && rv('opHdrSafe') !== 'yes') ? '' : 'none';
+  syncOperatorLiterature();
+  drawOperatorPreview('operator-svg');
+  renderOperatorSpec();
+  setOperatorPriceDisplays();
+}
+
+function opLineVal(l, markup) {
+  if (l.call) return 'call';
+  let amt = l.amount;
+  if (markup && l.kind === 'size' && amt) amt = Math.round(amt * markup);
+  if (amt) return fmt(amt);
+  if (l.kind === 'sell') return '—';
+  return 'incl.';
+}
+function setOperatorPriceDisplays() {
+  syncOperatorAccLabels();
+  const price = operatorPrice();
+  window._operatorPrice = price;
+  const isAdmin = !!(window._portalUser && window._portalUser.isAdmin);
+  const costLines = price.lines.filter(l => l.kind !== 'sell' && !l.call);
+  const extraLines = price.lines.filter(l => l.kind === 'sell' || l.call);
+  const sizeLines = price.lines.filter(l => l.kind === 'size' && l.amount);
+  const pubLines = sizeLines.concat(extraLines.filter(l => l.amount || l.call));
+  let html;
+  if (isAdmin) {
+    html = costLines.map(l => `<div class="price-line"><span class="pl">${l.label}</span><span class="pv${l.amount > 0 ? ' add' : ''}">${opLineVal(l)}</span></div>`).join('');
+    html += '<hr class="price-divider">';
+    html += `<div class="price-line"><span class="pl">Net cost (operator + Motion options)</span><span class="pv">${fmt(price.cost)}</span></div>`;
+    if (extraLines.length) {
+      html += extraLines.map(l => `<div class="price-line"><span class="pl">${l.label}</span><span class="pv${l.amount > 0 ? ' add' : ''}">${opLineVal(l)}</span></div>`).join('');
+    }
+    html += `<div class="price-line"><span class="pl">Contractor (33% MU + accessories)</span><span class="pv">${fmt(price.contractorPrice)}</span></div>`;
+    html += `<div class="price-line"><span class="pl">Retail (50% MU + accessories)</span><span class="pv">${fmt(price.retailPrice)}</span></div>`;
+    html += `<div class="price-total-row"><span class="pt-label">Showing (${price.tier})</span><span class="pt-value">${fmt(price.sell)}</span></div>`;
+    html += '<div class="price-note">Internal view. Net cost = Motion Access dealer price. Accessory sell prices match the swing-package list. Excludes freight, glass, and installation.</div>';
+  } else if (price.tier === 'contractor') {
+    html = pubLines.map(l => `<div class="price-line"><span class="pl">${l.label}</span><span class="pv${l.amount > 0 ? ' add' : ''}">${opLineVal(l, OP_MARKUP_CONTRACTOR)}</span></div>`).join('');
+    html += `<div class="price-total-row"><span class="pt-label">Contractor price</span><span class="pt-value">${fmt(price.sell)}</span></div>`;
+    html += '<div class="price-note">Your approved contractor pricing. Excludes freight, glass, installation, and taxes. Doortronix confirms final pricing within 24 hours.</div>';
+  } else {
+    html = pubLines.map(l => `<div class="price-line"><span class="pl">${l.label}</span><span class="pv${l.amount > 0 ? ' add' : ''}">${opLineVal(l, OP_MARKUP_RETAIL)}</span></div>`).join('');
+    html += `<div class="price-total-row"><span class="pt-label">Price</span><span class="pt-value">${fmt(price.sell)}</span></div>`;
+    html += '<div class="price-note">Excludes freight, glass, installation, and taxes. <strong>Contractors:</strong> <a href="portal/signup.html" style="color:var(--blue);font-weight:700;">apply for contractor pricing</a> to unlock your net.</div>';
+  }
+  const tot = fmt(price.sell);
+  const body = document.getElementById('price-body');       if (body) body.innerHTML = html;
+  const formBody = document.getElementById('form-price-body'); if (formBody) formBody.innerHTML = html;
+  ['price-header-total','sticky-price-total','form-price-header-total'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.textContent = tot;
+  });
+}
+
+function renderOperatorSpec() {
+  const isPair = isOpPair();
+  const de = isOpDoubleEgress();
+  const rows = [
+    ['Item', 'Swing operator — unit only'],
+    ['Model', operatorSku()],
+    ['Energy', OP_ENERGY_LABEL[rv('opEnergy') || 'low']],
+    ['Configuration', de ? (rv('opArm') === 'de-lh' ? 'Double egress pair — LH' : 'Double egress pair — RH') : (isPair ? 'Pair' : ('Single · ' + ((rv('opHand') || 'rh') === 'lh' ? 'LH' : 'RH')))],
+    ['Mounting & arm', OP_ARM_LABEL[rv('opArm') || 'surface-push']],
+    ['Finish', OP_FINISH_LABEL[rv('opFinish') || 'clear']],
+    ['Header size', operatorHeaderStr() + (isPair ? ' (overall)' : '')],
+    ['Additional options', (function () { const o = operatorOptCodes(); return o.length ? o.join('-') : 'None'; })()],
+    ['Accessories', operatorAccsLabel()],
+  ];
+  if (rv('opEnergy') === 'high') {
+    rows.push(['Guide rails', OP_RAIL_LABEL[rv('opRails') || 'both']]);
+    rows.push(['Approach', OP_APPROACH_LABEL[rv('opApproach') || 'bea']]);
+    rows.push(['SuperScan', OP_SCAN_LABEL[rv('opScan') || 'both']]);
+    rows.push(['Header safety', OP_HDRSAFE_LABEL[rv('opHdrSafe') || 'no']]);
+  }
+  const el = document.getElementById('spec-summary');
+  if (el) {
+    el.innerHTML = rows.map(([k,v]) => `<div class="spec-row"><span class="sk">${k}</span><span class="sv">${v}</span></div>`).join('') +
+      '<div style="margin-top:12px;padding-top:10px;border-top:1px solid #E5EAF0;font-size:12px;line-height:1.5;color:#475569;">' +
+      '<div style="font-weight:700;color:#1B4F8A;margin-bottom:4px;">Includes</div>' +
+      'Housing, motor/gearbox, control, arm, mounting brackets, and owners pack (decals). No door leaf or frame.' +
+      '<div style="font-weight:700;color:#1B4F8A;margin:10px 0 4px;">Standard configurations</div>' +
+      '2.75" spindle on surface-applied (push/pull). 3.75" spindle on center-hung. 8" max reveal push / 4" pull. Pairs operate simultaneously. Contact Doortronix for specials.' +
+      '<div style="font-weight:700;color:#1B4F8A;margin:10px 0 4px;">Cross reference</div>' +
+      'Dor-O-Matic, LCN, Astro, Mid and Senior Swing: 2810, 2850, 2860, 9530, 9540, 9550, 9560.' +
+      '</div>';
+  }
+}
+
+// Simple reference elevation of the operator + mounting (no door/frame sold).
+function drawOperatorPreview(svgId) {
+  const svg = document.getElementById(svgId);
+  if (!svg) return;
+  const W = 600, H = 360;
+  const isPair = isOpPair();
+  const isLH = (rv('opHand') || 'rh') === 'lh';
+  const arm = rv('opArm') || 'surface-push';
+  const de = isOpDoubleEgress();
+  const surface = arm.indexOf('surface') === 0 || de;
+  const bronze = (rv('opFinish') === 'bronze');
+  const metal = bronze ? '#4E3818' : '#8FA3B5';
+  const metalDk = bronze ? '#33260F' : '#5B7186';
+  const glass = '#DCEBF7';
+  const NS = 'http://www.w3.org/2000/svg';
+  const px = [];
+  const add = (tag, attrs, text) => {
+    let s = '<' + tag;
+    for (const k in attrs) s += ' ' + k + '="' + attrs[k] + '"';
+    if (text != null) s += '>' + text + '</' + tag + '>';
+    else s += '/>';
+    px.push(s);
+  };
+  // Layout
+  const mL = 70, mR = 70, mT = 40, mB = 60;
+  const ox = mL, ow = W - mL - mR;
+  const headerH = surface ? 34 : 30;
+  const hy = mT;
+  // Header / operator housing
+  add('rect', { x: ox, y: hy, width: ow, height: headerH, fill: metal, stroke: metalDk, 'stroke-width': 2, rx: 3 });
+  // Operator module inside/on header
+  const modW = ow * 0.42, modX = ox + (ow - modW) / 2, modY = surface ? hy + headerH - 4 : hy + 5;
+  add('rect', { x: modX, y: modY, width: modW, height: surface ? 22 : headerH - 10, fill: metalDk, stroke: '#222', 'stroke-width': 1, rx: 2 });
+  add('text', { x: ox + ow / 2, y: modY + (surface ? 15 : 13), 'text-anchor': 'middle', 'font-family': 'Arial', 'font-size': 11, fill: '#fff', 'font-weight': 'bold' }, 'OPERATOR');
+  // Door leaf(s) below header — dashed (reference only, by others)
+  const leafTop = hy + headerH + (surface ? 26 : 6);
+  const leafBot = H - mB;
+  const drawLeaf = (lx, lw, hingeLeft) => {
+    add('rect', { x: lx, y: leafTop, width: lw, height: leafBot - leafTop, fill: glass, stroke: '#7C93A8', 'stroke-width': 1.5, 'stroke-dasharray': '5,3' });
+    const hx = hingeLeft ? lx : lx + lw;
+    add('line', { x1: hx, y1: leafTop, x2: hx, y2: leafBot, stroke: metalDk, 'stroke-width': 3 });
+    // swing arc
+    const sweep = hingeLeft ? 1 : 0;
+    const ex = hingeLeft ? lx + lw : lx;
+    const r = lw;
+    add('path', { d: `M${ex},${leafBot} A${r},${r} 0 0,${sweep} ${hx},${leafBot - r}`, fill: 'none', stroke: '#9AB0C4', 'stroke-width': 1.2, 'stroke-dasharray': '4,3' });
+    // arm from operator module down to leaf
+    add('line', { x1: ox + ow / 2, y1: modY + (surface ? 22 : headerH - 10), x2: hingeLeft ? lx + lw * 0.5 : lx + lw * 0.5, y2: leafTop + 4, stroke: metalDk, 'stroke-width': 2.5 });
+  };
+  if (isPair) {
+    const gap = 8, lw = (ow - gap) / 2;
+    drawLeaf(ox, lw, true);
+    drawLeaf(ox + lw + gap, lw, false);
+  } else {
+    const lw = ow * 0.62;
+    const lx = isLH ? ox : ox + ow - lw;
+    drawLeaf(lx, lw, isLH);
+  }
+  // Header dimension line
+  const dY = H - 26;
+  add('line', { x1: ox, y1: dY, x2: ox + ow, y2: dY, stroke: '#444', 'stroke-width': 1 });
+  add('line', { x1: ox, y1: dY - 5, x2: ox, y2: dY + 5, stroke: '#444', 'stroke-width': 1 });
+  add('line', { x1: ox + ow, y1: dY - 5, x2: ox + ow, y2: dY + 5, stroke: '#444', 'stroke-width': 1 });
+  add('rect', { x: ox + ow / 2 - 52, y: dY - 10, width: 104, height: 18, fill: '#fff' });
+  add('text', { x: ox + ow / 2, y: dY + 4, 'text-anchor': 'middle', 'font-family': 'Arial', 'font-size': 12, fill: '#222', 'font-weight': 'bold' }, 'Header ' + operatorHeaderStr());
+  // Title
+  add('text', { x: W / 2, y: 22, 'text-anchor': 'middle', 'font-family': 'Arial', 'font-size': 13, fill: '#1B4F8A', 'font-weight': 'bold' }, de ? ('Double egress swing operator — ' + (arm === 'de-lh' ? 'LH' : 'RH') + ' pair') : ((surface ? 'Surface-applied' : 'Overhead concealed') + ' swing operator' + (isPair ? ' — pair' : '')));
+  add('text', { x: W / 2, y: leafBot + 16, 'text-anchor': 'middle', 'font-family': 'Arial', 'font-size': 10, fill: '#7C93A8' }, 'Door leaf shown dashed — by others (operator supplied unit only)');
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  svg.innerHTML = px.join('');
+}
+
+function captureOperator() {
+  const isPair = isOpPair();
+  const de = isOpDoubleEgress();
+  const hand = rv('opHand') || 'rh';
+  return {
+    id: Date.now(),
+    kind: 'operator',
+    typeCategory: 'operator',
+    config: 'operator',
+    configLabel: 'Swing Operator (unit only)',
+    configCode: operatorSku(),
+    widthStr: 'Header ' + operatorHeaderStr() + (isPair ? ' (overall)' : ''),
+    heightStr: '',
+    estimatedTotal: operatorPrice().total,
+    quantity: 1,
+    opEnergy: rv('opEnergy') || 'low',
+    opConfig: isPair ? 'pair' : 'single',
+    opHand: hand,
+    opArm: rv('opArm') || 'surface-push',
+    opFinish: rv('opFinish') || 'clear',
+    opSwitch: rv('opSwitch') || 'none',
+    opOpts: operatorOptCodes(),
+    opAccs: operatorAccSave(),
+    opPlateKit: rv('opPlateKit') || 'none',
+    opPlateStyle: rv('opPlateStyle') || '',
+    opPlateStyleB: rv('opPlateStyleB') || '',
+    opPlateKitLabel: operatorPlateKitLabel(),
+    opRails: rv('opRails') || 'both',
+    opApproach: rv('opApproach') || 'bea',
+    opScan: rv('opScan') || 'both',
+    opHdrSafe: rv('opHdrSafe') || 'no',
+    opHeaderIn: operatorHeaderIn(),
+    opEnergyLabel: OP_ENERGY_LABEL[rv('opEnergy') || 'low'],
+    opConfigLabel: de ? (rv('opArm') === 'de-lh' ? 'Double egress pair — LH' : 'Double egress pair — RH') : (isPair ? 'Pair' : ('Single · ' + (hand === 'lh' ? 'LH' : 'RH'))),
+    opArmLabel: OP_ARM_LABEL[rv('opArm') || 'surface-push'],
+    opFinishLabel: OP_FINISH_LABEL[rv('opFinish') || 'clear'],
+    opSwitchLabel: OP_SWITCH_LABEL[rv('opSwitch') || 'none'],
+    opOptsLabel: (operatorOptCodes().length ? operatorOptCodes().join('-') : 'None'),
+    opAccsLabel: operatorAccsLabel(),
+    opRailsLabel: OP_RAIL_LABEL[rv('opRails') || 'both'],
+    opApproachLabel: OP_APPROACH_LABEL[rv('opApproach') || 'bea'],
+    opScanLabel: OP_SCAN_LABEL[rv('opScan') || 'both'],
+    opHdrSafeLabel: OP_HDRSAFE_LABEL[rv('opHdrSafe') || 'no'],
+    notes: fv('f_notes') || '',
+    locationTags: '',
+    addons: [],
+  };
+}
+
+function loadOperatorIntoForm(item) {
+  setOperatorMode(true);
+  ensureOpPlateStyleChips();
+  const setR = (name, val) => { const el = document.querySelector(`input[name="${name}"][value="${val}"]`); if (el) el.checked = true; };
+  setR('opEnergy', item.opEnergy || 'low');
+  setR('opConfig', item.opConfig || 'single');
+  setR('opHand', item.opHand || 'rh');
+  setR('opArm', item.opArm || 'ohc-center');
+  setR('opFinish', item.opFinish || 'clear');
+  setR('opSwitch', item.opSwitch || 'none');
+  setR('opPlateKit', item.opPlateKit || 'none');
+  document.querySelectorAll('input[name="opPlateStyle"], input[name="opPlateStyleB"]').forEach(el => { el.checked = false; });
+  if (item.opPlateStyle) setR('opPlateStyle', item.opPlateStyle);
+  if (item.opPlateStyleB) setR('opPlateStyleB', item.opPlateStyleB);
+  const accQty = new Map();
+  (item.opAccs || []).forEach(x => {
+    if (typeof x === 'string') accQty.set(x, 1);
+    else if (x && x.id) accQty.set(x.id, Math.max(1, parseInt(x.qty, 10) || 1));
+  });
+  OP_ACC.forEach(a => {
+    const q = accQty.get(a.id) || 0;
+    const el = document.getElementById(a.id);
+    if (el) el.checked = q > 0;
+    const sel = document.getElementById(a.id + '_qty');
+    if (sel) sel.value = String(q > 0 ? q : 1);
+  });
+  setR('opRails', item.opRails || 'both');
+  setR('opApproach', item.opApproach || 'bea');
+  setR('opScan', item.opScan || 'both');
+  setR('opHdrSafe', item.opHdrSafe || 'no');
+  OP_OPT_ORDER.forEach(code => {
+    const el = document.getElementById('op_opt_' + code);
+    if (el) el.checked = !!(item.opOpts && item.opOpts.indexOf(code) >= 0);
+  });
+  const hin = item.opHeaderIn || ((item.opConfig === 'pair' || item.opArm === 'de-rh' || item.opArm === 'de-lh') ? OP_HEADER_PAIR_DEFAULT : OP_HEADER_SINGLE_DEFAULT);
+  const hEl = document.getElementById('op_header_in'); if (hEl) hEl.value = String(hin);
+  _opHeaderIsPair = isOpPair();
+  const notesEl = document.getElementById('f_notes'); if (notesEl) notesEl.value = item.notes || '';
+  updateOperator();
+}
+
+function _addOperatorToCartImpl(opts) {
+  opts = opts || {};
+  if (!_projectHeader) _projectHeader = getHeader();
+  const cart = getCart();
+
+  if (operatorKitNeedsStyle()) {
+    const wrap = document.getElementById('op-plate-style-wrap');
+    if (wrap) {
+      wrap.classList.add('op-need-style');
+      wrap.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    const needEl = document.getElementById('op-plate-style-need');
+    if (needEl) needEl.hidden = false;
+    showCartError(operatorPlateKitN() === 2
+      ? 'Select a plate style for each station in Kit 2 (they can differ).'
+      : 'Select a push plate style for the kit.');
+    return;
+  }
+
+  if (cart.length === 0 && _editingDoorId === null && !opts.lenient) {
+    const requiredIds = ['f_name','f_company','f_phone','f_email'];
+    let firstMissing = null;
+    requiredIds.forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (!el.value.trim()) {
+        el.style.borderColor = 'var(--red)';
+        el.style.boxShadow   = '0 0 0 3px rgba(220,38,38,.15)';
+        if (!firstMissing) firstMissing = el;
+      } else { el.style.borderColor = ''; el.style.boxShadow = ''; }
+    });
+    if (firstMissing) {
+      firstMissing.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      firstMissing.focus();
+      showCartError('Please fill in all required contact and project fields above.');
+      return;
+    }
+  }
+
+  if (cart.length === 0 && _editingDoorId === null) {
+    _projectHeader = {
+      name: fv('f_name'), company: fv('f_company'), role: fv('f_role'),
+      phone: fv('f_phone'), email: fv('f_email'),
+      projectName: fv('f_project'), location: fv('f_location'),
+      shipDate: shipTimelineStr(), poNumber: fv('f_po'),
+    };
+    saveHeader(_projectHeader);
+  }
+
+  const qty = parseInt(fv('f_qty')) || 1;
+  const tags = (fv('f_location_tags') || '').split(',').map(t => t.trim()).filter(Boolean);
+
+  if (_editingDoorId !== null) {
+    const item = captureOperator();
+    item.quantity = 1;
+    const idx = cart.findIndex(d => d.id === _editingDoorId);
+    if (idx >= 0) cart[idx] = item; else cart.push(item);
+    _editingDoorId = null;
+  } else if (qty > 1) {
+    for (let i = 0; i < qty; i++) {
+      const item = captureOperator();
+      item.id = Date.now() + i;
+      item.quantity = 1;
+      item.locationTags = tags[i] || '';
+      cart.push(item);
+    }
+  } else {
+    const item = captureOperator();
+    item.quantity = 1;
+    cart.push(item);
+  }
+
+  saveCart(cart);
+  lockContactSection();
+  renderCart();
+  showAddSuccess(qty > 1 ? `${qty} operators added to your project!` : 'Operator added to your project!');
+  const cartEl = document.getElementById('project-cart-section');
+  if (cartEl) {
+    cartEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setTimeout(() => { cartEl.classList.add('flash'); setTimeout(() => cartEl.classList.remove('flash'), 700); }, 400);
+  }
+  return true;
 }
 
 function applySwingSizeDefaults() {
@@ -2185,11 +3412,14 @@ function syncSwingUi() {
       ? 'Panic latch stop (breakout) (+$' + (85 * n) + ' — $85 × ' + n + ')'
       : 'Panic latch stop (breakout) (+$85)';
   }
+  syncSwingRailLabels();
   const railHint = document.getElementById('swing-rail-hint');
   if (railHint) {
+    const p = swingRailAddPrices();
+    const face = swingRailFace();
     railHint.textContent = high
-      ? 'Included: floor-to-wall double-line rail with one mid vertical. Two rails on the swing side, to the leading edge of the open leaf, unless a wall covers that side. Credit if walls or by others. Customer furnishes = rails by others, both sides.'
-      : 'Low energy (A156.19) does not require guide rails and they are typically not used. Default is none. Add them only if the opening needs them — they are extra.';
+      ? 'Included on the ' + face + ': floor-to-wall double-line rail with one mid vertical, to the leading edge of the open leaf. Out-swing = exterior. In-swing = interior. Credit if walls or by others.'
+      : 'Rails go on the ' + face + ' (out-swing = exterior, in-swing = interior). Low energy does not include them. Add both sides +$' + p.both + ' or one side +$' + p.one + '.';
   }
   const need = swingRailNeed();
   const oneBlk = document.getElementById('swing-rail-one-block');
@@ -2460,6 +3690,7 @@ function addDoorToCart(opts) {
 
 function _addDoorToCartImpl(opts) {
   opts = opts || {};
+  if (_orderKind === 'operator') return _addOperatorToCartImpl(opts);
   // Restore header from storage if lost (e.g. after page reload)
   if (!_projectHeader) _projectHeader = getHeader();
 
@@ -2469,7 +3700,7 @@ function _addDoorToCartImpl(opts) {
   // Saving a draft is lenient: don't force role or project city, so a signed-in
   // user can stash work-in-progress without filling out the whole header.
   if (cart.length === 0 && _editingDoorId === null && !opts.lenient) {
-    const requiredIds = ['f_name','f_company','f_role','f_phone','f_email','f_location'];
+    const requiredIds = ['f_name','f_company','f_phone','f_email'];
     let firstMissing = null;
     requiredIds.forEach(id => {
       const el = document.getElementById(id);
@@ -2574,7 +3805,8 @@ function editCartDoor(id) {
   const door = cart.find(d => d.id === id);
   if (!door) return;
   _editingDoorId = id;
-  loadDoorIntoForm(door);
+  if (door.kind === 'operator') loadOperatorIntoForm(door);
+  else loadDoorIntoForm(door);
   renderCart();
   document.getElementById('door-section-label').scrollIntoView({ behavior: 'smooth' });
 }
@@ -2832,8 +4064,14 @@ function renderCart() {
 
   if (cart.length === 0) {
     cartSection.style.display = 'none';
-    if (lbl) lbl.textContent  = 'Configuring Door #1';
-    if (addBtn) addBtn.textContent = 'Add to project & configure another';
+    if (_orderKind === 'operator') {
+      if (lbl) lbl.textContent  = 'Configuring Swing Operator';
+      if (addBtn) addBtn.textContent = 'Add operator to project';
+    } else {
+      if (lbl) lbl.textContent  = 'Configuring Door #1';
+      if (addBtn) addBtn.textContent = 'Add to project & configure another';
+    }
+    syncProjectScopeCopy();
     return;
   }
 
@@ -2843,6 +4081,20 @@ function renderCart() {
 
   cartCards.innerHTML = cart.map((d, i) => {
     const isEditing = d.id === _editingDoorId;
+    if (d.kind === 'operator') {
+      return `<div class="cart-card${isEditing ? ' editing' : ''}">
+      <div class="cart-card-num">ITEM ${i+1}${isEditing ? ' ✏️' : ''}</div>
+      <div class="cart-card-type">${d.configLabel}</div>
+      <div class="cart-card-code">${d.configCode}</div>
+      <div class="cart-card-dims">${d.opConfigLabel} · ${d.opArmLabel}<br>${d.widthStr}${(d.quantity||1)>1 ? ' <strong>×'+d.quantity+'</strong>' : ''}</div>
+      ${d.locationTags ? `<div style="font-size:10px;color:var(--mgray);margin-top:2px;font-style:italic;">${d.locationTags}</div>` : ''}
+      <div class="cart-card-price">${d.estimatedTotal ? '$'+d.estimatedTotal.toLocaleString() : 'Call'}</div>
+      <div class="cart-card-actions">
+        <button type="button" onclick="editCartDoor(${d.id})">Edit</button>
+        <button type="button" class="btn-remove" onclick="removeCartDoor(${d.id})">Delete</button>
+      </div>
+    </div>`;
+    }
     return `<div class="cart-card${isEditing ? ' editing' : ''}">
       <div class="cart-card-num">DOOR ${i+1}${isEditing ? ' ✏️' : ''}</div>
       <div class="cart-card-type">${d.configLabel}</div>
@@ -2860,15 +4112,22 @@ function renderCart() {
   const nextNum = _editingDoorId !== null
     ? cart.findIndex(d => d.id === _editingDoorId) + 1
     : cart.length + 1;
-  if (lbl) lbl.textContent = _editingDoorId !== null
-    ? `Editing Door #${nextNum}` : `Configuring Door #${nextNum}`;
-  if (addBtn) addBtn.textContent = _editingDoorId !== null
-    ? 'Update Door in Project' : 'Add to project & configure another';
+  const editingOp = _editingDoorId !== null && (cart.find(d => d.id === _editingDoorId) || {}).kind === 'operator';
+  if (_orderKind === 'operator' || editingOp) {
+    if (lbl) lbl.textContent = _editingDoorId !== null ? `Editing Operator #${nextNum}` : 'Configuring Swing Operator';
+    if (addBtn) addBtn.textContent = _editingDoorId !== null ? 'Update operator in project' : 'Add operator to project';
+  } else {
+    if (lbl) lbl.textContent = _editingDoorId !== null
+      ? `Editing Door #${nextNum}` : `Configuring Door #${nextNum}`;
+    if (addBtn) addBtn.textContent = _editingDoorId !== null
+      ? 'Update Door in Project' : 'Add to project & configure another';
+  }
+  syncProjectScopeCopy();
 }
 
 async function submitAllDoors() {
   const cart = getCart();
-  if (cart.length === 0) { showCartError('Add at least one door to your project before submitting.'); return; }
+  if (cart.length === 0) { showCartError('Add at least one item to your project before submitting.'); return; }
   if (!termsAgreed()) { showCartError('Read and check the terms below the price before submitting.'); return; }
   if (!(await maybeCreateAccount())) return;
 
@@ -2882,6 +4141,19 @@ async function submitAllDoors() {
 
   const projTotal = cart.reduce((s, d) => s + (d.estimatedTotal || 0), 0);
   const doorBlocks = cart.map((d, i) => {
+    if (d.kind === 'operator') {
+      return `ITEM ${i+1}: ${d.configLabel} (${d.configCode}) — Qty: ${d.quantity||1}\n` +
+             `  Includes: housing, motor/gearbox, control, arm, mounting brackets (no door/frame)\n` +
+             `  Energy: ${d.opEnergyLabel} | Configuration: ${d.opConfigLabel}\n` +
+             `  Mounting & arm: ${d.opArmLabel} | Finish: ${d.opFinishLabel}\n` +
+             `  ${d.widthStr} | Options: ${d.opOptsLabel || d.configCode}\n` +
+             `  Accessories: ${d.opAccsLabel || 'None'}\n` +
+             (d.opEnergy === 'high' ? `  Rails: ${d.opRailsLabel || d.opRails || '—'} | Approach: ${d.opApproachLabel || d.opApproach || '—'} | SuperScan: ${d.opScanLabel || d.opScan || '—'} | Header safety: ${d.opHdrSafeLabel || d.opHdrSafe || '—'}\n` : '') +
+             `  Std: 2.75" spindle surface / 3.75" center-hung; 8" max reveal push / 4" pull; pairs simultaneous\n` +
+             `  Est. Price: ${d.estimatedTotal ? '$'+d.estimatedTotal.toLocaleString() : 'Call for pricing'}` +
+             (d.locationTags ? `\n  Locations: ${d.locationTags}` : '') +
+             (d.notes ? `\n  Notes: ${d.notes}` : '');
+    }
     const stile  = d.stileWidth === 'medium' ? 'Medium 3-3/4"' : 'Narrow (std)';
     const rail   = d.bottomRail === '6in' ? '6"' : d.bottomRail === '10in' ? '10"' : '4" (std)';
     const sensor = (['Optex i-oneXT','BEA IXIO'].includes(d.sensor)) ? d.sensor : (d.sensor || 'Standard (incl.)');
@@ -3128,6 +4400,52 @@ function getTwinOut(side) {
 function getTwinStop(side) {
   const v = rv(side === 'right' ? 'swingStopR' : 'swingStopL');
   return v === 'panic' ? 'panic' : 'hard';
+}
+function swingDoorIsOut(side) {
+  if (side === 'left' || side === 'right') return getTwinDir(side) !== 'in';
+  return rv('swingDir') !== 'in';
+}
+function swingRailFace(side) {
+  return swingDoorIsOut(side) ? 'exterior' : 'interior';
+}
+function swingRailAddPrices() {
+  const cfg = getConfig();
+  const pair = !!(cfg && cfg.isBi);
+  return { both: pair ? 350 : 250, one: pair ? 175 : 125 };
+}
+function syncSwingRailLabels() {
+  const high = rv('swingEnergy') === 'high';
+  const p = swingRailAddPrices();
+  const setLab = (id, text) => {
+    const el = document.querySelector('label[for="' + id + '"]');
+    if (el) el.textContent = text;
+  };
+  if (high) {
+    setLab('gr_wall', 'Not needed (walls both sides)');
+    setLab('gr_both', 'Both sides');
+    setLab('gr_one', 'One side');
+    setLab('gr_others', 'Customer furnishes');
+  } else {
+    setLab('gr_wall', 'None');
+    setLab('gr_both', 'Both sides — +$' + p.both);
+    setLab('gr_one', 'One side — +$' + p.one);
+    setLab('gr_others', 'Customer furnishes');
+  }
+  ['trl', 'trr'].forEach(pre => {
+    if (high) {
+      setLab(pre + '_wall', 'None');
+      setLab(pre + '_both', 'Both sides');
+      setLab(pre + '_one', 'One side');
+      setLab(pre + '_others', 'By others');
+    } else {
+      setLab(pre + '_wall', 'None');
+      setLab(pre + '_both', 'Both sides — +$250');
+      setLab(pre + '_one', 'One side — +$125');
+      setLab(pre + '_others', 'By others');
+    }
+  });
+  const railsLbl = document.getElementById('swing-rails-label');
+  if (railsLbl) railsLbl.textContent = 'Guide Rails (' + swingRailFace() + ')';
 }
 function swingRailNeedFrom(m) {
   if (m === 'others') return 'others';
@@ -3643,28 +4961,29 @@ function getSwingRailSide() {
 function swingRailByCustomer() {
   return swingRailNeed() === 'others';
 }
-function railNeedLabel(need, side) {
+function railNeedLabel(need, side, face) {
   if (need === 'wall') return 'none';
-  if (need === 'others') return 'by others';
-  if (need === 'one') return '1 rail ' + side;
-  return 'both sides';
+  if (need === 'others') return 'by others (' + (face || 'swing face') + ')';
+  if (need === 'one') return '1 rail ' + side + ' — ' + (face || 'swing face');
+  return 'both sides — ' + (face || 'swing face');
 }
 function getSwingRailStr() {
   if (isSwingTwin()) {
-    return 'L ' + railNeedLabel(swingRailNeedOn('left'), getTwinRailSide('left'))
-      + ' · R ' + railNeedLabel(swingRailNeedOn('right'), getTwinRailSide('right'));
+    return 'L ' + railNeedLabel(swingRailNeedOn('left'), getTwinRailSide('left'), swingRailFace('left'))
+      + ' · R ' + railNeedLabel(swingRailNeedOn('right'), getTwinRailSide('right'), swingRailFace('right'));
   }
   const need = swingRailNeed();
+  const face = swingRailFace();
   if (need === 'wall') return 'Walls both sides — not needed';
-  if (need === 'others') return 'Customer furnishes';
-  const spec = 'floor-to-wall double line, one mid vertical';
+  if (need === 'others') return 'Customer furnishes — ' + face;
+  const spec = 'floor-to-wall double line, one mid vertical, ' + face;
   if (need === 'one') return '1 rail ' + getSwingRailSide() + ' — ' + spec;
   return 'Both sides — ' + spec;
 }
 const PLATE_SQ = 80;
 const PLATE_VEST = 160;
-const PLATE_TX = 80;
-const PLATE_RX = 80;
+const PLATE_TX = 55;
+const PLATE_RX = 55;
 const PLATE_BLUE = 40;
 function swingPlateKind() {
   const v = rv('swingPlate');
@@ -5617,6 +6936,10 @@ function drawTwinSwingPlan(svg, planW) {
       if (dash) attrs['stroke-dasharray'] = dash;
       svgEl(svg, 'rect', attrs);
     });
+    const face = d.outSwing ? 'EXTERIOR' : 'INTERIOR';
+    const lblY = d.outSwing ? railY + railLen + 18 : railY - 10;
+    const lx = railXs.length === 1 ? railXs[0] + railTh / 2 : (railXs[0] + railXs[1] + railTh) / 2;
+    t(lx, lblY, (need === 'one' ? 'GUIDE RAIL — ' : 'GUIDE RAILS — ') + face + (need === 'others' ? ' (by others)' : ''), 14, '#1B4F8A', 'middle', '700');
   });
 }
 
@@ -5793,9 +7116,10 @@ function drawSwingPlan(svgId, planW) {
     });
     const lblY = outSwing ? railY + railLen + 32 : railY - 24;
     const lx = railXs.length === 1 ? railXs[0] + railTh / 2 : (railXs[0] + railXs[1] + railTh) / 2;
+    const face = outSwing ? 'EXTERIOR' : 'INTERIOR';
     const lbl = one
-      ? (byOthers ? 'GUIDE RAIL (by others)' : 'GUIDE RAIL')
-      : (byOthers ? 'GUIDE RAILS (by others)' : 'GUIDE RAILS');
+      ? (byOthers ? 'GUIDE RAIL — ' + face + ' (by others)' : 'GUIDE RAIL — ' + face)
+      : (byOthers ? 'GUIDE RAILS — ' + face + ' (by others)' : 'GUIDE RAILS — ' + face);
     t(lx, lblY, lbl, 20, '#1B4F8A', 'middle', '700');
   }
 
@@ -6205,6 +7529,7 @@ function updateAll() {
 
 // ── Event listeners ──────────────────────────────────────────────────
 function onQuoteFormUpdate(e) {
+  if (_orderKind === 'operator') { updateOperator(); return; }
   const name = e && e.target && e.target.name;
   const tid = e && e.target && e.target.id;
   if (tid === 'muntin_aff') _muntinAffTouched = true;
@@ -6234,13 +7559,15 @@ document.getElementById('quoteForm').addEventListener('change', onQuoteFormUpdat
 // ── Form submit ──────────────────────────────────────────────────────
 document.getElementById('quoteForm').addEventListener('submit', async function(e) {
   e.preventDefault();
-  const req = ['f_name','f_company','f_role','f_phone','f_email','f_location'];
+  const req = ['f_name','f_company','f_phone','f_email'];
   let ok = true;
   req.forEach(id => {
     const el = document.getElementById(id);
+    if (!el) return;
     if (!el.value.trim()) { el.style.borderColor='var(--red)'; ok=false; }
     else el.style.borderColor='';
   });
+  if (_orderKind === 'operator') { addDoorToCart(); return; }
   if (!rv('config')) { alert('Please select a door configuration.'); return; }
   if (!ok) { alert('Please fill in all required fields marked with *.'); return; }
   if (!termsAgreed()) { alert('Read and check the terms below the price before submitting.'); return; }
@@ -6503,11 +7830,11 @@ function showConf(data, pd) {
     new Date().toLocaleDateString('en-US',{weekday:'short',year:'numeric',month:'short',day:'numeric'});
 
   document.getElementById('conf-contact').innerHTML =
-    [['Name',data.name],['Company',data.company],['Role',data.role],['Phone',data.phone],['Email',data.email]]
+    [['Name',data.name],['Company',data.company],['Phone',data.phone],['Email',data.email]]
     .map(([k,v])=>`<div class="conf-spec-row"><span class="ck">${k}</span><span class="cv">${v||'—'}</span></div>`).join('');
 
   document.getElementById('conf-project').innerHTML =
-    [['Project',data.projectName||'—'],['Location',data.location],['Timeline',data.shipDate||'Standard — 3–4 weeks'],['Qty',data.quantity+' opening(s)']]
+    [['Project',data.projectName||'—'],['Ship to',data.shipTo||'—'],['Timeline',data.shipDate||'Standard — 3–4 weeks'],['Qty',data.quantity+' opening(s)']]
     .map(([k,v])=>`<div class="conf-spec-row"><span class="ck">${k}</span><span class="cv">${v||'—'}</span></div>`).join('');
 
   const doorSpecs = [
@@ -6674,7 +8001,9 @@ portalMe().then(function (me) {
   }
   // Reveal the "Save quote" button now that we know the user is signed in.
   renderCart();
-  if (me) calcPrice();
+  // Re-price now that we know the account tier (contractor vs retail).
+  if (_orderKind === 'operator') updateOperator();
+  else if (me) calcPrice();
 });
 </script>
 </body>

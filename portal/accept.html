@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Accept Invite | Doortronix USA</title>
+  <link rel="stylesheet" href="css/portal.css">
+</head>
+<body data-page="accept">
+  <div class="topbar">Factory-Direct from Malakoff, Texas</div>
+  <nav class="nav"><div class="nav-inner">
+    <a href="../index.html" class="brand">Doortronix<span>USA</span></a>
+    <div class="nav-links" id="nav-links"></div>
+  </div></nav>
+  <div class="auth-card">
+    <h1>Set your password</h1>
+    <p class="lead" id="acc_lead">Doortronix invited you to an account with your company pricing. Choose a password to sign in.</p>
+    <div class="err" id="acc_bad" style="display:none;"></div>
+    <form id="accept-form" class="hidden">
+      <p class="ok" id="acc_tier" style="margin-top:0;"></p>
+      <label>Name</label>
+      <input id="acc_name" readonly>
+      <label>Company</label>
+      <input id="acc_company" readonly>
+      <label>Email</label>
+      <input id="acc_email" readonly>
+      <label for="acc_password">Password (8+ characters)</label>
+      <input id="acc_password" type="password" required minlength="8" autocomplete="new-password">
+      <div class="err" id="acc_err"></div>
+      <button class="btn btn-primary btn-wide" type="submit">Save password and sign in</button>
+    </form>
+    <p class="muted" style="margin-top:16px;text-align:center;">Already set a password? <a href="login.html">Sign in</a></p>
+  </div>
+  <script src="js/portal.js"></script>
+</body>
+</html>

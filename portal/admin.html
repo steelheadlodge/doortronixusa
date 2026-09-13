@@ -26,16 +26,68 @@
       </form>
     </div>
     <div class="card">
+      <h2>Invite a customer</h2>
+      <p class="muted" style="margin-bottom:12px;">Creates their company with the discount you set. Copy the link (or email it) — they pick a password and see their net as soon as they sign in. Link expires in 14 days.</p>
+      <form id="invite-form">
+        <div class="two">
+          <div>
+            <label for="inv_name">Their name</label>
+            <input id="inv_name" required autocomplete="name">
+          </div>
+          <div>
+            <label for="inv_company">Company</label>
+            <input id="inv_company" required autocomplete="organization">
+          </div>
+        </div>
+        <div class="two">
+          <div>
+            <label for="inv_email">Email</label>
+            <input id="inv_email" type="email" required autocomplete="email">
+          </div>
+          <div>
+            <label for="inv_phone">Phone <span style="font-weight:400;color:var(--mgray)">(optional)</span></label>
+            <input id="inv_phone" type="tel" autocomplete="tel">
+          </div>
+        </div>
+        <div class="two">
+          <div>
+            <label for="inv_disc">Discount % off published contractor net</label>
+            <input id="inv_disc" type="number" min="0" max="80" step="0.5" value="0">
+          </div>
+          <div>
+            <label for="inv_dep">Deposit %</label>
+            <input id="inv_dep" type="number" min="10" max="100" step="5" value="50">
+          </div>
+        </div>
+        <div class="err" id="inv_err"></div>
+        <button class="btn btn-primary" type="submit" style="margin-top:14px">Create invite</button>
+      </form>
+      <div id="inv_result" class="ok hidden" style="margin-top:14px">
+        <div style="font-weight:700;margin-bottom:8px;">Invite ready — send this link (not the admin page).</div>
+        <input id="inv_url" readonly style="font-size:12px;">
+        <div class="row-actions">
+          <button class="btn btn-blue" type="button" id="inv_copy">Copy link</button>
+          <a class="btn btn-outline" id="inv_mail" href="#">Email link</a>
+        </div>
+        <p class="muted" style="margin-top:8px;" id="inv_meta"></p>
+      </div>
+      <h3 style="font-size:13px;color:var(--blue);margin:18px 0 8px;">Recent invites</h3>
+      <table>
+        <thead><tr><th>Company</th><th>Email</th><th>Discount</th><th>Status</th><th></th></tr></thead>
+        <tbody id="inv-body"></tbody>
+      </table>
+    </div>
+    <div class="card">
       <h2>Companies</h2>
       <table>
-        <thead><tr><th>Company</th><th>Discount %</th><th>Deposit %</th><th>Self-serve</th><th>Users / orders</th><th></th></tr></thead>
+        <thead><tr><th>Company</th><th>Email</th><th>Discount %</th><th>Deposit %</th><th>Self-serve</th><th>Users / orders</th><th></th></tr></thead>
         <tbody id="co-body"></tbody>
       </table>
     </div>
     <div class="card">
       <h2>All orders</h2>
       <table>
-        <thead><tr><th>Order</th><th>Company</th><th>Status</th><th>Amount</th><th>Confirm / status</th></tr></thead>
+        <thead><tr><th>Order</th><th>Company</th><th>Status</th><th>Amount</th><th>Ship / warranty</th><th>Confirm / status</th></tr></thead>
         <tbody id="ad-orders"></tbody>
       </table>
     </div>

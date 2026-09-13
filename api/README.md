@@ -59,7 +59,9 @@ Signing up with a factory email does **not** make someone an admin.
 ## How you run it
 
 - Anyone can create an account. They see published contractor net.
+- **Invite a customer** (Admin): enter name, company, email, and discount. Copy or email the link. They set a password and see that discount immediately. Link lasts 14 days; use **New link** to re-issue.
 - In Admin → Companies, set their **Discount %**. Next quote shows their net.
 - Confirm the dollar amount on every order before Stripe opens. The quote page total is an estimate only.
 - They pay 50% deposit in Stripe → lead time starts → they pay the balance before ship.
+- Mark an order **Shipped** (or enter **Shipped on** on the order). That date starts the 1-year warranty. Add carrier, tracking / PRO, and Condor serials there. **Factory freight cost** stays on the factory card only — it is never sent on customer order APIs. Customer ship notes are for liftgate / appointment / pieces, not rates.
 - Duplicate on an old order reopens the quote builder with those doors.

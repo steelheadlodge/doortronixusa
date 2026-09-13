@@ -50,6 +50,8 @@ async function handle(request, env) {
   if (request.method === 'POST' && path === '/login') return login(request, env);
   if (request.method === 'POST' && path === '/logout') return logout(request, env);
   if (request.method === 'POST' && path === '/admin/bootstrap') return bootstrapAdmin(request, env);
+  if (request.method === 'GET' && path === '/invite') return getInvite(request, env);
+  if (request.method === 'POST' && path === '/invite/accept') return acceptInvite(request, env);
 
   const session = await getSession(request, env);
 
@@ -122,13 +124,29 @@ async function handle(request, env) {
 }
 
 async function adminRoutes(path, request, env, session) {
+  if (path === '/admin/invites' && request.method === 'GET') return listInvites(env, request);
+  if (path === '/admin/invites' && request.method === 'POST') return createInvite(request, env);
+  const resend = path.match(/^\/admin\/invites\/(\d+)\/resend$/);
+  if (resend && request.method === 'POST') return resendInvite(env, request, Number(resend[1]));
+
   if (path === '/admin/companies' && request.method === 'GET') {
     const { results } = await env.DB.prepare(
       `SELECT c.*, (SELECT COUNT(*) FROM users u WHERE u.company_id = c.id) AS user_count,
               (SELECT COUNT(*) FROM orders o WHERE o.company_id = c.id) AS order_count
        FROM companies c ORDER BY c.name COLLATE NOCASE`
     ).all();
-    return json({ companies: results }, 200, request);
+    const { results: users } = await env.DB.prepare(
+      `SELECT company_id, name, email FROM users ORDER BY name COLLATE NOCASE, email COLLATE NOCASE`
+    ).all();
+    const byCo = new Map();
+    for (const u of users || []) {
+      const list = byCo.get(u.company_id) || [];
+      list.push({ name: u.name, email: u.email });
+      byCo.set(u.company_id, list);
+    }
+    return json({
+      companies: (results || []).map((c) => ({ ...c, users: byCo.get(c.id) || [] })),
+    }, 200, request);
   }
 
   const coMatch = path.match(/^\/admin\/companies\/(\d+)$/);
@@ -150,6 +168,7 @@ async function adminRoutes(path, request, env, session) {
     const { results } = await env.DB.prepare(
       `SELECT o.id, o.number, o.status, o.project_name, o.your_total, o.confirmed_total,
               o.deposit_paid, o.balance_paid, o.created_at, o.lead_starts_at, o.ship_estimate,
+              o.shipped_on, o.warranty_ends, o.carrier, o.tracking_number, o.pro_number,
               c.name AS company_name, u.email AS user_email
        FROM orders o
        JOIN companies c ON c.id = o.company_id
@@ -181,6 +200,138 @@ async function adminRoutes(path, request, env, session) {
   }
 
   return json({ error: 'Not found' }, 404, request);
+}
+
+const INVITE_DAYS = 14;
+
+async function sha256Hex(s) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+  return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+function inviteExpiry() {
+  return Date.now() + INVITE_DAYS * 86400000;
+}
+
+async function listInvites(env, request) {
+  const { results } = await env.DB.prepare(
+    `SELECT i.id, i.email, i.expires_at, i.used_at, i.created_at,
+            u.name AS name, c.name AS company, c.discount_pct AS discount_pct
+     FROM invites i
+     JOIN users u ON u.id = i.user_id
+     JOIN companies c ON c.id = i.company_id
+     ORDER BY i.id DESC LIMIT 50`
+  ).all();
+  return json({ invites: results || [] }, 200, request);
+}
+
+async function issueInviteToken(env, inviteId) {
+  const raw = randomToken();
+  const hash = await sha256Hex(raw);
+  const expires = inviteExpiry();
+  await env.DB.prepare('UPDATE invites SET token_hash = ?, expires_at = ?, used_at = NULL WHERE id = ?')
+    .bind(hash, expires, inviteId).run();
+  return { token: raw, expiresAt: expires };
+}
+
+async function createInvite(request, env) {
+  const body = await readJson(request);
+  const email = normalizeEmail(body.email);
+  const name = String(body.name || '').trim();
+  const companyName = String(body.company || '').trim();
+  const phone = String(body.phone || '').trim().slice(0, 40);
+  const discount = clampDiscount(body.discountPct);
+  const deposit = clampNum(body.depositPct, 10, 100, 50);
+  if (!email || !email.includes('@')) return json({ error: 'Enter a valid email.' }, 400, request);
+  if (name.length < 2) return json({ error: 'Enter their name.' }, 400, request);
+  if (companyName.length < 2) return json({ error: 'Enter the company name.' }, 400, request);
+
+  const existing = await env.DB.prepare('SELECT id, company_id FROM users WHERE email = ?').bind(email).first();
+  if (existing) {
+    const pending = await env.DB.prepare(
+      'SELECT id FROM invites WHERE user_id = ? AND used_at IS NULL AND expires_at > ?'
+    ).bind(existing.id, Date.now()).first();
+    if (!pending) {
+      return json({ error: 'That email already has an account. Set their discount on the Companies list instead.' }, 409, request);
+    }
+    await env.DB.prepare('UPDATE companies SET name = ?, discount_pct = ?, deposit_pct = ? WHERE id = ?')
+      .bind(companyName.slice(0, 120), discount, deposit, existing.company_id).run();
+    await env.DB.prepare('UPDATE users SET name = ?, phone = ? WHERE id = ?')
+      .bind(name.slice(0, 80), phone, existing.id).run();
+    const issued = await issueInviteToken(env, pending.id);
+    return json({ token: issued.token, expiresAt: issued.expiresAt, email, company: companyName, discountPct: discount }, 200, request);
+  }
+
+  const co = await env.DB.prepare(
+    'INSERT INTO companies (name, discount_pct, deposit_pct) VALUES (?, ?, ?) RETURNING id'
+  ).bind(companyName.slice(0, 120), discount, deposit).first();
+  const placeholder = await hashPassword(randomToken());
+  const user = await env.DB.prepare(
+    'INSERT INTO users (company_id, email, password_hash, name, phone) VALUES (?, ?, ?, ?, ?) RETURNING id'
+  ).bind(co.id, email, placeholder, name.slice(0, 80), phone).first();
+  const raw = randomToken();
+  const hash = await sha256Hex(raw);
+  const expires = inviteExpiry();
+  await env.DB.prepare(
+    'INSERT INTO invites (token_hash, company_id, user_id, email, expires_at) VALUES (?, ?, ?, ?, ?)'
+  ).bind(hash, co.id, user.id, email, expires).run();
+  return json({ token: raw, expiresAt: expires, email, company: companyName, discountPct: discount }, 201, request);
+}
+
+async function resendInvite(env, request, id) {
+  const row = await env.DB.prepare('SELECT id, email FROM invites WHERE id = ?').bind(id).first();
+  if (!row) return json({ error: 'Invite not found.' }, 404, request);
+  const issued = await issueInviteToken(env, id);
+  return json({ token: issued.token, expiresAt: issued.expiresAt, email: row.email }, 200, request);
+}
+
+async function getInvite(request, env) {
+  if (!(await rateOk(env, request, 'invite-get', 40, 3600))) {
+    return json({ error: 'Too many attempts. Try again later.' }, 429, request);
+  }
+  const token = String(new URL(request.url).searchParams.get('token') || '').trim();
+  if (token.length < 16) return json({ error: 'This invite link is invalid or expired.' }, 404, request);
+  const hash = await sha256Hex(token);
+  const row = await env.DB.prepare(
+    `SELECT i.used_at, i.expires_at, u.name, u.email, c.name AS company, c.discount_pct
+     FROM invites i
+     JOIN users u ON u.id = i.user_id
+     JOIN companies c ON c.id = i.company_id
+     WHERE i.token_hash = ?`
+  ).bind(hash).first();
+  if (!row || row.used_at || row.expires_at < Date.now()) {
+    return json({ error: 'This invite link is invalid or expired.' }, 404, request);
+  }
+  return json({
+    name: row.name,
+    email: row.email,
+    company: row.company,
+    discountPct: row.discount_pct,
+  }, 200, request);
+}
+
+async function acceptInvite(request, env) {
+  if (!(await rateOk(env, request, 'invite-accept', 12, 3600))) {
+    return json({ error: 'Too many attempts. Try again later.' }, 429, request);
+  }
+  const body = await readJson(request);
+  const token = String(body.token || '').trim();
+  const password = String(body.password || '');
+  if (token.length < 16) return json({ error: 'This invite link is invalid or expired.' }, 404, request);
+  if (password.length < 8 || password.length > 200) return json({ error: 'Password must be 8–200 characters.' }, 400, request);
+  const hash = await sha256Hex(token);
+  const row = await env.DB.prepare(
+    'SELECT id, user_id, used_at, expires_at FROM invites WHERE token_hash = ?'
+  ).bind(hash).first();
+  if (!row || row.used_at || row.expires_at < Date.now()) {
+    return json({ error: 'This invite link is invalid or expired.' }, 404, request);
+  }
+  const pw = await hashPassword(password);
+  await env.DB.prepare('UPDATE users SET password_hash = ? WHERE id = ?').bind(pw, row.user_id).run();
+  await env.DB.prepare("UPDATE invites SET used_at = datetime('now') WHERE id = ?").bind(row.id).run();
+  const sessionToken = await createSession(env, row.user_id);
+  const session = await loadSessionUser(env, row.user_id);
+  return json({ token: sessionToken, user: publicUser(session) }, 200, request);
 }
 
 async function signup(request, env) {
@@ -255,7 +406,8 @@ async function updateMe(request, env, session) {
 async function listOrders(env, session, request) {
   const { results } = await env.DB.prepare(
     `SELECT id, number, status, project_name, location, your_total, confirmed_total,
-            deposit_paid, balance_paid, lead_time_text, lead_starts_at, ship_estimate, created_at
+            deposit_paid, balance_paid, lead_time_text, lead_starts_at, ship_estimate, created_at,
+            shipped_on, warranty_ends, carrier, tracking_number, pro_number
      FROM orders WHERE company_id = ? ORDER BY id DESC LIMIT 100`
   ).bind(session.companyId).all();
   return json({ orders: results }, 200, request);
@@ -622,6 +774,23 @@ async function adminPatchOrder(request, env, id) {
   const depositPaid = ['deposit_paid', 'in_production', 'ready_to_ship', 'shipped'].includes(status) ? 1 : (status === 'submitted' || status === 'confirmed' ? 0 : order.deposit_paid);
   const balancePaid = status === 'shipped' ? 1 : (['submitted', 'confirmed', 'deposit_paid', 'in_production'].includes(status) ? 0 : order.balance_paid);
 
+  let shippedOn = isoDate(body.shippedOn) || order.shipped_on || '';
+  if (status === 'shipped' && !shippedOn) shippedOn = chicagoToday();
+  let warrantyEnds = isoDate(body.warrantyEnds) || order.warranty_ends || '';
+  if (shippedOn && (!warrantyEnds || (body.shippedOn && !body.warrantyEnds))) {
+    warrantyEnds = plusOneYear(shippedOn);
+  }
+
+  const serials = body.serials != null ? sanitizeSerials(body.serials) : parseJsonArr(order.serials_json);
+  let claims = parseJsonArr(order.warranty_claims_json);
+  if (body.warrantyClaims != null) claims = sanitizeClaims(body.warrantyClaims);
+  if (body.addClaim) claims = claims.concat(sanitizeClaims([body.addClaim]));
+  let freightCost = order.freight_cost;
+  if (body.freightCost !== undefined) {
+    if (body.freightCost === '' || body.freightCost == null) freightCost = null;
+    else freightCost = money(body.freightCost);
+  }
+
   await env.DB.prepare(
     `UPDATE orders SET
        confirmed_total = ?, deposit_amount = ?, status = ?,
@@ -629,6 +798,10 @@ async function adminPatchOrder(request, env, id) {
        lead_time_text = COALESCE(?, lead_time_text),
        ship_estimate = COALESCE(?, ship_estimate),
        notes = COALESCE(?, notes),
+       shipped_on = ?, warranty_ends = ?,
+       carrier = ?, tracking_number = ?, pro_number = ?,
+       freight_type = ?, ship_notes = ?, freight_cost = ?,
+       serials_json = ?, warranty_claims_json = ?,
        updated_at = datetime('now')
      WHERE id = ?`
   ).bind(
@@ -640,6 +813,16 @@ async function adminPatchOrder(request, env, id) {
     body.leadTime != null ? String(body.leadTime).slice(0, 300) : null,
     body.shipEstimate != null ? String(body.shipEstimate).slice(0, 40) : null,
     body.notes != null ? String(body.notes).slice(0, 2000) : null,
+    shippedOn || null,
+    warrantyEnds || null,
+    body.carrier != null ? String(body.carrier).slice(0, 80) : (order.carrier || null),
+    body.trackingNumber != null ? String(body.trackingNumber).slice(0, 80) : (order.tracking_number || null),
+    body.proNumber != null ? String(body.proNumber).slice(0, 80) : (order.pro_number || null),
+    body.freightType != null ? String(body.freightType).slice(0, 20) : (order.freight_type || null),
+    body.shipNotes != null ? String(body.shipNotes).slice(0, 500) : (order.ship_notes || null),
+    freightCost,
+    JSON.stringify(serials),
+    JSON.stringify(claims),
     id
   ).run();
 
@@ -671,6 +854,15 @@ function formatOrder(order, includeAdmin) {
     leadTime: order.lead_time_text,
     leadStartsAt: order.lead_starts_at,
     shipEstimate: order.ship_estimate,
+    shippedOn: order.shipped_on || '',
+    warrantyEnds: order.warranty_ends || '',
+    warrantyStatus: warrantyStatus(order.warranty_ends),
+    carrier: order.carrier || '',
+    trackingNumber: order.tracking_number || '',
+    proNumber: order.pro_number || '',
+    freightType: order.freight_type || '',
+    shipNotes: includeAdmin ? (order.ship_notes || '') : publicShipNotes(order.ship_notes),
+    serials: parseJsonArr(order.serials_json),
     createdAt: order.created_at,
     updatedAt: order.updated_at,
   };
@@ -679,8 +871,70 @@ function formatOrder(order, includeAdmin) {
     out.userEmail = order.user_email;
     out.notes = order.notes;
     out.discountPct = order.discount_pct;
+    out.warrantyClaims = parseJsonArr(order.warranty_claims_json);
+    out.freightCost = order.freight_cost != null && order.freight_cost !== '' ? Number(order.freight_cost) : null;
   }
   return out;
+}
+
+function publicShipNotes(s) {
+  return String(s || '')
+    .replace(/\$\s*[\d,]+(?:\.\d{1,2})?/g, '')
+    .replace(/\b(?:usd|us\$)\s*[\d,]+(?:\.\d{1,2})?/gi, '')
+    .replace(/\b\d+(?:,\d{3})*(?:\.\d{2})?\s*(?:usd|dollars?)\b/gi, '')
+    .replace(/\b(?:freight\s*)?(?:cost|rate|invoice)\s*[:#-]?\s*[\d,]+(?:\.\d{2})?/gi, '')
+    .replace(/[ \t]{2,}/g, ' ')
+    .trim();
+}
+
+function parseJsonArr(raw) {
+  try {
+    const v = JSON.parse(raw || '[]');
+    return Array.isArray(v) ? v : [];
+  } catch {
+    return [];
+  }
+}
+function isoDate(s) {
+  const m = String(s || '').trim().match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  return m ? m[1] + '-' + m[2] + '-' + m[3] : '';
+}
+function chicagoToday() {
+  return new Date().toLocaleDateString('en-CA', { timeZone: 'America/Chicago' });
+}
+function plusOneYear(iso) {
+  const m = String(iso || '').match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!m) return '';
+  let y = Number(m[1]) + 1;
+  const mo = Number(m[2]);
+  let d = Number(m[3]);
+  const last = new Date(Date.UTC(y, mo, 0)).getUTCDate();
+  if (d > last) d = last;
+  return y + '-' + String(mo).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+}
+function warrantyStatus(ends) {
+  const e = isoDate(ends);
+  if (!e) return '';
+  return e >= chicagoToday() ? 'covered' : 'expired';
+}
+function sanitizeSerials(list) {
+  if (!Array.isArray(list)) return [];
+  return list.slice(0, 40).map((x, i) => ({
+    i: Number(x && x.i) || i,
+    label: String((x && x.label) || '').slice(0, 120),
+    sku: String((x && x.sku) || '').slice(0, 60),
+    serial: String((x && x.serial) || '').slice(0, 80),
+    maBuyDate: isoDate(x && x.maBuyDate),
+  }));
+}
+function sanitizeClaims(list) {
+  if (!Array.isArray(list)) return [];
+  return list.slice(0, 80).map((x) => ({
+    date: isoDate(x && x.date) || chicagoToday(),
+    what: String((x && x.what) || '').slice(0, 200),
+    part: String((x && x.part) || '').slice(0, 120),
+    notes: String((x && x.notes) || '').slice(0, 400),
+  })).filter((c) => c.what || c.part || c.notes);
 }
 
 function publicUser(s) {
