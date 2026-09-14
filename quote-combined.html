@@ -346,8 +346,7 @@ body.sheet-mode #plan-svg { background:#fff; }
 .btn-add-cart:hover { background:var(--dblue); }
 .account-create-box { background:#EEF4FB; border:1.5px solid var(--blue); border-radius:8px; padding:12px 14px; margin:0 0 14px; }
 .account-create-box .ac-title { font-size:13px; font-weight:700; color:var(--blue); margin-bottom:6px; }
-.account-create-box .ac-row { display:flex; gap:10px; align-items:flex-start; font-size:13px; font-weight:600; margin-bottom:8px; }
-.account-create-box .ac-row input { width:18px; height:18px; margin-top:2px; flex-shrink:0; accent-color:var(--orange); }
+.account-create-box .ac-require { font-size:13px; font-weight:600; color:#163F6E; margin:0 0 10px; line-height:1.4; }
 .account-create-box .ac-signed { font-size:13px; font-weight:600; color:#166534; }
 </style>
 </head>
@@ -1813,14 +1812,11 @@ body.sheet-mode #plan-svg { background:#fff; }
           <div class="ac-title">Your Doortronix account</div>
           <div class="ac-signed" id="account-signed-in" style="display:none;"></div>
           <div id="account-guest-fields">
-            <div class="ac-row">
-              <input type="checkbox" id="f_create_account" checked>
-              <label for="f_create_account">Create an account now so you can pay, track this order, and reorder later. Uses the contact info above.</label>
-            </div>
+            <p class="ac-require">An account is required to submit. You can browse and price without one. After you submit, we review the job and send the confirmation drawing — you track it here.</p>
             <div class="field" id="account-pass-field">
-              <label>Account password (8+ characters)</label>
+              <label>Create a password (8+ characters) <span class="req">*</span></label>
               <input type="password" id="f_account_pass" minlength="8" autocomplete="new-password" placeholder="Choose a password">
-              <span class="hint">Already have an account? <a href="portal/login.html">Sign in</a> before you submit so this quote lands in your order list.</span>
+              <span class="hint">Already have an account? <a id="account-signin-link" href="portal/login.html?next=../quote-combined.html">Sign in</a> before you submit so this quote lands in your order list.</span>
             </div>
           </div>
         </div>
@@ -1854,7 +1850,7 @@ body.sheet-mode #plan-svg { background:#fff; }
     </div>
 
     <div class="preview-title">Live Door Preview
-      <button type="button" class="btn-print-draw" id="btn-print-drawing" onclick="printQuoteDrawing()" title="Opens the letter confirmation drawing for this build. Print from that page.">Print confirmation drawing</button>
+      <button type="button" class="btn-print-draw" id="btn-print-drawing" onclick="printQuoteDrawing()" title="Opens a preliminary letter sheet. Doortronix issues the confirmation drawing after review.">Print preliminary drawing</button>
     </div>
     <div id="drawing-wrap">
       <svg id="door-svg" viewBox="0 0 600 300" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;"></svg>
@@ -2126,11 +2122,9 @@ function syncAccountBox(me) {
 
 async function maybeCreateAccount() {
   if (localStorage.getItem('dtx_session')) return true;
-  const want = document.getElementById('f_create_account');
-  if (!want || !want.checked) return true;
   const pass = fv('f_account_pass');
   if (pass.length < 8) {
-    showCartError('Set a password (8+ characters) to create your account, or uncheck Create account to submit as a guest.');
+    showCartError('Set a password (8+ characters) to create your account, or sign in if you already have one.');
     const p = document.getElementById('f_account_pass');
     if (p) p.focus();
     return false;
@@ -2155,9 +2149,10 @@ async function maybeCreateAccount() {
     if (data.token) localStorage.setItem('dtx_session', data.token);
     window._portalUser = data.user || null;
     syncAccountBox(window._portalUser);
+    syncPrintDrawingButton();
     return true;
   } catch (err) {
-    showCartError('Could not reach the account service. Uncheck Create account to submit the quote, or try again.');
+    showCartError('Could not reach the account service. An account is required to submit — sign in or try again.');
     return false;
   }
 }
@@ -2168,10 +2163,18 @@ if (window.DTX_TERMS) {
     agreeLabel: 'I have read these terms. I understand this quote and the drawings are not confirmed until I sign a confirmation drawing and pay.',
   });
 }
-document.getElementById('f_create_account')?.addEventListener('change', function () {
-  const f = document.getElementById('account-pass-field');
-  if (f) f.style.display = this.checked ? '' : 'none';
-});
+function syncPrintDrawingButton() {
+  const pb = document.getElementById('btn-print-drawing');
+  if (!pb) return;
+  const isAdmin = !!(window._portalUser && window._portalUser.isAdmin);
+  if (isAdmin) {
+    pb.textContent = 'Print confirmation drawing';
+    pb.title = 'Opens the letter confirmation drawing for this build. Print or save as PDF to email after you review.';
+  } else {
+    pb.textContent = 'Print preliminary drawing';
+    pb.title = 'Opens a preliminary letter sheet. Doortronix issues the confirmation drawing after review.';
+  }
+}
 
 // ── Addon state (JS-authoritative, not CSS-derived) ──────────────────
 const _checkedAddons = new Set(['addon_rocker_switch']);
@@ -4129,7 +4132,6 @@ async function submitAllDoors() {
   const cart = getCart();
   if (cart.length === 0) { showCartError('Add at least one item to your project before submitting.'); return; }
   if (!termsAgreed()) { showCartError('Read and check the terms below the price before submitting.'); return; }
-  if (!(await maybeCreateAccount())) return;
 
   const hdr = _projectHeader || {
     name: fv('f_name'), company: fv('f_company'), role: fv('f_role'),
@@ -4138,6 +4140,11 @@ async function submitAllDoors() {
     shipDate: shipTimelineStr(), poNumber: fv('f_po'),
   };
   if (!hdr.name || !hdr.email) { showCartError('Please fill in contact information before submitting.'); return; }
+  if (!(await maybeCreateAccount())) return;
+  if (!localStorage.getItem('dtx_session')) {
+    showCartError('Sign in or create an account to submit this quote.');
+    return;
+  }
 
   const projTotal = cart.reduce((s, d) => s + (d.estimatedTotal || 0), 0);
   const doorBlocks = cart.map((d, i) => {
@@ -4206,14 +4213,12 @@ async function submitAllDoors() {
   }
 
   let portalSaved = null;
-  if (localStorage.getItem('dtx_session')) {
-    try {
-      portalSaved = await savePortalOrder(hdr, cart, projTotal);
-    } catch (err) {
-      if (btn) { btn.textContent = 'Submit Full Project Quote →'; btn.disabled = false; }
-      showCartError('Quote email sent, but your account did not save the order: ' + err.message + ' Keep this cart and try again, or call (888) 453-5196.');
-      return;
-    }
+  try {
+    portalSaved = await savePortalOrder(hdr, cart, projTotal);
+  } catch (err) {
+    if (btn) { btn.textContent = 'Submit Full Project Quote →'; btn.disabled = false; }
+    showCartError('Quote email sent, but your account did not save the order: ' + err.message + ' Keep this cart and try again, or call (888) 453-5196.');
+    return;
   }
 
   clearCart();
@@ -4224,7 +4229,7 @@ async function submitAllDoors() {
   successDiv.style.cssText = 'background:#f0fdf4;border:2px solid #86efac;border-radius:10px;padding:20px 24px;text-align:center;margin:16px 0;';
   const portalBit = portalSaved && portalSaved.order
     ? ` Saved as <strong>${portalSaved.order.number}</strong>.${portalOrderLink(portalSaved)}`
-    : (localStorage.getItem('dtx_session') ? '' : ' <a href="portal/signup.html" style="color:#166534;font-weight:700;">Create an account</a> to pay, track, and reorder.');
+    : ' Saved to your account.';
   successDiv.innerHTML = `<p style="font-size:18px;font-weight:700;color:#166534;margin:0 0 8px;">✓ Project Quote Submitted!</p>
     <p style="color:#166534;margin:0;">Thank you, <strong>${hdr.name}</strong> — ${cart.length} door${cart.length>1?'s':''} submitted.${projTotal > 0 ? ' Est. Total: <strong>$'+projTotal.toLocaleString()+'</strong>.' : ''} We'll confirm within 24 hours.${portalBit}</p>`;
   const cartSection = document.getElementById('project-cart-section');
@@ -7572,6 +7577,10 @@ document.getElementById('quoteForm').addEventListener('submit', async function(e
   if (!ok) { alert('Please fill in all required fields marked with *.'); return; }
   if (!termsAgreed()) { alert('Read and check the terms below the price before submitting.'); return; }
   if (!(await maybeCreateAccount())) return;
+  if (!localStorage.getItem('dtx_session')) {
+    alert('Sign in or create an account to submit this quote.');
+    return;
+  }
 
   const cfg = getConfig();
   const addons = [];
@@ -7654,16 +7663,15 @@ document.getElementById('quoteForm').addEventListener('submit', async function(e
     if (submitBtn) { submitBtn.textContent = 'Submit Quote →'; submitBtn.disabled = false; }
   }
 
-  if (localStorage.getItem('dtx_session') && pd) {
-    try {
-      await savePortalOrder({
-        name: data.name, email: data.email, phone: data.phone,
-        projectName: data.projectName, location: data.location,
-        poNumber: data.poNumber, shipDate: data.shipDate,
-      }, [captureCurrentDoor()], pd.grandTotal);
-    } catch (err) {
-      showCartError('Quote email sent, but your account did not save the order: ' + err.message);
-    }
+  try {
+    await savePortalOrder({
+      name: data.name, email: data.email, phone: data.phone,
+      projectName: data.projectName, location: data.location,
+      poNumber: data.poNumber, shipDate: data.shipDate,
+    }, [captureCurrentDoor()], pd ? pd.grandTotal : 0);
+  } catch (err) {
+    showCartError('Quote email sent, but your account did not save the order: ' + err.message);
+    return;
   }
 
   showConf(data, pd);
@@ -7801,7 +7809,12 @@ function printQuoteDrawing() {
     const url = new URL('installer-cut-sheet.html', location.href);
     url.searchParams.set('d', encoded);
     // Admins get the internal Factory cut list button on the drawing.
-    if (window._portalUser && window._portalUser.isAdmin) url.searchParams.set('factory', '1');
+    if (window._portalUser && window._portalUser.isAdmin) {
+      url.searchParams.set('confirm', '1');
+      url.searchParams.set('factory', '1');
+    } else {
+      url.searchParams.set('prelim', '1');
+    }
     const href = url.href;
     // window.open keeps the opener link so the drawing tab can return here.
     const win = window.open(href, '_blank');
@@ -7815,7 +7828,7 @@ function printQuoteDrawing() {
     }
   } catch (err) {
     console.error(err);
-    alert('Could not build the confirmation drawing.');
+    alert('Could not build the drawing.');
   } finally {
     if (btn) btn.disabled = false;
   }
@@ -7980,13 +7993,14 @@ portalMe().then(function (me) {
       a.style.cssText = 'color:#fff;font-weight:700;text-decoration:underline;';
       a.textContent = 'Account — ' + me.company + (me.discountPct ? ' · ' + me.discountPct + '% off' : '');
     } else {
-      a.href = 'portal/signup.html';
+      a.href = 'portal/login.html?next=' + encodeURIComponent('../quote-combined.html');
       a.style.cssText = 'color:#B8CCE4;font-weight:700;';
-      a.textContent = 'Create account to pay, track, and reorder';
+      a.textContent = 'Sign in or create an account to submit';
     }
     chip.appendChild(a);
   }
   syncAccountBox(me);
+  syncPrintDrawingButton();
   // Prefill the contact section from the signed-in account so there's nothing
   // to retype (and the browser can't drop the name into the email box).
   if (me) {

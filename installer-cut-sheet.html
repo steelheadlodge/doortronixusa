@@ -73,6 +73,15 @@ html, body { background:#E8EEF4; color:var(--ink); font-family:Arial, Helvetica,
 .side-foot { margin-top:auto; }
 .ship { font-size:12px; line-height:1.4; padding:7px 8px 8px; border-top:1px solid var(--line); }
 .ship .k { font-size:9px; text-transform:uppercase; letter-spacing:.4px; color:#666; font-weight:700; margin-bottom:2px; }
+.sheet.prelim { position:relative; }
+.sheet.prelim .doc-title { color:#92400E; }
+.sheet.prelim::before {
+  content:'PRELIMINARY';
+  position:absolute; top:40%; left:4%;
+  font-size:68px; font-weight:800; letter-spacing:6px;
+  color:rgba(146,64,14,.09); transform:rotate(-18deg);
+  pointer-events:none; z-index:4; white-space:nowrap;
+}
 .approve-body { background:#F4F7FB; border-top:3px solid var(--orange); padding:8px 8px 9px; }
 .approve-hint { font-size:10px; font-weight:700; color:var(--blue); margin-bottom:8px; }
 .sign { display:grid; grid-template-columns:1fr 1.15fr 0.7fr; gap:8px; align-items:end; }
@@ -127,8 +136,8 @@ html.embed .sheet { margin:0 auto 0; }
       <div class="phone">Malakoff, TX · (888) 453-5196</div>
     </div>
     <div class="doc">
-      <div class="doc-title">Confirmation Drawing</div>
-      <div class="doc-sub">Sizes &amp; configuration — not confirmed until signed</div>
+      <div class="doc-title" id="doc-title">Confirmation Drawing</div>
+      <div class="doc-sub" id="doc-sub">Sizes &amp; configuration — not confirmed until signed</div>
       <div class="doc-ref" id="ref-line">—</div>
     </div>
   </header>
@@ -163,9 +172,9 @@ html.embed .sheet { margin:0 auto 0; }
           <div class="k">Ship to</div>
           <div id="ship-to">—</div>
         </div>
-        <h3>Approval</h3>
+        <h3 id="approve-h">Approval</h3>
         <div class="approve-body">
-          <div class="approve-hint">Sign to confirm sizes, glass cuts, and configuration. Unsigned drawings are not released for fabrication or glass.</div>
+          <div class="approve-hint" id="approve-hint">Sign to confirm sizes, glass cuts, and configuration. Unsigned drawings are not released for fabrication or glass.</div>
           <div class="sign">
             <div>
               <div class="ln" id="appr-name"></div>
@@ -2857,11 +2866,30 @@ else if (new URLSearchParams(location.search).get('type') === 'swing') {
 }
 else loadSample('fbo-single-rh', { widthFt:8, heightFt:8, heightIn:0, transom:true, ftthFt:10, ftthIn:0, transomVerticals:1, frameFinish:'Clear Anodized' });
 
+function applyPrelimMode() {
+  document.title = 'Preliminary Drawing — Doortronix USA';
+  const title = document.getElementById('doc-title');
+  const sub = document.getElementById('doc-sub');
+  if (title) title.textContent = 'Preliminary Drawing';
+  if (sub) sub.textContent = 'Quote preview — Doortronix issues the confirmation drawing after review';
+  const sheet = document.getElementById('sheet');
+  if (sheet) sheet.classList.add('prelim');
+  const h = document.getElementById('approve-h');
+  if (h) h.textContent = 'Not a confirmation';
+  const hint = document.getElementById('approve-hint');
+  if (hint) hint.textContent = 'This is not a confirmation. Do not sign this sheet. We will send the confirmation drawing after we review your quote.';
+  const sign = document.querySelector('.sign');
+  if (sign) sign.style.display = 'none';
+}
+
 // Factory cut list is internal — hidden from the customer-facing drawing.
 // Reveal the button (and optionally auto-open) with ?factory=1 / ?cutlist=1, OR
 // whenever a signed-in admin is viewing the drawing (independent of the URL).
+// Public / unsigned opens stay preliminary unless ?confirm=1 or ?factory=1.
 (function () {
   const q = new URLSearchParams(location.search);
+  const isConfirm = q.get('confirm') === '1' || q.get('factory') === '1';
+  if (!isConfirm) applyPrelimMode();
   const internal = q.get('factory') === '1' || q.get('cutlist') === '1';
   const btn = document.getElementById('btn-cutlist');
   if (btn && internal) btn.style.display = '';

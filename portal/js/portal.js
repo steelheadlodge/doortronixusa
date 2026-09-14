@@ -152,6 +152,12 @@
   function fillAuthPages() {
     nav(null);
     const params = new URLSearchParams(location.search);
+    const next = params.get('next');
+    if (next) {
+      document.querySelectorAll('a[href="signup.html"], a[href="login.html"]').forEach((a) => {
+        a.setAttribute('href', a.getAttribute('href').split('?')[0] + '?next=' + encodeURIComponent(next));
+      });
+    }
     document.getElementById('signup-form')?.addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = e.target.querySelector('button');
@@ -792,6 +798,9 @@
   function safeNext(raw) {
     const allowed = ['index.html', 'orders.html', 'order.html', 'account.html', 'admin.html', 'pay-return.html'];
     const s = String(raw || '').trim();
+    if (s === '../quote-combined.html' || s === '/quote-combined.html' || s === 'quote-combined.html') {
+      return '../quote-combined.html';
+    }
     if (!s || /[\\]/.test(s) || /:/.test(s) || s.startsWith('//') || s.includes('..')) return 'index.html';
     const [path, query] = s.split('?');
     const file = path.split('/').pop();
