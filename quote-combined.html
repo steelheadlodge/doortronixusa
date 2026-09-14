@@ -5301,24 +5301,8 @@ function updateAddonVisibility() {
 }
 
 // ── Price calculation ───────────────────────────────────────────────
-// ── New-work pricing gate ───────────────────────────────────────────
-// Swing packages are new and not yet public. Their pricing is hidden from
-// the public site and unlocked only for the owner via a private link/code.
-// This is a display gate on a static site — the pricing math still ships to
-// the browser, so it deters casual viewing but is not hard security.
-const PRICE_UNLOCK_CODE = 'dtx-swing-2026';
-function pricingUnlocked() {
-  try {
-    const q = new URLSearchParams(location.search).get('unlock');
-    if (q !== null) {
-      if (q === PRICE_UNLOCK_CODE) localStorage.setItem('dtx_price_unlock', q);
-      else localStorage.removeItem('dtx_price_unlock');
-    }
-    return localStorage.getItem('dtx_price_unlock') === PRICE_UNLOCK_CODE;
-  } catch (e) { return false; }
-}
-function isNewWork(cfg) { return !!(cfg && cfg.isSwing); }
-function pricingGated(cfg) { return isNewWork(cfg) && !pricingUnlocked(); }
+// Swing package prices are public contractor net, same as sliders.
+function pricingGated() { return false; }
 
 function calcPrice() {
   const body = document.getElementById('price-body');

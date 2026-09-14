@@ -168,6 +168,7 @@ async function adminRoutes(path, request, env, session) {
     const { results } = await env.DB.prepare(
       `SELECT o.id, o.number, o.status, o.project_name, o.your_total, o.confirmed_total,
               o.deposit_paid, o.balance_paid, o.created_at, o.lead_starts_at, o.ship_estimate,
+              o.deposit_paid_on, o.drawing_signed_on,
               o.shipped_on, o.warranty_ends, o.carrier, o.tracking_number, o.pro_number,
               c.name AS company_name, u.email AS user_email
        FROM orders o
@@ -175,7 +176,7 @@ async function adminRoutes(path, request, env, session) {
        JOIN users u ON u.id = o.user_id
        ORDER BY o.id DESC LIMIT 200`
     ).all();
-    return json({ orders: results }, 200, request);
+    return json({ orders: (results || []).map(withEta) }, 200, request);
   }
 
   const aoMatch = path.match(/^\/admin\/orders\/(\d+)$/);
@@ -407,10 +408,11 @@ async function listOrders(env, session, request) {
   const { results } = await env.DB.prepare(
     `SELECT id, number, status, project_name, location, your_total, confirmed_total,
             deposit_paid, balance_paid, lead_time_text, lead_starts_at, ship_estimate, created_at,
+            deposit_paid_on, drawing_signed_on,
             shipped_on, warranty_ends, carrier, tracking_number, pro_number
      FROM orders WHERE company_id = ? ORDER BY id DESC LIMIT 100`
   ).bind(session.companyId).all();
-  return json({ orders: results }, 200, request);
+  return json({ orders: (results || []).map(withEta) }, 200, request);
 }
 
 async function getOrder(env, session, id, request) {
@@ -739,12 +741,13 @@ async function stripeWebhook(request, env) {
 
   if (pay.kind === 'deposit' && !order.deposit_paid) {
     const lead = order.lead_time_text || await getSetting(env, 'lead_time');
-    const start = new Date().toISOString().slice(0, 10);
+    const start = chicagoToday();
     await env.DB.prepare(
       `UPDATE orders SET deposit_paid = 1, status = 'deposit_paid', lead_starts_at = ?,
+              deposit_paid_on = COALESCE(deposit_paid_on, ?),
               lead_time_text = ?, updated_at = datetime('now')
        WHERE id = ? AND deposit_paid = 0`
-    ).bind(start, lead, pay.order_id).run();
+    ).bind(start, start, lead, pay.order_id).run();
   } else if (pay.kind === 'balance' && !order.balance_paid) {
     await env.DB.prepare(
       `UPDATE orders SET balance_paid = 1, updated_at = datetime('now') WHERE id = ? AND balance_paid = 0`
@@ -791,13 +794,25 @@ async function adminPatchOrder(request, env, id) {
     else freightCost = money(body.freightCost);
   }
 
+  let drawingSignedOn = order.drawing_signed_on || '';
+  if (body.drawingSignedOn !== undefined) drawingSignedOn = isoDate(body.drawingSignedOn);
+  let depositPaidOn = order.deposit_paid_on || order.lead_starts_at || '';
+  if (body.depositPaidOn !== undefined) depositPaidOn = isoDate(body.depositPaidOn);
+  if (depositPaid && !depositPaidOn) depositPaidOn = chicagoToday();
+  let leadStartsAt = order.lead_starts_at || '';
+  if (depositPaid && !leadStartsAt) leadStartsAt = depositPaidOn || chicagoToday();
+
+  const eta = etaShipDate({ deposit_paid_on: depositPaidOn, drawing_signed_on: drawingSignedOn });
+
   await env.DB.prepare(
     `UPDATE orders SET
        confirmed_total = ?, deposit_amount = ?, status = ?,
        deposit_paid = ?, balance_paid = ?,
        lead_time_text = COALESCE(?, lead_time_text),
+       lead_starts_at = COALESCE(?, lead_starts_at),
        ship_estimate = COALESCE(?, ship_estimate),
        notes = COALESCE(?, notes),
+       drawing_signed_on = ?, deposit_paid_on = ?,
        shipped_on = ?, warranty_ends = ?,
        carrier = ?, tracking_number = ?, pro_number = ?,
        freight_type = ?, ship_notes = ?, freight_cost = ?,
@@ -811,8 +826,11 @@ async function adminPatchOrder(request, env, id) {
     depositPaid,
     balancePaid,
     body.leadTime != null ? String(body.leadTime).slice(0, 300) : null,
-    body.shipEstimate != null ? String(body.shipEstimate).slice(0, 40) : null,
+    leadStartsAt || null,
+    eta || (body.shipEstimate != null ? String(body.shipEstimate).slice(0, 40) : null),
     body.notes != null ? String(body.notes).slice(0, 2000) : null,
+    drawingSignedOn || null,
+    depositPaidOn || null,
     shippedOn || null,
     warrantyEnds || null,
     body.carrier != null ? String(body.carrier).slice(0, 80) : (order.carrier || null),
@@ -853,7 +871,10 @@ function formatOrder(order, includeAdmin) {
     balancePaid: !!order.balance_paid,
     leadTime: order.lead_time_text,
     leadStartsAt: order.lead_starts_at,
-    shipEstimate: order.ship_estimate,
+    depositPaidOn: order.deposit_paid_on || order.lead_starts_at || '',
+    drawingSignedOn: order.drawing_signed_on || '',
+    etaShip: etaShipDate(order),
+    shipEstimate: order.ship_estimate || etaShipDate(order),
     shippedOn: order.shipped_on || '',
     warrantyEnds: order.warranty_ends || '',
     warrantyStatus: warrantyStatus(order.warranty_ends),
@@ -898,6 +919,88 @@ function parseJsonArr(raw) {
 function isoDate(s) {
   const m = String(s || '').trim().match(/^(\d{4})-(\d{2})-(\d{2})$/);
   return m ? m[1] + '-' + m[2] + '-' + m[3] : '';
+}
+function ymd(y, mo, d) {
+  return y + '-' + String(mo).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+}
+function parseYmd(iso) {
+  const s = isoDate(iso);
+  if (!s) return null;
+  return { y: Number(s.slice(0, 4)), mo: Number(s.slice(5, 7)), d: Number(s.slice(8, 10)) };
+}
+function addDays(iso, n) {
+  const p = parseYmd(iso);
+  if (!p) return '';
+  const dt = new Date(Date.UTC(p.y, p.mo - 1, p.d + n));
+  return ymd(dt.getUTCFullYear(), dt.getUTCMonth() + 1, dt.getUTCDate());
+}
+function weekdaySun0(iso) {
+  const p = parseYmd(iso);
+  if (!p) return -1;
+  return new Date(Date.UTC(p.y, p.mo - 1, p.d)).getUTCDay();
+}
+function nthWeekdayOfMonth(year, month, n, weekday) {
+  const firstWd = new Date(Date.UTC(year, month - 1, 1)).getUTCDay();
+  const day = 1 + ((weekday - firstWd + 7) % 7) + (n - 1) * 7;
+  return ymd(year, month, day);
+}
+function lastWeekdayOfMonth(year, month, weekday) {
+  const last = new Date(Date.UTC(year, month, 0));
+  const day = last.getUTCDate() - ((last.getUTCDay() - weekday + 7) % 7);
+  return ymd(year, month, day);
+}
+function observedFixed(year, month, day) {
+  const iso = ymd(year, month, day);
+  const wd = weekdaySun0(iso);
+  if (wd === 6) return addDays(iso, -1);
+  if (wd === 0) return addDays(iso, 1);
+  return iso;
+}
+function usFederalHolidaySet(year) {
+  return new Set([
+    observedFixed(year, 1, 1),
+    nthWeekdayOfMonth(year, 1, 3, 1),
+    nthWeekdayOfMonth(year, 2, 3, 1),
+    lastWeekdayOfMonth(year, 5, 1),
+    observedFixed(year, 6, 19),
+    observedFixed(year, 7, 4),
+    nthWeekdayOfMonth(year, 9, 1, 1),
+    nthWeekdayOfMonth(year, 10, 2, 1),
+    observedFixed(year, 11, 11),
+    nthWeekdayOfMonth(year, 11, 4, 4),
+    observedFixed(year, 12, 25),
+  ]);
+}
+function isUsFederalHoliday(iso) {
+  const p = parseYmd(iso);
+  return !!(p && usFederalHolidaySet(p.y).has(isoDate(iso)));
+}
+function firstWeekdayOnOrAfter(iso) {
+  let cur = isoDate(iso);
+  if (!cur) return '';
+  for (let i = 0; i < 14; i++) {
+    const wd = weekdaySun0(cur);
+    if (wd !== 0 && wd !== 6 && !isUsFederalHoliday(cur)) return cur;
+    cur = addDays(cur, 1);
+  }
+  return cur;
+}
+function clockStartOn(row) {
+  const dep = isoDate(row.deposit_paid_on || row.depositPaidOn || row.lead_starts_at || row.leadStartsAt);
+  const sig = isoDate(row.drawing_signed_on || row.drawingSignedOn);
+  if (!dep || !sig) return '';
+  return dep > sig ? dep : sig;
+}
+function etaShipDate(row) {
+  const start = clockStartOn(row);
+  return start ? firstWeekdayOnOrAfter(addDays(start, 28)) : '';
+}
+function withEta(row) {
+  if (!row) return row;
+  const eta = etaShipDate(row);
+  row.eta_ship = eta;
+  row.etaShip = eta;
+  return row;
 }
 function chicagoToday() {
   return new Date().toLocaleDateString('en-CA', { timeZone: 'America/Chicago' });

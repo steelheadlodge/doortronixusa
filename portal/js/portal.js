@@ -220,7 +220,7 @@
     if (draftStat) draftStat.textContent = drafts.length;
     const recent = document.getElementById('recent-body');
     if (!orders.length) {
-      recent.innerHTML = '<tr><td colspan="6" class="muted">No orders yet. Start a quote and submit it to your account.</td></tr>';
+      recent.innerHTML = '<tr><td colspan="7" class="muted">No orders yet. Start a quote and submit it to your account.</td></tr>';
     } else {
       recent.innerHTML = orders.slice(0, 8).map(orderRow).join('');
     }
@@ -235,12 +235,17 @@
     }
   }
 
+  function etaFromOrder(o) {
+    return o.eta_ship || o.etaShip || o.ship_estimate || o.shipEstimate || '';
+  }
   function orderRow(o) {
+    const eta = etaFromOrder(o);
     return '<tr>' +
       '<td><a href="order.html?id=' + o.id + '"><strong>' + esc(o.number) + '</strong></a></td>' +
       '<td>' + esc(o.project_name || '—') + '</td>' +
       '<td>' + badge(o.status) + '</td>' +
       '<td class="price">' + money(o.confirmed_total != null ? o.confirmed_total : o.your_total) + '</td>' +
+      '<td>' + (eta ? esc(eta) : '<span class="muted">—</span>') + '</td>' +
       '<td>' + warrFromRow(o) + '</td>' +
       '<td>' + (o.created_at || '').slice(0, 10) + '</td>' +
       '</tr>';
@@ -254,7 +259,7 @@
     const orders = data.orders || [];
     body.innerHTML = orders.length
       ? orders.map(orderRow).join('')
-      : '<tr><td colspan="6" class="muted">No orders yet.</td></tr>';
+      : '<tr><td colspan="7" class="muted">No orders yet.</td></tr>';
   }
 
   async function quotesPage() {
@@ -363,6 +368,10 @@
     if (!card) return;
     card.classList.remove('hidden');
     const set = (id, v) => { const el = document.getElementById(id); if (el) el.value = v || ''; };
+    set('ad_signed', o.drawingSignedOn);
+    set('ad_deposit_on', o.depositPaidOn);
+    const etaPrev = document.getElementById('ad_eta_preview');
+    if (etaPrev) etaPrev.textContent = o.etaShip ? 'ETA ship ' + o.etaShip : 'ETA ship — enter both dates, then save';
     set('ad_shipped', o.shippedOn);
     set('ad_warr_end', o.warrantyEnds);
     const shipEl = document.getElementById('ad_shipped');
@@ -414,6 +423,8 @@
           }));
           const what = fv('ad_claim_what');
           const body = {
+            drawingSignedOn: fv('ad_signed'),
+            depositPaidOn: fv('ad_deposit_on'),
             shippedOn: fv('ad_shipped'),
             warrantyEnds: fv('ad_warr_end'),
             freightType: fv('ad_freight'),
@@ -466,9 +477,18 @@
       ? money(o.depositAmount) + (o.depositPaid ? ' — paid' : ' — due to start fabrication')
       : 'Set when price is confirmed';
     document.getElementById('olead').textContent = o.leadTime || '—';
-    document.getElementById('ostart').textContent = o.leadStartsAt
-      ? 'Started ' + o.leadStartsAt + (o.shipEstimate ? ' · Est. ship ' + o.shipEstimate : '')
-      : 'Lead time starts when the deposit clears.';
+    const etaEl = document.getElementById('oeta');
+    if (etaEl) {
+      etaEl.textContent = o.etaShip
+        ? 'ETA ship ' + o.etaShip
+        : 'ETA ship — awaiting deposit date and signed drawing date';
+    }
+    const startBits = [];
+    if (o.depositPaidOn) startBits.push('Deposit ' + o.depositPaidOn);
+    if (o.drawingSignedOn) startBits.push('Signed drawing ' + o.drawingSignedOn);
+    document.getElementById('ostart').textContent = startBits.length
+      ? startBits.join(' · ') + '. Four weeks, then the first weekday that is not a US federal holiday.'
+      : 'Lead time starts when we have both the deposit and the signed confirmation drawing.';
     const serials = defaultSerials(o.doors, o.serials);
     document.getElementById('oship').innerHTML = renderShip(o);
     document.getElementById('owarranty').innerHTML = renderWarranty(o, serials);
@@ -746,7 +766,7 @@
     document.getElementById('ad-orders').innerHTML = (ords.orders || []).map((o) => {
       const shipBit = o.shipped_on
         ? esc(o.shipped_on) + '<br>' + warrFromRow(o)
-        : '<span class="muted">—</span>';
+        : (o.eta_ship ? 'ETA ' + esc(o.eta_ship) : '<span class="muted">—</span>');
       return '<tr>' +
         '<td><a href="order.html?id=' + o.id + '"><strong>' + esc(o.number) + '</strong></a></td>' +
         '<td>' + esc(o.company_name) + '</td>' +

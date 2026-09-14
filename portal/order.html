@@ -38,6 +38,7 @@
     <div class="card">
       <h2>Lead time</h2>
       <p id="olead">—</p>
+      <p><strong id="oeta">—</strong></p>
       <p class="muted" id="ostart"></p>
     </div>
     <div class="card" id="ship-card">
@@ -50,7 +51,18 @@
     </div>
     <div class="card hidden" id="admin-ship-card">
       <h2>Factory — ship &amp; warranty</h2>
-      <p class="muted" style="margin-bottom:10px;">Shipped on starts the customer’s 1-year clock (America/Chicago). Enter the carrier and tracking or PRO so they can follow the freight.</p>
+      <p class="muted" style="margin-bottom:10px;">ETA ship is the first weekday — skipping US federal holidays — four weeks after you have both the deposit and the signed drawing. Shipped on starts the customer’s 1-year clock (America/Chicago).</p>
+      <div class="two">
+        <div>
+          <label for="ad_signed">Signed drawing received</label>
+          <input type="date" id="ad_signed">
+        </div>
+        <div>
+          <label for="ad_deposit_on">Deposit received</label>
+          <input type="date" id="ad_deposit_on">
+        </div>
+      </div>
+      <p class="muted" id="ad_eta_preview" style="margin:8px 0 14px">ETA ship —</p>
       <div class="two">
         <div>
           <label for="ad_shipped">Shipped on</label>

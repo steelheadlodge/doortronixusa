@@ -149,7 +149,7 @@ html.embed .sheet { margin:0 auto 0; }
       <div class="elev"><svg id="door-svg" viewBox="0 0 840 420" preserveAspectRatio="xMidYMid meet"></svg></div>
       <div class="plan-col">
         <div class="plan"><svg id="plan-svg" viewBox="0 0 840 480" preserveAspectRatio="xMidYMid meet"></svg></div>
-        <div class="plan-notes">
+        <div class="plan-notes" id="plan-notes">
           <strong>NOTES:</strong><br>
           1. ELECTRICAL REQUIREMENTS: 120 VAC, 5 AMP MIN TO POWER OPERATOR BY ELECTRICAL CONTRACTOR.<br>
           2. ROUGH OPENING SHALL PROVIDE 1/4"[6] SHIM SPACE ON SIDES AND TOP OF PACKAGE.<br>
@@ -488,6 +488,20 @@ function optionList() {
   if (!addons.length) return [['Options', 'None']];
   return addons.map(a => [a.name, a.qty > 1 ? '× ' + a.qty : 'Yes']);
 }
+function syncPlanNotes() {
+  const el = document.getElementById('plan-notes');
+  if (!el || !ORDER) return;
+  const d = ORDER.door || {};
+  const cfg = CONFIGS[d.configKey];
+  const ansi = (isSwingCfg(cfg) && d.swingEnergy === 'low') ? 'ANSI/BHMA A156.19' : 'ANSI/BHMA A156.10';
+  el.innerHTML =
+    '<strong>NOTES:</strong><br>' +
+    '1. ELECTRICAL REQUIREMENTS: 120 VAC, 5 AMP MIN TO POWER OPERATOR BY ELECTRICAL CONTRACTOR.<br>' +
+    '2. ROUGH OPENING SHALL PROVIDE 1/4"[6] SHIM SPACE ON SIDES AND TOP OF PACKAGE.<br>' +
+    '3. LIMITS OF ACTIVATION AND SAFETY ZONES ARE FOR REFERENCE ONLY; SEE ' + ansi + ' FOR DETAILED REQUIREMENTS.<br>' +
+    '4. SEE SPECIFICATIONS FOR ADDITIONAL INFORMATION.<br>' +
+    '5. GLASS SIZES, DIMENSIONS, AND ALL DETAILS ON THIS DRAWING ARE PRELIMINARY UNTIL THIS SHEET IS SIGNED AND RETURNED, OR A SIGNED ORDER CONFIRMATION IS ISSUED. DO NOT CUT GLASS FROM THIS DRAWING UNTIL CONFIRMED. GLASS BY OTHERS.';
+}
 function slideSensorStr(d) {
   const s = (d && d.sensor) || '';
   if (/i-oneXT/i.test(s)) return 'Optex i-oneXT';
@@ -666,6 +680,7 @@ function swingParticulars(d, h) {
   const high = d.swingEnergy !== 'low';
   const rows = [
     ['Frame size', getOverallWidthStr() + ' W × ' + getOverallHeightStr() + ' H'],
+    ['Header', '5-3/4" OHC'],
     ['Clear opening', getClearOpeningStr() || '—'],
     ['Swing', swingDirLabel(d)],
     ['Operation', high ? 'Fully automatic' : 'Low energy'],
@@ -900,6 +915,7 @@ function renderSheet() {
   }
 
   fillTable('options-tbl', optionList());
+  syncPlanNotes();
   document.getElementById('ship-to').innerHTML = (p.shipTo || '—').replace(/\n/g, '<br>');
   document.getElementById('appr-name').textContent = '';
   document.getElementById('appr-date').textContent = '';
@@ -1279,8 +1295,9 @@ function calcSwingGlass(cfg, d, W, Hhdr) {
   }
   return out;
 }
-// Medium-stile glass formulas aren't finalized — suppress glass sizes for
-// swing doors (always medium stile) and any medium-stile slider until worked out.
+// Swing door-panel glass math is not shop-correct yet — Andrew will supply
+// the factory formula. Hide sizes so nobody cuts from this sheet.
+// Medium-stile slider formulas are also unfinished.
 function glassSizesHidden() {
   const d = ORDER && ORDER.door;
   if (!d) return false;
@@ -2862,6 +2879,12 @@ if (loadFromURL()) renderSheet();
 else if (new URLSearchParams(location.search).get('type') === 'swing') {
   const demo = new URLSearchParams(location.search).get('demo');
   if (demo === 'slt') loadSampleSwing('swing-single', { swingHand:'rh', transom:true, ftthFt:9, ftthIn:0, heightFt:7, heightIn:6, swingSidelite:'both', slWidthFt:3, slWidthIn:0 });
+  else if (demo === 'pair') loadSampleSwing('swing-pair', { widthFt:6, widthIn:0, heightFt:7, heightIn:6, swingDir:'out' });
+  else if (demo === 'twin') loadSampleSwing('swing-twin-center', {
+    widthFt:3, widthIn:5, widthLFt:3, widthLIn:5, widthRFt:3, widthRIn:5,
+    swingDirL:'out', swingDirR:'in', swingHandL:'rh', swingHandR:'lh',
+    swingSidelite:'none',
+  });
   else loadSampleSwing('swing-single', { swingHand:'rh' });
 }
 else loadSample('fbo-single-rh', { widthFt:8, heightFt:8, heightIn:0, transom:true, ftthFt:10, ftthIn:0, transomVerticals:1, frameFinish:'Clear Anodized' });

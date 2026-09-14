@@ -17,7 +17,7 @@
     '<li><strong>Quote.</strong> Submitting this form is a request, not a purchase. Price, drawings, glass sizes, and lead time are estimates. You are not obligated until you approve a confirmation drawing and pay.</li>',
     '<li><strong>Confirmation drawing.</strong> Doortronix reviews the quote and sends a confirmation drawing. That drawing is still preliminary until you sign it. Do not cut glass or fabricate from a quote preview or an unsigned drawing.</li>',
     '<li><strong>Pay in your account.</strong> Create a free Doortronix account to approve the drawing, pay the deposit or the full amount, track the order, and reorder the same package later. Fabrication does not start until payment clears.</li>',
-    '<li><strong>Fabricate and ship.</strong> After cleared deposit or full payment, we build the aluminum door package in Malakoff, Texas and ship it. Lead time starts on the day payment clears, not the day you sign.</li>',
+    '<li><strong>Fabricate and ship.</strong> After cleared deposit or full payment, we build the aluminum door package in Malakoff, Texas and ship it. Lead time starts when we have both a cleared deposit and the signed confirmation drawing.</li>',
     '</ol>',
     '<h4>What we sell</h4>',
     '<p>We sell the <strong>aluminum door package only</strong> — frame, panels, hardware, and operator. Price does <strong>not</strong> include glass, glazing, freight, installation, or taxes. Glass is supplied and installed by others. Frames are prepped for the glass thickness you select.</p>',
