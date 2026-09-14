@@ -55,6 +55,9 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
 /* ── Form grid ── */
 .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
 .form-grid .full { grid-column:1/-1; }
+.sf-horiz-card { display:block; margin-top:10px; padding:12px 14px; background:#F8FAFC; border:1.5px solid var(--border); border-radius:8px; }
+.sf-horiz-heights { display:flex; flex-direction:column; gap:10px; margin-top:10px; }
+.sf-horiz-heights .sf-h-hidden { display:none !important; }
 .field { display:flex; flex-direction:column; gap:5px; }
 .sl-side-card { background:#F8FAFC; border:1.5px solid var(--border); border-radius:8px; padding:10px 12px; gap:8px; }
 .sl-side-card .sl-vert-label { font-size:11px; font-weight:700; color:#4B5563; margin-top:2px; }
@@ -70,8 +73,9 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
 .op-opt-h:first-child { margin-top:0; }
 .op-opt-note { font-size:11px; color:var(--mgray); margin:4px 0 0; line-height:1.4; }
 .op-opt-group + .op-opt-group { margin-top:14px; }
+.chip-group { display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
 .chip-group input[type=radio], .chip-group input[type=checkbox] { display:none; }
-.chip-group label { border:1.5px solid var(--border); border-radius:20px; padding:5px 13px; font-size:12px; font-weight:600; color:var(--mgray); cursor:pointer; transition:all .15s; user-select:none; }
+.chip-group label { display:inline-flex; align-items:center; border:1.5px solid var(--border); border-radius:20px; padding:5px 13px; font-size:12px; font-weight:600; color:var(--mgray); cursor:pointer; transition:all .15s; user-select:none; }
 .chip-group input:checked + label { border-color:var(--blue); background:var(--blue); color:#fff; }
 .chip-group input:disabled + label { opacity:.4; cursor:not-allowed; pointer-events:none; }
 .chip-group label:hover { border-color:var(--blue); color:var(--blue); }
@@ -111,7 +115,8 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
 .config-grid input[type=radio] { display:none; }
 .config-card { border:2px solid var(--border); border-radius:10px; padding:10px 8px; cursor:pointer; transition:all .15s; text-align:center; background:#fff; display:block; }
 .config-card:hover { border-color:var(--blue); }
-.type-choice-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+.type-choice-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; }
+@media (min-width:980px){ .type-choice-grid { grid-template-columns:repeat(4,1fr); } }
 .type-choice { border:2px solid var(--border); border-radius:12px; padding:20px 14px; background:#fff; cursor:pointer; text-align:center; transition:all .15s; display:flex; flex-direction:column; align-items:center; gap:2px; font-family:inherit; }
 .type-choice:hover { border-color:var(--blue); background:#EEF4FB; box-shadow:0 4px 14px rgba(27,79,138,.14); transform:translateY(-2px); }
 .type-choice svg { margin-bottom:8px; }
@@ -367,7 +372,7 @@ body.sheet-mode #plan-svg { background:#fff; }
   <!-- ══ FORM PANEL ══ -->
   <div class="form-panel">
     <h1 id="form-main-title">Request a Quote</h1>
-    <p class="intro" id="form-intro">Factory-direct net pricing on automatic sliding and swing door packages. Choose your door type to start — you can add multiple doors to quote an entire project in one submission.<br>Our team in Malakoff, Texas will confirm your quote within <strong>24 hours</strong>.</p>
+    <p class="intro" id="form-intro">Factory-direct net pricing on automatic sliding and swing door packages, plus matching storefront lites. Choose a product family to start — you can add multiple openings to quote an entire project in one submission.<br>Our team in Malakoff, Texas will confirm your quote within <strong>24 hours</strong>.</p>
     <div class="trust-bar">
       <span class="trust-chip">✓ Manufactured in Malakoff, TX</span>
       <span class="trust-chip">✓ Factory-Direct Net Pricing</span>
@@ -378,7 +383,7 @@ body.sheet-mode #plan-svg { background:#fff; }
     <!-- ── DOOR FAMILY CHOOSER (first step) ── -->
     <div id="type-chooser" style="margin:18px 0 4px;">
       <div class="section-header" style="margin-top:0;">What Are You Quoting?</div>
-      <p style="font-size:13px;color:var(--mgray);margin:0 0 14px;">Pick a door family to begin. You can switch types anytime.</p>
+      <p style="font-size:13px;color:var(--mgray);margin:0 0 14px;">Pick a product family to begin. You can switch types anytime.</p>
       <div class="type-choice-grid">
         <button type="button" class="type-choice" onclick="chooseDoorFamily('slide', true)">
           <svg viewBox="0 0 96 52" width="96" height="52" aria-hidden="true">
@@ -426,6 +431,22 @@ body.sheet-mode #plan-svg { background:#fff; }
           <div class="tc-name">Swing Operators</div>
           <div class="tc-desc">Condor auto operator — unit only, no door/frame</div>
           <div class="tc-price">Call for pricing</div>
+        </button>
+        <button type="button" class="type-choice" onclick="chooseDoorFamily('storefront', true)">
+          <svg viewBox="0 0 96 52" width="96" height="52" aria-hidden="true">
+            <rect x="0" y="0" width="96" height="52" fill="#EEF4FB" rx="4"/>
+            <rect x="3" y="3" width="90" height="46" fill="#DDEEFF"/>
+            <rect x="2" y="2" width="92" height="2" fill="#1B4F8A"/>
+            <rect x="2" y="48" width="92" height="2" fill="#1B4F8A"/>
+            <rect x="2" y="2" width="2" height="48" fill="#1B4F8A"/>
+            <rect x="92" y="2" width="2" height="48" fill="#1B4F8A"/>
+            <rect x="32.5" y="4" width="2" height="44" fill="#1B4F8A"/>
+            <rect x="61.5" y="4" width="2" height="44" fill="#1B4F8A"/>
+            <rect x="4" y="28" width="88" height="2" fill="#1B4F8A"/>
+          </svg>
+          <div class="tc-name">Storefront / Matching Lites</div>
+          <div class="tc-desc">Fixed aluminum frame only — no door or operator</div>
+          <div class="tc-price">from $450</div>
         </button>
       </div>
     </div>
@@ -532,10 +553,11 @@ body.sheet-mode #plan-svg { background:#fff; }
         <button type="button" class="door-type-tab" id="tab-single" onclick="setDoorType('single')">Single Slide</button>
         <button type="button" class="door-type-tab" id="tab-swing" onclick="setDoorType('swing')">Swing Doors</button>
         <button type="button" class="door-type-tab" id="tab-operator" onclick="setOperatorMode(true)">Swing Operator</button>
+        <button type="button" class="door-type-tab" id="tab-storefront" onclick="setDoorType('storefront')">Storefront</button>
       </div>
 
       <div id="door-config-block">
-      <div class="section-header">③ Door Configuration</div>
+      <div class="section-header" id="config-section-header">③ Door Configuration</div>
 
       <div class="field full" style="margin-bottom:12px;">
         <label>Select Configuration <span class="req">*</span></label>
@@ -632,6 +654,21 @@ body.sheet-mode #plan-svg { background:#fff; }
           </label>
 
         </div><!-- /configGrid-swing -->
+
+        <!-- Storefront / matching lites — frame only, no door or operator -->
+        <div class="config-grid" id="configGrid-storefront" style="display:none;">
+
+          <div style="grid-column:1/-1; font-size:11px; font-weight:700; color:var(--blue); text-transform:uppercase; letter-spacing:.5px; padding-bottom:2px; border-bottom:1px solid var(--border); margin-bottom:2px;">Storefront / Matching Lites</div>
+
+          <input type="radio" name="config" id="cfg_storefront" value="storefront-fixed">
+          <label for="cfg_storefront" class="config-card">
+            <svg class="cc-icon" width="70" height="36" viewBox="0 0 70 36"><rect x="0" y="0" width="70" height="36" fill="#EEF4FB" rx="3"/><rect x="2" y="2" width="66" height="32" fill="#DDEEFF"/><rect x="1.5" y="1.5" width="67" height="1.8" fill="#1B4F8A"/><rect x="1.5" y="32.7" width="67" height="1.8" fill="#1B4F8A"/><rect x="1.5" y="1.5" width="1.8" height="33" fill="#1B4F8A"/><rect x="66.7" y="1.5" width="1.8" height="33" fill="#1B4F8A"/><rect x="23.6" y="3.3" width="1.8" height="29.4" fill="#1B4F8A"/><rect x="44.6" y="3.3" width="1.8" height="29.4" fill="#1B4F8A"/><rect x="3.3" y="18.1" width="63.4" height="1.8" fill="#1B4F8A"/></svg>
+            <div class="cc-name">Fixed Storefront</div>
+            <div class="cc-code">Frame only · glass by others</div>
+            <div class="cc-price">from $450</div>
+          </label>
+
+        </div><!-- /configGrid-storefront -->
 
         <p style="font-size:11px;color:var(--mgray);margin-top:6px;">ESA and custom configurations: call <strong>(888) 453-5196</strong>.</p>
       </div>
@@ -926,6 +963,90 @@ body.sheet-mode #plan-svg { background:#fff; }
 
       </div>
 
+      <div id="storefront-config-block" class="full" style="display:none;margin-bottom:16px;">
+        <div style="background:#F0F4F8;border:1.5px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:12px;line-height:1.55;color:#374151;">
+          <strong style="color:var(--blue);">Aluminum frame only — no door, operator, or hardware</strong><br>
+          Same Doortronix storefront members as the sidelites on a swing package. Glass is supplied and installed by others. Jamb is 1-3/4" × 4-1/2" standard; 1" glass is +$150 and changes the jamb to 2".
+        </div>
+        <div class="form-grid">
+          <div class="field">
+            <label>Extra verticals</label>
+            <div class="chip-group">
+              <input type="radio" name="sfVerticals" id="sfv_0" value="0" checked>
+              <label for="sfv_0">None</label>
+              <input type="radio" name="sfVerticals" id="sfv_1" value="1">
+              <label for="sfv_1">1</label>
+              <input type="radio" name="sfVerticals" id="sfv_2" value="2">
+              <label for="sfv_2">2</label>
+              <input type="radio" name="sfVerticals" id="sfv_3" value="3">
+              <label for="sfv_3">3</label>
+              <input type="radio" name="sfVerticals" id="sfv_4" value="4">
+              <label for="sfv_4">4</label>
+              <input type="radio" name="sfVerticals" id="sfv_5" value="5">
+              <label for="sfv_5">5</label>
+              <input type="radio" name="sfVerticals" id="sfv_6" value="6">
+              <label for="sfv_6">6</label>
+            </div>
+            <span class="hint" id="sf-vert-hint">Equally spaced. Recommended maximum bay 4'0". Typical verticals for the width are included; extras beyond that are +$80 each.</span>
+          </div>
+          <div class="field">
+            <label>Extra horizontals</label>
+            <div class="chip-group">
+              <input type="radio" name="sfHorizontals" id="sfh_0" value="0">
+              <label for="sfh_0">None</label>
+              <input type="radio" name="sfHorizontals" id="sfh_1" value="1" checked>
+              <label for="sfh_1">1 (42" std)</label>
+              <input type="radio" name="sfHorizontals" id="sfh_2" value="2">
+              <label for="sfh_2">2</label>
+              <input type="radio" name="sfHorizontals" id="sfh_3" value="3">
+              <label for="sfh_3">3</label>
+            </div>
+            <span class="hint">Same 1-3/4" (or 2") frame members — not 2" door muntins. Heights are AFF to centerline. One bar defaults to 42". Horizontal 1 is the lowest; each next one sits above it.</span>
+          </div>
+        </div>
+        <div id="sf-horiz-detail" class="sf-horiz-card" style="display:none;">
+          <div class="field">
+            <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;cursor:pointer;">
+              <input type="checkbox" id="sf_hdr_match" style="width:auto;margin:0;accent-color:var(--blue);">
+              <span>Line the top bar with an adjacent door header</span>
+            </label>
+            <div id="sf-hdr-match-fields" style="display:none;margin-top:8px;">
+              <div style="font-size:11px;font-weight:700;color:var(--blue);margin-bottom:4px;">That door’s header height</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;max-width:280px;">
+                <select id="sf_hdr_ft">
+                  <option value="6">6'</option>
+                  <option value="7" selected>7'</option>
+                  <option value="8">8'</option>
+                  <option value="9">9'</option>
+                  <option value="10">10'</option>
+                </select>
+                <select id="sf_hdr_in">
+                  <option value="0">0"</option><option value="1">1"</option><option value="2">2"</option>
+                  <option value="3">3"</option><option value="4">4"</option><option value="5">5"</option>
+                  <option value="6" selected>6"</option><option value="7">7"</option><option value="8">8"</option>
+                  <option value="9">9"</option><option value="10">10"</option><option value="11">11"</option>
+                </select>
+              </div>
+              <span class="hint" id="sf-hdr-match-hint">Same number as on that door quote — any height. Top of this bar lines up with the top of that header. Uncheck to set a free AFF instead.</span>
+            </div>
+          </div>
+          <div class="sf-horiz-heights">
+            <div class="field" id="sf-h1-field">
+              <label for="sf_h1">Horizontal 1 (lowest)</label>
+              <select id="sf_h1"></select>
+            </div>
+            <div class="field sf-h-hidden" id="sf-h2-field">
+              <label for="sf_h2">Horizontal 2 (above 1)</label>
+              <select id="sf_h2"></select>
+            </div>
+            <div class="field sf-h-hidden" id="sf-h3-field">
+              <label for="sf_h3">Horizontal 3 (above 2)</label>
+              <select id="sf_h3"></select>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="form-grid">
         <!-- Frame Finish -->
         <div class="field">
@@ -946,6 +1067,7 @@ body.sheet-mode #plan-svg { background:#fff; }
             <div class="field">
               <select id="f_wft" name="widthFt">
                 <option value="">Ft —</option>
+                <option value="1">1'</option><option value="2">2'</option>
                 <option value="3">3'</option><option value="4">4'</option><option value="5">5'</option>
                 <option value="6">6'</option><option value="7">7'</option><option value="8">8'</option>
                 <option value="9">9'</option><option value="10">10'</option><option value="11">11'</option>
@@ -1005,19 +1127,19 @@ body.sheet-mode #plan-svg { background:#fff; }
               </select>
             </div>
           </div>
-          <span class="hint size-range-note" id="height-range-note">Standard header height: 7'6" to 8'0". Over 8'0": +$200/ft</span>
+          <span class="hint size-range-note" id="height-range-note">Standard frame height: 7'6" to 8'0". Over 8'0": +$200/ft</span>
         </div>
 
         <!-- Transom -->
-        <div class="field">
+        <div class="field" id="transom-field">
           <label>Transom</label>
           <div class="chip-group">
             <input type="radio" name="transom" id="tr_no" value="no" checked>
             <label for="tr_no">No Transom</label>
             <input type="radio" name="transom" id="tr_yes" value="yes">
-            <label for="tr_yes">With Transom (+$250)</label>
+            <label for="tr_yes" id="tr_yes_lbl">With Transom (+$250)</label>
           </div>
-          <span class="hint">+$250 over the door. If sidelites are on, transom across those lites is +$80/ft. Standard header 7'6"–8'0" (+$200/ft over 8'0"). Max with transom: 11'6"</span>
+          <span class="hint" id="transom-hint">+$250 over the door. If sidelites are on, transom across those lites is +$80/ft. Standard header 7'6"–8'0" (+$200/ft over 8'0"). Max with transom: 11'6"</span>
         </div>
 
         <!-- Overall Frame Height (only shown when transom selected) -->
@@ -1264,7 +1386,7 @@ body.sheet-mode #plan-svg { background:#fff; }
       </div>
 
       <!-- ── DOOR SPECIFICATIONS ── -->
-      <div class="section-header">④ Door Specifications</div>
+      <div class="section-header" id="spec-section-header">④ Door Specifications</div>
 
       <div class="form-grid">
         <!-- Door panel glass prep -->
@@ -1325,7 +1447,7 @@ body.sheet-mode #plan-svg { background:#fff; }
         </div>
 
         <!-- Bottom rail -->
-        <div class="field">
+        <div class="field" id="bottom-rail-field">
           <label>Bottom Rail</label>
           <div class="chip-group">
             <input type="radio" name="bottomRail" id="br_std" value="std" checked>
@@ -1338,7 +1460,7 @@ body.sheet-mode #plan-svg { background:#fff; }
         </div>
 
         <!-- Muntin -->
-        <div class="field">
+        <div class="field" id="muntin-field">
           <label>Horizontal Muntin</label>
           <div class="chip-group">
             <input type="radio" name="muntin" id="mt_std" value='2" Muntin (std)' checked>
@@ -1349,7 +1471,7 @@ body.sheet-mode #plan-svg { background:#fff; }
             <label for="mt_none">No Muntin</label>
           </div>
           <div id="muntin-height-field" style="display:none;margin-top:8px;">
-            <label for="muntin_aff" style="font-size:12px;" id="muntin-aff-label">Muntin / storefront horizontal height</label>
+            <label for="muntin_aff" style="font-size:12px;" id="muntin-aff-label">Muntin height</label>
             <select id="muntin_aff"></select>
             <div id="muntin-height-2-field" style="display:none;margin-top:8px;">
               <label for="muntin_aff2" style="font-size:12px;">Additional muntin height</label>
@@ -1360,7 +1482,7 @@ body.sheet-mode #plan-svg { background:#fff; }
         </div>
 
         <!-- Threshold -->
-        <div class="field">
+        <div class="field" id="threshold-field">
           <label>Threshold</label>
           <div class="chip-group">
             <input type="radio" name="threshold" id="th_std" value="Standard 1/2&quot;" checked>
@@ -1390,6 +1512,7 @@ body.sheet-mode #plan-svg { background:#fff; }
 
 
       <!-- ── HARDWARE & OPTIONS ── -->
+      <div id="hardware-options-block">
       <div class="section-header">⑤ Hardware &amp; Options</div>
       <p style="font-size:12px;color:var(--mgray);margin-bottom:12px;">All prices are net contractor pricing. Check items to add to your estimate.</p>
 
@@ -1543,6 +1666,7 @@ body.sheet-mode #plan-svg { background:#fff; }
           </select>
         </div>
       </div>
+      </div><!-- /hardware-options-block -->
       </div><!-- /door-config-block -->
 
       <!-- ── SWING OPERATOR (unit only) ── -->
@@ -1771,14 +1895,14 @@ body.sheet-mode #plan-svg { background:#fff; }
       </div><!-- /operator-config-block -->
 
       <!-- Notes -->
-      <div class="section-header">⑥ Notes &amp; Special Requirements for This Door</div>
+      <div class="section-header" id="notes-section-header">⑥ Notes &amp; Special Requirements for This Door</div>
       <div class="field">
         <textarea name="notes" id="f_notes" placeholder="Access control requirements, unusual site conditions, installation type (new construction / retrofit), emergency egress requirements, or anything else we should know..."></textarea>
       </div>
 
       <!-- Desktop price breakdown (hidden on mobile — preview panel handles it there) -->
       <div id="form-price-section">
-        <div class="section-header">⑦ Price Estimate</div>
+        <div class="section-header" id="price-section-header">⑦ Price Estimate</div>
         <div class="price-card">
           <div class="price-card-header" style="display:flex;justify-content:space-between;align-items:center;">Net Contractor Price<span id="form-price-header-total" style="font-size:16px;"></span></div>
           <div class="price-card-body" id="form-price-body">
@@ -1849,7 +1973,7 @@ body.sheet-mode #plan-svg { background:#fff; }
       </div>
     </div>
 
-    <div class="preview-title">Live Door Preview
+    <div class="preview-title" id="preview-title">Live Door Preview
       <button type="button" class="btn-print-draw" id="btn-print-drawing" onclick="printQuoteDrawing()" title="Opens a preliminary letter sheet. Doortronix issues the confirmation drawing after review.">Print preliminary drawing</button>
     </div>
     <div id="drawing-wrap">
@@ -2198,6 +2322,9 @@ let _lastSwingEnergy = '';
 let _plateQtyTouched = false;
 let _muntinAffTouched = false;
 let _muntinAff2Touched = false;
+let _sfVertTouched = false;
+let _sfHdrMatchOn = false;
+let _sfHdrSavedAff = 42;
 
 function getStileW(sc) {
   return Math.max(3, sc * (rv('stileWidth') === 'medium' ? 3.75 : 2.5));
@@ -2218,6 +2345,8 @@ const CONFIGS = {
   'swing-single-lh': { label:'Single Swing — LH', code:'OHC LH',  base:4500, transom:250, minW:41, maxW:52,  panels:1, isFBO:false, isBi:false, isSwing:true },
   'swing-pair':      { label:'Swing Pair',        code:'OHC Pair', base:6800, transom:250, minW:60, maxW:114, panels:2, isFBO:false, isBi:true,  isSwing:true },
   'swing-twin-center': { label:'Entry/Exit Swings', code:'OHC Twin', base:9000, transom:250, minW:41, maxW:52, panels:2, isFBO:false, isBi:false, isSwing:true, isTwin:true },
+  // Fixed storefront / matching lites — same members and $/ft as swing sidelites. No leaf or operator.
+  'storefront-fixed': { label:'Storefront / Matching Lites', code:'SF', base:450, transom:80, minW:12, maxW:192, panels:0, isFBO:false, isBi:false, isStorefront:true },
 };
 
 // ── Door Type Toggle ────────────────────────────────────────────────
@@ -2225,7 +2354,230 @@ let _currentDoorType = 'bi-part';
 let _orderKind = 'door'; // 'door' (slider/swing package) or 'operator' (Condor unit only)
 
 function isSwingCfg(cfg) { return !!(cfg && cfg.isSwing); }
+function isStorefrontCfg(cfg) { return !!(cfg && cfg.isStorefront); }
+function isStorefront() { return _currentDoorType === 'storefront' || isStorefrontCfg(getConfig()); }
+function isStorefrontItem(d) {
+  return !!(d && (d.typeCategory === 'storefront' || d.config === 'storefront-fixed' || d.configKey === 'storefront-fixed'));
+}
 function isSwingTwin(cfg) { return !!((cfg || getConfig()) && (cfg || getConfig()).isTwin); }
+function parseSfVertN(v) {
+  const n = parseInt(v, 10) || 0;
+  return (n >= 1 && n <= 6) ? n : 0;
+}
+function suggestedSfVerticals(widthIn) {
+  const w = widthIn || 0;
+  if (w >= 168) return 6;
+  if (w >= 144) return 5;
+  if (w >= 120) return 4;
+  if (w >= 96) return 3;
+  if (w >= 72) return 2;
+  if (w >= 48) return 1;
+  return 0;
+}
+function getStorefrontVerticals() { return parseSfVertN(rv('sfVerticals')); }
+const SF_EXTRA_VERT = 80;
+function storefrontIncludedVerticals() {
+  return suggestedSfVerticals(getWidthIn() || 72);
+}
+function storefrontBillableVerticals() {
+  return Math.max(0, getStorefrontVerticals() - storefrontIncludedVerticals());
+}
+function getStorefrontFaceIn() { return rv('glassPrep') === '1"' ? 2 : 1.75; }
+const SF_MAX_BAY_IN = 48;
+function storefrontBayDLO() {
+  const w = getWidthIn() || 72;
+  const f = getStorefrontFaceIn();
+  const nV = getStorefrontVerticals();
+  return (w - f * (nV + 2)) / (nV + 1);
+}
+function syncStorefrontBayHint() {
+  const hint = document.getElementById('sf-vert-hint');
+  if (!hint) return;
+  const dlo = storefrontBayDLO();
+  const cols = getStorefrontVerticals() + 1;
+  const over = dlo > SF_MAX_BAY_IN + 0.02;
+  const incl = storefrontIncludedVerticals();
+  const bill = storefrontBillableVerticals();
+  hint.textContent = 'Each bay is ' + fmtInches(dlo) + ' wide (' + cols + (cols === 1 ? ' lite' : ' lites') +
+    '). Recommended maximum 4\'0". Verticals that keep bays typical are included (' +
+    (incl ? incl + ' at this width' : 'none needed at this width') + '). Extra verticals beyond that are +$' +
+    SF_EXTRA_VERT + ' each' + (bill ? ' — ' + bill + ' extra now' : '') + '.' +
+    (over ? ' This frame is over 4\'0" per bay.' : '');
+  hint.style.color = over ? '#B91C1C' : '';
+}
+function getStorefrontHorizontalCount() {
+  const n = parseInt(rv('sfHorizontals') || '0', 10) || 0;
+  return (n >= 1 && n <= 3) ? n : 0;
+}
+function storefrontHeaderMatchOn() {
+  const el = document.getElementById('sf_hdr_match');
+  return !!(el && el.checked);
+}
+function getStorefrontHeaderTopAff() {
+  const ft = parseInt(fv('sf_hdr_ft'), 10);
+  const inches = parseInt(fv('sf_hdr_in'), 10);
+  const ftN = Number.isFinite(ft) ? ft : 7;
+  const inN = Number.isFinite(inches) ? inches : 6;
+  return ftN * 12 + inN;
+}
+// Top of the storefront bar = top of the adjacent door header.
+// Stored/drawn height is still AFF to centerline.
+function getStorefrontMatchHeaderAff() {
+  return Math.round((getStorefrontHeaderTopAff() - getStorefrontFaceIn() / 2) * 16) / 16;
+}
+function fillStorefrontHorizSelect(sel, selected) {
+  if (!sel) return;
+  const cur = selected != null ? parseFloat(selected) : parseFloat(sel.value);
+  sel.innerHTML = '';
+  for (let i = 18; i <= 114; i++) {
+    const opt = document.createElement('option');
+    opt.value = String(i);
+    opt.textContent = i + '" AFF';
+    sel.appendChild(opt);
+  }
+  if (cur > 0 && cur <= 114 && !Number.isInteger(cur)) {
+    const opt = document.createElement('option');
+    opt.value = String(cur);
+    opt.textContent = (typeof inToStr === 'function' ? inToStr(cur) : cur + '"') + ' AFF';
+    sel.appendChild(opt);
+  }
+  const pick = (cur > 0 && cur <= 114) ? String(cur) : '42';
+  if ([...sel.options].some(o => o.value === pick)) sel.value = pick;
+  else sel.value = String(Math.max(18, Math.min(114, Math.round(cur) || 42)));
+}
+function loadStorefrontHorizIntoForm(door) {
+  if (!door) return;
+  let affs = Array.isArray(door.sfHorizAffs) ? door.sfHorizAffs.map(Number).filter(a => a > 0) : [];
+  let n = parseInt(door.sfHorizontals, 10);
+  if (!(n >= 0 && n <= 3)) n = affs.length ? Math.min(3, affs.length) : 0;
+  if (!n && door.muntin && !/no muntin/i.test(door.muntin || '') && Array.isArray(door.muntinAffs) && door.muntinAffs.length) {
+    affs = door.muntinAffs.map(Number).filter(a => a > 0);
+    n = Math.min(3, affs.length);
+  }
+  const el = document.querySelector('input[name="sfHorizontals"][value="' + n + '"]');
+  if (el) el.checked = true;
+  const matchEl = document.getElementById('sf_hdr_match');
+  if (matchEl) matchEl.checked = !!door.sfHeaderMatch;
+  if (door.sfHeaderKind) {
+    const k = document.querySelector('input[name="sfHeaderKind"][value="' + door.sfHeaderKind + '"]');
+    if (k) k.checked = true;
+  }
+  const hdrFt = document.getElementById('sf_hdr_ft');
+  if (hdrFt && door.sfHeaderFt != null) hdrFt.value = String(door.sfHeaderFt);
+  const hdrIn = document.getElementById('sf_hdr_in');
+  if (hdrIn && door.sfHeaderIn != null) hdrIn.value = String(door.sfHeaderIn);
+  affs.sort((a, b) => a - b);
+  const matchAff = door.sfHeaderMatch ? getStorefrontMatchHeaderAff() : null;
+  const free = affs.filter(a => matchAff == null || Math.abs(a - matchAff) > 0.06).sort((a, b) => a - b);
+  fillStorefrontHorizSelect(document.getElementById('sf_h1'), free[0] || parseFloat(door.sfHoriz1) || 42);
+  fillStorefrontHorizSelect(document.getElementById('sf_h2'), free[1] || parseFloat(door.sfHoriz2) || 60);
+  fillStorefrontHorizSelect(document.getElementById('sf_h3'), free[2] || parseFloat(door.sfHoriz3) || 84);
+}
+function initStorefrontHorizSelects() {
+  fillStorefrontHorizSelect(document.getElementById('sf_h1'), 42);
+  fillStorefrontHorizSelect(document.getElementById('sf_h2'), 60);
+  fillStorefrontHorizSelect(document.getElementById('sf_h3'), 84);
+}
+function getStorefrontHorizAffs() {
+  const n = getStorefrontHorizontalCount();
+  const affs = [];
+  const match = storefrontHeaderMatchOn();
+  for (let i = 1; i <= n; i++) {
+    if (match && i === n) affs.push(getStorefrontMatchHeaderAff());
+    else {
+      const v = parseFloat(fv('sf_h' + i));
+      if (v > 0) affs.push(v);
+    }
+  }
+  return [...new Set(affs.map(a => Math.round(a * 16) / 16))].filter(a => a > 0).sort((a, b) => a - b);
+}
+function calcStorefrontGlass(W, H, face, verts, affs) {
+  const w = W != null ? W : (getWidthIn() || 72);
+  const h = H != null ? H : (getHeightIn() || 90);
+  const f = face != null ? face : getStorefrontFaceIn();
+  const nV = verts != null ? verts : getStorefrontVerticals();
+  const bars = (affs || getStorefrontHorizAffs()).slice().sort((a, b) => a - b);
+  const cols = nV + 1;
+  const colDLO = (w - f * (nV + 2)) / cols;
+  const top = h - f;
+  const rowsBot = [];
+  let cursor = f;
+  bars.forEach(a => {
+    const lo = a - f / 2, hi = a + f / 2;
+    if (lo > cursor + 0.01 && hi < top - 0.01) { rowsBot.push(lo - cursor); cursor = hi; }
+  });
+  rowsBot.push(Math.max(0, top - cursor));
+  const rows = rowsBot.slice().reverse();
+  return {
+    cols, colDLO, rows,
+    glassW: colDLO + 0.625,
+    rowGlass: rows.map(r => r + 0.625),
+    affs: bars
+  };
+}
+function storefrontGlassStr() {
+  const g = calcStorefrontGlass();
+  if (!g || !g.rowGlass.length || g.glassW <= 0) return '—';
+  const n = g.rowGlass.length;
+  return g.rowGlass.map((h, i) => {
+    const suffix = n === 1 ? '' : n === 2 ? (i === 0 ? ' top' : ' bot') : ' row ' + (i + 1);
+    return '(Qty ' + g.cols + ')  ' + fmtInches(g.glassW) + ' × ' + fmtInches(h) + suffix;
+  }).join(' · ');
+}
+function syncStorefrontHorizUi() {
+  const n = getStorefrontHorizontalCount();
+  const detail = document.getElementById('sf-horiz-detail');
+  if (detail) detail.style.display = n ? 'block' : 'none';
+  const matchEl = document.getElementById('sf_hdr_match');
+  if (matchEl && !n && matchEl.checked) matchEl.checked = false;
+  const match = !!(matchEl && matchEl.checked);
+  const matchFields = document.getElementById('sf-hdr-match-fields');
+  if (matchFields) matchFields.style.display = match ? '' : 'none';
+  const topSel = n >= 1 ? document.getElementById('sf_h' + n) : null;
+  if (match && !_sfHdrMatchOn && topSel) {
+    const cur = parseFloat(topSel.value);
+    if (cur > 0) _sfHdrSavedAff = cur;
+  }
+  if (!match && _sfHdrMatchOn && topSel) {
+    fillStorefrontHorizSelect(topSel, _sfHdrSavedAff || 42);
+    topSel.disabled = false;
+  }
+  _sfHdrMatchOn = match;
+  const names = {
+    1: n === 1 ? 'Horizontal 1 (std 42" AFF)' : 'Horizontal 1 (lowest)',
+    2: 'Horizontal 2 (above 1)',
+    3: 'Horizontal 3 (above 2)'
+  };
+  ['1', '2', '3'].forEach(i => {
+    const idx = parseInt(i, 10);
+    const el = document.getElementById('sf-h' + i + '-field');
+    const isTopMatch = match && n >= 1 && idx === n;
+    if (el) el.classList.toggle('sf-h-hidden', n < idx || isTopMatch);
+    const sel = document.getElementById('sf_h' + i);
+    if (sel) {
+      if (isTopMatch) fillStorefrontHorizSelect(sel, getStorefrontMatchHeaderAff());
+      sel.disabled = !!isTopMatch;
+    }
+    const lbl = document.querySelector('label[for="sf_h' + i + '"]');
+    if (lbl) lbl.textContent = names[idx];
+  });
+  if (match) {
+    const hint = document.getElementById('sf-hdr-match-hint');
+    if (hint) {
+      hint.textContent = 'Top of this bar at ' + inToStr(getStorefrontHeaderTopAff()) +
+        ' AFF — same as the top of that header. Uncheck to set a free height.';
+    }
+  }
+  syncStorefrontBayHint();
+}
+function setSfVertRadio(n) {
+  const el = document.querySelector('input[name="sfVerticals"][value="' + parseSfVertN(n) + '"]');
+  if (el) el.checked = true;
+}
+function applySuggestedSfVerticals() {
+  if (_sfVertTouched) return;
+  setSfVertRadio(suggestedSfVerticals(getWidthIn() || 72));
+}
 
 function setDoorType(type) {
   if (_orderKind === 'operator') setOperatorMode(false);
@@ -2233,9 +2585,12 @@ function setDoorType(type) {
   document.getElementById('configGrid-bipart').style.display = type === 'bi-part' ? '' : 'none';
   document.getElementById('configGrid-single').style.display  = type === 'single'   ? '' : 'none';
   document.getElementById('configGrid-swing').style.display   = type === 'swing'    ? '' : 'none';
+  const sfGrid = document.getElementById('configGrid-storefront');
+  if (sfGrid) sfGrid.style.display = type === 'storefront' ? '' : 'none';
   document.getElementById('tab-bipart').classList.toggle('active', type === 'bi-part');
   document.getElementById('tab-single').classList.toggle('active', type === 'single');
   document.getElementById('tab-swing').classList.toggle('active', type === 'swing');
+  const tSf = document.getElementById('tab-storefront'); if (tSf) tSf.classList.toggle('active', type === 'storefront');
   const tOp = document.getElementById('tab-operator'); if (tOp) tOp.classList.remove('active');
   const title = document.getElementById('form-main-title');
   const intro = document.getElementById('form-intro');
@@ -2243,6 +2598,10 @@ function setDoorType(type) {
     if (title) title.textContent = 'Swing Door Quote';
     document.title = 'Swing Door Quote — Doortronix USA';
     if (intro) intro.innerHTML = 'Configure your complete swing door and frame below. Add multiple openings to quote an entire project in one submission.<br>Our team in Malakoff, Texas will confirm your quote within <strong>24 hours</strong>.';
+  } else if (type === 'storefront') {
+    if (title) title.textContent = 'Storefront / Matching Lites Quote';
+    document.title = 'Storefront Quote — Doortronix USA';
+    if (intro) intro.innerHTML = 'Configure a fixed aluminum frame — no door leaf or operator. Same members and pricing as the sidelites on a swing package. Add multiple openings to quote an entire project in one submission.<br>Our team in Malakoff, Texas will confirm your quote within <strong>24 hours</strong>.';
   } else {
     if (title) title.textContent = 'Sliding Door Quote';
     document.title = 'Sliding Door Quote — Doortronix USA';
@@ -2258,6 +2617,22 @@ function setDoorType(type) {
     const sn = document.getElementById('sn_std'); if (sn) sn.checked = true;
     const sw = document.getElementById('sw_narrow'); if (sw) sw.checked = true;
     const br = document.getElementById('br_std'); if (br) br.checked = true;
+  } else if (type === 'storefront') {
+    const sf = document.getElementById('cfg_storefront'); if (sf) sf.checked = true;
+    const q = document.getElementById('gp_quarter'); if (q) q.checked = true;
+    const mt = document.getElementById('mt_none'); if (mt) mt.checked = true;
+    const tr = document.getElementById('tr_no'); if (tr) tr.checked = true;
+    const sfh1 = document.getElementById('sfh_1'); if (sfh1) sfh1.checked = true;
+    const hdrM = document.getElementById('sf_hdr_match'); if (hdrM) hdrM.checked = false;
+    fillStorefrontHorizSelect(document.getElementById('sf_h1'), 42);
+    setFrameWidthIn(72);
+    const hft = document.getElementById('f_hft'); if (hft) hft.value = '7';
+    const hin = document.getElementById('f_hin'); if (hin) hin.value = '6';
+    const h16 = document.getElementById('f_h16'); if (h16) h16.value = '0';
+    _sfVertTouched = false;
+    _sfHdrMatchOn = false;
+    _sfHdrSavedAff = 42;
+    applySuggestedSfVerticals();
   } else {
     document.getElementById('cfg_swing_single').checked = true;
     const med = document.getElementById('sw_medium'); if (med) med.checked = true;
@@ -2285,6 +2660,7 @@ function chooseDoorFamily(fam, fresh) {
   const flow = document.getElementById('quote-flow');
   if (flow) flow.style.display = '';
   if (fam === 'operator') { setOperatorMode(true); return; }
+  if (fam === 'storefront') { setDoorType('storefront'); return; }
   setDoorType(fam === 'swing' ? 'swing' : 'bi-part');
 }
 
@@ -2792,7 +3168,7 @@ function setOperatorMode(on) {
   const dw = document.getElementById('drawing-wrap');          if (dw) dw.style.display = on ? 'none' : '';
   const ow = document.getElementById('operator-drawing-wrap'); if (ow) ow.style.display = on ? '' : 'none';
   const pb = document.getElementById('btn-print-drawing');     if (pb) pb.style.display = on ? 'none' : '';
-  ['tab-bipart','tab-single','tab-swing'].forEach(id => { const t = document.getElementById(id); if (t) t.classList.remove('active'); });
+  ['tab-bipart','tab-single','tab-swing','tab-storefront'].forEach(id => { const t = document.getElementById(id); if (t) t.classList.remove('active'); });
   const tOp = document.getElementById('tab-operator'); if (tOp) tOp.classList.toggle('active', on);
   if (on) {
     const title = document.getElementById('form-main-title');
@@ -2810,9 +3186,12 @@ function setOperatorMode(on) {
 function projectScopeKind() {
   const cart = (typeof getCart === 'function') ? getCart() : [];
   const hasOp = cart.some(d => d.kind === 'operator') || _orderKind === 'operator';
-  const hasDoor = cart.some(d => d.kind !== 'operator') || _orderKind !== 'operator';
-  if (hasOp && hasDoor) return 'mixed';
+  const hasStorefront = cart.some(isStorefrontItem) || (_orderKind !== 'operator' && _currentDoorType === 'storefront');
+  const hasDoor = cart.some(d => d.kind !== 'operator' && !isStorefrontItem(d)) || (_orderKind !== 'operator' && _currentDoorType !== 'storefront');
+  const kinds = [hasOp, hasDoor, hasStorefront].filter(Boolean).length;
+  if (kinds > 1) return 'mixed';
   if (hasOp) return 'operator';
+  if (hasStorefront) return 'storefront';
   return 'door';
 }
 
@@ -2832,12 +3211,18 @@ function syncProjectScopeCopy() {
     if (terms) terms.innerHTML = 'This quote is for the <strong>swing operator only — no door or frame</strong>. Prices <strong>do not include freight, installation, or applicable taxes</strong>. Submitting a quote does not start fabrication. Next we confirm the model and options; you approve and pay the deposit or full amount in your account; then we order and ship.';
     if (hint) hint.textContent = 'One operator? Use “Submit Quote” above. Adding doors or more operators? Add each to the project cart, then submit all at once.';
     if (oneBtn) oneBtn.textContent = 'Submit Quote (this operator only) →';
+  } else if (kind === 'storefront') {
+    if (title) title.textContent = '🪟 Storefront / Matching Lites — Frame Only';
+    if (body) body.innerHTML = 'We manufacture and supply the <strong>aluminum storefront frame</strong> only. <strong>No door leaf, operator, or hardware.</strong> Pricing <strong>does not include glass/glazing, freight, installation, or taxes</strong>. Glass is supplied and installed by others; frames are prepped for your specified glass thickness.';
+    if (terms) terms.innerHTML = 'This quote is for the <strong>aluminum storefront frame only — no door, operator, or glass</strong>. Prices <strong>do not include glass/glazing, freight, installation, or applicable taxes</strong>. Submitting a quote does not start fabrication. Next we send a confirmation drawing; you approve it and pay the deposit or full amount in your account; then we build and ship.';
+    if (hint) hint.textContent = 'One frame only? Use “Submit Quote” above. Multiple openings? Add each to the project cart, then submit all at once.';
+    if (oneBtn) oneBtn.textContent = 'Submit Quote (this frame only) →';
   } else if (kind === 'mixed') {
-    if (title) title.textContent = '📦 Project Quote — Doors & Operators';
-    if (body) body.innerHTML = 'This project can include door packages and standalone swing operators. Door-package pricing <strong>does not include glass/glazing</strong>. Operators are supplied <strong>without a door or frame</strong>. Freight, installation, and taxes are extra on all items.';
-    if (terms) terms.innerHTML = 'This quote may include <strong>aluminum door packages</strong> and <strong>standalone swing operators</strong>. Door packages do not include glass/glazing. Operators are supplied without a door or frame. Prices <strong>do not include freight, installation, or applicable taxes</strong>. Submitting a quote does not start fabrication. Next we send a confirmation; you approve it and pay the deposit or full amount in your account; then we build and ship.';
-    if (hint) hint.textContent = 'Add each door or operator to the project cart, then submit all at once. Or submit the item you’re configuring now.';
-    if (oneBtn) oneBtn.textContent = _orderKind === 'operator' ? 'Submit Quote (this operator only) →' : 'Submit Quote (this door only) →';
+    if (title) title.textContent = '📦 Project Quote — Doors, Frames & Operators';
+    if (body) body.innerHTML = 'This project can include door packages, matching storefront frames, and standalone swing operators. Door-package and storefront pricing <strong>does not include glass/glazing</strong>. Operators are supplied <strong>without a door or frame</strong>. Freight, installation, and taxes are extra on all items.';
+    if (terms) terms.innerHTML = 'This quote may include <strong>aluminum door packages</strong>, <strong>storefront frames</strong>, and <strong>standalone swing operators</strong>. Door packages and storefronts do not include glass/glazing. Operators are supplied without a door or frame. Prices <strong>do not include freight, installation, or applicable taxes</strong>. Submitting a quote does not start fabrication. Next we send a confirmation; you approve it and pay the deposit or full amount in your account; then we build and ship.';
+    if (hint) hint.textContent = 'Add each door, frame, or operator to the project cart, then submit all at once. Or submit the item you’re configuring now.';
+    if (oneBtn) oneBtn.textContent = _orderKind === 'operator' ? 'Submit Quote (this operator only) →' : (_currentDoorType === 'storefront' ? 'Submit Quote (this frame only) →' : 'Submit Quote (this door only) →');
   } else {
     if (title) title.textContent = '📦 Door Package Only — Material Supply';
     if (body) body.innerHTML = 'We manufacture and supply the <strong>aluminum door package</strong> (frame, panels, hardware, and operating system). Pricing <strong>does not include glass/glazing, freight, installation, or taxes</strong>. Glass is supplied and installed by others; frames are prepped for your specified glass thickness.';
@@ -3280,17 +3665,55 @@ function clampSwingHeight() {
 
 function syncSwingUi() {
   const swing = _currentDoorType === 'swing';
+  const storefront = _currentDoorType === 'storefront';
   const cfg = getConfig();
   const block = document.getElementById('swing-config-block');
   if (block) block.style.display = swing ? '' : 'none';
+  const sfBlock = document.getElementById('storefront-config-block');
+  if (sfBlock) sfBlock.style.display = storefront ? 'block' : 'none';
   const hw = document.getElementById('swing-hardware-block');
   if (hw) hw.style.display = swing ? '' : 'none';
+  const hwOpts = document.getElementById('hardware-options-block');
+  if (hwOpts) hwOpts.style.display = storefront ? 'none' : '';
+  const netField = document.getElementById('net-opening-field');
+  if (netField) netField.style.display = storefront ? 'none' : '';
+  const brField = document.getElementById('bottom-rail-field');
+  if (brField) brField.style.display = storefront ? 'none' : '';
+  const thField = document.getElementById('threshold-field');
+  if (thField) thField.style.display = storefront ? 'none' : '';
+  const cfgHdr = document.getElementById('config-section-header');
+  if (cfgHdr) cfgHdr.textContent = storefront ? '③ Frame Configuration' : '③ Door Configuration';
+  const specHdr = document.getElementById('spec-section-header');
+  if (specHdr) specHdr.textContent = storefront ? '④ Frame Specifications' : '④ Door Specifications';
+  const notesHdr = document.getElementById('notes-section-header');
+  if (notesHdr) notesHdr.textContent = storefront ? '⑤ Notes & Special Requirements for This Frame' : '⑥ Notes & Special Requirements for This Door';
+  const priceHdr = document.getElementById('price-section-header');
+  if (priceHdr) priceHdr.textContent = storefront ? '⑥ Price Estimate' : '⑦ Price Estimate';
+  const prevTitle = document.getElementById('preview-title');
+  if (prevTitle && prevTitle.firstChild && prevTitle.firstChild.nodeType === 3) {
+    prevTitle.firstChild.textContent = storefront ? 'Live Frame Preview ' : 'Live Door Preview ';
+  }
+  const trField = document.getElementById('transom-field');
+  if (trField) trField.style.display = storefront ? 'none' : '';
+  const mtField = document.getElementById('muntin-field');
+  if (mtField) mtField.style.display = storefront ? 'none' : '';
+  if (storefront) {
+    const trNo = document.getElementById('tr_no'); if (trNo) trNo.checked = true;
+    const mtNone = document.getElementById('mt_none'); if (mtNone) mtNone.checked = true;
+    syncStorefrontHorizUi();
+  }
+  const trYes = document.getElementById('tr_yes_lbl');
+  if (trYes && !storefront) trYes.textContent = 'With Transom (+$250)';
+  const trHint = document.getElementById('transom-hint');
+  if (trHint && !storefront) {
+    trHint.textContent = '+$250 over the door. If sidelites are on, transom across those lites is +$80/ft. Standard header 7\'6"–8\'0" (+$200/ft over 8\'0"). Max with transom: 11\'6"';
+  }
   const netLbl = document.getElementById('net-opening-label');
   if (netLbl) netLbl.textContent = swing ? 'Clear Door Opening' : 'Net Slide Opening (clear door width)';
   const sSlide = document.getElementById('sensor-field-slide');
-  if (sSlide) sSlide.style.display = swing ? 'none' : '';
+  if (sSlide) sSlide.style.display = (swing || storefront) ? 'none' : '';
   const stileF = document.getElementById('stile-width-field');
-  if (stileF) stileF.style.display = swing ? 'none' : '';
+  if (stileF) stileF.style.display = (swing || storefront) ? 'none' : '';
   if (swing) {
     const med = document.getElementById('sw_medium');
     if (med) med.checked = true;
@@ -3495,11 +3918,15 @@ function syncSwingUi() {
   if (slGlass) slGlass.style.display = 'none';
   ['gp_9_16','gp_5_8'].forEach(id => {
     const lbl = document.querySelector('label[for="'+id+'"]');
-    if (lbl) lbl.style.display = swing ? 'none' : '';
+    if (lbl) lbl.style.display = (swing || storefront) ? 'none' : '';
   });
   const gpLabel = document.getElementById('glass-prep-label');
-  if (gpLabel) gpLabel.textContent = swing ? 'Glass Prep (door, sidelite, transom)' : 'Door Panel Glass Prep';
-  if (swing) {
+  if (gpLabel) {
+    gpLabel.textContent = storefront
+      ? 'Glass Prep'
+      : swing ? 'Glass Prep (door, sidelite, transom)' : 'Door Panel Glass Prep';
+  }
+  if (swing || storefront) {
     if (rv('glassPrep') !== '1/4"' && rv('glassPrep') !== '1"') {
       const q = document.getElementById('gp_quarter');
       if (q) q.checked = true;
@@ -3519,16 +3946,17 @@ function syncSwingUi() {
   const mhField = document.getElementById('muntin-height-field');
   const mh2 = document.getElementById('muntin-height-2-field');
   const nMunt = swingMuntinCount();
-  const showMh = swing ? (nMunt >= 1 || slOn || twin) : (nMunt >= 1);
+  const showMh = storefront ? false : (swing ? (nMunt >= 1 || slOn || twin) : (nMunt >= 1));
   if (mhField) mhField.style.display = showMh ? '' : 'none';
   if (mh2) mh2.style.display = swing && nMunt >= 2 ? '' : 'none';
+  if (storefront) applySuggestedSfVerticals();
   // Slider muntin height: keep the menu showing the auto position until the buyer overrides it.
-  if (!swing && !_muntinAffTouched) {
+  if (!swing && !storefront && !_muntinAffTouched) {
     const sSel = document.getElementById('muntin_aff');
     if (sSel && sSel.options.length) sSel.value = String(defaultSliderMuntinAff());
   }
   const mhLbl = document.getElementById('muntin-aff-label');
-  if (mhLbl) mhLbl.textContent = nMunt >= 2 ? 'Muntin 1 height' : 'Muntin / storefront horizontal height';
+  if (mhLbl) mhLbl.textContent = nMunt >= 2 ? 'Muntin 1 height' : 'Muntin height';
   const mhHint = document.getElementById('muntin-aff-hint');
   if (mhHint) mhHint.textContent = nMunt >= 2
     ? 'AFF to centerline of each 2" muntin. Sidelite horizontals line up with both.'
@@ -3538,15 +3966,18 @@ function syncSwingUi() {
   if (profNote) profNote.textContent = getSwingFrameProfileStr();
   const gpHint = document.getElementById('glass-prep-hint');
   if (gpHint) {
-    gpHint.innerHTML = swing
+    gpHint.innerHTML = storefront
+      ? 'Glass <strong>not included</strong>. Cut size is daylight + 5/8" on width and height. Prep is <strong>1/4" or 1" only</strong>. 1" glass is +$150 and changes the jamb from 1-3/4" to 2".'
+      : swing
       ? 'Glass <strong>not included</strong>. One prep for the door, sidelites, and transom: <strong>1/4" or 1" only</strong>. 1" glass is +$150 and changes the jamb from 1-3/4" to 2".'
       : 'Glass <strong>not included</strong> — frame is prepped for your specified glass thickness. Glass supplied &amp; installed by others.';
   }
   const jambLive = document.getElementById('swing-jamb-live');
   if (jambLive) {
-    jambLive.style.display = swing ? '' : 'none';
-    if (swing) {
-      jambLive.textContent = getSwingFrameFaceIn() === 2
+    jambLive.style.display = (swing || storefront) ? '' : 'none';
+    if (swing || storefront) {
+      const face = storefront ? getStorefrontFaceIn() : getSwingFrameFaceIn();
+      jambLive.textContent = face === 2
         ? 'Jamb: 2" × 4-1/2" — 1" glass is selected (standard is 1-3/4").'
         : 'Jamb: 1-3/4" × 4-1/2" standard. Changes to 2" only if 1" glass is selected.';
     }
@@ -3603,12 +4034,23 @@ function captureCurrentDoor() {
     widthIn:       getWidthIn(),
     heightIn:      getHeightIn(),
     glazing:       rv('glazing'),
-    transom:       rv('transom'),
+    transom:       (cfg && cfg.isStorefront) ? 'no' : rv('transom'),
     transomGlassPrep: (cfg && cfg.isSwing) ? getSwingGlassPrep() : rv('transomGlassPrep'),
-    transomV:      rv('transomV') || '0',
-    transomVerticals: parseInt(rv('transomV') || '0', 10) || 0,
+    transomV:      (cfg && cfg.isStorefront) ? '0' : (rv('transomV') || '0'),
+    transomVerticals: (cfg && cfg.isStorefront) ? 0 : (parseInt(rv('transomV') || '0', 10) || 0),
     glassPrep:     (cfg && cfg.isSwing) ? getSwingGlassPrep() : rv('glassPrep'),
     doorGlassPrep: (cfg && cfg.isSwing) ? getSwingGlassPrep() : rv('glassPrep'),
+    sfVerticals:   (cfg && cfg.isStorefront) ? getStorefrontVerticals() : 0,
+    sfHorizontals: (cfg && cfg.isStorefront) ? getStorefrontHorizontalCount() : 0,
+    sfHorizAffs:   (cfg && cfg.isStorefront) ? getStorefrontHorizAffs() : [],
+    sfHeaderMatch: (cfg && cfg.isStorefront) ? storefrontHeaderMatchOn() : false,
+    sfHeaderKind:  (cfg && cfg.isStorefront) ? (rv('sfHeaderKind') || 'swing') : '',
+    sfHeaderFt:    (cfg && cfg.isStorefront) ? (parseInt(fv('sf_hdr_ft'), 10) || 7) : 0,
+    sfHeaderIn:    (cfg && cfg.isStorefront) ? (Number.isFinite(parseInt(fv('sf_hdr_in'), 10)) ? parseInt(fv('sf_hdr_in'), 10) : 6) : 0,
+    sfHoriz1:      (cfg && cfg.isStorefront) ? fv('sf_h1') : '',
+    sfHoriz2:      (cfg && cfg.isStorefront) ? fv('sf_h2') : '',
+    sfHoriz3:      (cfg && cfg.isStorefront) ? fv('sf_h3') : '',
+    sfGlassStr:    (cfg && cfg.isStorefront) ? storefrontGlassStr() : '',
     frameFinish:   rv('glazing') === '313 Dark Bronze' ? '313 Dark Bronze' : 'Clear Anodized',
     configKey:     rv('config'),
     widthFt:       isSwingTwin() ? Math.floor(getTwinDoorIn('left') / 12) : parseInt(fv('f_wft'), 10) || 0,
@@ -3623,12 +4065,12 @@ function captureCurrentDoor() {
     height16:      parseInt(fv('f_h16'), 10) || 0,
     ftthFt:        parseInt(fv('f_ftthft'), 10) || 0,
     ftthIn:        parseInt(fv('f_ftthin'), 10) || 0,
-    stileWidth:    rv('stileWidth'),
+    stileWidth:    (cfg && cfg.isStorefront) ? 'narrow' : rv('stileWidth'),
     bottomRail:    rv('bottomRail'),
-    muntin:        rv('muntin'),
-    muntinAff:     (cfg && cfg.isSwing) ? getSwingMuntinAffIn() : getSliderMuntinAffIn(),
-    muntinAff2:    fv('muntin_aff2'),
-    muntinAffs:    (cfg && cfg.isSwing) ? getSwingMuntinAffs() : [getSliderMuntinAffIn()],
+    muntin:        (cfg && cfg.isStorefront) ? 'No Muntin' : rv('muntin'),
+    muntinAff:     (cfg && cfg.isStorefront) ? 0 : ((cfg && cfg.isSwing) ? getSwingMuntinAffIn() : getSliderMuntinAffIn()),
+    muntinAff2:    (cfg && cfg.isStorefront) ? '' : fv('muntin_aff2'),
+    muntinAffs:    (cfg && cfg.isStorefront) ? getStorefrontHorizAffs() : ((cfg && cfg.isSwing) ? getSwingMuntinAffs() : [getSliderMuntinAffIn()]),
     threshold:     rv('threshold'),
     sensor:        rv('sensor'),
     swingDir:      rv('swingDir'),
@@ -3674,7 +4116,7 @@ function captureCurrentDoor() {
     swingHandR: isSwingTwin() ? getTwinHand('right') : '',
     swingDirL: isSwingTwin() ? getTwinDir('left') : '',
     swingDirR: isSwingTwin() ? getTwinDir('right') : '',
-    slVerticals: Math.max(getSwingSideliteVerticalsOn('left'), getSwingSideliteVerticalsOn('right'), getSwingSideliteVerticalsOn('center')),
+    slVerticals: (cfg && cfg.isStorefront) ? getStorefrontVerticals() : Math.max(getSwingSideliteVerticalsOn('left'), getSwingSideliteVerticalsOn('right'), getSwingSideliteVerticalsOn('center')),
     slVerticalsSide: slVertLegacySide(),
     swingSideliteGlass: (getSwingSideliteLoc() !== 'none' || isSwingTwin()) ? getSwingGlassPrep() : '',
     addons:        [..._checkedAddons],
@@ -3789,7 +4231,9 @@ function _addDoorToCartImpl(opts) {
   renderCart();
 
   // Show success toast near the button
-  showAddSuccess(qty > 1 ? `${qty} doors added to your project!` : 'Door added to your project!');
+  showAddSuccess(qty > 1
+    ? `${qty} ${isStorefront() ? 'frames' : 'doors'} added to your project!`
+    : (isStorefront() ? 'Frame added to your project!' : 'Door added to your project!'));
 
   // Scroll to cart so user sees the confirmation, then flash it
   const cartEl = document.getElementById('project-cart-section');
@@ -3834,6 +4278,13 @@ function loadDoorIntoForm(door) {
   if (door.heightIn) {
     const hFt = Math.floor(door.heightIn / 12); const hIn = Math.floor(door.heightIn % 12);
     document.getElementById('f_hft').value = hFt; document.getElementById('f_hin').value = hIn; document.getElementById('f_h16').value = 0;
+  }
+  if (door.sfVerticals != null || (door.typeCategory === 'storefront' && door.slVerticals != null)) {
+    setSfVertRadio(door.sfVerticals != null ? door.sfVerticals : door.slVerticals);
+    _sfVertTouched = true;
+  }
+  if (door.typeCategory === 'storefront' || door.config === 'storefront-fixed') {
+    loadStorefrontHorizIntoForm(door);
   }
   if (door.swingSideliteWInL || door.slWidthLFt != null) {
     const n = door.swingSideliteWInL != null ? door.swingSideliteWInL
@@ -3948,6 +4399,17 @@ function resetDoorForm() {
   _slVertTouched.left = false;
   _slVertTouched.right = false;
   _slVertTouched.center = false;
+  _sfVertTouched = false;
+  _sfHdrMatchOn = false;
+  _sfHdrSavedAff = 42;
+  setSfVertRadio(0);
+  const sfh1 = document.getElementById('sfh_1'); if (sfh1) sfh1.checked = true;
+  const hdrM = document.getElementById('sf_hdr_match'); if (hdrM) hdrM.checked = false;
+  const hdrFt = document.getElementById('sf_hdr_ft'); if (hdrFt) hdrFt.value = '7';
+  const hdrIn = document.getElementById('sf_hdr_in'); if (hdrIn) hdrIn.value = '6';
+  fillStorefrontHorizSelect(document.getElementById('sf_h1'), 42);
+  fillStorefrontHorizSelect(document.getElementById('sf_h2'), 60);
+  fillStorefrontHorizSelect(document.getElementById('sf_h3'), 84);
   _swingStopTouched = false;
   _swingRailsTouched = false;
   _twinStopTouched.left = false;
@@ -4007,14 +4469,16 @@ function updateQtyUI() {
   const hint    = document.getElementById('location-tags-hint');
   const input   = document.getElementById('f_location_tags');
   if (qty > 1) {
-    if (hint)  hint.textContent  = `Separate each location with a comma — each will become its own door in your project cart.`;
+    if (hint)  hint.textContent  = `Separate each location with a comma — each will become its own ${isStorefront() ? 'frame' : 'door'} in your project cart.`;
     if (input) input.placeholder = 'e.g. Main Entry, Garden Center, Receiving';
   } else {
     if (hint)  hint.textContent  = 'Label this opening for easy reference.';
     if (input) input.placeholder = 'e.g. Main Entry';
   }
   if (addBtn && !addBtn.textContent.includes('Update')) {
-    addBtn.textContent = qty > 1 ? `Add ${qty} doors to project` : 'Add to project & configure another';
+    addBtn.textContent = qty > 1
+      ? (isStorefront() ? `Add ${qty} frames to project` : `Add ${qty} doors to project`)
+      : 'Add to project & configure another';
   }
 }
 
@@ -4070,6 +4534,9 @@ function renderCart() {
     if (_orderKind === 'operator') {
       if (lbl) lbl.textContent  = 'Configuring Swing Operator';
       if (addBtn) addBtn.textContent = 'Add operator to project';
+    } else if (_currentDoorType === 'storefront') {
+      if (lbl) lbl.textContent  = 'Configuring Frame #1';
+      if (addBtn) addBtn.textContent = 'Add to project & configure another';
     } else {
       if (lbl) lbl.textContent  = 'Configuring Door #1';
       if (addBtn) addBtn.textContent = 'Add to project & configure another';
@@ -4099,7 +4566,7 @@ function renderCart() {
     </div>`;
     }
     return `<div class="cart-card${isEditing ? ' editing' : ''}">
-      <div class="cart-card-num">DOOR ${i+1}${isEditing ? ' ✏️' : ''}</div>
+      <div class="cart-card-num">${isStorefrontItem(d) ? 'FRAME' : 'DOOR'} ${i+1}${isEditing ? ' ✏️' : ''}</div>
       <div class="cart-card-type">${d.configLabel}</div>
       <div class="cart-card-code">${d.configCode}</div>
       <div class="cart-card-dims">${d.widthStr || '—'} × ${d.heightStr || '—'}${d.twinDoorWInL || (d.swingSidelite && d.swingSidelite !== 'none') ? ' + sidelites' : ''}${(d.quantity||1)>1 ? ' <strong>×'+d.quantity+'</strong>' : ''}</div>
@@ -4116,9 +4583,13 @@ function renderCart() {
     ? cart.findIndex(d => d.id === _editingDoorId) + 1
     : cart.length + 1;
   const editingOp = _editingDoorId !== null && (cart.find(d => d.id === _editingDoorId) || {}).kind === 'operator';
+  const editingSf = _editingDoorId !== null && isStorefrontItem(cart.find(d => d.id === _editingDoorId) || {});
   if (_orderKind === 'operator' || editingOp) {
     if (lbl) lbl.textContent = _editingDoorId !== null ? `Editing Operator #${nextNum}` : 'Configuring Swing Operator';
     if (addBtn) addBtn.textContent = _editingDoorId !== null ? 'Update operator in project' : 'Add operator to project';
+  } else if (_currentDoorType === 'storefront' || editingSf) {
+    if (lbl) lbl.textContent = _editingDoorId !== null ? `Editing Frame #${nextNum}` : `Configuring Frame #${nextNum}`;
+    if (addBtn) addBtn.textContent = _editingDoorId !== null ? 'Update frame in project' : 'Add to project & configure another';
   } else {
     if (lbl) lbl.textContent = _editingDoorId !== null
       ? `Editing Door #${nextNum}` : `Configuring Door #${nextNum}`;
@@ -4164,6 +4635,17 @@ async function submitAllDoors() {
     const stile  = d.stileWidth === 'medium' ? 'Medium 3-3/4"' : 'Narrow (std)';
     const rail   = d.bottomRail === '6in' ? '6"' : d.bottomRail === '10in' ? '10"' : '4" (std)';
     const sensor = (['Optex i-oneXT','BEA IXIO'].includes(d.sensor)) ? d.sensor : (d.sensor || 'Standard (incl.)');
+    if (isStorefrontItem(d)) {
+      return `FRAME ${i+1}: ${d.configLabel} (${d.configCode}) — Qty: ${d.quantity||1}\n` +
+             `  Aluminum frame only — no door, operator, or hardware. Glass by others.\n` +
+             `  Width: ${d.widthStr} | Height: ${d.heightStr}\n` +
+             `  Finish: ${d.glazing || d.frameFinish} | Glass Prep: ${d.glassPrep || d.doorGlassPrep} | Extra verticals: ${d.sfVerticals || d.slVerticals || 0}\n` +
+             `  Extra horizontals: ${(d.sfHorizAffs && d.sfHorizAffs.length) ? d.sfHorizAffs.map(a => (typeof inToStr === 'function' ? inToStr(a) : a + '"') + ' AFF').join(' / ') + (d.sfHeaderMatch ? ' (top bar lines with door header)' : '') : 'None'}\n` +
+             `  Glass (daylight + 5/8"): ${d.sfGlassStr || '—'}\n` +
+             `  Est. Price: ${d.estimatedTotal ? '$'+d.estimatedTotal.toLocaleString() : 'Call for pricing'}` +
+             (d.locationTags ? `\n  Locations: ${d.locationTags}` : '') +
+             (d.notes ? `\n  Notes: ${d.notes}` : '');
+    }
     const swingLine = (d.typeCategory === 'swing' || (d.config || '').indexOf('swing') === 0)
       ? `  Swing: ${d.swingDir === 'in' ? 'In-swing (breakout)' : 'Out-swing'} | Energy: ${d.swingEnergy === 'high' ? 'Fully automatic' : 'Low energy ADA'}\n` +
         `  Stop: ${d.swingStopL || d.swingStopR ? ('L ' + (d.swingStopL === 'panic' ? 'panic' : 'fixed') + ' · R ' + (d.swingStopR === 'panic' ? 'panic' : 'fixed')) : (d.swingStop === 'panic' ? 'Panic latch breakout' : (d.swingStop || 'Fixed door stop'))} | Crash bars: ${d.swingCrash || 'None'} | Rails: ${d.swingRailStr || d.swingRails || 'none'}\n` +
@@ -4776,7 +5258,7 @@ function defaultSliderMuntinAff() {
 }
 function defaultMuntinAff() {
   const cfg = getConfig();
-  return (cfg && cfg.isSwing) ? defaultSwingMuntinAff() : defaultSliderMuntinAff();
+  return (cfg && (cfg.isSwing || cfg.isStorefront)) ? defaultSwingMuntinAff() : defaultSliderMuntinAff();
 }
 function getSliderMuntinAffIn() {
   if (!_muntinAffTouched) return defaultSliderMuntinAff();
@@ -5137,6 +5619,7 @@ function calcNetOpeningIn() {
   const wIn = getWidthIn();
   if (wIn === null) return null;
   if (cfg.base === null) return null;                  // ESA — no formula
+  if (cfg.isStorefront) return null;
   if (cfg.isSwing) return calcSwingClearWidthIn();
   return cfg.isBi ? 36 + (wIn - 96) * 0.5 : 33 + (wIn - 78) * 0.5;
 }
@@ -5255,22 +5738,29 @@ function updateFTTH() {
   if (f) f.style.display = hasTransom ? '' : 'none';
   if (hasTransom) clampFtthIn();
   const tg = document.getElementById('transom-glass-field');
-  if (tg) tg.style.display = (hasTransom && _currentDoorType !== 'swing') ? '' : 'none';
+  if (tg) tg.style.display = (hasTransom && _currentDoorType !== 'swing' && _currentDoorType !== 'storefront') ? '' : 'none';
   const tv = document.getElementById('transom-verticals-field');
-  if (tv) tv.style.display = (hasTransom && _currentDoorType !== 'swing') ? '' : 'none';
+  if (tv) tv.style.display = (hasTransom && _currentDoorType !== 'swing' && _currentDoorType !== 'storefront') ? '' : 'none';
   // Swap Frame Height label based on transom selection
   const hl = document.getElementById('height-field-label');
-  if (hl) hl.textContent = hasTransom ? 'Header Height (FTTH)' : 'Header Height';
+  if (hl) {
+    if (_currentDoorType === 'storefront') hl.textContent = 'Frame Height';
+    else hl.textContent = hasTransom ? 'Header Height (FTTH)' : 'Header Height';
+  }
   const hn = document.getElementById('height-range-note');
   if (hn && !hn.classList.contains('warn') && !hn.classList.contains('ok')) {
     const swing = _currentDoorType === 'swing';
-    hn.textContent = hasTransom
-      ? (swing
-        ? 'Floor to top of header/operator. Standard: 7\'6" (90"). Over 8\'0": +$200/ft.'
-        : 'Floor to top of header/operator. Standard: 7\'6" to 8\'0" (+$200/ft over 8\'0").')
-      : (swing
-        ? 'Standard swing header: 7\'6" (90"). Min 7\'-3/4". Over 8\'0": +$200/ft'
-        : 'Standard header height: 7\'6" to 8\'0". Over 8\'0": +$200/ft');
+    if (_currentDoorType === 'storefront') {
+      hn.textContent = 'Overall aluminum frame height. Standard 7\'6".';
+    } else {
+      hn.textContent = hasTransom
+        ? (swing
+          ? 'Floor to top of header/operator. Standard: 7\'6" (90"). Over 8\'0": +$200/ft.'
+          : 'Floor to top of header/operator. Standard: 7\'6" to 8\'0" (+$200/ft over 8\'0").')
+        : (swing
+          ? 'Standard swing header: 7\'6" (90"). Min 7\'-3/4". Over 8\'0": +$200/ft'
+          : 'Standard header height: 7\'6" to 8\'0". Over 8\'0": +$200/ft');
+    }
   }
 }
 
@@ -5281,7 +5771,7 @@ function updateAddonVisibility() {
   slideOnly.forEach(id => {
     const el = document.getElementById(id);
     if (!el) return;
-    if (cfg && cfg.isSwing) {
+    if (cfg && (cfg.isSwing || cfg.isStorefront)) {
       el.style.display = 'none';
       el.classList.remove('checked');
       _checkedAddons.delete(id);
@@ -5291,7 +5781,7 @@ function updateAddonVisibility() {
   });
   const ar8600 = document.getElementById('addon_ar_8600');
   if (!ar8600) return;
-  if (!cfg || !cfg.isFBO || cfg.isSwing) {
+  if (!cfg || !cfg.isFBO || cfg.isSwing || cfg.isStorefront) {
     ar8600.classList.add('disabled');
     ar8600.classList.remove('checked');
     _checkedAddons.delete('addon_ar_8600');
@@ -5322,14 +5812,44 @@ function calcPrice() {
     return;
   }
 
-  let total = cfg.base;
-  const lines = [{
+  let total = cfg.isStorefront ? 0 : cfg.base;
+  const lines = cfg.isStorefront ? [] : [{
     label: cfg.isTwin ? 'Entry/Exit swings — two packages ($4,500 × 2)' : (cfg.label + ' — Standard Package'),
     amount: cfg.base
   }];
 
+  if (cfg.isStorefront) {
+    const sfW = getWidthIn() || 72;
+    const liteAmt = swingSideliteSellFor(sfW);
+    total += liteAmt;
+    const nV = getStorefrontVerticals();
+    const nH = getStorefrontHorizontalCount();
+    const hAffs = getStorefrontHorizAffs();
+    const billV = storefrontBillableVerticals();
+    lines.push({
+      label: 'Storefront / matching lites — aluminum frame only' +
+        (nV ? ' · ' + nV + ' vertical' + (nV > 1 ? 's' : '') + (billV ? '' : ' incl.') : '') +
+        (nH ? ' · ' + nH + ' extra horizontal' + (nH > 1 ? 's' : '') + (hAffs.length ? ' @ ' + hAffs.map(a => inToStr(a) + ' AFF').join(' / ') : '') : ''),
+      amount: liteAmt
+    });
+    if (billV) {
+      const vAmt = billV * SF_EXTRA_VERT;
+      total += vAmt;
+      lines.push({
+        label: 'Extra verticals beyond typical bay ×' + billV + ' (+$' + SF_EXTRA_VERT + ' ea)',
+        amount: vAmt
+      });
+    }
+    if (rv('glassPrep') === '1"') {
+      total += 150;
+      lines.push({ label: '1" glass prep — 2" jamb', amount: 150 });
+    }
+    lines.push({ label: 'Frame profile ' + (getStorefrontFaceIn() === 2 ? '2" × 4-1/2" (1" glass)' : '1-3/4" × 4-1/2" (1/4" glass)'), amount: 0 });
+    lines.push({ label: 'Glass by others — cut size = daylight + 5/8"', amount: 0 });
+  }
+
   // Transom — twin is two packages, so a transom is one per door
-  if (rv('transom') === 'yes') {
+  if (rv('transom') === 'yes' && !cfg.isStorefront) {
     const tN = cfg.isTwin ? 2 : 1;
     const tAmt = cfg.transom * tN;
     total += tAmt;
@@ -5345,15 +5865,15 @@ function calcPrice() {
   }
 
   // Stile / rail / sensor upcharges (slide: active + sidelite; swing: leaves only)
-  const totalPanels = cfg.isSwing ? cfg.panels : cfg.panels * 2;
+  const totalPanels = cfg.isStorefront ? 0 : (cfg.isSwing ? cfg.panels : cfg.panels * 2);
   const isMediumStile = rv('stileWidth') === 'medium';
-  if (isMediumStile && !cfg.isSwing) {
+  if (isMediumStile && !cfg.isSwing && !cfg.isStorefront) {
     const amt = 180 * totalPanels;
     total += amt;
     lines.push({ label: `Medium Stiles ×${totalPanels} panels`, amount: amt });
   }
   const railVal = rv('bottomRail');
-  if (railVal === '6in') {
+  if (!cfg.isStorefront && railVal === '6in') {
     if (!isMediumStile) {
       const amt = 80 * totalPanels;
       total += amt;
@@ -5361,15 +5881,15 @@ function calcPrice() {
     } else {
       lines.push({ label: `6" Bottom Rails ×${totalPanels} panels (incl.)`, amount: 0 });
     }
-  } else if (railVal === '10in') {
+  } else if (!cfg.isStorefront && railVal === '10in') {
     const amt = 160 * totalPanels;
     total += amt;
     lines.push({ label: `10" Bottom Rails ×${totalPanels} panels`, amount: amt });
   }
   const sensorVal = rv('sensor');
-  if (sensorVal === 'Optex i-oneXT') {
+  if (!cfg.isStorefront && sensorVal === 'Optex i-oneXT') {
     total += 220; lines.push({ label: 'Optex i-oneXT Sensor', amount: 220 });
-  } else if (sensorVal === 'BEA IXIO') {
+  } else if (!cfg.isStorefront && sensorVal === 'BEA IXIO') {
     total += 280; lines.push({ label: 'BEA IXIO Sensor', amount: 280 });
   }
   if (cfg.isSwing) {
@@ -5601,7 +6121,9 @@ function calcPrice() {
       if (note) { note.textContent = `+$200/ft over 14'0" (max 16'0")`; note.className = 'size-range-note ok'; }
     } else {
       if (note) {
-        note.textContent = cfg.isSwing
+        note.textContent = cfg.isStorefront
+          ? `✓ Within range (${inToStr(cfg.minW)} – ${inToStr(cfg.maxW)}). $175/ft, $450 minimum`
+          : cfg.isSwing
           ? `✓ Within range (${inToStr(cfgMinW(cfg))} – ${inToStr(cfg.maxW)})`
           : cfg.isBi ? `✓ Within range (8'0" – 16'0"). Over 14'0": +$200/ft` : `✓ Within range (${inToStr(cfg.minW)} – ${inToStr(cfg.maxW)})`;
         note.className = 'size-range-note ok';
@@ -5610,7 +6132,9 @@ function calcPrice() {
   } else {
     const note = document.getElementById('width-range-note');
     if (note) {
-      note.textContent = cfg.isSwing
+      note.textContent = cfg.isStorefront
+        ? `Storefront range: ${inToStr(cfg.minW)} – ${inToStr(cfg.maxW)}. $175/ft, $450 minimum`
+        : cfg.isSwing
         ? (cfg.isBi ? `Swing pair range: 5'0" – 9'6"` : `Minimum frame width ${inToStr(cfgMinW(cfg))} for 32" clear. Range: ${inToStr(cfgMinW(cfg))} – 4'4"`)
         : cfg.isBi ? `Bi-part range: 8'0" – 16'0" (+$200/ft over 14'0")` : `Single-slide range: 6'6" – 9'0"`;
       note.className = 'size-range-note';
@@ -5620,7 +6144,7 @@ function calcPrice() {
   // Header height — standard 7'6"–8'0"; over 8'0" is +$200/ft
   const hNote = document.getElementById('height-range-note');
   if (hIn !== null && hNote) {
-    if (hIn < (cfg.isSwing ? SWING_MIN_H : 90)) {
+    if (!cfg.isStorefront && hIn < (cfg.isSwing ? SWING_MIN_H : 90)) {
       hNote.textContent = cfg.isSwing
         ? `⚠ Minimum frame height is 7'-3/4" (79" clear + 5-3/4" header)`
         : `⚠ Minimum header height is 7'6" — call us to confirm`;
@@ -5634,7 +6158,9 @@ function calcPrice() {
       hNote.className = 'size-range-note ok';
     } else {
       const stdRange = `7'6" – 8'0"`;
-      hNote.textContent = rv('transom') === 'yes'
+      hNote.textContent = cfg.isStorefront
+        ? `✓ Frame height within range. Over 8'0": +$200/ft`
+        : rv('transom') === 'yes'
         ? `✓ Header height within range (${stdRange})`
         : `✓ Within range (${stdRange}). Over 8'0": +$200/ft`;
       hNote.className = 'size-range-note ok';
@@ -5662,7 +6188,7 @@ function calcPrice() {
   }
 
   // Add-ons — read from authoritative JS Set (not CSS classes)
-  _checkedAddons.forEach(id => {
+  if (!cfg.isStorefront) _checkedAddons.forEach(id => {
     const el = document.getElementById(id);
     if (!el || el.classList.contains('disabled')) return;
     const price = parseInt(el.dataset.price) || 0;
@@ -5736,6 +6262,32 @@ function updateSpecSummary() {
   })() : null;
   const alarmContacts = _checkedAddons.has('addon_alarm_contacts')
     ? 'Monitor Breakout + Door Position (+$150)' : 'None';
+  if (cfg && cfg.isStorefront) {
+    const nV = getStorefrontVerticals();
+    const hAffs = getStorefrontHorizAffs();
+    const specs = [
+      ['Configuration', cfg.label],
+      ['Code', cfg.code],
+      ['Frame Finish', rv('glazing') || '—'],
+      ['Glass Prep', rv('glassPrep') || '1/4"'],
+      ['Frame profile', getStorefrontFaceIn() === 2 ? '2" × 4-1/2" (1" glass)' : '1-3/4" × 4-1/2" (1/4" glass)'],
+      ['Extra verticals', nV ? (String(nV) + (storefrontBillableVerticals() ? ' · ' + storefrontBillableVerticals() + ' beyond typical +$' + SF_EXTRA_VERT + ' ea' : ' incl.')) : 'None'],
+      ['Bay width', fmtInches(storefrontBayDLO()) + '  ·  rec. max 4\'0"'],
+      ['Extra horizontals', hAffs.length ? (storefrontHeaderMatchOn()
+        ? hAffs.slice(0, -1).map(a => inToStr(a) + ' AFF').concat([
+            inToStr(getStorefrontHeaderTopAff()) + ' top of bar = hdr top'
+          ]).join(' / ')
+        : hAffs.map(a => inToStr(a) + ' AFF').join(' / ')) : 'None'],
+      ['Frame Width', getWidthStr()],
+      ['Frame Height', getHeightStr()],
+      ['Glass (daylight + 5/8")', storefrontGlassStr()],
+      ['Quantity', fv('f_qty') || '—'],
+    ];
+    document.getElementById('spec-summary').innerHTML = specs.map(([k,v]) =>
+      `<div class="spec-row"><span class="sk">${k}</span><span class="sv">${v}</span></div>`
+    ).join('');
+    return;
+  }
   const specs = [
     ['Configuration', cfg ? cfg.label : '—'],
     ['Code', cfg ? cfg.code : '—'],
@@ -5789,12 +6341,194 @@ function getGlazeFill() {
     : { fill:'#E8F4FD', stroke:'#A8D4F5' };
 }
 
+function drawStorefrontElevation(svg, vW, vH, isConf) {
+  const glaze = getGlazeFill();
+  const frame = getFrameColor();
+  const realW = getWidthIn() || 72;
+  const realFrameH = getHeightIn() || 90;
+  const realTotalH = realFrameH;
+  const faceIn = getStorefrontFaceIn();
+  const numV = getStorefrontVerticals();
+  const muntAffs = getStorefrontHorizAffs();
+  const titleH = isConf ? 60 : 0;
+  const matchOn = storefrontHeaderMatchOn();
+  const matchAff = matchOn ? getStorefrontMatchHeaderAff() : null;
+  const hdrTopAff = matchOn ? getStorefrontHeaderTopAff() : null;
+  const leftDims = [];
+  muntAffs.forEach(aff => {
+    if (matchAff != null && Math.abs(aff - matchAff) < 0.06) return;
+    leftDims.push({ aff, label: inToStr(aff) + ' AFF' });
+  });
+  if (hdrTopAff != null) leftDims.push({ aff: hdrTopAff, label: inToStr(hdrTopAff) + ' hdr top' });
+  const longest = leftDims.reduce((n, d) => Math.max(n, d.label.length), 0);
+  const mL = isConf ? 80 : (leftDims.length ? Math.max(168, 52 + longest * 8) : 110);
+  const mR = isConf ? 80 : 140;
+  const nearHead = leftDims.some(d => d.aff >= realFrameH - 8);
+  const mT = isConf ? titleH + 16 : (nearHead ? 132 : 108);
+  const mB = isConf ? 100 : 118;
+  const availW = vW - mL - mR;
+  let sc, dW, dH, dX, dY;
+  if (!isConf) {
+    sc = availW / realW;
+    dW = realW * sc;
+    dH = realTotalH * sc;
+    vH = Math.ceil(mT + dH + mB);
+    svg.setAttribute('viewBox', `0 0 ${vW} ${vH}`);
+    dX = mL + (availW - dW) / 2;
+    dY = mT;
+  } else {
+    const availH = vH - mT - mB;
+    sc = Math.min(availW / realW, availH / realTotalH);
+    dW = realW * sc;
+    dH = realTotalH * sc;
+    dX = mL + (availW - dW) / 2;
+    dY = mT + (availH - dH) / 2;
+  }
+  const mem = Math.max(2, sc * faceIn);
+  function r(x, y, w, h, fill, stroke, sw) {
+    svgEl(svg, 'rect', { x, y, width: Math.max(w, 0), height: Math.max(h, 0), fill: fill || 'none', stroke: stroke || 'none', 'stroke-width': sw || 0 });
+  }
+  function t(x, y, str, size, fill, anchor, weight) {
+    return svgEl(svg, 'text', { x, y, 'font-size': size || 18, fill: fill || '#111', 'text-anchor': anchor || 'middle', 'font-weight': weight || 'normal', 'font-family': 'Arial,sans-serif' }, str);
+  }
+  function dimLine(x1, y1, x2, y2, lbl, horiz, labelSide, fs) {
+    const aw = 5, off = 7, font = fs || 18;
+    if (horiz) {
+      svgEl(svg, 'line', { x1, y1, x2, y2, stroke: '#1B4F8A', 'stroke-width': 0.7 });
+      svgEl(svg, 'line', { x1, y1: y1 - off, x2: x1, y2: y1 + off, stroke: '#1B4F8A', 'stroke-width': 0.7 });
+      svgEl(svg, 'line', { x1: x2, y1: y1 - off, x2, y2: y1 + off, stroke: '#1B4F8A', 'stroke-width': 0.7 });
+      svgEl(svg, 'path', { d: `M${x1},${y1}l${aw},-3l0,6Z`, fill: '#1B4F8A' });
+      svgEl(svg, 'path', { d: `M${x2},${y1}l${-aw},-3l0,6Z`, fill: '#1B4F8A' });
+      t((x1 + x2) / 2, labelSide === 'above' ? y1 - 10 : y1 + 20, lbl, font, '#1B4F8A', 'middle', '700');
+    } else {
+      svgEl(svg, 'line', { x1, y1, x2, y2, stroke: '#1B4F8A', 'stroke-width': 0.7 });
+      svgEl(svg, 'line', { x1: x1 - off, y1, x2: x1 + off, y2: y1, stroke: '#1B4F8A', 'stroke-width': 0.7 });
+      svgEl(svg, 'line', { x1: x1 - off, y1: y2, x2: x1 + off, y2, stroke: '#1B4F8A', 'stroke-width': 0.7 });
+      svgEl(svg, 'path', { d: `M${x1},${y1}l-3,${aw}l6,0Z`, fill: '#1B4F8A' });
+      svgEl(svg, 'path', { d: `M${x1},${y2}l-3,${-aw}l6,0Z`, fill: '#1B4F8A' });
+      const cx = x1 + (labelSide === 'left' ? -16 : 22);
+      const cy = (y1 + y2) / 2;
+      const el = t(cx, cy, lbl, font, '#1B4F8A', 'middle', '700');
+      el.setAttribute('transform', `rotate(-90,${cx},${cy})`);
+    }
+  }
+  if (isConf) {
+    r(0, 0, vW, titleH, '#1B4F8A');
+    t(16, 22, 'DOORTRONIX USA', 14, '#fff', 'start', '700');
+    t(16, 38, 'Estimate Drawing — Storefront Elevation', 10, '#B8CCE4', 'start');
+    t(vW - 14, 22, 'Storefront / Matching Lites (SF)', 11, '#E87722', 'end', '700');
+    t(vW - 14, 38, getWidthStr() + ' W × ' + getHeightStr() + ' H', 10, '#fff', 'end', '700');
+    t(vW - 14, 52, rv('glazing'), 9, '#B8CCE4', 'end');
+  }
+  const gx = dX + mem, gw = Math.max(0, dW - mem * 2);
+  const vertXs = [];
+  for (let i = 1; i <= numV; i++) vertXs.push(gx + gw * i / (numV + 1));
+  const liteEdges = [gx, ...vertXs.flatMap(vx => [vx - mem / 2, vx + mem / 2]), gx + gw];
+  function fillBays(y, h) {
+    for (let i = 0; i < liteEdges.length - 1; i += 2) {
+      const lx = liteEdges[i], lw = liteEdges[i + 1] - liteEdges[i];
+      if (lw > 1 && h > 1) r(lx, y, lw, h, glaze.fill);
+    }
+  }
+  const bayY = dY + mem;
+  const bayH = Math.max(0, dH - mem * 2);
+  fillBays(bayY, bayH);
+  r(dX, dY, dW, mem, frame);
+  r(dX, dY + dH - mem, dW, mem, frame);
+  r(dX, dY, mem, dH, frame);
+  r(dX + dW - mem, dY, mem, dH, frame);
+  vertXs.forEach(vx => r(vx - mem / 2, bayY, mem, bayH, frame));
+  muntAffs.forEach(aff => {
+    const hy = Math.max(bayY, Math.min(dY + dH - mem * 2, dY + dH - aff * sc - mem / 2));
+    for (let i = 0; i < liteEdges.length - 1; i += 2) {
+      const lx = liteEdges[i], lw = liteEdges[i + 1] - liteEdges[i];
+      if (lw > 2) r(lx, hy, lw, mem, frame);
+    }
+  });
+  if (!isConf) {
+    dimLine(dX, dY + dH + 28, dX + dW, dY + dH + 28, getWidthStr(), true, 'below', 18);
+    dimLine(dX + dW + 22, dY, dX + dW + 22, dY + dH, getHeightStr(), false, 'right', 16);
+    let lastLblY = Infinity;
+    const lx = dX - 36;
+    if (hdrTopAff != null) {
+      const yTop = dY + dH - hdrTopAff * sc;
+      svgEl(svg, 'line', {
+        x1: dX, y1: yTop, x2: dX + dW, y2: yTop,
+        stroke: '#1B4F8A', 'stroke-width': 0.8, 'stroke-dasharray': '4 3'
+      });
+    }
+    leftDims.forEach(dim => {
+      const yy = dY + dH - dim.aff * sc;
+      let lblY = yy;
+      if (lastLblY !== Infinity && Math.abs(lastLblY - lblY) < 18) {
+        lblY = lastLblY + (yy >= lastLblY ? 18 : -18);
+      }
+      if (lblY < 18) lblY = 18;
+      lastLblY = lblY;
+      svgEl(svg, 'line', { x1: lx, y1: yy, x2: lx, y2: dY + dH, stroke: '#1B4F8A', 'stroke-width': 0.7 });
+      svgEl(svg, 'line', { x1: lx - 6, y1: yy, x2: lx + 6, y2: yy, stroke: '#1B4F8A', 'stroke-width': 0.7 });
+      t(lx - 10, lblY + 5, dim.label, 14, '#1B4F8A', 'end', '700');
+    });
+    t(dX + dW / 2, dY - 18, 'STOREFRONT / MATCHING LITES — FRAME ONLY', 13, '#1B4F8A', 'middle', '700');
+  }
+  _doorScale = { dX, dW, sc, vW, unitX: dX, unitW: dW, slL: 0, slR: 0 };
+}
+
+function drawStorefrontPlan(svgId, planW) {
+  const svg = document.getElementById(svgId || 'plan-svg');
+  if (!svg) return;
+  svg.innerHTML = '';
+  const foot = document.getElementById('plan-footer');
+  if (foot) foot.style.display = 'none';
+  if (!_doorScale) return;
+  const { dX, dW, sc } = _doorScale;
+  const vW = planW || 600;
+  const frame = getFrameColor();
+  const glaze = getGlazeFill();
+  const faceIn = getStorefrontFaceIn();
+  const faceW = Math.max(2, sc * faceIn);
+  const thick = Math.max(3, sc * 4.5);
+  const glassTh = Math.max(1, sc * 0.25);
+  const numV = getStorefrontVerticals();
+  const y = 42;
+  const pad = 36;
+  const vH = Math.ceil(y + thick + pad * 2 + 40);
+  svg.setAttribute('viewBox', `0 0 ${vW} ${vH}`);
+  const frameY = y + pad;
+  function t(x, yy, str, size, fill, anchor, weight) {
+    svgEl(svg, 'text', { x, y: yy, 'font-size': size || 16, fill: fill || '#111', 'text-anchor': anchor || 'middle', 'font-weight': weight || 'normal', 'font-family': 'Arial,sans-serif' }, str);
+  }
+  svgEl(svg, 'rect', { x: dX, y: frameY, width: dW, height: thick, fill: frame, stroke: '#888', 'stroke-width': 0.7 });
+  const gx = dX + faceW, gw = Math.max(0, dW - faceW * 2);
+  const vertXs = [];
+  for (let i = 1; i <= numV; i++) vertXs.push(gx + gw * i / (numV + 1));
+  const edges = [gx, ...vertXs.flatMap(vx => [vx - faceW / 2, vx + faceW / 2]), gx + gw];
+  for (let i = 0; i < edges.length - 1; i += 2) {
+    const lx = edges[i], lw = edges[i + 1] - edges[i];
+    if (lw > 1) {
+      svgEl(svg, 'rect', {
+        x: lx + 1, y: frameY + (thick - glassTh) / 2, width: Math.max(0, lw - 2), height: glassTh,
+        fill: glaze.fill, stroke: glaze.stroke, 'stroke-width': 0.35
+      });
+    }
+  }
+  svgEl(svg, 'rect', { x: dX, y: frameY, width: faceW, height: thick, fill: frame, stroke: '#777', 'stroke-width': 0.6 });
+  svgEl(svg, 'rect', { x: dX + dW - faceW, y: frameY, width: faceW, height: thick, fill: frame, stroke: '#777', 'stroke-width': 0.6 });
+  vertXs.forEach(vx => {
+    svgEl(svg, 'rect', { x: vx - faceW / 2, y: frameY, width: faceW, height: thick, fill: frame, stroke: '#777', 'stroke-width': 0.6 });
+  });
+  t(dX + dW / 2, frameY - 12, 'EXTERIOR', 13, '#1B4F8A', 'middle', '700');
+  t(dX + dW / 2, frameY + thick + 18, 'INTERIOR', 13, '#1B4F8A', 'middle', '700');
+  t(dX + dW / 2, frameY + thick + 36, getWidthStr() + '  ·  ' + (getStorefrontFaceIn() === 2 ? '2"' : '1-3/4"') + ' × 4-1/2" frame', 14, '#1B4F8A', 'middle', '700');
+}
+
 function drawDoor(svgId, vW, vH, isConf) {
   const svg = document.getElementById(svgId);
   if (!svg) return;
   svg.innerHTML = '';
   const cfg = getConfig();
   if (cfg && cfg.isSwing) { drawSwingElevation(svg, vW, vH, isConf); return; }
+  if (cfg && cfg.isStorefront) { drawStorefrontElevation(svg, vW, vH, isConf); return; }
   const glaze = getGlazeFill();
   const frame = getFrameColor();
   const hasTransom = rv('transom') === 'yes';
@@ -7139,6 +7873,7 @@ function drawPlanView() {
   const cfg = getConfig();
   if (!cfg) return;
   if (cfg.isSwing) { drawSwingPlan(); return; }
+  if (cfg.isStorefront) { drawStorefrontPlan(); return; }
   if (!_doorScale) return;
 
   const frame = getFrameColor();
@@ -7458,9 +8193,17 @@ function syncTwinDoorInches(ftId, inId) {
 }
 function ensureSliderWidth() {
   const cfg = getConfig();
-  if (!cfg || cfg.isSwing) return;
+  if (!cfg || cfg.isSwing || cfg.isStorefront) return;
   if (getWidthIn() != null) return;
   setFrameWidthIn(cfg.isBi ? 120 : 84);
+}
+function ensureStorefrontWidth() {
+  const cfg = getConfig();
+  if (!cfg || !cfg.isStorefront) return;
+  const w = getWidthIn();
+  if (w == null) { setFrameWidthIn(72); return; }
+  if (w < cfg.minW) setFrameWidthIn(cfg.minW);
+  else if (w > cfg.maxW) setFrameWidthIn(cfg.maxW);
 }
 function ensureSwingWidth() {
   const cfg = getConfig();
@@ -7489,6 +8232,7 @@ function ensureSwingWidth() {
 function updateAll() {
   ensureSwingWidth();
   ensureSliderWidth();
+  ensureStorefrontWidth();
   syncSwingUi();
   clampSwingHeight();
   // Update nose casters label based on door type
@@ -7509,7 +8253,8 @@ function updateAll() {
   updateSpecSummary();
   if (document.body.classList.contains('sheet-mode')) {
     drawDoor('door-svg', 840, 460, true);
-    drawSwingPlan('plan-svg', 840);
+    if (getConfig() && getConfig().isStorefront) drawStorefrontPlan('plan-svg', 840);
+    else drawSwingPlan('plan-svg', 840);
   } else {
     drawDoor('door-svg', 600, 300, false);
     drawPlanView();
@@ -7533,6 +8278,7 @@ function onQuoteFormUpdate(e) {
   if (name === 'slVerticalsL') _slVertTouched.left = true;
   if (name === 'slVerticalsR') _slVertTouched.right = true;
   if (name === 'slVerticalsC') _slVertTouched.center = true;
+  if (name === 'sfVerticals') _sfVertTouched = true;
   if (name === 'swingStop') _swingStopTouched = true;
   if (name === 'swingStopL') _twinStopTouched.left = true;
   if (name === 'swingStopR') _twinStopTouched.right = true;
@@ -7589,7 +8335,7 @@ document.getElementById('quoteForm').addEventListener('submit', async function(e
     shipTo: fv('f_shipto') || fv('f_location'), jobNumber: fv('f_job'),
     poNumber: fv('f_po'), shipDate: shipTimelineStr(), quantity: fv('f_qty'),
     configuration: cfg ? cfg.label + ' (' + cfg.code + ')' : rv('config'),
-    packageType: cfg && cfg.isSwing ? 'Complete swing door and frame' : 'Sliding door',
+    packageType: cfg && cfg.isStorefront ? 'Storefront / matching lites — aluminum frame only' : (cfg && cfg.isSwing ? 'Complete swing door and frame' : 'Sliding door'),
     swingDirection: cfg && cfg.isSwing ? getSwingStr() + (!cfg.isTwin && !cfg.isBi && rv('swingDir') === 'in' ? ' (breakout)' : '') : 'N/A',
     swingEnergy: cfg && cfg.isSwing ? (rv('swingEnergy') === 'high' ? 'Fully automatic' : 'Low energy') : 'N/A',
     swingStop: cfg && cfg.isSwing ? getSwingStopStr() : 'N/A',
@@ -7607,12 +8353,20 @@ document.getElementById('quoteForm').addEventListener('submit', async function(e
     swingSidelites: cfg && cfg.isSwing ? ((getSwingSideliteLoc() === 'none' && !cfg.isTwin) ? 'None' : getSwingSideliteStr() + ' · ' + getSwingSideliteProfileStr()) : 'N/A',
     frameFinish: rv('glazing'), doorGlassPrep: cfg && cfg.isSwing ? getSwingGlassPrep() : rv('glassPrep'), transomGlassPrep: cfg && cfg.isSwing ? (rv('transom') === 'yes' ? getSwingGlassPrep() : 'N/A') : (rv('transomGlassPrep') || 'N/A'),
     transomVerticals: 'N/A',
-    stileWidth: rv('stileWidth') === 'medium' ? 'Medium 3-3/4"' : 'Narrow (std)',
-    bottomRail: rv('bottomRail') === '6in' ? '6"' : rv('bottomRail') === '10in' ? '10"' : '4" (std)',
-    muntin: (rv('muntin') || '2" Muntin (std)') + (swingMuntinCount() ? ' @ ' + (cfg && cfg.isSwing ? getSwingMuntinAffs() : [getSliderMuntinAffIn()]).map(a => a + '" AFF').join(' / ') : ''),
-    threshold: rv('threshold'),
-    sensor: (['Optex i-oneXT','BEA IXIO'].includes(rv('sensor'))) ? rv('sensor') : 'Standard (incl.)',
-    transom: rv('transom') === 'yes' ? 'Yes' : 'No',
+    stileWidth: cfg && cfg.isStorefront ? '—' : (rv('stileWidth') === 'medium' ? 'Medium 3-3/4"' : 'Narrow (std)'),
+    bottomRail: cfg && cfg.isStorefront ? '—' : (rv('bottomRail') === '6in' ? '6"' : rv('bottomRail') === '10in' ? '10"' : '4" (std)'),
+    muntin: cfg && cfg.isStorefront
+      ? (getStorefrontHorizAffs().length ? (storefrontHeaderMatchOn()
+          ? getStorefrontHorizAffs().slice(0, -1).map(a => inToStr(a) + ' AFF').concat([
+              inToStr(getStorefrontHeaderTopAff()) + ' top of bar = hdr top'
+            ]).join(' / ')
+          : getStorefrontHorizAffs().map(a => inToStr(a) + ' AFF').join(' / ')) : 'None')
+      : ((rv('muntin') || '2" Muntin (std)') + (swingMuntinCount() ? ' @ ' + (cfg && cfg.isSwing ? getSwingMuntinAffs() : [getSliderMuntinAffIn()]).map(a => a + '" AFF').join(' / ') : '')),
+    threshold: cfg && cfg.isStorefront ? '—' : rv('threshold'),
+    sensor: cfg && cfg.isStorefront ? '—' : ((['Optex i-oneXT','BEA IXIO'].includes(rv('sensor'))) ? rv('sensor') : 'Standard (incl.)'),
+    transom: (cfg && cfg.isStorefront) ? 'No' : (rv('transom') === 'yes' ? 'Yes' : 'No'),
+    sfGlass: cfg && cfg.isStorefront ? storefrontGlassStr() : '',
+    sfVerticals: cfg && cfg.isStorefront ? getStorefrontVerticals() : 0,
     ftth: ftthStr2 || 'N/A',
     frameWidth: getWidthStr(), frameHeight: getHeightStr(),
     netOpening: getOpenStr(),
@@ -7696,16 +8450,25 @@ function buildSheetOrder() {
     configKey: rv('config'),
     frameFinish: rv('glazing') === '313 Dark Bronze' ? '313 Dark Bronze' : 'Clear Anodized',
     doorGlassPrep: (cfg && cfg.isSwing) ? getSwingGlassPrep() : rv('glassPrep'),
-    transom: transom,
-    transomVerticals: parseInt(rv('transomV') || '0', 10) || 0,
-    ftthFt: transom ? (parseInt(fv('f_ftthft'), 10) || 0) : 0,
-    ftthIn: transom ? (parseInt(fv('f_ftthin'), 10) || 0) : 0,
-    ftth16: transom ? (parseInt(fv('f_ftth16'), 10) || 0) : 0,
-    stileWidth: (cfg && cfg.isSwing) ? 'medium' : rv('stileWidth'),
+    transom: (cfg && cfg.isStorefront) ? false : transom,
+    transomVerticals: (cfg && cfg.isStorefront) ? 0 : (parseInt(rv('transomV') || '0', 10) || 0),
+    ftthFt: (cfg && cfg.isStorefront) ? 0 : (transom ? (parseInt(fv('f_ftthft'), 10) || 0) : 0),
+    ftthIn: (cfg && cfg.isStorefront) ? 0 : (transom ? (parseInt(fv('f_ftthin'), 10) || 0) : 0),
+    ftth16: (cfg && cfg.isStorefront) ? 0 : (transom ? (parseInt(fv('f_ftth16'), 10) || 0) : 0),
+    stileWidth: (cfg && cfg.isStorefront) ? 'narrow' : ((cfg && cfg.isSwing) ? 'medium' : rv('stileWidth')),
     bottomRail: rv('bottomRail'),
-    muntin: rv('muntin'),
-    muntinAff: cfg && cfg.isSwing ? getSwingMuntinAffIn() : getSliderMuntinAffIn(),
-    muntinAff2: cfg && cfg.isSwing ? (parseInt(fv('muntin_aff2'), 10) || 0) : undefined,
+    muntin: (cfg && cfg.isStorefront) ? 'No Muntin' : rv('muntin'),
+    muntinAff: (cfg && cfg.isStorefront) ? 0 : (cfg && cfg.isSwing ? getSwingMuntinAffIn() : getSliderMuntinAffIn()),
+    muntinAff2: (cfg && cfg.isStorefront) ? undefined : (cfg && cfg.isSwing ? (parseInt(fv('muntin_aff2'), 10) || 0) : undefined),
+    sfHorizontals: (cfg && cfg.isStorefront) ? getStorefrontHorizontalCount() : 0,
+    sfHorizAffs: (cfg && cfg.isStorefront) ? getStorefrontHorizAffs() : [],
+    sfHeaderMatch: (cfg && cfg.isStorefront) ? storefrontHeaderMatchOn() : false,
+    sfHeaderKind: (cfg && cfg.isStorefront) ? (rv('sfHeaderKind') || 'swing') : '',
+    sfHeaderFt: (cfg && cfg.isStorefront) ? (parseInt(fv('sf_hdr_ft'), 10) || 7) : 0,
+    sfHeaderIn: (cfg && cfg.isStorefront) ? (Number.isFinite(parseInt(fv('sf_hdr_in'), 10)) ? parseInt(fv('sf_hdr_in'), 10) : 6) : 0,
+    sfHoriz1: (cfg && cfg.isStorefront) ? fv('sf_h1') : '',
+    sfHoriz2: (cfg && cfg.isStorefront) ? fv('sf_h2') : '',
+    sfHoriz3: (cfg && cfg.isStorefront) ? fv('sf_h3') : '',
     threshold: rv('threshold'),
     sensor: (cfg && cfg.isSwing) ? '' : (rv('sensor') === 'Standard Optex (incl.)' ? 'Standard (incl.)' : rv('sensor')),
     locking: cfg && cfg.isSwing ? (cfg.isBi ? 'Deadbolt + flushbolts' : cfg.isTwin ? 'Deadbolt ×2' : 'Adams Rite deadbolt') : rv('locking'),
@@ -7755,7 +8518,8 @@ function buildSheetOrder() {
     swingHandR: (cfg && cfg.isTwin) ? getTwinHand('right') : undefined,
     swingDirL: (cfg && cfg.isTwin) ? getTwinDir('left') : undefined,
     swingDirR: (cfg && cfg.isTwin) ? getTwinDir('right') : undefined,
-    slVerticals: (cfg && cfg.isSwing) ? getSwingSideliteVerticals() : 0,
+    slVerticals: (cfg && cfg.isStorefront) ? getStorefrontVerticals() : ((cfg && cfg.isSwing) ? getSwingSideliteVerticals() : 0),
+    sfVerticals: (cfg && cfg.isStorefront) ? getStorefrontVerticals() : 0,
     slVerticalsSide: (cfg && cfg.isSwing) ? slVertLegacySide() : 'both',
     swingCrashIn: rv('swingCrashIn') || '0',
     swingCrashOut: rv('swingCrashOut') || '0',
@@ -7783,7 +8547,7 @@ function buildSheetOrder() {
 function printQuoteDrawing() {
   const cfg = getConfig();
   if (!cfg) {
-    alert('Select a door configuration first.');
+    alert('Select a configuration first.');
     return;
   }
   const btn = document.getElementById('btn-print-drawing');
@@ -7834,7 +8598,17 @@ function showConf(data, pd) {
     [['Project',data.projectName||'—'],['Ship to',data.shipTo||'—'],['Timeline',data.shipDate||'Standard — 3–4 weeks'],['Qty',data.quantity+' opening(s)']]
     .map(([k,v])=>`<div class="conf-spec-row"><span class="ck">${k}</span><span class="cv">${v||'—'}</span></div>`).join('');
 
-  const doorSpecs = [
+  const isSf = !!(data.packageType && /storefront/i.test(data.packageType));
+  const doorSpecs = isSf ? [
+    ['Configuration',data.configuration],
+    ['Package',data.packageType],
+    ['Frame Finish',data.frameFinish],
+    ['Glass Prep', data.doorGlassPrep],
+    ['Extra verticals', data.sfVerticals ? String(data.sfVerticals) : 'None'],
+    ['Extra horizontals', data.muntin],
+    ['Glass (daylight + 5/8")', data.sfGlass || '—'],
+    ['Frame Width',data.frameWidth],['Frame Height',data.frameHeight],
+  ] : [
     ['Configuration',data.configuration],
     ...(data.packageType ? [['Package',data.packageType]] : []),
     ...(data.swingDirection && data.swingDirection !== 'N/A' ? [['Swing',data.swingDirection],['Operation',data.swingEnergy],['Door stop',data.swingStop],['Hardware',data.swingHardware],['Push plates',data.swingPlates],['Sidelites',data.swingSidelites]] : []),
@@ -7882,6 +8656,7 @@ function closeConf() {
 // ── Init ─────────────────────────────────────────────────────────────
 initCrashHeightSelects();
 initMuntinAffSelects();
+initStorefrontHorizSelects();
 const _startParams = new URLSearchParams(location.search);
 const _startType = _startParams.get('type');
 if (_startParams.get('sheet') === '1') {
@@ -7895,7 +8670,7 @@ if (_startParams.get('sheet') === '1') {
     // Confirmation-sheet render: no chooser, honor the URL type directly.
     const flow = document.getElementById('quote-flow');
     if (flow) flow.style.display = '';
-    setDoorType(_startType === 'swing' ? 'swing' : 'bi-part');
+    setDoorType((_startType === 'storefront' || _startType === 'lite' || _startType === 'lites') ? 'storefront' : (_startType === 'swing' ? 'swing' : 'bi-part'));
   } else if (restoringDup) {
     // Reopening a saved quote or duplicating an order — land on the form with
     // the restored cart, no chooser, and DON'T start a new project.
@@ -7903,6 +8678,8 @@ if (_startParams.get('sheet') === '1') {
   } else if (_startType === 'swing') {
     // Product-page "Get a quote" deep link → fresh new project.
     chooseDoorFamily('swing', true);
+  } else if (_startType === 'storefront' || _startType === 'lite' || _startType === 'lites') {
+    chooseDoorFamily('storefront', true);
   } else if (['slide', 'slide-single', 'single', 'bipart', 'bi-part'].includes(_startType)) {
     chooseDoorFamily('slide', true);
     if (_startType === 'single' || _startType === 'slide-single') setDoorType('single');

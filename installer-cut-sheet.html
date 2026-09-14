@@ -250,6 +250,7 @@ const CONFIGS = {
   'swing-single-lh': { label:'Single Swing — LH', code:'OHC LH',   isFBO:false, isBi:false, isSwing:true },
   'swing-pair':      { label:'Swing Pair',        code:'OHC Pair', isFBO:false, isBi:true,  isSwing:true },
   'swing-twin-center': { label:'Entry/Exit Swings', code:'OHC Twin', isFBO:false, isBi:false, isSwing:true, isTwin:true },
+  'storefront-fixed': { label:'Storefront / Matching Lites', code:'SF', isFBO:false, isBi:false, isStorefront:true },
 };
 
 function encodeOrder(obj) {
@@ -442,6 +443,7 @@ function loadSampleSwing(configKey, doorOverrides) {
   renderSheet();
 }
 function isSwingCfg(cfg) { return !!(cfg && cfg.isSwing); }
+function isStorefrontCfg(cfg) { return !!(cfg && cfg.isStorefront); }
 
 function stileLabel(d) {
   const cfg = CONFIGS[d.configKey];
@@ -493,6 +495,16 @@ function syncPlanNotes() {
   if (!el || !ORDER) return;
   const d = ORDER.door || {};
   const cfg = CONFIGS[d.configKey];
+  if (isStorefrontCfg(cfg)) {
+    el.innerHTML =
+      '<strong>NOTES:</strong><br>' +
+      '1. ALUMINUM STOREFRONT FRAME ONLY — NO DOOR LEAF, OPERATOR, OR HARDWARE.<br>' +
+      '2. ROUGH OPENING SHALL PROVIDE 1/4"[6] SHIM SPACE ON SIDES AND TOP OF PACKAGE.<br>' +
+      '3. GLASS BY OTHERS — CUT SIZE = DAYLIGHT + 5/8". FRAME PREPPED FOR THE GLASS THICKNESS SHOWN IN PARTICULARS.<br>' +
+      '4. SEE SPECIFICATIONS FOR ADDITIONAL INFORMATION.<br>' +
+      '5. GLASS SIZES, DIMENSIONS, AND ALL DETAILS ON THIS DRAWING ARE PRELIMINARY UNTIL THIS SHEET IS SIGNED AND RETURNED, OR A SIGNED ORDER CONFIRMATION IS ISSUED. DO NOT CUT GLASS FROM THIS DRAWING UNTIL CONFIRMED.';
+    return;
+  }
   const ansi = (isSwingCfg(cfg) && d.swingEnergy === 'low') ? 'ANSI/BHMA A156.19' : 'ANSI/BHMA A156.10';
   el.innerHTML =
     '<strong>NOTES:</strong><br>' +
@@ -676,6 +688,64 @@ function twinDoorIn(side) {
   if (ft) return ft * 12 + (parseInt(d.widthIn, 10) || 0);
   return 41;
 }
+function storefrontFaceIn(d) {
+  return (d && d.doorGlassPrep === '1"') ? 2 : 1.75;
+}
+function storefrontVerticals(d) {
+  if (!d) return 0;
+  const n = parseInt(d.sfVerticals != null ? d.sfVerticals : d.slVerticals, 10) || 0;
+  return (n >= 1 && n <= 6) ? n : 0;
+}
+function storefrontHeaderTopAff(d) {
+  const ft = parseInt(d && d.sfHeaderFt, 10);
+  const inches = parseInt(d && d.sfHeaderIn, 10);
+  const ftN = Number.isFinite(ft) ? ft : 7;
+  const inN = Number.isFinite(inches) ? inches : 6;
+  return ftN * 12 + inN;
+}
+function storefrontMatchHeaderAff(d) {
+  return Math.round((storefrontHeaderTopAff(d) - storefrontFaceIn(d) / 2) * 16) / 16;
+}
+function storefrontHorizAffs(d) {
+  if (!d) return [];
+  if (Array.isArray(d.sfHorizAffs) && d.sfHorizAffs.length) {
+    return [...new Set(d.sfHorizAffs.map(Number).filter(a => a > 0))].sort((a, b) => a - b);
+  }
+  const n = parseInt(d.sfHorizontals, 10) || 0;
+  const affs = [];
+  const match = !!d.sfHeaderMatch;
+  for (let i = 1; i <= n; i++) {
+    if (match && i === n) affs.push(storefrontMatchHeaderAff(d));
+    else {
+      const v = parseFloat(d['sfHoriz' + i]);
+      if (v > 0) affs.push(v);
+    }
+  }
+  if (!affs.length && d.muntin && !/no muntin/i.test(d.muntin)) {
+    return storefrontMuntAffs(d);
+  }
+  return [...new Set(affs.map(a => Math.round(a * 16) / 16))].filter(a => a > 0).sort((a, b) => a - b);
+}
+function storefrontParticulars(d, h) {
+  const nV = storefrontVerticals(d);
+  const face = storefrontFaceIn(d);
+  const affs = storefrontHorizAffs(d);
+  return [
+    ['Frame size', getOverallWidthStr() + ' W × ' + getOverallHeightStr() + ' H'],
+    ['Package', 'Aluminum frame only — no door or operator'],
+    ['Finish', d.frameFinish],
+    ['Frame profile', face === 2 ? '2" × 4-1/2" (1" glass)' : '1-3/4" × 4-1/2" (1/4" glass)'],
+    ['Glass prep', d.doorGlassPrep || '1/4"'],
+    ['Extra verticals', nV ? String(nV) : 'None'],
+    ['Bay width', formatInches(((getWidthIn() || 72) - face * (nV + 2)) / (nV + 1)) + '  ·  rec. max 4\'0"'],
+    ['Extra horizontals', affs.length ? (d.sfHeaderMatch
+      ? affs.slice(0, -1).map(a => formatInches(a) + ' AFF').concat([
+          formatInches(storefrontHeaderTopAff(d)) + ' top of bar = hdr top'
+        ]).join(' / ')
+      : affs.map(a => formatInches(a) + ' AFF').join(' / ')) : 'None'],
+    ['Glass', 'By others — cut = daylight + 5/8"'],
+  ];
+}
 function swingParticulars(d, h) {
   const high = d.swingEnergy !== 'low';
   const rows = [
@@ -724,6 +794,30 @@ function calcCutList() {
   const noThresh = /no threshold/i.test(d.threshold || '');
   const g = calcGlass();
   const frame = [], panels = [], notes = [];
+
+  if (cfg.isStorefront) {
+    const face = storefrontFaceIn(d);
+    const faceStr = face === 2 ? '2" × 4-1/2"' : '1-3/4" × 4-1/2"';
+    const nV = storefrontVerticals(d);
+    const affs = storefrontHorizAffs(d);
+    const cols = nV + 1;
+    const colDLO = (W - face * (nV + 2)) / cols;
+    frame.push({ part: 'Jamb / frame tube', profile: faceStr, qty: 2, len: frameH, note: 'Full frame height' });
+    frame.push({ part: 'Head', profile: faceStr, qty: 1, len: Math.max(0, W - face * 2), note: 'Between jambs' });
+    frame.push({ part: 'Sill', profile: faceStr, qty: 1, len: Math.max(0, W - face * 2), note: 'Between jambs' });
+    if (nV) frame.push({ part: 'Extra vertical', profile: faceStr, qty: nV, len: Math.max(0, frameH - face * 2), note: 'Equally spaced' });
+    affs.forEach(aff => {
+      frame.push({
+        part: 'Extra horizontal @ ' + formatInches(aff) + ' AFF',
+        profile: faceStr,
+        qty: cols,
+        len: Math.max(0, colDLO),
+        note: 'Between verticals, centerline AFF' + (d.sfHeaderMatch && Math.abs(aff - storefrontMatchHeaderAff(d)) < 0.06 ? ' — lines with door header' : '')
+      });
+    });
+    notes.push('Storefront frame only — same members as swing sidelites, not 2" door muntins. Glass cut = daylight + 5/8". Glass by others.');
+    return { isSwing: false, isStorefront: true, frame, panels, glass: glassSizeRows(), meta: { W, frameH, Hhdr, transomH: 0, railIn, stileW, finish, hasMuntin: false }, notes };
+  }
 
   if (isSwing) {
     frame.push({ part: 'Jamb / frame tube', profile: '1-3/4" × 4-1/2"', qty: 2, len: frameH, note: 'Full frame height' });
@@ -800,7 +894,9 @@ function renderCutList() {
     ph += '</tbody>';
     setHTML('cut-panels', ph);
   } else {
-    setHTML('cut-panels', '<tbody><tr><td style="border:1px solid #cbd5e1;padding:6px;">Swing leaf cuts pending production formulas — see notes.</td></tr></tbody>');
+    setHTML('cut-panels', cl.isStorefront
+      ? '<tbody><tr><td style="border:1px solid #cbd5e1;padding:6px;">No door leaf — storefront frame only.</td></tr></tbody>'
+      : '<tbody><tr><td style="border:1px solid #cbd5e1;padding:6px;">Swing leaf cuts pending production formulas — see notes.</td></tr></tbody>');
   }
 
   let gh = '<thead><tr><th>Lite</th><th class="num">Qty/opng</th><th class="num">Size</th><th class="num">Total (' + qty + ')</th></tr></thead><tbody>';
@@ -876,18 +972,20 @@ function renderSheet() {
   ];
   // Lead time is optional — omit the row entirely when blank.
   if (ORDER.leadTime && String(ORDER.leadTime).trim()) cells.push(['Lead time', ORDER.leadTime]);
-  const modelPrefix = isSwingCfg(cfg) ? 'DT-SWING' : 'DT-3000';
+  const modelPrefix = isStorefrontCfg(cfg) ? 'DT-SF' : (isSwingCfg(cfg) ? 'DT-SWING' : 'DT-3000');
   const modelStr = !cfg ? '—'
     : cfg.isTwin
       ? modelPrefix + '  ·  ' + cfg.label + ' · ' + swingDirLabel(d)
     : cfg.isSwing
       ? modelPrefix + '  ·  ' + cfg.label.replace(/\s*—\s*(RH|LH)\s*$/i, '') + ' · ' + swingDirLabel(d)
+    : cfg.isStorefront
+      ? modelPrefix + '  ·  ' + cfg.label + '  ·  frame only'
       : modelPrefix + '  ·  ' + cfg.label + ' (' + cfg.code + ')';
   document.getElementById('meta').innerHTML = cells.map(([k,v]) =>
     '<div class="cell"><div class="k">' + k + '</div><div class="v">' + dash(v) + '</div></div>').join('')
     + '<div class="cell wide"><div class="k">Model / config</div><div class="v">' + dash(modelStr) + '</div></div>';
 
-  fillTable('particulars', isSwingCfg(cfg) ? swingParticulars(d, h) : [
+  fillTable('particulars', isStorefrontCfg(cfg) ? storefrontParticulars(d, h) : isSwingCfg(cfg) ? swingParticulars(d, h) : [
     ['Frame size', getOverallWidthStr() + ' W × ' + getOverallHeightStr() + ' H'],
     ['Header height', getHeightStr()],
     ['Net slide (typ.)', getClearOpeningStr() || d.netOpening],
@@ -911,7 +1009,9 @@ function renderSheet() {
   if (glassNote) {
     glassNote.textContent = hideGlass
       ? 'Glass sizes provided separately. Glass by others. Do not cut until signed.'
-      : 'Glass by others. Do not cut until signed.';
+      : (isStorefrontCfg(cfg)
+        ? 'Cut size = daylight + 5/8". Glass by others. Do not cut until signed.'
+        : 'Glass by others. Do not cut until signed.');
   }
 
   fillTable('options-tbl', optionList());
@@ -934,7 +1034,7 @@ function drawAll() {
   drawDoor();
   drawPlanView();
   const cfg = ORDER && CONFIGS[ORDER.door.configKey];
-  if (isSwingCfg(cfg)) return;
+  if (isSwingCfg(cfg) || isStorefrontCfg(cfg)) return;
   centerSvgVertically(document.getElementById('door-svg'), 16);
   centerSvgVertically(document.getElementById('plan-svg'), 0);
 }
@@ -965,6 +1065,7 @@ function getWidthIn() {
   const ft = parseInt(d.widthFt);
   if (ft) return ft*12 + (parseInt(d.widthIn) || 0) + (parseInt(d.width16) || 0)/16;
   if (cfg && cfg.isSwing) return 42;
+  if (cfg && cfg.isStorefront) return 72;
   return cfg && cfg.isBi ? 120 : 84;
 }
 function getHeightIn() {
@@ -1146,6 +1247,7 @@ function calcGlass() {
   const W = getWidthIn();
   const Hhdr = getHeightIn();
   if (!cfg || W == null || Hhdr == null) return null;
+  if (cfg.isStorefront) return calcStorefrontGlass(d, W, Hhdr);
   if (cfg.isSwing) return calcSwingGlass(cfg, d, W, Hhdr);
   const isBi = cfg.isBi;
   const medium = d.stileWidth === 'medium';
@@ -1298,9 +1400,36 @@ function calcSwingGlass(cfg, d, W, Hhdr) {
 // Swing door-panel glass math is not shop-correct yet — Andrew will supply
 // the factory formula. Hide sizes so nobody cuts from this sheet.
 // Medium-stile slider formulas are also unfinished.
+function calcStorefrontGlass(d, W, H) {
+  const GLASS_ADD = 0.625;
+  const face = storefrontFaceIn(d);
+  const nV = storefrontVerticals(d);
+  const bars = storefrontHorizAffs(d);
+  const cols = nV + 1;
+  const colDLO = (W - face * (nV + 2)) / cols;
+  const top = H - face;
+  const rowsBot = [];
+  let cursor = face;
+  bars.forEach(a => {
+    const lo = a - face / 2, hi = a + face / 2;
+    if (lo > cursor + 0.01 && hi < top - 0.01) { rowsBot.push(lo - cursor); cursor = hi; }
+  });
+  rowsBot.push(Math.max(0, top - cursor));
+  const rows = rowsBot.slice().reverse();
+  const transoms = rows.map((h, i) => {
+    const n = rows.length;
+    const suffix = n === 1 ? '' : n === 2 ? (i === 0 ? ' top' : ' bot') : ' row ' + (i + 1);
+    return { label: 'Lite' + suffix, qty: cols, w: colDLO + GLASS_ADD, h: h + GLASS_ADD };
+  });
+  return { liteW: 0, topH: 0, botH: 0, hasMuntin: false, panels: 0, fixedLbl: 'lite', isBi: false, transoms, storefront: true };
+}
+// Swing door-panel glass math is not shop-correct yet — Andrew will supply
+// the factory formula. Hide sizes so nobody cuts from this sheet.
+// Medium-stile slider formulas are also unfinished.
 function glassSizesHidden() {
   const d = ORDER && ORDER.door;
   if (!d) return false;
+  if (isStorefrontCfg(CONFIGS[d.configKey]) || d.typeCategory === 'storefront' || d.configKey === 'storefront-fixed') return false;
   return isSwingCfg(CONFIGS[d.configKey]) || d.stileWidth === 'medium';
 }
 
@@ -1312,6 +1441,10 @@ function glassSizeRows() {
     return [label, '(Qty ' + qty + ')  ' + glassPair(w, h)];
   }
   const rows = [];
+  if (g.storefront) {
+    (g.transoms || []).forEach(t => rows.push(row(t.label, t.qty, t.w, t.h)));
+    return rows.length ? rows : [['Glass', '—']];
+  }
   if (g.twin && g.doors) {
     g.doors.forEach(dr => {
       if (g.hasMuntin && Math.abs(dr.topH - dr.botH) > 0.01) {
@@ -2301,6 +2434,153 @@ function drawSwingPlan(svg) {
 }
 
 
+function storefrontMuntAffs(d) {
+  if (!d || !d.muntin || /no muntin/i.test(d.muntin)) return [];
+  const a = parseInt(d.muntinAff, 10) || 42;
+  if (/additional/i.test(d.muntin)) {
+    const b = parseInt(d.muntinAff2, 10) || 24;
+    return [a, b];
+  }
+  return [a];
+}
+function drawStorefrontElevation(svg, vW, vH) {
+  const d = ORDER.door;
+  const glaze = getGlazeFill();
+  const frame = getFrameColor();
+  const realW = getWidthIn() || 72;
+  const realFrameH = getHeightIn() || 90;
+  const realTotalH = realFrameH;
+  const faceIn = storefrontFaceIn(d);
+  const numV = storefrontVerticals(d);
+  const muntAffs = storefrontHorizAffs(d);
+  const matchAff = d.sfHeaderMatch ? storefrontMatchHeaderAff(d) : null;
+  const hdrTopAff = d.sfHeaderMatch ? storefrontHeaderTopAff(d) : null;
+  const leftDims = [];
+  muntAffs.forEach(aff => {
+    if (matchAff != null && Math.abs(aff - matchAff) < 0.06) return;
+    leftDims.push({ aff, label: formatInches(aff) + ' AFF' });
+  });
+  if (hdrTopAff != null) leftDims.push({ aff: hdrTopAff, label: formatInches(hdrTopAff) + ' hdr top' });
+  const longest = leftDims.reduce((n, dim) => Math.max(n, dim.label.length), 0);
+  const mL = leftDims.length ? Math.max(88, 36 + longest * 6) : 52;
+  const mR = 56;
+  const mT = 28;
+  const mB = 52;
+  const availW = vW - mL - mR;
+  const availH = vH - mT - mB;
+  const sc = Math.min(availW / realW, availH / realTotalH);
+  const dW = realW * sc, dH = realTotalH * sc;
+  const dX = mL + (availW - dW) / 2;
+  const dY = mT + (availH - dH) / 2;
+  const mem = Math.max(2, sc * faceIn);
+  function r(x, y, w, h, fill) {
+    svgEl(svg, 'rect', { x, y, width: Math.max(w, 0), height: Math.max(h, 0), fill: fill || 'none' });
+  }
+  function t(x, y, str, size, fill, anchor, weight) {
+    return svgEl(svg, 'text', { x, y, 'font-size': size || 12, fill: fill || '#111', 'text-anchor': anchor || 'middle', 'font-weight': weight || 'normal', 'font-family': 'Arial,sans-serif' }, str);
+  }
+  function dimLine(x1, y1, x2, y2, lbl, horiz) {
+    const aw = 4, off = 5;
+    svgEl(svg, 'line', { x1, y1, x2, y2, stroke: '#1B4F8A', 'stroke-width': 0.7 });
+    if (horiz) {
+      svgEl(svg, 'line', { x1, y1: y1 - off, x2: x1, y2: y1 + off, stroke: '#1B4F8A', 'stroke-width': 0.7 });
+      svgEl(svg, 'line', { x1: x2, y1: y1 - off, x2, y2: y1 + off, stroke: '#1B4F8A', 'stroke-width': 0.7 });
+      svgEl(svg, 'path', { d: `M${x1},${y1}l${aw},-3l0,6Z`, fill: '#1B4F8A' });
+      svgEl(svg, 'path', { d: `M${x2},${y1}l${-aw},-3l0,6Z`, fill: '#1B4F8A' });
+      t((x1 + x2) / 2, y1 + 16, lbl, 12, '#1B4F8A', 'middle', '700');
+    } else {
+      svgEl(svg, 'line', { x1: x1 - off, y1, x2: x1 + off, y2: y1, stroke: '#1B4F8A', 'stroke-width': 0.7 });
+      svgEl(svg, 'line', { x1: x1 - off, y1: y2, x2: x1 + off, y2, stroke: '#1B4F8A', 'stroke-width': 0.7 });
+      svgEl(svg, 'path', { d: `M${x1},${y1}l-3,${aw}l6,0Z`, fill: '#1B4F8A' });
+      svgEl(svg, 'path', { d: `M${x1},${y2}l-3,${-aw}l6,0Z`, fill: '#1B4F8A' });
+      const el = t(x1 + 16, (y1 + y2) / 2, lbl, 12, '#1B4F8A', 'middle', '700');
+      el.setAttribute('transform', `rotate(-90,${x1 + 16},${(y1 + y2) / 2})`);
+    }
+  }
+  const gx = dX + mem, gw = Math.max(0, dW - mem * 2);
+  const vertXs = [];
+  for (let i = 1; i <= numV; i++) vertXs.push(gx + gw * i / (numV + 1));
+  const liteEdges = [gx, ...vertXs.flatMap(vx => [vx - mem / 2, vx + mem / 2]), gx + gw];
+  function fillBays(y, h) {
+    for (let i = 0; i < liteEdges.length - 1; i += 2) {
+      const lx = liteEdges[i], lw = liteEdges[i + 1] - liteEdges[i];
+      if (lw > 1 && h > 1) r(lx, y, lw, h, glaze.fill);
+    }
+  }
+  const bayY = dY + mem;
+  const bayH = Math.max(0, dH - mem * 2);
+  fillBays(bayY, bayH);
+  r(dX, dY, dW, mem, frame);
+  r(dX, dY + dH - mem, dW, mem, frame);
+  r(dX, dY, mem, dH, frame);
+  r(dX + dW - mem, dY, mem, dH, frame);
+  vertXs.forEach(vx => r(vx - mem / 2, bayY, mem, bayH, frame));
+  muntAffs.forEach(aff => {
+    const hy = Math.max(bayY, Math.min(dY + dH - mem * 2, dY + dH - aff * sc - mem / 2));
+    for (let i = 0; i < liteEdges.length - 1; i += 2) {
+      const lx = liteEdges[i], lw = liteEdges[i + 1] - liteEdges[i];
+      if (lw > 2) r(lx, hy, lw, mem, frame);
+    }
+  });
+  dimLine(dX, dY + dH + 22, dX + dW, dY + dH + 22, getWidthStr(), true);
+  dimLine(dX + dW + 18, dY, dX + dW + 18, dY + dH, getHeightStr(), false);
+  const lx = dX - 22;
+  if (hdrTopAff != null) {
+    const yTop = dY + dH - hdrTopAff * sc;
+    svgEl(svg, 'line', {
+      x1: dX, y1: yTop, x2: dX + dW, y2: yTop,
+      stroke: '#1B4F8A', 'stroke-width': 0.7, 'stroke-dasharray': '3 2'
+    });
+  }
+  leftDims.forEach(dim => {
+    const yy = dY + dH - dim.aff * sc;
+    svgEl(svg, 'line', { x1: lx, y1: yy, x2: lx, y2: dY + dH, stroke: '#1B4F8A', 'stroke-width': 0.7 });
+    svgEl(svg, 'line', { x1: lx - 5, y1: yy, x2: lx + 5, y2: yy, stroke: '#1B4F8A', 'stroke-width': 0.7 });
+    t(lx - 7, yy + 3, dim.label, 9, '#1B4F8A', 'end', '700');
+  });
+  _doorScale = { dX, dW, sc, vW };
+}
+function drawStorefrontPlan(svg, vW) {
+  if (!_doorScale) return;
+  const d = ORDER.door;
+  const { dX, dW, sc } = _doorScale;
+  const frame = getFrameColor();
+  const glaze = getGlazeFill();
+  const faceIn = storefrontFaceIn(d);
+  const faceW = Math.max(2, sc * faceIn);
+  const thick = Math.max(3, sc * 4.5);
+  const glassTh = Math.max(1, sc * 0.25);
+  const numV = storefrontVerticals(d);
+  const y = 28;
+  const frameY = y + 24;
+  const vH = Math.ceil(frameY + thick + 48);
+  svg.setAttribute('viewBox', `0 0 ${vW} ${vH}`);
+  function t(x, yy, str, size, fill, anchor, weight) {
+    svgEl(svg, 'text', { x, y: yy, 'font-size': size || 11, fill: fill || '#111', 'text-anchor': anchor || 'middle', 'font-weight': weight || 'normal', 'font-family': 'Arial,sans-serif' }, str);
+  }
+  svgEl(svg, 'rect', { x: dX, y: frameY, width: dW, height: thick, fill: frame, stroke: '#888', 'stroke-width': 0.7 });
+  const gx = dX + faceW, gw = Math.max(0, dW - faceW * 2);
+  const vertXs = [];
+  for (let i = 1; i <= numV; i++) vertXs.push(gx + gw * i / (numV + 1));
+  const edges = [gx, ...vertXs.flatMap(vx => [vx - faceW / 2, vx + faceW / 2]), gx + gw];
+  for (let i = 0; i < edges.length - 1; i += 2) {
+    const lx = edges[i], lw = edges[i + 1] - edges[i];
+    if (lw > 1) {
+      svgEl(svg, 'rect', {
+        x: lx + 1, y: frameY + (thick - glassTh) / 2, width: Math.max(0, lw - 2), height: glassTh,
+        fill: glaze.fill, stroke: glaze.stroke, 'stroke-width': 0.35
+      });
+    }
+  }
+  svgEl(svg, 'rect', { x: dX, y: frameY, width: faceW, height: thick, fill: frame, stroke: '#777', 'stroke-width': 0.6 });
+  svgEl(svg, 'rect', { x: dX + dW - faceW, y: frameY, width: faceW, height: thick, fill: frame, stroke: '#777', 'stroke-width': 0.6 });
+  vertXs.forEach(vx => {
+    svgEl(svg, 'rect', { x: vx - faceW / 2, y: frameY, width: faceW, height: thick, fill: frame, stroke: '#777', 'stroke-width': 0.6 });
+  });
+  t(dX + dW / 2, frameY - 8, 'EXTERIOR', 10, '#1B4F8A', 'middle', '700');
+  t(dX + dW / 2, frameY + thick + 14, 'INTERIOR', 10, '#1B4F8A', 'middle', '700');
+}
+
 function drawDoor() {
   const svg = document.getElementById('door-svg');
   if (!svg) return;
@@ -2311,6 +2591,7 @@ function drawDoor() {
   const cfg = CONFIGS[d.configKey];
   if (!cfg) return;
   if (cfg.isSwing) { drawSwingElevation(svg, vW, vH); return; }
+  if (cfg.isStorefront) { drawStorefrontElevation(svg, vW, vH); return; }
 
   const glaze = getGlazeFill();
   const frame = getFrameColor();
@@ -2636,6 +2917,7 @@ function drawPlanView() {
   const cfg = CONFIGS[d.configKey];
   if (!cfg || !_doorScale) return;
   if (cfg.isSwing) { drawSwingPlan(svg, vW, vH); return; }
+  if (cfg.isStorefront) { drawStorefrontPlan(svg, vW, vH); return; }
 
   const frame = getFrameColor();
   const panelFill = getPanelFill();
