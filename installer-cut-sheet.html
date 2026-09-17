@@ -828,13 +828,16 @@ function calcCutList() {
   }
 
   // Slider frame extrusions
-  frame.push({ part: 'Jamb tube', profile: '1-3/4" × 4-1/2"', qty: 2, len: frameH, note: 'Full frame height' + (d.transom ? ' (incl. transom)' : '') });
-  frame.push({ part: 'Header / operator housing', profile: '8" operator beam', qty: 1, len: W - 3.5, note: 'Between jambs' });
-  if (!noThresh) frame.push({ part: 'Threshold', profile: d.threshold || '1/2"', qty: 1, len: W - 3.5, note: '' });
+  const slFace = sliderFrameFaceIn(d);
+  const slFaceStr = slFace === 2 ? '2" × 4-1/2"' : '1-3/4" × 4-1/2"';
+  frame.push({ part: 'Jamb tube', profile: slFaceStr, qty: 2, len: frameH, note: 'Full frame height' + (d.transom ? ' (incl. transom)' : '') + (slFace === 2 ? ' — 1" transom glass' : '') });
+  frame.push({ part: 'Header / operator housing', profile: '8" operator beam', qty: 1, len: W - slFace * 2, note: 'Between jambs' });
+  if (!noThresh) frame.push({ part: 'Threshold', profile: d.threshold || '1/2"', qty: 1, len: W - slFace * 2, note: '' });
   if (d.transom && transomH > 0) {
-    frame.push({ part: 'Transom divider rail', profile: 'Head member', qty: 1, len: W - 3.5, note: 'Splits transom from header' });
+    frame.push({ part: 'Transom divider rail', profile: slFaceStr, qty: 1, len: W - slFace * 2, note: 'Splits transom from header' });
     const verts = parseInt(d.transomVerticals, 10) || 0;
-    if (verts > 0) frame.push({ part: 'Transom vertical mullion', profile: '1-3/4"', qty: verts, len: transomH - 2, note: 'Equal transom lites' });
+    const nMull = cfg.isBi ? verts : (verts + 1);
+    if (nMull > 0) frame.push({ part: 'Transom vertical mullion', profile: slFaceStr, qty: nMull, len: transomH - slFace, note: cfg.isBi ? 'Equal transom lites' : 'Center split' + (verts ? ' + extras' : ' (incl.)') });
   }
 
   // Leaves
@@ -1137,7 +1140,9 @@ function calcClearOpeningIn() {
   const cfg = CONFIGS[d.configKey];
   const wIn = getWidthIn();
   if (!cfg || wIn === null) return null;
-  return cfg.isBi ? 36 + (wIn - 96) * 0.5 : 33 + (wIn - 78) * 0.5;
+  const baseW = cfg.isBi ? 96 : 78;
+  const baseOpen = cfg.isBi ? 36 : 33;
+  return baseOpen + Math.floor(wIn - baseW) * 0.5;
 }
 function getClearOpeningStr() {
   const cfg = CONFIGS[ORDER.door.configKey];
@@ -1163,6 +1168,12 @@ function getClearOpeningStr() {
 }
 function swingFaceIn() {
   return (ORDER.door.doorGlassPrep === '1"') ? 2 : 1.75;
+}
+function sliderFrameFaceIn(d) {
+  d = d || (ORDER && ORDER.door) || {};
+  const transom = !!(d.transom === true || d.transom === 'yes');
+  const inch = d.doorGlassPrep === '1"' || d.glassPrep === '1"' || d.transomGlassPrep === '1"';
+  return (transom && inch) ? 2 : 1.75;
 }
 function swingFrameProfileStr() {
   return swingFaceIn() === 2 ? '2" × 4-1/2" (1" glass)' : '1-3/4" × 4-1/2" (std)';
@@ -1253,13 +1264,15 @@ function calcGlass() {
   const medium = d.stileWidth === 'medium';
   const hasMuntin = !!(d.muntin && !/no muntin/i.test(d.muntin));
   const railDeduct = d.bottomRail === '10in' ? 6 : d.bottomRail === '6in' ? 2 : 0;
+  const face = sliderFrameFaceIn(d);
+  const GLASS_ADD = 0.625;
 
   let liteW;
   if (isBi) {
-    liteW = (W - 17.25) / 4 - 0.3125;
+    liteW = (W - 17.25 - 2 * (face - 1.75)) / 4 - 0.3125;
     if (medium) liteW -= 3;
   } else {
-    liteW = W / 2 - (medium ? 8.5 : 5.5);
+    liteW = W / 2 - ((medium ? 6.75 : 3.75) + face);
   }
 
   // Height from the 4" / 2" muntin sheets. Medium stile changes width only.
@@ -1290,18 +1303,27 @@ function calcGlass() {
     const tH = (ftth - Hhdr) - 2;
     const verts = parseInt(d.transomVerticals, 10) || 0;
     if (tH > 0) {
-      if (verts <= 0) {
-        out.transoms.push({ label: 'Transom (1 lite)', qty: 1, w: W - 2.875, h: tH });
+      if (!isBi) {
+        const lites = 2 + verts;
+        out.transoms.push({
+          label: lites === 2 ? 'Transom' : 'Transom (' + lites + ' lites)',
+          qty: lites,
+          w: (W - face * (lites + 1)) / lites + GLASS_ADD,
+          h: tH
+        });
+      } else if (verts <= 0) {
+        out.transoms.push({ label: 'Transom (1 lite)', qty: 1, w: W - 2 * face + GLASS_ADD, h: tH });
       } else if (verts === 1) {
-        out.transoms.push({ label: 'Transom (2 lites)', qty: 2, w: W / 2 - 2, h: tH });
-      } else if (isBi) {
-        const railSO = (W - 17.25) / 4 + 0.0625;
-        const sideW = railSO + 3.25;
-        const centerW = (W - 7) - 2 * (railSO + 2.625) + 0.625;
+        out.transoms.push({ label: 'Transom (2 lites)', qty: 2, w: (W - 3 * face) / 2 + GLASS_ADD, h: tH });
+      } else {
+        // 2 verticals: mullions land at the SO|SX door junctions (quarter points
+        // of the daylight), so the side lites are narrower than the center lite.
+        // Face-aware so the widths still close on a 2" (1" glass) frame.
+        const panIn = (W - 2 * face) / 4;
+        const sideW = (panIn - face / 2) + GLASS_ADD;
+        const centerW = (2 * panIn - face) + GLASS_ADD;
         out.transoms.push({ label: 'Transom (sides)', qty: 2, w: sideW, h: tH });
         out.transoms.push({ label: 'Transom (center)', qty: 1, w: centerW, h: tH });
-      } else {
-        out.transoms.push({ label: 'Transom (3 lites)', qty: 3, w: (W - 5.125) / 3, h: tH });
       }
     }
   }
@@ -2621,7 +2643,7 @@ function drawDoor() {
   const dY  = mT + (availH - dH) / 2;
   const widthDimY = dY + dH + widthDimGap;
 
-  const jambW   = Math.max(2, sc * 1.75);
+  const jambW   = Math.max(2, sc * sliderFrameFaceIn(d));
   const railIn  = d.bottomRail === '10in' ? 10 : d.bottomRail === '6in' ? 6 : 4;
   const stileW  = getStileW(sc);
   const topRH   = Math.max(3, sc * 4.0);
@@ -2700,14 +2722,15 @@ function drawDoor() {
     const glassStopH = Math.max(1.5, sc * 1);
     const tGlassH = transomH - frameT - glassStopH;
     const _pX = dX + frameT, _pW = dW - frameT * 2;
+    const nMull = isBi ? numV : (numV + 1);
     const vertXs = [];
-    if (numV > 0) {
+    if (nMull > 0) {
       if (numV === 2 && isBi) {
         const gap = 3, panW2 = (_pW - gap * 3) / 4;
         vertXs.push(_pX + panW2 + gap / 2);
         vertXs.push(_pX + (panW2 + gap) * 3 - gap / 2);
       } else {
-        for (let i = 1; i <= numV; i++) vertXs.push(tx + tw * i / (numV + 1));
+        for (let i = 1; i <= nMull; i++) vertXs.push(tx + tw * i / (nMull + 1));
       }
     }
     const liteEdges = [tx, ...vertXs.flatMap(vx => [vx - frameT/2, vx + frameT/2]), tx + tw];
@@ -2929,7 +2952,7 @@ function drawPlanView() {
   const sc = _doorScale.sc;
   const frameW = _doorScale.dW;
   const frameX = _doorScale.dX + (vW - _doorScale.vW) / 2;
-  const jambW  = Math.max(2, sc * 1.75);
+  const jambW  = Math.max(2, sc * sliderFrameFaceIn(ORDER.door));
   const openX  = frameX + jambW;
   const openW  = frameW - jambW * 2;
   const titleH = 30, stateGap = 22, openDimGap = 22, footGap = 22;

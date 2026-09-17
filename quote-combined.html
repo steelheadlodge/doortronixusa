@@ -1306,13 +1306,13 @@ body.sheet-mode #plan-svg { background:#fff; }
           <div class="field full">
             <label>Push Plates (low energy)</label>
             <div class="chip-group">
-              <input type="radio" name="swingPlate" id="pp_45" value="4.5sq" checked>
+              <input type="radio" name="swingPlate" id="pp_45" value="4.5sq">
               <label for="pp_45">4.5" square — $80 ea</label>
               <input type="radio" name="swingPlate" id="pp_vest" value="vestibule">
               <label for="pp_vest">Vestibule two-button — $160 ea</label>
               <input type="radio" name="swingPlate" id="pp_jamb" value="jamb">
               <label for="pp_jamb">Jamb mounted — $80 ea</label>
-              <input type="radio" name="swingPlate" id="pp_none" value="none">
+              <input type="radio" name="swingPlate" id="pp_none" value="none" checked>
               <label for="pp_none">None / by others</label>
             </div>
             <span class="hint" id="swing-plate-hint">Choose how many plates. Typical is 2 (interior + exterior). Twin often uses 4.</span>
@@ -1415,7 +1415,7 @@ body.sheet-mode #plan-svg { background:#fff; }
             <input type="radio" name="transomGlassPrep" id="tgp_1in" value='1"'>
             <label for="tgp_1in">1"</label>
           </div>
-          <span class="hint">Transom glass prep is 1/4" or 1" only. 1" glass changes the jamb from 1-3/4" (std) to 2".</span>
+          <span class="hint">Transom glass prep is 1/4" or 1" only. 1" glass in the transom changes the jamb from 1-3/4" to 2" × 4-1/2" and the door lite widths change with the fatter jambs.</span>
         </div>
 
         <div class="field full" id="transom-verticals-field" style="display:none;">
@@ -2320,6 +2320,7 @@ let _twinStopTouched = { left: false, right: false };
 let _twinRailsTouched = { left: false, right: false };
 let _lastSwingEnergy = '';
 let _plateQtyTouched = false;
+let _plateKindTouched = false;
 let _muntinAffTouched = false;
 let _muntinAff2Touched = false;
 let _sfVertTouched = false;
@@ -2579,6 +2580,126 @@ function applySuggestedSfVerticals() {
   setSfVertRadio(suggestedSfVerticals(getWidthIn() || 72));
 }
 
+function checkRadioId(id) {
+  const el = document.getElementById(id);
+  if (el) el.checked = true;
+}
+
+// Reset size, hardware, and option radios for the family the customer just
+// picked. Switching Slide ↔ Swing ↔ Storefront (or Operator) should not keep
+// leftover muntins, plates, sidelites, add-ons, or widths from the last family.
+function applyFamilyDefaults(type) {
+  checkRadioId('gl_clear');
+  checkRadioId('tr_no');
+  checkRadioId('gp_quarter');
+  checkRadioId('th_std');
+  checkRadioId('sn_std');
+  checkRadioId('sl_none');
+  checkRadioId('cbi_0');
+  checkRadioId('cbo_0');
+  checkRadioId('pp_none');
+  checkRadioId('ppw_wire');
+  checkRadioId('pl_logo');
+  checkRadioId('pf_ss');
+  checkRadioId('pull_10');
+  checkRadioId('pb_cut');
+  checkRadioId('ap_bea');
+  checkRadioId('hs_no');
+  checkRadioId('sd_out');
+  checkRadioId('sh_rh');
+  checkRadioId('se_high');
+  checkRadioId('ss_both');
+  checkRadioId('st_hard');
+  checkRadioId('gr_both');
+
+  const hft = document.getElementById('f_hft'); if (hft) hft.value = '7';
+  const hin = document.getElementById('f_hin'); if (hin) hin.value = '6';
+  const h16 = document.getElementById('f_h16'); if (h16) h16.value = '0';
+
+  _muntinAffTouched = false;
+  _muntinAff2Touched = false;
+  _plateQtyTouched = false;
+  _plateKindTouched = false;
+  _swingStopTouched = false;
+  _swingRailsTouched = false;
+  _twinStopTouched = { left: false, right: false };
+  _twinRailsTouched = { left: false, right: false };
+  _lastSwingEnergy = '';
+  _slVertTouched = { left: false, right: false, center: false };
+  _sfVertTouched = false;
+  _sfHdrMatchOn = false;
+  _sfHdrSavedAff = 42;
+  setSlVertRadio('left', 0);
+  setSlVertRadio('right', 0);
+  setSlVertRadio('center', 0);
+
+  const pq = document.getElementById('swing_plate_qty');
+  if (pq) pq.value = '2';
+
+  _checkedAddons.clear();
+  document.querySelectorAll('.addon-item.checked').forEach(el => el.classList.remove('checked'));
+  if (type === 'bi-part' || type === 'single') ensureDefaultSwitch();
+
+  if (type === 'bi-part') {
+    checkRadioId('cfg_fbo_bi');
+    checkRadioId('sw_narrow');
+    checkRadioId('br_std');
+    checkRadioId('mt_std');
+    setFrameWidthIn(120);
+  } else if (type === 'single') {
+    checkRadioId('cfg_fbo_ss_rh');
+    checkRadioId('sw_narrow');
+    checkRadioId('br_std');
+    checkRadioId('mt_std');
+    setFrameWidthIn(84);
+  } else if (type === 'storefront') {
+    checkRadioId('cfg_storefront');
+    checkRadioId('mt_none');
+    const sfh1 = document.getElementById('sfh_1'); if (sfh1) sfh1.checked = true;
+    const hdrM = document.getElementById('sf_hdr_match'); if (hdrM) hdrM.checked = false;
+    const hdrFt = document.getElementById('sf_hdr_ft'); if (hdrFt) hdrFt.value = '7';
+    const hdrIn = document.getElementById('sf_hdr_in'); if (hdrIn) hdrIn.value = '6';
+    fillStorefrontHorizSelect(document.getElementById('sf_h1'), 42);
+    fillStorefrontHorizSelect(document.getElementById('sf_h2'), 60);
+    fillStorefrontHorizSelect(document.getElementById('sf_h3'), 84);
+    setFrameWidthIn(72);
+    applySuggestedSfVerticals();
+  } else {
+    checkRadioId('cfg_swing_single');
+    checkRadioId('sw_medium');
+    checkRadioId('br_6');
+    checkRadioId('mt_std');
+    applySwingSizeDefaults();
+  }
+}
+
+function applyOperatorDefaults() {
+  checkRadioId('op_e_low');
+  checkRadioId('op_c_single');
+  checkRadioId('op_h_rh');
+  checkRadioId('op_a_surf_push');
+  checkRadioId('op_f_clear');
+  checkRadioId('op_sw_none');
+  checkRadioId('op_kit_none');
+  checkRadioId('op_rail_both');
+  checkRadioId('op_ap_bea');
+  checkRadioId('op_sc_both');
+  checkRadioId('op_hs_no');
+  document.querySelectorAll('input[name="opPlateStyle"], input[name="opPlateStyleB"]').forEach(el => { el.checked = false; });
+  OP_OPT_ORDER.forEach(code => {
+    const el = document.getElementById('op_opt_' + code);
+    if (el) el.checked = false;
+  });
+  OP_ACC.forEach(a => {
+    const el = document.getElementById(a.id);
+    if (el) el.checked = false;
+    const sel = document.getElementById(a.id + '_qty');
+    if (sel) sel.value = '1';
+  });
+  const hEl = document.getElementById('op_header_in');
+  if (hEl) hEl.value = String(OP_HEADER_SINGLE_DEFAULT);
+}
+
 function setDoorType(type) {
   if (_orderKind === 'operator') setOperatorMode(false);
   _currentDoorType = type;
@@ -2607,38 +2728,7 @@ function setDoorType(type) {
     document.title = 'Sliding Door Quote — Doortronix USA';
     if (intro) intro.innerHTML = 'Configure your door below to see live contractor pricing. Select Bi-Part or Single Slide — then add multiple doors to quote an entire project in one submission.<br>Our team in Malakoff, Texas will confirm your quote within <strong>24 hours</strong>.';
   }
-  if (type === 'bi-part') {
-    document.getElementById('cfg_fbo_bi').checked = true;
-    const sn = document.getElementById('sn_std'); if (sn) sn.checked = true;
-    const sw = document.getElementById('sw_narrow'); if (sw) sw.checked = true;
-    const br = document.getElementById('br_std'); if (br) br.checked = true;
-  } else if (type === 'single') {
-    document.getElementById('cfg_fbo_ss_rh').checked = true;
-    const sn = document.getElementById('sn_std'); if (sn) sn.checked = true;
-    const sw = document.getElementById('sw_narrow'); if (sw) sw.checked = true;
-    const br = document.getElementById('br_std'); if (br) br.checked = true;
-  } else if (type === 'storefront') {
-    const sf = document.getElementById('cfg_storefront'); if (sf) sf.checked = true;
-    const q = document.getElementById('gp_quarter'); if (q) q.checked = true;
-    const mt = document.getElementById('mt_none'); if (mt) mt.checked = true;
-    const tr = document.getElementById('tr_no'); if (tr) tr.checked = true;
-    const sfh1 = document.getElementById('sfh_1'); if (sfh1) sfh1.checked = true;
-    const hdrM = document.getElementById('sf_hdr_match'); if (hdrM) hdrM.checked = false;
-    fillStorefrontHorizSelect(document.getElementById('sf_h1'), 42);
-    setFrameWidthIn(72);
-    const hft = document.getElementById('f_hft'); if (hft) hft.value = '7';
-    const hin = document.getElementById('f_hin'); if (hin) hin.value = '6';
-    const h16 = document.getElementById('f_h16'); if (h16) h16.value = '0';
-    _sfVertTouched = false;
-    _sfHdrMatchOn = false;
-    _sfHdrSavedAff = 42;
-    applySuggestedSfVerticals();
-  } else {
-    document.getElementById('cfg_swing_single').checked = true;
-    const med = document.getElementById('sw_medium'); if (med) med.checked = true;
-    const hi = document.getElementById('se_high'); if (hi) hi.checked = true;
-    applySwingSizeDefaults();
-  }
+  applyFamilyDefaults(type);
   _muntinAffTouched = false; _muntinAff2Touched = false;
   const mAff = document.getElementById('muntin_aff');
   if (mAff && mAff.options.length) mAff.value = String(defaultMuntinAff());
@@ -3176,6 +3266,7 @@ function setOperatorMode(on) {
     if (title) title.textContent = 'Swing Operator Quote';
     document.title = 'Swing Operator Quote — Doortronix USA';
     if (intro) intro.innerHTML = 'Configure an automatic swing operator supplied on its own — no door or frame. Order it by itself, or add it to a project alongside other items.<br>Our team in Malakoff, Texas will confirm your quote within <strong>24 hours</strong>.';
+    applyOperatorDefaults();
     updateOperator();
   }
   syncProjectScopeCopy();
@@ -3744,6 +3835,7 @@ function syncSwingUi() {
   if (lowNote) lowNote.style.display = swing && !high ? '' : 'none';
   const plates = document.getElementById('swing-plates-block');
   if (plates) plates.style.display = swing && !high ? '' : 'none';
+  applyDefaultSwingPlates();
   const plateOn = rv('swingPlate') !== 'none';
   const logoF = document.getElementById('swing-plate-logo-field');
   const finF = document.getElementById('swing-plate-finish-field');
@@ -3757,8 +3849,8 @@ function syncSwingUi() {
   const plateHint = document.getElementById('swing-plate-hint');
   if (plateHint && swing && !high) {
     plateHint.textContent = isSwingTwin()
-      ? 'Choose how many plates. Typical twin is 4 (a pair at each door). Vestibule two-button is still one plate.'
-      : 'Choose how many plates. Typical is 2 (interior + exterior). Vestibule two-button is still one plate.';
+      ? 'Not included unless you add them. Typical twin is 4 (a pair at each door). Vestibule two-button is still one plate.'
+      : 'Not included unless you add them. Typical is 2 (interior + exterior). Vestibule two-button is still one plate.';
   }
   const rfHint = document.getElementById('swing-plate-wireless-hint');
   if (rfHint && swing && !high && plateOn) {
@@ -3970,17 +4062,19 @@ function syncSwingUi() {
       ? 'Glass <strong>not included</strong>. Cut size is daylight + 5/8" on width and height. Prep is <strong>1/4" or 1" only</strong>. 1" glass is +$150 and changes the jamb from 1-3/4" to 2".'
       : swing
       ? 'Glass <strong>not included</strong>. One prep for the door, sidelites, and transom: <strong>1/4" or 1" only</strong>. 1" glass is +$150 and changes the jamb from 1-3/4" to 2".'
-      : 'Glass <strong>not included</strong> — frame is prepped for your specified glass thickness. Glass supplied &amp; installed by others.';
+      : 'Glass <strong>not included</strong> — frame is prepped for your specified glass thickness. Glass supplied &amp; installed by others. Door 1" glass stays on 1-3/4" × 4-1/2" jambs. 1" glass <em>with a transom</em> changes the jamb to 2" × 4-1/2" and the door lite widths change with it.';
   }
   const jambLive = document.getElementById('swing-jamb-live');
   if (jambLive) {
-    jambLive.style.display = (swing || storefront) ? '' : 'none';
-    if (swing || storefront) {
-      const face = storefront ? getStorefrontFaceIn() : getSwingFrameFaceIn();
-      jambLive.textContent = face === 2
+    jambLive.style.display = '';
+    const face = storefront ? getStorefrontFaceIn() : swing ? getSwingFrameFaceIn() : getSliderFrameFaceIn();
+    jambLive.textContent = face === 2
+      ? (swing || storefront
         ? 'Jamb: 2" × 4-1/2" — 1" glass is selected (standard is 1-3/4").'
-        : 'Jamb: 1-3/4" × 4-1/2" standard. Changes to 2" only if 1" glass is selected.';
-    }
+        : 'Jamb: 2" × 4-1/2" — 1" glass in the transom (door 1" glass alone stays 1-3/4").')
+      : (swing || storefront
+        ? 'Jamb: 1-3/4" × 4-1/2" standard. Changes to 2" only if 1" glass is selected.'
+        : 'Jamb: 1-3/4" × 4-1/2" standard. Changes to 2" only if 1" glass is used with a transom.');
   }
 }
 
@@ -4065,6 +4159,7 @@ function captureCurrentDoor() {
     height16:      parseInt(fv('f_h16'), 10) || 0,
     ftthFt:        parseInt(fv('f_ftthft'), 10) || 0,
     ftthIn:        parseInt(fv('f_ftthin'), 10) || 0,
+    ftth16:        parseInt(fv('f_ftth16'), 10) || 0,
     stileWidth:    (cfg && cfg.isStorefront) ? 'narrow' : rv('stileWidth'),
     bottomRail:    rv('bottomRail'),
     muntin:        (cfg && cfg.isStorefront) ? 'No Muntin' : rv('muntin'),
@@ -4342,6 +4437,7 @@ function loadDoorIntoForm(door) {
     if (pq) pq.value = String(Math.max(1, Math.min(8, parseInt(door.swingPlateQty, 10) || 2)));
     _plateQtyTouched = true;
   }
+  if (door.swingPlate) _plateKindTouched = true;
   _slVertTouched.left = true;
   _slVertTouched.right = true;
   (function applySwingRails(d) {
@@ -4418,6 +4514,7 @@ function resetDoorForm() {
   _twinRailsTouched.right = false;
   _lastSwingEnergy = '';
   _plateQtyTouched = false;
+  _plateKindTouched = false;
   const pq = document.getElementById('swing_plate_qty');
   if (pq) pq.value = '2';
   _checkedAddons.clear();
@@ -5053,6 +5150,13 @@ function getHeightStr() {
   const inStr = inches + (sixteenth ? '-' + SIXTEENTH_LABELS[sixteenth] : '') + '"';
   return `${ft}'-${inStr}`;
 }
+function getFtthIn() {
+  const ft = parseInt(fv('f_ftthft'));
+  if (!ft) return null;
+  const inches = parseInt(fv('f_ftthin')) || 0;
+  const sixteenth = parseInt(fv('f_ftth16')) || 0;
+  return ft * 12 + inches + sixteenth / 16;
+}
 function getFtthStr() {
   const ft = fv('f_ftthft');
   if (!ft) return '';
@@ -5230,6 +5334,98 @@ function getSwingGlassPrep() {
 }
 function getSwingFrameFaceIn() {
   return getSwingGlassPrep() === '1"' ? 2 : 1.75;
+}
+// Slider jambs stay 1-3/4" × 4-1/2" even when the door leaves are prepped for 1"
+// glass. The transom is glazed in the frame, so 1" glass + a transom needs 2" × 4-1/2".
+function sliderInchGlassSelected() {
+  return rv('glassPrep') === '1"' || (rv('transom') === 'yes' && rv('transomGlassPrep') === '1"');
+}
+function getSliderFrameFaceIn() {
+  return (rv('transom') === 'yes' && sliderInchGlassSelected()) ? 2 : 1.75;
+}
+function getSliderFrameProfileStr() {
+  return getSliderFrameFaceIn() === 2 ? '2" × 4-1/2" (1" transom glass)' : '1-3/4" × 4-1/2" (std)';
+}
+function calcSliderGlass() {
+  const cfg = getConfig();
+  if (!cfg || cfg.isSwing || cfg.isStorefront) return null;
+  const W = getWidthIn();
+  const Hhdr = getHeightIn();
+  if (W == null || Hhdr == null) return null;
+  const isBi = !!cfg.isBi;
+  const medium = rv('stileWidth') === 'medium';
+  const hasMuntin = rv('muntin') !== 'No Muntin';
+  const railDeduct = rv('bottomRail') === '10in' ? 6 : rv('bottomRail') === '6in' ? 2 : 0;
+  const face = getSliderFrameFaceIn();
+  const GLASS_ADD = 0.625;
+  let liteW = isBi
+    ? (W - 17.25 - 2 * (face - 1.75)) / 4 - 0.3125
+    : W / 2 - ((medium ? 6.75 : 3.75) + face);
+  if (isBi && medium) liteW -= 3;
+  const noMuntinH = Hhdr - 17.625;
+  const STD_TOP = 90 / 2 - 10;
+  let topBase, botBase;
+  if (Hhdr <= 96) {
+    topBase = Hhdr / 2 - 10;
+    botBase = topBase - railDeduct;
+  } else {
+    botBase = STD_TOP - railDeduct;
+    topBase = (Hhdr - 20 - railDeduct) - botBase;
+  }
+  const muntDelta = hasMuntin ? (getSliderMuntinAffIn() - defaultSliderMuntinAff()) : 0;
+  const topH = hasMuntin ? Math.max(1, topBase - muntDelta) : noMuntinH;
+  const botH = hasMuntin ? Math.max(1, botBase + muntDelta) : noMuntinH - railDeduct;
+  const panels = isBi ? 4 : 2;
+  const transoms = [];
+  if (rv('transom') === 'yes') {
+    const ftth = getFtthIn() || Hhdr;
+    const tH = (ftth - Hhdr) - 2;
+    const extraV = parseInt(rv('transomV'), 10) || 0;
+    if (tH > 0) {
+      if (!isBi) {
+        const lites = 2 + extraV;
+        transoms.push({
+          label: lites === 2 ? 'Transom' : 'Transom (' + lites + ' lites)',
+          qty: lites,
+          w: (W - face * (lites + 1)) / lites + GLASS_ADD,
+          h: tH
+        });
+      } else if (extraV <= 0) {
+        transoms.push({ label: 'Transom (1 lite)', qty: 1, w: W - 2 * face + GLASS_ADD, h: tH });
+      } else if (extraV === 1) {
+        transoms.push({ label: 'Transom (2 lites)', qty: 2, w: (W - 3 * face) / 2 + GLASS_ADD, h: tH });
+      } else {
+        // 2 verticals: mullions land at the SO|SX door junctions (quarter points
+        // of the daylight), so the side lites are narrower than the center lite.
+        // Face-aware so the widths still close on a 2" (1" glass) frame.
+        const panIn = (W - 2 * face) / 4;
+        const sideW = (panIn - face / 2) + GLASS_ADD;
+        const centerW = (2 * panIn - face) + GLASS_ADD;
+        transoms.push({ label: 'Transom (sides)', qty: 2, w: sideW, h: tH });
+        transoms.push({ label: 'Transom (center)', qty: 1, w: centerW, h: tH });
+      }
+    }
+  }
+  return { liteW, topH, botH, hasMuntin, panels, transoms, isBi };
+}
+function sliderGlassSummaryRows() {
+  // Medium-stile slider glass formulas are not production-verified yet, so we
+  // withhold those cut sizes (the cut sheet hides them too). Narrow stile only.
+  if (rv('stileWidth') === 'medium') return [];
+  const g = calcSliderGlass();
+  if (!g) return [];
+  const rows = [];
+  if (g.hasMuntin && Math.abs(g.topH - g.botH) > 0.01) {
+    rows.push(['Glass — door top', '(Qty ' + g.panels + ')  ' + fmtInches(g.liteW) + ' × ' + fmtInches(g.topH)]);
+    rows.push(['Glass — door bot', '(Qty ' + g.panels + ')  ' + fmtInches(g.liteW) + ' × ' + fmtInches(g.botH)]);
+  } else {
+    const n = g.hasMuntin ? g.panels * 2 : g.panels;
+    rows.push(['Glass — door', '(Qty ' + n + ')  ' + fmtInches(g.liteW) + ' × ' + fmtInches(g.topH)]);
+  }
+  g.transoms.forEach(t => {
+    rows.push(['Glass — ' + t.label.toLowerCase(), '(Qty ' + t.qty + ')  ' + fmtInches(t.w) + ' × ' + fmtInches(t.h)]);
+  });
+  return rows;
 }
 function getSwingSideliteFaceIn() {
   return getSwingFrameFaceIn();
@@ -5430,6 +5626,11 @@ function applyDefaultPlateQty() {
   const el = document.getElementById('swing_plate_qty');
   if (el) el.value = String(defaultPlateQty());
 }
+function applyDefaultSwingPlates() {
+  if (_currentDoorType !== 'swing' || _plateKindTouched) return;
+  const none = document.getElementById('pp_none');
+  if (none) none.checked = true;
+}
 function swingRailNeed() {
   return swingRailNeedFrom(rv('swingRails'));
 }
@@ -5621,7 +5822,11 @@ function calcNetOpeningIn() {
   if (cfg.base === null) return null;                  // ESA — no formula
   if (cfg.isStorefront) return null;
   if (cfg.isSwing) return calcSwingClearWidthIn();
-  return cfg.isBi ? 36 + (wIn - 96) * 0.5 : 33 + (wIn - 78) * 0.5;
+  // Shop typical: +1/2" opening per whole extra inch of frame.
+  // A leftover 1/2" of frame (8'-2-1/2") does not add a 1/4" of opening.
+  const baseW = cfg.isBi ? 96 : 78;
+  const baseOpen = cfg.isBi ? 36 : 33;
+  return baseOpen + Math.floor(wIn - baseW) * 0.5;
 }
 function getOpenStr() {
   const cfg = getConfig();
@@ -5640,7 +5845,12 @@ function getOpenStr() {
     return fmtInches(w) + ' W × ' + fmtInches(h) + ' H';
   }
   const n = calcNetOpeningIn();
-  return n !== null && n > 0 ? fmtInches(n) : '';
+  if (n === null || n <= 0) return '';
+  if (n >= 12) {
+    const ft = Math.floor(n / 12);
+    return ft + "'-" + fmtInches(n - ft * 12);
+  }
+  return fmtInches(n);
 }
 function updateNetOpeningDisplay() {
   const el = document.getElementById('net-opening-display');
@@ -5745,7 +5955,7 @@ function updateFTTH() {
   const hl = document.getElementById('height-field-label');
   if (hl) {
     if (_currentDoorType === 'storefront') hl.textContent = 'Frame Height';
-    else hl.textContent = hasTransom ? 'Header Height (FTTH)' : 'Header Height';
+    else hl.textContent = 'Header Height';
   }
   const hn = document.getElementById('height-range-note');
   if (hn && !hn.classList.contains('warn') && !hn.classList.contains('ok')) {
@@ -5860,6 +6070,10 @@ function calcPrice() {
         const vAmt = numV * 50;
         total += vAmt;
         lines.push({ label: `Transom Verticals ×${numV}`, amount: vAmt });
+      }
+      if (getSliderFrameFaceIn() === 2) {
+        total += 150;
+        lines.push({ label: '1" glass prep — 2" × 4-1/2" jamb', amount: 150 });
       }
     }
   }
@@ -6254,12 +6468,7 @@ function calcPrice() {
 // ── Spec summary ────────────────────────────────────────────────────
 function updateSpecSummary() {
   const cfg = getConfig();
-  const ftthStr = rv('transom') === 'yes' ? (() => {
-    const ft=fv('f_ftthft'), i=parseInt(fv('f_ftthin'))||0, s=parseInt(fv('f_ftth16'))||0;
-    if (!ft) return '—';
-    const inPart = i === 0 && s === 0 ? '' : i + (s ? '-' + SIXTEENTH_LABELS[s] : '') + '"';
-    return `${ft}'${inPart}`;
-  })() : null;
+  const ftthStr = rv('transom') === 'yes' ? (getFtthStr() || '—') : null;
   const alarmContacts = _checkedAddons.has('addon_alarm_contacts')
     ? 'Monitor Breakout + Door Position (+$150)' : 'None';
   if (cfg && cfg.isStorefront) {
@@ -6295,6 +6504,7 @@ function updateSpecSummary() {
     ['Door Glass Prep', cfg && cfg.isSwing ? getSwingGlassPrep() + ' (door, sidelite, transom)' : (rv('glassPrep') || '—')],
     ...(rv('transom') === 'yes' && !(cfg && cfg.isSwing) ? [['Transom Glass Prep', rv('transomGlassPrep') || '—'], ['Transom Verticals', (parseInt(rv('transomV')) || 0) > 0 ? rv('transomV') : 'None']] : []),
     ['Stile Width', (cfg && cfg.isSwing) ? 'Medium 3-3/4" (std)' : (rv('stileWidth') === 'medium' ? 'Medium 3-3/4"' : 'Narrow (std)')],
+    ...(!cfg || cfg.isSwing || cfg.isStorefront ? [] : [['Frame profile', getSliderFrameProfileStr()]]),
     ['Bottom Rail', rv('bottomRail') === '6in' ? '6"' : rv('bottomRail') === '10in' ? '10"' : '4" (std)'],
     ['Horizontal Muntin', (rv('muntin') || '2" Muntin (std)') + (swingMuntinCount() ? ' @ ' + (cfg && cfg.isSwing ? getSwingMuntinAffs() : [getSliderMuntinAffIn()]).map(a => a + '" AFF').join(' / ') : '')],
     ['Threshold', rv('threshold') || '—'],
@@ -6314,11 +6524,12 @@ function updateSpecSummary() {
       ['Sidelites', (getSwingSideliteLoc() === 'none' && !cfg.isTwin) ? 'None' : getSwingSideliteStr() + ' · ' + getSwingSideliteProfileStr()],
     ] : []),
     ['Sensor', (['Optex i-oneXT','BEA IXIO'].includes(rv('sensor'))) ? rv('sensor') : (rv('sensor') || '—')],
-    ['Transom', rv('transom') === 'yes' ? `Yes (+$250)${ftthStr ? ' — FTTH: ' + ftthStr : ''}` : 'No'],
+    ['Transom', rv('transom') === 'yes' ? `Yes (+$250)${ftthStr && ftthStr !== '—' ? ' — overall ' + ftthStr : ''}` : 'No'],
     ['Frame Width', getWidthStr() + (cfg && cfg.isSwing && (getSwingSideliteLoc() !== 'none' || cfg.isTwin) ? ' door · ' + inToStr(getSwingOverallIn()) + ' overall' : '')],
-    [rv('transom') === 'yes' ? 'Header Height (FTTH)' : 'Header Height', getHeightStr()],
-    ...(rv('transom') === 'yes' ? [['Overall Frame Height', (() => { const ft=fv('f_ftthft'),i=fv('f_ftthin')||'0'; return ft ? `${ft}'${i==='0'?'':i+'"'}` : '—'; })()]] : []),
+    ['Header Height', getHeightStr()],
+    ...(rv('transom') === 'yes' ? [['Overall Frame Height', getFtthStr() || '—']] : []),
     [(cfg && cfg.isSwing) ? 'Clear Door Opening' : 'Net Opening', getOpenStr() || '—'],
+    ...((cfg && !cfg.isSwing && !cfg.isStorefront) ? sliderGlassSummaryRows() : []),
     ['Alarm Contacts', alarmContacts],
     ['Quantity', fv('f_qty') || '—'],
   ];
@@ -6542,8 +6753,7 @@ function drawDoor(svgId, vW, vH, isConf) {
   const realW      = getWidthIn()  || (isBi ? 120 : 84);
   const realFrameH = getHeightIn() || 90;  // frame height (floor to top of header)
   const ftthFt2    = parseInt(fv('f_ftthft')) || 0;
-  const ftthIn2    = parseInt(fv('f_ftthin')) || 0;
-  const realFtth   = hasTransom && ftthFt2 ? ftthFt2 * 12 + ftthIn2 : realFrameH;
+  const realFtth   = hasTransom ? (getFtthIn() || realFrameH) : realFrameH;
   const realTransomIn = hasTransom ? Math.max(0, realFtth - realFrameH) : 0;
   const realTotalH = realFtth;   // total height incl. transom
 
@@ -6572,7 +6782,7 @@ function drawDoor(svgId, vW, vH, isConf) {
   }
 
   // ── Frame members at true scale ────────────────────────────────────
-  const jambW  = Math.max(2, sc * 1.75);  // 1-3/4" structural tube
+  const jambW  = Math.max(2, sc * getSliderFrameFaceIn());
   const railIn = rv('bottomRail') === '10in' ? 10 : rv('bottomRail') === '6in' ? 6 : 4;
   const stileW = Math.max(3, sc * (rv('stileWidth') === 'medium' ? 3.75 : 2.5));
   const topRH  = Math.max(3, sc * 4.0);   // 4" top rail
@@ -6654,17 +6864,19 @@ function drawDoor(svgId, vW, vH, isConf) {
     const glassStopH = Math.max(1.5, sc * 1);       // 1" glass stop line thickness
     const tGlassH = transomH - frameT - glassStopH; // glass fills to just above glass stop
 
-    // Compute vertical mullion center x-positions
+    // Single slide always splits the transom at center (SX / SO). Extra
+    // transom verticals add mullions on top of that included split.
     const _pX = dX + frameT, _pW = dW - frameT * 2;
+    const nMull = isBi ? numV : (numV + 1);
     const vertXs = [];
-    if (numV > 0) {
+    if (nMull > 0) {
       if (numV === 2 && isBi) {
         const gap = 3, panW = (_pW - gap * 3) / 4;
         vertXs.push(_pX + panW + gap / 2);
         vertXs.push(_pX + (panW + gap) * 3 - gap / 2);
       } else {
-        for (let i = 1; i <= numV; i++) {
-          vertXs.push(tx + tw * i / (numV + 1));
+        for (let i = 1; i <= nMull; i++) {
+          vertXs.push(tx + tw * i / (nMull + 1));
         }
       }
     }
@@ -6676,7 +6888,7 @@ function drawDoor(svgId, vW, vH, isConf) {
       if (lw > 1) r(lx, tGlassY, lw, tGlassH, glaze.fill, glaze.stroke, 0.5);
     }
 
-    // Top header tube — 1-3/4" horizontal member at very top of transom
+    // Top header tube — same face as the jambs (1-3/4" or 2")
     r(dX, dY, dW, frameT, frame);
 
     // Left and right transom jambs (frameT wide, full transom height)
@@ -6923,8 +7135,7 @@ function drawTwinSwingElevation(svg, vW, vH, isConf) {
   const realUnitW = realSlL + realDL + realSlC + realDR + realSlR;
   const realFrameH = getHeightIn() || SWING_STD_H;
   const ftthFt = parseInt(fv('f_ftthft')) || 0;
-  const ftthIn = parseInt(fv('f_ftthin')) || 0;
-  const realFtth = hasTransom && ftthFt ? ftthFt * 12 + ftthIn : realFrameH;
+  const realFtth = hasTransom ? (getFtthIn() || realFrameH) : realFrameH;
   const realTransomIn = hasTransom ? Math.max(0, realFtth - realFrameH) : 0;
   const realTotalH = realFtth;
   const hasSl = true;
@@ -7178,8 +7389,7 @@ function drawSwingElevation(svg, vW, vH, isConf) {
   const realUnitW = realW + realSlL + realSlR;
   const realFrameH = getHeightIn() || SWING_STD_H;
   const ftthFt = parseInt(fv('f_ftthft')) || 0;
-  const ftthIn = parseInt(fv('f_ftthin')) || 0;
-  const realFtth = hasTransom && ftthFt ? ftthFt * 12 + ftthIn : realFrameH;
+  const realFtth = hasTransom ? (getFtthIn() || realFrameH) : realFrameH;
   const realTransomIn = hasTransom ? Math.max(0, realFtth - realFrameH) : 0;
   const realTotalH = realFtth;
 
@@ -7885,7 +8095,7 @@ function drawPlanView() {
   const frameX = _doorScale.dX;
   const frameW = _doorScale.dW;
   const sc     = _doorScale.sc;
-  const jambW  = Math.max(2, sc * 1.75);
+  const jambW  = Math.max(2, sc * getSliderFrameFaceIn());
   const openX  = frameX + jambW;
   const openW  = frameW - jambW * 2;
   const panH   = Math.max(2, sc * 1.75);
@@ -8286,6 +8496,7 @@ function onQuoteFormUpdate(e) {
   if (name === 'swingRailsL' || name === 'swingRailSideL') _twinRailsTouched.left = true;
   if (name === 'swingRailsR' || name === 'swingRailSideR') _twinRailsTouched.right = true;
   if (name === 'swingPlateQty') _plateQtyTouched = true;
+  if (name === 'swingPlate') _plateKindTouched = true;
   updateAll();
 }
 document.getElementById('quoteForm').addEventListener('input', onQuoteFormUpdate);
@@ -8450,6 +8661,7 @@ function buildSheetOrder() {
     configKey: rv('config'),
     frameFinish: rv('glazing') === '313 Dark Bronze' ? '313 Dark Bronze' : 'Clear Anodized',
     doorGlassPrep: (cfg && cfg.isSwing) ? getSwingGlassPrep() : rv('glassPrep'),
+    transomGlassPrep: (cfg && cfg.isSwing) ? getSwingGlassPrep() : rv('transomGlassPrep'),
     transom: (cfg && cfg.isStorefront) ? false : transom,
     transomVerticals: (cfg && cfg.isStorefront) ? 0 : (parseInt(rv('transomV') || '0', 10) || 0),
     ftthFt: (cfg && cfg.isStorefront) ? 0 : (transom ? (parseInt(fv('f_ftthft'), 10) || 0) : 0),
