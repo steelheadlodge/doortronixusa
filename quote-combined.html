@@ -371,8 +371,8 @@ body.sheet-mode #plan-svg { background:#fff; }
 
   <!-- ══ FORM PANEL ══ -->
   <div class="form-panel">
-    <h1 id="form-main-title">Request a Quote</h1>
-    <p class="intro" id="form-intro">Factory-direct net pricing on automatic sliding and swing door packages, plus matching storefront lites. Choose a product family to start — you can add multiple openings to quote an entire project in one submission.<br>Our team in Malakoff, Texas will confirm your quote within <strong>24 hours</strong>.</p>
+    <h1 id="form-main-title">Get instant pricing</h1>
+    <p class="intro" id="form-intro">This form prices the door as you build it — net contractor price updates live, before you submit. Sliding doors, swing doors, storefront lites, and swing operators. Add multiple openings to price a whole project.<br>When you submit, our team in Malakoff, Texas confirms the quote within <strong>24 hours</strong>.</p>
     <div class="trust-bar">
       <span class="trust-chip">✓ Manufactured in Malakoff, TX</span>
       <span class="trust-chip">✓ Factory-Direct Net Pricing</span>
@@ -1769,7 +1769,7 @@ body.sheet-mode #plan-svg { background:#fff; }
               <div class="chip-group">
                 <input type="checkbox" id="op_opt_N" value="N"><label for="op_opt_N">N — Independent pair</label>
               </div>
-              <p class="op-opt-note">Independent pair is N on the model so it doesn’t collide with Fixed Stop F.</p>
+              <p class="op-opt-note">Each leaf can be opened on its own. A standard pair opens both leaves together.</p>
             </div>
 
             <div class="op-opt-group" id="op-opts-push">
@@ -2718,11 +2718,11 @@ function setDoorType(type) {
   if (type === 'swing') {
     if (title) title.textContent = 'Swing Door Quote';
     document.title = 'Swing Door Quote — Doortronix USA';
-    if (intro) intro.innerHTML = 'Configure your complete swing door and frame below. Add multiple openings to quote an entire project in one submission.<br>Our team in Malakoff, Texas will confirm your quote within <strong>24 hours</strong>.';
+    if (intro) intro.innerHTML = 'Configure your complete swing door and frame below. The price updates as you go. Add multiple openings to price an entire project in one submission.<br>Our team in Malakoff, Texas will confirm your quote within <strong>24 hours</strong>.';
   } else if (type === 'storefront') {
     if (title) title.textContent = 'Storefront / Matching Lites Quote';
     document.title = 'Storefront Quote — Doortronix USA';
-    if (intro) intro.innerHTML = 'Configure a fixed aluminum frame — no door leaf or operator. Same members and pricing as the sidelites on a swing package. Add multiple openings to quote an entire project in one submission.<br>Our team in Malakoff, Texas will confirm your quote within <strong>24 hours</strong>.';
+    if (intro) intro.innerHTML = 'Configure a fixed aluminum frame — no door leaf or operator. Same members and pricing as the sidelites on a swing package. The price updates as you go. Add multiple openings to price an entire project in one submission.<br>Our team in Malakoff, Texas will confirm your quote within <strong>24 hours</strong>.';
   } else {
     if (title) title.textContent = 'Sliding Door Quote';
     document.title = 'Sliding Door Quote — Doortronix USA';
@@ -2798,7 +2798,7 @@ const OP_OPT_LABEL = {
   B: 'Breakaway stop & prep',
   F: 'Fixed stop & prep',
   X: 'Extended single (over 48")',
-  N: 'Independent pair',
+  N: 'Independent pair', // N, not F — F is already Fixed Stop on the Condor model
   P: 'Black plastic end caps',
   W: 'Wood door screw pack',
   Y: 'Fire door screw pack',
@@ -2810,7 +2810,7 @@ const OP_EXT_KIT = {
   sku: 'MA-EXT-KIT',
   label: 'Push rod extension kit',
   sell: 25,
-  img: 'images/operator/ma-ext-kit.jpg',
+  img: 'images/operator/ma-ext-kit.jpg?v=2',
   note: 'For push-arm reveals over 8″. One kit per leaf. Finish (clear or dark bronze) matches the operator. Fits Condor and Dor-O-Matic / LCN Astro, Senior, and Mid push arms.',
 };
 const OP_END_PLATES = {
@@ -3265,7 +3265,7 @@ function setOperatorMode(on) {
     const intro = document.getElementById('form-intro');
     if (title) title.textContent = 'Swing Operator Quote';
     document.title = 'Swing Operator Quote — Doortronix USA';
-    if (intro) intro.innerHTML = 'Configure an automatic swing operator supplied on its own — no door or frame. Order it by itself, or add it to a project alongside other items.<br>Our team in Malakoff, Texas will confirm your quote within <strong>24 hours</strong>.';
+    if (intro) intro.innerHTML = 'Configure an automatic swing operator supplied on its own — no door or frame. The price updates as you go. Order it by itself, or add it to a project alongside other items.<br>Our team in Malakoff, Texas will confirm your quote within <strong>24 hours</strong>.';
     applyOperatorDefaults();
     updateOperator();
   }

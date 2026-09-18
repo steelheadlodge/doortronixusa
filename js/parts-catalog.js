@@ -7,7 +7,7 @@ window.DTX_PARTS = [
     name: 'Push rod extension kit',
     category: 'Operator',
     sell: 25,
-    img: 'images/operator/ma-ext-kit.jpg',
+    img: 'images/operator/ma-ext-kit.jpg?v=2',
     note: 'For push-arm reveals over 8″. One kit per leaf. Order clear or dark bronze to match the operator.',
   },
   {
