@@ -2272,14 +2272,30 @@ function isIdleNextOpening() {
 }
 
 function hasInProgressDoor() {
-  if (_editingDoorId !== null) return true;
+  if (_editingDoorId !== null) return getCart().some(d => d.id === _editingDoorId);
   if (!rv('config')) return false;
-  if (getCart().length && isIdleNextOpening()) return false;
+  if (getCart().length) return false;
   const cfg = getConfig();
   const doors = (cfg && cfg.isTwin)
     ? [getTwinDoorIn('left'), getTwinDoorIn('right')]
     : [getWidthIn()];
   return doors.every(w => !!w);
+}
+
+function syncEditedDoorIntoCart() {
+  if (_editingDoorId == null) return;
+  const cart = getCart();
+  const idx = cart.findIndex(d => d.id === _editingDoorId);
+  if (idx < 0) { _editingDoorId = null; markOpeningIdle(); return; }
+  const cur = cart[idx];
+  const doorData = (cur.kind === 'operator' || _orderKind === 'operator')
+    ? captureOperator()
+    : captureCurrentDoor();
+  doorData.id = _editingDoorId;
+  doorData.quantity = cur.quantity || 1;
+  if (cur.kind) doorData.kind = cur.kind;
+  cart[idx] = doorData;
+  saveCart(cart);
 }
 
 function shipBlockParts() {
@@ -2542,19 +2558,17 @@ async function savePortalDraft() {
     return;
   }
 
-  // Fold the door the user is currently configuring into the project first, so
-  // "Save" captures in-progress work without them having to click "Add" too.
+  // Save the openings already on the job. Do not add the leftover "next door"
+  // on the form. That form is always filled with a default slider, and writing
+  // it back is how a deleted extra door kept returning.
   let inProgressNote = '';
-  if (_orderKind === 'operator') {
-    // Operators always have valid defaults; only fold in the current one when
-    // the project is otherwise empty, so repeated saves don't duplicate it.
-    if (getCart().length === 0 && _editingDoorId === null) addDoorToCart({ lenient: true });
-  } else if (hasInProgressDoor()) {
-    const ok = addDoorToCart({ lenient: true });
-    if (!ok) {
-      if (getCart().length === 0) return; // addDoorToCart already flagged the problem
-      inProgressNote = ' The door you were editing needs a bit more info — finish it and save again to include it.';
+  if (getCart().length === 0) {
+    if (_orderKind === 'operator' || hasInProgressDoor()) {
+      const ok = addDoorToCart({ lenient: true });
+      if (!ok) return;
     }
+  } else {
+    syncEditedDoorIntoCart();
   }
 
   const cart = getCart();
@@ -4054,7 +4068,7 @@ function _addOperatorToCartImpl(opts) {
     const item = captureOperator();
     item.quantity = 1;
     const idx = cart.findIndex(d => d.id === _editingDoorId);
-    if (idx >= 0) cart[idx] = item; else cart.push(item);
+    if (idx >= 0) cart[idx] = item;
     _editingDoorId = null;
   } else if (qty > 1) {
     for (let i = 0; i < qty; i++) {
@@ -4687,7 +4701,7 @@ function _addDoorToCartImpl(opts) {
     const doorData = captureCurrentDoor();
     doorData.quantity = 1;
     const idx = cart.findIndex(d => d.id === _editingDoorId);
-    if (idx >= 0) cart[idx] = doorData; else cart.push(doorData);
+    if (idx >= 0) cart[idx] = doorData;
     _editingDoorId = null;
   } else if (qty > 1) {
     // Split into individual entries — one per door
@@ -4755,7 +4769,8 @@ function removeCartDoor(id) {
   let cart = getCart().filter(d => d.id !== id);
   saveCart(cart);
   if (cart.length === 0) unlockContactSection();
-  if (_editingDoorId === id) { _editingDoorId = null; resetDoorForm(); }
+  if (_editingDoorId === id) _editingDoorId = null;
+  resetDoorForm();
   renderCart();
 }
 
