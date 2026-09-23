@@ -827,25 +827,65 @@ function calcCutList() {
     return { isSwing, frame, panels, glass: glassSizeRows(), meta: { W, frameH, Hhdr, transomH, railIn, stileW, finish, hasMuntin }, notes };
   }
 
-  // Slider frame extrusions
+  // Slider frame extrusions.
+  // Header length is the beam between the jambs. Production cuts below are for
+  // bipart (either stile) and narrow-stile single slide. Medium-stile single
+  // was not in the production notes.
   const slFace = sliderFrameFaceIn(d);
   const slFaceStr = slFace === 2 ? '2" × 4-1/2"' : '1-3/4" × 4-1/2"';
+  const headerLen = W - slFace * 2;
+  const narrow = d.stileWidth !== 'medium';
+  const shopCuts = cfg.isBi || narrow;
   frame.push({ part: 'Jamb tube', profile: slFaceStr, qty: 2, len: frameH, note: 'Full frame height' + (d.transom ? ' (incl. transom)' : '') + (slFace === 2 ? ' — 1" transom glass' : '') });
-  frame.push({ part: 'Header / operator housing', profile: '8" operator beam', qty: 1, len: W - slFace * 2, note: 'Between jambs' });
-  if (!noThresh) frame.push({ part: 'Threshold', profile: d.threshold || '1/2"', qty: 1, len: W - slFace * 2, note: '' });
+  frame.push({ part: 'Header / operator housing', profile: '8" operator beam', qty: 1, len: headerLen, note: 'Header length, between jambs' });
+  if (!cfg.isBi && narrow) {
+    frame.push({ part: 'Service cover', profile: 'Header cover', qty: 1, len: headerLen, note: 'Same as header length' });
+  }
+  const threshLen = (!cfg.isBi && narrow) ? headerLen + 0.25 : headerLen;
+  if (!noThresh) frame.push({ part: 'Threshold', profile: d.threshold || '1/2"', qty: 1, len: threshLen, note: (!cfg.isBi && narrow) ? 'Header length + 1/4"' : '' });
   if (d.transom && transomH > 0) {
-    frame.push({ part: 'Transom divider rail', profile: slFaceStr, qty: 1, len: W - slFace * 2, note: 'Splits transom from header' });
+    frame.push({ part: 'Transom divider rail', profile: slFaceStr, qty: 1, len: headerLen, note: 'Splits transom from header' });
     const verts = parseInt(d.transomVerticals, 10) || 0;
     const nMull = cfg.isBi ? verts : (verts + 1);
     if (nMull > 0) frame.push({ part: 'Transom vertical mullion', profile: slFaceStr, qty: nMull, len: transomH - slFace, note: cfg.isBi ? 'Equal transom lites' : 'Center split' + (verts ? ' + extras' : ' (incl.)') });
+    if (shopCuts) {
+      // One stop per lite, cut to the clear width between the transom tubes (not the glass size).
+      if (!cfg.isBi) {
+        const lites = 2 + verts;
+        frame.push({ part: 'Transom stop', profile: 'Between tubes', qty: lites, len: (W - slFace * (lites + 1)) / lites, note: 'One per lite' });
+      } else if (verts <= 0) {
+        frame.push({ part: 'Transom stop', profile: 'Between tubes', qty: 1, len: W - slFace * 2, note: '1 lite' });
+      } else if (verts === 1) {
+        frame.push({ part: 'Transom stop', profile: 'Between tubes', qty: 2, len: (W - slFace * 3) / 2, note: '2 equal lites' });
+      } else {
+        const panIn = (W - slFace * 2) / 4;
+        frame.push({ part: 'Transom stop (sides)', profile: 'Between tubes', qty: 2, len: panIn - slFace / 2, note: 'Side lites' });
+        frame.push({ part: 'Transom stop (center)', profile: 'Between tubes', qty: 1, len: 2 * panIn - slFace, note: 'Center lite' });
+      }
+    }
   }
 
   // Leaves
   const leafH = Hhdr - 8.5;   // stile length: header 8" + 1/2" threshold allowance
-  const railLen = g.liteW;    // between stiles ≈ glass width (add shop pocket allowance)
+  const railLen = g.liteW;    // rail size = glass width between the stiles
   const nPanels = g.panels;
   const nActive = cfg.isBi ? 2 : 1;
   const nFixed = nPanels - nActive;
+  if (shopCuts) {
+    if (cfg.isBi) frame.push({ part: 'Rod', profile: 'Drive rod', qty: 2, len: (headerLen - 3) / 2, note: '(Header length − 3") ÷ 2' });
+    else frame.push({ part: 'Rod', profile: 'Drive rod', qty: 1, len: headerLen - 3, note: 'Header length − 3"' });
+    frame.push({ part: 'Narrow filler', profile: '', qty: 2, len: Hhdr - 8, note: 'Header height − 8", one each jamb' });
+    if (!cfg.isBi && narrow && !noThresh) {
+      frame.push({ part: 'Threshold filler', profile: '', qty: 1, len: threshLen - (railLen + 4.5), note: 'Threshold − door panel (rail + 4-1/2")' });
+    }
+    // Single: rail + 2-3/4". Bipart: that same length, 1/8" shorter.
+    const snap = railLen + 2.75 - (cfg.isBi ? 0.125 : 0);
+    frame.push({ part: 'Snap-in door stop', profile: '', qty: nPanels, len: snap, note: cfg.isBi ? 'Rail + 2-5/8" (single formula − 1/8"), one per panel' : 'Rail + 2-3/4", one per panel' });
+    if (!cfg.isBi && narrow) {
+      frame.push({ part: 'Horizontal glass stop', profile: d.doorGlassPrep || '1/4"', qty: (hasMuntin ? 3 : 2) * nPanels, len: railLen - 0.0625, note: 'Rail − 1/16"' });
+    }
+    frame.push({ part: 'Crash bar', profile: '', qty: nPanels, len: railLen + 2.375, note: 'Rail + 2-3/8", one per panel' });
+  }
   const panelW = g.liteW + 2 * stileW;
   const stileTxt = stileW === 3.75 ? '3-3/4"' : '2-1/2"';
   const mk = (leaf, qty) => ({ leaf, qty,
@@ -856,8 +896,15 @@ function calcCutList() {
   panels.push(mk('Active leaf (SX)', nActive));
   panels.push(mk(cfg.isFBO ? 'Fixed leaf (SO)' : 'Fixed leaf (O)', nFixed));
 
-  notes.push('Stiles run full leaf height; top rail, bottom rail, and muntin are cut to fit between stiles (≈ glass width). Add your shop glass-pocket allowance to rail/muntin lengths.');
-  notes.push('Leaf height = header height − 8" header − 1/2" threshold. Panel width = glass width + 2 × stile.');
+  notes.push('Stiles run full leaf height. Rail size on this list is the glass width between the stiles. Top rail, bottom rail, and muntin are cut to that rail size.');
+  notes.push('Leaf height = header height − 8" header − 1/2" threshold.');
+  if (shopCuts) {
+    notes.push('Header length is the beam between the jambs. Rod, narrow filler, stops, and crash bars use the production lengths. No astragal.');
+    if (cfg.isBi) notes.push('Bipart snap-in door stop is the single-slide length (rail + 2-3/4") minus 1/8".');
+    else notes.push('Horizontal glass stop is the rail size minus 1/16". Service cover matches the header length.');
+  } else {
+    notes.push('Medium-stile single production cuts are not on this list yet — narrow-stile single and bipart only.');
+  }
   notes.push('Glass: two equal lites per leaf up to 8\u20320" header; above 8\u20320" the muntin holds at its 7\u20326" height and the top lite grows.');
 
   return { isSwing, frame, panels, glass: glassSizeRows(), meta: { W, frameH, Hhdr, transomH, railIn, stileW, finish, hasMuntin }, notes };

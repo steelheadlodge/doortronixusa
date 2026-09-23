@@ -16,3 +16,8 @@ _verify/
 
 # Build outputs / packaged zips
 *.zip
+
+# Dealer net price list — working copy, not for the public site until signed off
+data/parts-price-list.json
+parts-order.html
+images/parts/
