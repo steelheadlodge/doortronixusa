@@ -5549,7 +5549,7 @@ const SIXTEENTH_LABELS = ['','1/16','1/8','3/16','1/4','5/16','3/8','7/16','1/2'
 function dimFtIn(ft, inches, six) {
   const frac = six ? ' ' + SIXTEENTH_LABELS[six] : '';
   if (!ft) return String(inches || 0) + frac + '"';
-  return ft + "' " + (inches || 0) + frac + '"';
+  return ft + "'-" + (inches || 0) + frac + '"';
 }
 function getHeightIn() {
   const ft = parseInt(fv('f_hft'));
@@ -6317,7 +6317,7 @@ function getOpenStr() {
   if (n === null || n <= 0) return '';
   if (n >= 12) {
     const ft = Math.floor(n / 12);
-    return ft + "' " + fmtInches(n - ft * 12);
+    return ft + "'-" + fmtInches(n - ft * 12);
   }
   return fmtInches(n);
 }
@@ -6358,7 +6358,7 @@ function inToStr(totalIn) {
   const ft = Math.floor(totalIn / 12);
   const inches = totalIn % 12;
   if (!ft) return fmtInches(inches || 0);
-  return ft + "' " + fmtInches(inches || 0);
+  return ft + "'-" + fmtInches(inches || 0);
 }
 
 // ── Add-on toggle ───────────────────────────────────────────────────
@@ -8787,7 +8787,7 @@ function updateNoseCasters() {
 function inchesToStr(totalIn) {
   const ft = Math.floor(totalIn / 12);
   const inches = Math.round(totalIn % 12);
-  return ft + "' " + inches + '"';
+  return ft + "'-" + inches + '"';
 }
 
 function updateSizeConstraints() {

@@ -1135,7 +1135,7 @@ function getFTTHIn() {
 function dimFtIn(ft, inches, six) {
   const frac = six ? ' ' + SIXTEENTH_LABELS[six] : '';
   if (!ft) return String(inches || 0) + frac + '"';
-  return ft + "' " + (inches || 0) + frac + '"';
+  return ft + "'-" + (inches || 0) + frac + '"';
 }
 function getWidthStr() {
   const d = ORDER.door;
@@ -1212,7 +1212,7 @@ function getClearOpeningStr() {
   if (n === null || n <= 0) return ORDER.door.netOpening || '';
   const ft = Math.floor(n / 12);
   const rem = Math.round(n - ft * 12);
-  return rem === 0 ? ft + "' 0\"" : ft + "' " + rem + '"';
+  return rem === 0 ? ft + "'-0\"" : ft + "'-" + rem + '"';
 }
 function swingFaceIn() {
   return (ORDER.door.doorGlassPrep === '1"') ? 2 : 1.75;
