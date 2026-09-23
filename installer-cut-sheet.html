@@ -1132,32 +1132,29 @@ function getFTTHIn() {
   const d = ORDER.door;
   return (parseInt(d.ftthFt) || 0) * 12 + (parseInt(d.ftthIn) || 0) + (parseInt(d.ftth16) || 0) / 16;
 }
+function dimFtIn(ft, inches, six) {
+  const frac = six ? ' ' + SIXTEENTH_LABELS[six] : '';
+  if (!ft) return String(inches || 0) + frac + '"';
+  return ft + "' " + (inches || 0) + frac + '"';
+}
 function getWidthStr() {
   const d = ORDER.door;
   const cfg = CONFIGS[d.configKey];
   if (cfg && cfg.isTwin) return formatFtIn(twinDoorIn('left')) + ' / ' + formatFtIn(twinDoorIn('right'));
   const ft = parseInt(d.widthFt, 10);
-  if (ft) {
-    const i = parseInt(d.widthIn) || 0, s = parseInt(d.width16) || 0;
-    const inStr = i + (s ? '-' + SIXTEENTH_LABELS[s] : '') + '"';
-    return `${ft}'-${inStr}`;
-  }
+  if (ft) return dimFtIn(ft, parseInt(d.widthIn) || 0, parseInt(d.width16) || 0);
   return formatFtIn(getWidthIn());
 }
 function getHeightStr() {
   const d = ORDER.door;
   const ft = d.heightFt; if (!ft) return '—';
-  const i = parseInt(d.heightIn) || 0, s = parseInt(d.height16) || 0;
-  const inStr = i + (s ? '-' + SIXTEENTH_LABELS[s] : '') + '"';
-  return `${ft}'-${inStr}`;
+  return dimFtIn(ft, parseInt(d.heightIn) || 0, parseInt(d.height16) || 0);
 }
 function getFTTHStr() {
   const d = ORDER.door;
   const ft = parseInt(d.ftthFt) || 0;
   if (!ft) return getHeightStr();
-  const i = parseInt(d.ftthIn) || 0, s = parseInt(d.ftth16) || 0;
-  const inStr = i + (s ? '-' + SIXTEENTH_LABELS[s] : '') + '"';
-  return `${ft}'-${inStr}`;
+  return dimFtIn(ft, parseInt(d.ftthIn) || 0, parseInt(d.ftth16) || 0);
 }
 function formatFtIn(n) {
   if (n == null || !isFinite(n) || n < 0) return '—';
@@ -1167,8 +1164,7 @@ function formatFtIn(n) {
   if (rem16 < 0) rem16 = 0;
   const inches = Math.floor(rem16 / 16);
   const six = rem16 % 16;
-  if (!ft) return inches + (six ? '-' + SIXTEENTH_LABELS[six] : '') + '"';
-  return ft + "'-" + inches + (six ? '-' + SIXTEENTH_LABELS[six] : '') + '"';
+  return dimFtIn(ft, inches, six);
 }
 function getOverallWidthIn() {
   const cfg = CONFIGS[ORDER.door.configKey];
@@ -1216,7 +1212,7 @@ function getClearOpeningStr() {
   if (n === null || n <= 0) return ORDER.door.netOpening || '';
   const ft = Math.floor(n / 12);
   const rem = Math.round(n - ft * 12);
-  return rem === 0 ? `${ft}'-0"` : `${ft}'-${rem}"`;
+  return rem === 0 ? ft + "' 0\"" : ft + "' " + rem + '"';
 }
 function swingFaceIn() {
   return (ORDER.door.doorGlassPrep === '1"') ? 2 : 1.75;
@@ -1293,7 +1289,7 @@ function formatInches(n) {
   if (sixteenths === 0) return whole + '"';
   let num = sixteenths, den = 16;
   while (num % 2 === 0) { num /= 2; den /= 2; }
-  return whole + '-' + num + '/' + den + '"';
+  return whole + ' ' + num + '/' + den + '"';
 }
 function glassPair(w, h) {
   return formatInches(w) + ' × ' + formatInches(h);

@@ -5543,10 +5543,14 @@ function getWidthStr() {
   if (!ft) return '—';
   const inches = parseInt(fv('f_win')) || 0;
   const sixteenth = parseInt(fv('f_w16')) || 0;
-  const inStr = inches + (sixteenth ? '-' + SIXTEENTH_LABELS[sixteenth] : '') + '"';
-  return `${ft}'-${inStr}`;
+  return dimFtIn(ft, inches, sixteenth);
 }
 const SIXTEENTH_LABELS = ['','1/16','1/8','3/16','1/4','5/16','3/8','7/16','1/2','9/16','5/8','11/16','3/4','13/16','7/8','15/16'];
+function dimFtIn(ft, inches, six) {
+  const frac = six ? ' ' + SIXTEENTH_LABELS[six] : '';
+  if (!ft) return String(inches || 0) + frac + '"';
+  return ft + "' " + (inches || 0) + frac + '"';
+}
 function getHeightIn() {
   const ft = parseInt(fv('f_hft'));
   const inches = parseInt(fv('f_hin')) || 0;
@@ -5558,8 +5562,7 @@ function getHeightStr() {
   const ft = fv('f_hft');
   const inches = parseInt(fv('f_hin')) || 0;
   const sixteenth = parseInt(fv('f_h16')) || 0;
-  const inStr = inches + (sixteenth ? '-' + SIXTEENTH_LABELS[sixteenth] : '') + '"';
-  return `${ft}'-${inStr}`;
+  return dimFtIn(ft, inches, sixteenth);
 }
 function getFtthIn() {
   const ft = parseInt(fv('f_ftthft'));
@@ -5573,8 +5576,7 @@ function getFtthStr() {
   if (!ft) return '';
   const inches = parseInt(fv('f_ftthin')) || 0;
   const sixteenth = parseInt(fv('f_ftth16')) || 0;
-  const inStr = inches + (sixteenth ? '-' + SIXTEENTH_LABELS[sixteenth] : '') + '"';
-  return `${ft}'-${inStr}`;
+  return dimFtIn(ft, inches, sixteenth);
 }
 function getSwingSideliteLoc() {
   return rv('swingSidelite') || 'none';
@@ -6232,7 +6234,7 @@ function fmtInches(totalIn) {
   const sixteenths = Math.round(frac * 16);
   if (sixteenths === 0) return `${whole}"`;
   if (sixteenths === 16) return `${whole + 1}"`;
-  return `${whole}-${SIXTEENTH_LABELS[sixteenths]}"`;
+  return `${whole} ${SIXTEENTH_LABELS[sixteenths]}"`;
 }
 const SWING_MIN_CLEAR_W = 32;
 // Open leaf takes the 3-3/4" pivot inset plus the full 1-3/4" door. The 1" fingerguard sits at the heel inside that 3-3/4", so it is not subtracted again.
@@ -6315,7 +6317,7 @@ function getOpenStr() {
   if (n === null || n <= 0) return '';
   if (n >= 12) {
     const ft = Math.floor(n / 12);
-    return ft + "'-" + fmtInches(n - ft * 12);
+    return ft + "' " + fmtInches(n - ft * 12);
   }
   return fmtInches(n);
 }
@@ -6356,8 +6358,7 @@ function inToStr(totalIn) {
   const ft = Math.floor(totalIn / 12);
   const inches = totalIn % 12;
   if (!ft) return fmtInches(inches || 0);
-  if (!inches) return `${ft}'0"`;
-  return `${ft}'` + fmtInches(inches);
+  return ft + "' " + fmtInches(inches || 0);
 }
 
 // ── Add-on toggle ───────────────────────────────────────────────────
@@ -8786,7 +8787,7 @@ function updateNoseCasters() {
 function inchesToStr(totalIn) {
   const ft = Math.floor(totalIn / 12);
   const inches = Math.round(totalIn % 12);
-  return `${ft}'-${inches}"`;
+  return ft + "' " + inches + '"';
 }
 
 function updateSizeConstraints() {
@@ -9028,7 +9029,7 @@ document.getElementById('quoteForm').addEventListener('submit', async function(e
   const pd = window._priceData;
   const ftthFt = fv('f_ftthft');
   const ftthInV = parseInt(fv('f_ftthin')) || 0, ftth16V = parseInt(fv('f_ftth16')) || 0;
-  const ftthStr2 = ftthFt ? `${ftthFt}'${ftthInV === 0 && ftth16V === 0 ? '' : ftthInV + (ftth16V ? '-' + SIXTEENTH_LABELS[ftth16V] : '') + '"'}` : '';
+  const ftthStr2 = ftthFt ? dimFtIn(ftthFt, ftthInV, ftth16V) : '';
   const alarmContacts2 = _checkedAddons.has('addon_alarm_contacts')
     ? 'Monitor Breakout + Door Position' : 'None';
   const data = {
