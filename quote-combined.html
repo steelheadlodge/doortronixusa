@@ -4779,14 +4779,14 @@ function loadDoorIntoForm(door) {
   const cfgEl = document.querySelector(`input[name="config"][value="${door.config}"]`);
   if (cfgEl) cfgEl.checked = true;
   const setRadio = (name, val) => { if (!val) return; const match = document.querySelector(`input[name="${name}"][value='${val}']`); if (match) match.checked = true; };
-  if (door.widthIn) {
-    const wFt = Math.floor(door.widthIn / 12); const wIn = Math.floor(door.widthIn % 12);
-    document.getElementById('f_wft').value = wFt; document.getElementById('f_win').value = wIn; document.getElementById('f_w16').value = 0;
-  }
-  if (door.heightIn) {
-    const hFt = Math.floor(door.heightIn / 12); const hIn = Math.floor(door.heightIn % 12);
-    document.getElementById('f_hft').value = hFt; document.getElementById('f_hin').value = hIn; document.getElementById('f_h16').value = 0;
-  }
+  const wTotal = Number(door.widthIn);
+  const wParts = (Number(door.widthFt) || 0) * 12 + (Number(door.widthInParts) || 0) + (Number(door.width16) || 0) / 16;
+  if (Number.isFinite(wTotal) && wTotal >= 12) setFrameWidthIn(wTotal);
+  else if (wParts > 0) setFrameWidthIn(wParts);
+  const hTotal = Number(door.heightIn);
+  const hParts = (Number(door.heightFt) || 0) * 12 + (Number(door.heightInParts) || 0) + (Number(door.height16) || 0) / 16;
+  if (Number.isFinite(hTotal) && hTotal >= 12) setFrameHeightIn(hTotal);
+  else if (hParts > 0) setFrameHeightIn(hParts);
   if (door.sfVerticals != null || (door.typeCategory === 'storefront' && door.slVerticals != null)) {
     setSfVertRadio(door.sfVerticals != null ? door.sfVerticals : door.slVerticals);
     _sfVertTouched = true;
@@ -6248,20 +6248,22 @@ function cfgMinW(cfg) {
   const c = cfg || getConfig();
   return (c && c.isSwing) ? getSwingMinWidthIn(c) : (c ? c.minW : 0);
 }
-function setFrameWidthIn(totalIn) {
+function setFrameDimIn(ftId, inId, sixId, totalIn) {
   if (totalIn == null || !isFinite(totalIn)) return;
   let ft = Math.floor(totalIn / 12);
   let rem = Math.round((totalIn - ft * 12) * 16) / 16;
   if (rem >= 12) { ft += 1; rem -= 12; }
   const whole = Math.floor(rem);
   const six = Math.round((rem - whole) * 16);
-  const wft = document.getElementById('f_wft');
-  const win = document.getElementById('f_win');
-  const w16 = document.getElementById('f_w16');
-  if (wft) wft.value = String(ft);
-  if (win) win.value = String(whole);
-  if (w16) w16.value = String(six);
+  const ftEl = document.getElementById(ftId);
+  const inEl = document.getElementById(inId);
+  const sEl = document.getElementById(sixId);
+  if (ftEl) ftEl.value = String(ft);
+  if (inEl) inEl.value = String(whole);
+  if (sEl) sEl.value = String(six);
 }
+function setFrameWidthIn(totalIn) { setFrameDimIn('f_wft', 'f_win', 'f_w16', totalIn); }
+function setFrameHeightIn(totalIn) { setFrameDimIn('f_hft', 'f_hin', 'f_h16', totalIn); }
 function calcSwingClearWidthFor(wIn) {
   if (wIn == null) return null;
   return Math.max(0, wIn - getSwingFrameFaceIn() * 2 - swingOpenLeafTakesIn());
