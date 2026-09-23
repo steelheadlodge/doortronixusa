@@ -70,9 +70,10 @@ html, body { background:#E8EEF4; color:var(--ink); font-family:Arial, Helvetica,
 #glass-tbl td { padding:2px 7px; font-size:10px; }
 .note { font-size:9px; color:#666; padding:2px 7px 4px; line-height:1.25; }
 
-.side-foot { margin-top:auto; }
-.ship { font-size:12px; line-height:1.4; padding:7px 8px 8px; border-top:1px solid var(--line); }
-.ship .k { font-size:9px; text-transform:uppercase; letter-spacing:.4px; color:#666; font-weight:700; margin-bottom:2px; }
+.options-scroll { flex:1 1 auto; min-height:0; overflow:auto; }
+.side-foot { margin-top:auto; flex:none; }
+.jobloc { font-size:12px; line-height:1.35; padding:5px 8px 6px; border-top:1px solid var(--line); }
+.jobloc .k { font-size:9px; text-transform:uppercase; letter-spacing:.4px; color:#666; font-weight:700; margin-bottom:1px; }
 .sheet.prelim { position:relative; }
 .sheet.prelim .doc-title { color:#92400E; }
 .sheet.prelim::before {
@@ -166,11 +167,13 @@ html.embed .sheet { margin:0 auto 0; }
       <table class="tbl" id="glass-tbl"></table>
       <div class="note" id="glass-note">Glass by others. Do not cut until signed.</div>
       <h3>Options</h3>
-      <table class="tbl" id="options-tbl"></table>
+      <div class="options-scroll">
+        <table class="tbl" id="options-tbl"></table>
+      </div>
       <div class="side-foot">
-        <div class="ship">
-          <div class="k">Ship to</div>
-          <div id="ship-to">—</div>
+        <div class="jobloc">
+          <div class="k">Job location</div>
+          <div id="job-location">—</div>
         </div>
         <h3 id="approve-h">Approval</h3>
         <div class="approve-body">
@@ -286,6 +289,8 @@ const SAMPLE_ORDER = {
     quantity: 1,
     location: 'Tyler, TX',
     shipTo: 'Walgreens — Tyler Plaza\n4121 S Broadway Ave\nTyler, TX 75703',
+    shipPhone: '(903) 555-0142',
+    shipEmail: 'receiving@walgreens.example',
   },
   door: {
     configKey: 'fbo-bi',
@@ -1018,7 +1023,6 @@ function renderSheet() {
     ['Customer PO', p.po],
     ['Door / tag', doorMarks()],
     ['Quantity', qty + (qty === 1 ? ' opening' : ' openings')],
-    ['Location', p.location],
   ];
   // Lead time is optional — omit the row entirely when blank.
   if (ORDER.leadTime && String(ORDER.leadTime).trim()) cells.push(['Lead time', ORDER.leadTime]);
@@ -1066,7 +1070,8 @@ function renderSheet() {
 
   fillTable('options-tbl', optionList());
   syncPlanNotes();
-  document.getElementById('ship-to').innerHTML = (p.shipTo || '—').replace(/\n/g, '<br>');
+  const jobEl = document.getElementById('job-location');
+  if (jobEl) jobEl.innerHTML = (p.location || '—').replace(/\n/g, '<br>');
   document.getElementById('appr-name').textContent = '';
   document.getElementById('appr-date').textContent = '';
 

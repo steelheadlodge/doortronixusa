@@ -531,9 +531,22 @@ body.sheet-mode #plan-svg { background:#fff; }
           <span class="hint">Standard lead time is 3–4 weeks from cleared payment. Need it sooner? Choose expedited and we’ll confirm availability and any rush fee.</span>
         </div>
         <div class="field full">
+          <label>Job location</label>
+          <input type="text" name="location" id="f_location" placeholder="e.g. Walmart #4321, Tyler, TX">
+          <span class="hint">Where the opening is. This is the location printed on the confirmation drawing.</span>
+        </div>
+        <div class="field full">
           <label>Ship-to Address</label>
           <textarea name="shipTo" id="f_shipto" rows="2" placeholder="Company / contact, street, city, state, ZIP"></textarea>
-          <span class="hint">Where the doors ship — company / contact, street, city, state, ZIP.</span>
+          <span class="hint">Where the doors ship. Stays on the quote for the carrier — address, phone, and email. It does not print on the confirmation drawing.</span>
+        </div>
+        <div class="field">
+          <label>Ship-to phone</label>
+          <input type="tel" name="shipPhone" id="f_ship_phone" placeholder="(555) 000-0000" autocomplete="tel">
+        </div>
+        <div class="field">
+          <label>Ship-to email</label>
+          <input type="email" name="shipEmail" id="f_ship_email" placeholder="receiving@company.com" autocomplete="email">
         </div>
         <div class="field full" id="lead-time-field" style="display:none;">
           <label>Lead Time (on drawing)</label>
@@ -2142,6 +2155,32 @@ function hasInProgressDoor() {
   return doors.every(w => !!w);
 }
 
+function shipBlockParts() {
+  return {
+    address: (fv('f_shipto') || '').trim(),
+    phone: (fv('f_ship_phone') || '').trim(),
+    email: (fv('f_ship_email') || '').trim(),
+  };
+}
+function composeShipBlock(parts) {
+  const p = parts || shipBlockParts();
+  const lines = [];
+  if (p.address) lines.push(p.address);
+  if (p.phone) lines.push('Phone: ' + p.phone);
+  if (p.email) lines.push('Email: ' + p.email);
+  return lines.join('\n');
+}
+function splitShipBlock(text) {
+  const addr = [], phones = [], emails = [];
+  String(text || '').split(/\n/).forEach(line => {
+    const phone = line.match(/^\s*Phone:\s*(.*)$/i);
+    const email = line.match(/^\s*Email:\s*(.*)$/i);
+    if (phone) phones.push(phone[1].trim());
+    else if (email) emails.push(email[1].trim());
+    else addr.push(line);
+  });
+  return { address: addr.join('\n').trim(), phone: phones.filter(Boolean).join(', '), email: emails.filter(Boolean).join(', ') };
+}
 function buildDraftHeader() {
   const h = _projectHeader || {};
   return {
@@ -2152,7 +2191,7 @@ function buildDraftHeader() {
     location: h.location || fv('f_location'),
     poNumber: h.poNumber || fv('f_po'),
     shipDate: h.shipDate || shipTimelineStr(),
-    shipTo: h.shipTo || fv('f_shipto'),
+    shipTo: composeShipBlock() || h.shipTo || '',
   };
 }
 
@@ -4114,7 +4153,7 @@ function clearCart() {
 function startNewProject() {
   clearCart();
   _currentDraftId = null;
-  ['f_project', 'f_po', 'f_location', 'f_shipto', 'f_location_tags'].forEach(id => {
+  ['f_project', 'f_po', 'f_location', 'f_shipto', 'f_ship_phone', 'f_ship_email', 'f_location_tags'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = '';
   });
@@ -4773,6 +4812,7 @@ async function submitAllDoors() {
     phone: hdr.phone, email: hdr.email,
     projectName: hdr.projectName || '', location: hdr.location,
     shipDate: hdr.shipDate || '', poNumber: hdr.poNumber || '',
+    shipTo: composeShipBlock() || hdr.shipTo || '',
     doorCount: cart.length,
     projectEstimatedTotal: projTotal > 0 ? '$' + projTotal.toLocaleString() : 'See individual doors',
     doors: doorBlocks,
@@ -8629,7 +8669,7 @@ document.getElementById('quoteForm').addEventListener('submit', async function(e
     name: fv('f_name'), company: fv('f_company'), role: fv('f_role'),
     phone: fv('f_phone'), email: fv('f_email'),
     projectName: fv('f_project'), location: fv('f_location'),
-    shipTo: fv('f_shipto') || fv('f_location'), jobNumber: fv('f_job'),
+    shipTo: composeShipBlock(), jobNumber: fv('f_job'),
     poNumber: fv('f_po'), shipDate: shipTimelineStr(), quantity: fv('f_qty'),
     configuration: cfg ? cfg.label + ' (' + cfg.code + ')' : rv('config'),
     packageType: cfg && cfg.isStorefront ? 'Storefront / matching lites — aluminum frame only' : (cfg && cfg.isSwing ? 'Complete swing door and frame' : 'Sliding door'),
@@ -8836,7 +8876,9 @@ function buildSheetOrder() {
       doorMark: fv('f_location_tags'),
       quantity: parseInt(fv('f_qty'), 10) || 1,
       location: fv('f_location'),
-      shipTo: fv('f_shipto') || fv('f_location'),
+      shipTo: fv('f_shipto'),
+      shipPhone: fv('f_ship_phone'),
+      shipEmail: fv('f_ship_email'),
     },
     door: door,
     addons: addons,
@@ -9017,7 +9059,16 @@ renderCart();
     if (r.phone) hdr.phone = r.phone;
     if (r.poNumber) hdr.poNumber = r.poNumber;
     if (r.shipDate) hdr.shipDate = r.shipDate;
-    if (r.shipTo) hdr.shipTo = r.shipTo;
+    if (r.shipTo) {
+      const parts = splitShipBlock(r.shipTo);
+      hdr.shipTo = r.shipTo;
+      const ste = document.getElementById('f_shipto');
+      if (ste && parts.address && !ste.value) ste.value = parts.address;
+      const sp = document.getElementById('f_ship_phone');
+      if (sp && parts.phone && !sp.value) sp.value = parts.phone;
+      const se = document.getElementById('f_ship_email');
+      if (se && parts.email && !se.value) se.value = parts.email;
+    }
     if (hdr.name && hdr.email) {
       saveHeader(hdr);
       _projectHeader = hdr;
@@ -9031,8 +9082,6 @@ renderCart();
     if (le && r.location && !le.value) le.value = r.location;
     const poe = document.getElementById('f_po');
     if (poe && r.poNumber && !poe.value) poe.value = r.poNumber;
-    const ste = document.getElementById('f_shipto');
-    if (ste && r.shipTo && !ste.value) ste.value = r.shipTo;
     renderCart();
   } catch (e) { console.warn('Could not restore copied order', e); }
 })();
