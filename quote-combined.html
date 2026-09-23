@@ -4554,8 +4554,29 @@ let _projectHeader = null;
 let _editingDoorId = null;
 let _awaitingNextOpening = false;
 
-function getCart()        { try { return JSON.parse(localStorage.getItem(CART_KEY))   || []; } catch { return []; } }
-function saveCart(cart)   { localStorage.setItem(CART_KEY, JSON.stringify(cart)); }
+function normalizeCartDoorDims(d) {
+  if (!d || typeof d !== 'object') return d;
+  if (d.kind === 'operator') {
+    if (d.widthStr) d.widthStr = cartDoorWidthStr(d);
+    return d;
+  }
+  d.widthStr = cartDoorWidthStr(d);
+  d.heightStr = cartDoorHeightStr(d);
+  return d;
+}
+function getCart() {
+  try {
+    return (JSON.parse(localStorage.getItem(CART_KEY)) || []).map(d => {
+      try { return normalizeCartDoorDims(d); } catch (e) { return d; }
+    });
+  } catch { return []; }
+}
+function saveCart(cart) {
+  const next = (cart || []).map(d => {
+    try { return normalizeCartDoorDims(Object.assign({}, d)); } catch (e) { return d; }
+  });
+  localStorage.setItem(CART_KEY, JSON.stringify(next));
+}
 function getHeader()      { try { return JSON.parse(localStorage.getItem(HEADER_KEY)) || null; } catch { return null; } }
 function saveHeader(hdr)  { localStorage.setItem(HEADER_KEY, JSON.stringify(hdr)); }
 
@@ -5647,8 +5668,10 @@ function formatFtInFromInches(n) {
 }
 function cleanFtInStr(s) {
   return String(s || '')
+    .replace(/[\u2013\u2014]/g, '-')
+    .replace(/[”“″″]/g, '"')
     .replace(/'(\s*)(\d+)-(\d+\/\d+)"/g, "'-$2 $3\"")
-    .replace(/(\d+)-(\d+\/\d+)"/g, '$1 $2"');
+    .replace(/-(\d+\/\d+)"/g, ' $1"');
 }
 function cartDoorWidthStr(d) {
   if (!d) return '—';
@@ -9520,6 +9543,7 @@ if (_startParams.get('sheet') === '1') {
 })();
 
 renderCart();
+try { if (getCart().length) saveCart(getCart()); } catch (e) {}
 if (getCart().length) markOpeningIdle();
 
 (function restorePortalDup() {
