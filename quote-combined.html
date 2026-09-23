@@ -317,8 +317,25 @@ body.sheet-mode #plan-svg { background:#fff; }
 .cart-title { font-size:13px; font-weight:700; color:var(--blue); text-transform:uppercase; letter-spacing:.5px; }
 .cart-total-badge { background:var(--orange); color:#fff; font-size:12px; font-weight:700; border-radius:20px; padding:3px 12px; }
 .cart-header-right { display:flex; gap:8px; align-items:center; }
-.btn-submit-all { background:var(--orange); color:#fff; border:none; border-radius:7px; padding:9px 20px; font-size:13px; font-weight:700; cursor:pointer; transition:background .15s; white-space:nowrap; }
-.btn-submit-all:hover { background:#CF6A1A; }
+.btn-submit-all { background:#fff; color:var(--blue); border:1.5px solid var(--blue); border-radius:7px; padding:8px 12px; font-size:12px; font-weight:700; cursor:pointer; transition:background .15s; white-space:nowrap; }
+.btn-submit-all:hover { background:#EEF4FB; }
+.btn-print-est { background:var(--blue); color:#fff; border:none; border-radius:7px; padding:9px 14px; font-size:13px; font-weight:700; cursor:pointer; white-space:nowrap; }
+.btn-print-est:hover { background:var(--dblue); }
+#job-estimate { background:#fff; border:2px solid var(--blue); border-radius:10px; padding:14px 16px 12px; margin:0 0 20px; }
+#job-estimate h2 { margin:0 0 4px; font-size:15px; color:var(--blue); }
+#job-estimate .est-lead { margin:0 0 12px; font-size:12px; line-height:1.45; color:#334155; }
+#job-estimate .est-grid { display:grid; grid-template-columns:1.4fr 0.7fr 0.8fr 0.8fr 0.8fr; gap:8px; }
+#job-estimate label { display:block; font-size:11px; font-weight:700; color:#334155; margin-bottom:3px; }
+#job-estimate input, #job-estimate textarea { width:100%; box-sizing:border-box; padding:7px 8px; border:1px solid #c0cfe0; border-radius:6px; font-size:13px; }
+#job-estimate textarea { min-height:52px; resize:vertical; margin-top:8px; }
+.est-lines { margin-top:10px; border-top:1px solid #E5EAF0; padding-top:8px; }
+.est-line { display:flex; justify-content:space-between; gap:12px; font-size:13px; padding:3px 0; }
+.est-line.total { font-size:16px; font-weight:800; color:var(--blue); border-top:2px solid var(--blue); margin-top:4px; padding-top:6px; }
+.est-actions { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:10px; }
+.est-note { font-size:11px; color:#64748b; line-height:1.4; margin:8px 0 0; }
+@media (max-width: 800px) {
+  #job-estimate .est-grid { grid-template-columns:1fr 1fr; }
+}
 .btn-save-quote { background:#166534; color:#fff; border:none; border-radius:7px; padding:9px 16px; font-size:13px; font-weight:700; cursor:pointer; transition:background .15s; white-space:nowrap; }
 .btn-save-quote:hover { background:#14532d; }
 .btn-save-quote:disabled { opacity:.6; cursor:default; }
@@ -372,7 +389,7 @@ body.sheet-mode #plan-svg { background:#fff; }
   <!-- ══ FORM PANEL ══ -->
   <div class="form-panel">
     <h1 id="form-main-title">Get instant pricing</h1>
-    <p class="intro" id="form-intro">This form prices the door as you build it — net contractor price updates live, before you submit. Sliding doors, swing doors, storefront lites, and swing operators. Add multiple openings to price a whole project.<br>When you submit, our team in Malakoff, Texas confirms the quote within <strong>24 hours</strong>.</p>
+    <p class="intro" id="form-intro">Price the job as you build it. The number on screen is published contractor net — use it for your estimate. Save it and print a sheet for your client without sending anything to the factory.<br>Send the job to Doortronix only when you want Malakoff to confirm it and issue a drawing to sign.</p>
     <div class="trust-bar">
       <span class="trust-chip">✓ Manufactured in Malakoff, TX</span>
       <span class="trust-chip">✓ Factory-Direct Net Pricing</span>
@@ -462,17 +479,52 @@ body.sheet-mode #plan-svg { background:#fff; }
     <div id="project-cart-section">
       <div class="cart-header">
         <div class="cart-header-left">
-          <span class="cart-title">📋 Project Quote</span>
-          <span class="cart-total-badge" id="cart-total-badge">Est. Total: —</span>
+          <span class="cart-title">Openings on this job</span>
+          <span class="cart-total-badge" id="cart-total-badge">Doortronix net: —</span>
         </div>
         <div class="cart-header-right">
           <button type="button" class="btn-clear-cart" onclick="clearCart()">Clear All</button>
-          <button type="button" class="btn-save-quote" id="btn-save-quote" onclick="savePortalDraft()" style="display:none;">Save quote</button>
-          <button type="button" class="btn-submit-all" onclick="submitAllDoors()">Submit Full Project Quote →</button>
+          <button type="button" class="btn-save-quote" id="btn-save-quote" onclick="savePortalDraft()" style="display:none;">Save estimate</button>
         </div>
       </div>
       <div id="cart-cards"></div>
       <div id="save-quote-status" style="display:none;font-size:12px;font-weight:600;margin-top:8px;"></div>
+    </div>
+
+    <div id="job-estimate">
+      <h2>Price this job</h2>
+      <p class="est-lead">Doortronix net is the package price. Add your markup, and any glass, freight, or installation allowance you want on the sheet you give your client. Those allowances are your figures. Saving and printing do not send this job to the factory.</p>
+      <div class="est-grid">
+        <div>
+          <label for="f_est_client">Estimate for</label>
+          <input type="text" id="f_est_client" placeholder="Your client or GC" oninput="onEstimateInput()">
+        </div>
+        <div>
+          <label for="f_est_markup">Your markup %</label>
+          <input type="number" id="f_est_markup" min="0" step="0.5" value="0" oninput="onEstimateInput()">
+        </div>
+        <div>
+          <label for="f_est_glass">Glass allowance $</label>
+          <input type="number" id="f_est_glass" min="0" step="1" placeholder="0" oninput="onEstimateInput()">
+        </div>
+        <div>
+          <label for="f_est_freight">Freight allowance $</label>
+          <input type="number" id="f_est_freight" min="0" step="1" placeholder="0" oninput="onEstimateInput()">
+        </div>
+        <div>
+          <label for="f_est_install">Install allowance $</label>
+          <input type="number" id="f_est_install" min="0" step="1" placeholder="0" oninput="onEstimateInput()">
+        </div>
+      </div>
+      <textarea id="f_est_notes" placeholder="Notes for your client sheet — scope, exclusions, lead time you are quoting. Not sent unless you send the job." oninput="onEstimateInput()"></textarea>
+      <div class="est-lines" id="est-lines"></div>
+      <div class="est-actions">
+        <button type="button" class="btn-save-quote" id="btn-save-quote-est" onclick="savePortalDraft()">Save estimate</button>
+        <button type="button" class="btn-print-est" onclick="printClientEstimate()">Print client estimate</button>
+        <button type="button" class="btn-submit-all" onclick="submitAllDoors()">Send to Doortronix to confirm</button>
+      </div>
+      <p class="est-note">Send this only when you want Malakoff to confirm the package price and issue a drawing to sign. Your markup and allowances stay on your sheet — they are not the factory price.</p>
+      <div id="estimate-status" style="display:none;font-size:12px;font-weight:600;margin-top:8px;"></div>
     </div>
 
     <form id="quoteForm" novalidate>
@@ -1952,17 +2004,17 @@ body.sheet-mode #plan-svg { background:#fff; }
           <div class="ac-title">Your Doortronix account</div>
           <div class="ac-signed" id="account-signed-in" style="display:none;"></div>
           <div id="account-guest-fields">
-            <p class="ac-require">An account is required to submit. You can browse and price without one. After you submit, we review the job and send the confirmation drawing — you track it here.</p>
+            <p class="ac-require">You can price and print an estimate without an account. An account keeps it on your dashboard. Send the job only when you want Doortronix to confirm it and issue a drawing to sign.</p>
             <div class="field" id="account-pass-field">
               <label>Create a password (8+ characters) <span class="req">*</span></label>
               <input type="password" id="f_account_pass" minlength="8" autocomplete="new-password" placeholder="Choose a password">
-              <span class="hint">Already have an account? <a id="account-signin-link" href="portal/login.html?next=../quote-combined.html">Sign in</a> before you submit so this quote lands in your order list.</span>
+              <span class="hint">Already have an account? <a id="account-signin-link" href="portal/login.html?next=../quote-combined.html">Sign in</a> so Save estimate can store this job on your dashboard.</span>
             </div>
           </div>
         </div>
         <button type="button" class="btn-add-cart" id="btn-add-to-cart" onclick="addDoorToCart()">Add to project &amp; configure another</button>
-        <button type="submit" class="btn-submit" id="btn-submit-one" style="background:#6B7280;margin-top:0;">Submit Quote (this door only) →</button>
-        <p id="quote-submit-hint" style="font-size:10px;color:var(--mgray);margin-top:8px;text-align:center;">Single door only? Use "Submit Quote" above. Multiple doors? Add each to the project cart, then submit all at once.</p>
+        <button type="submit" class="btn-submit" id="btn-submit-one" style="background:#6B7280;margin-top:0;">Send this opening to Doortronix →</button>
+        <p id="quote-submit-hint" style="font-size:10px;color:var(--mgray);margin-top:8px;text-align:center;">This sends the opening for confirmation. To price the job for your client, add it to the project and use Save estimate or Print client estimate. Nothing is sent until you choose to send it.</p>
       </div>
 
     </form>
@@ -1972,7 +2024,7 @@ body.sheet-mode #plan-svg { background:#fff; }
     <div id="sticky-price-bar" style="position:sticky;bottom:0;background:var(--blue);color:#fff;padding:10px 20px;display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:700;border-top:2px solid var(--dblue);z-index:10;gap:12px;">
       <span>Net Contractor Price</span>
       <span id="sticky-price-total" style="font-size:18px;margin-left:auto;">—</span>
-      <button type="button" class="btn-save-quote" id="btn-save-quote-sticky" onclick="savePortalDraft()" style="display:none;">Save quote</button>
+      <button type="button" class="btn-save-quote" id="btn-save-quote-sticky" onclick="savePortalDraft()" style="display:none;">Save estimate</button>
     </div>
     <div id="sticky-save-status" style="display:none;position:sticky;bottom:0;background:#f0fdf4;color:#166534;font-size:12px;font-weight:600;padding:8px 20px;border-top:1px solid #86efac;z-index:9;"></div>
   </div><!-- /form-panel -->
@@ -2134,12 +2186,13 @@ function saveQuoteBtns() {
   return [
     document.getElementById('btn-save-quote'),
     document.getElementById('btn-save-quote-sticky'),
+    document.getElementById('btn-save-quote-est'),
   ].filter(Boolean);
 }
 function syncSaveQuoteButtons() {
   // Always show Save — signed-out users get prompted to sign in when they click,
   // so the option is discoverable instead of hidden.
-  const txt = _currentDraftId ? 'Update saved quote' : 'Save quote';
+  const txt = _currentDraftId ? 'Update estimate' : 'Save estimate';
   saveQuoteBtns().forEach(b => { b.style.display = ''; b.textContent = txt; });
 }
 
@@ -2195,6 +2248,143 @@ function buildDraftHeader() {
   };
 }
 
+function estMoney(n) {
+  const v = Number(n);
+  if (!Number.isFinite(v)) return 0;
+  return Math.round(v);
+}
+function estFieldNum(id) {
+  const raw = fv(id);
+  if (raw == null || String(raw).trim() === '') return 0;
+  const n = parseFloat(String(raw).replace(/[$,]/g, ''));
+  return Number.isFinite(n) && n > 0 ? n : 0;
+}
+function readEstimateMeta() {
+  return {
+    client: (fv('f_est_client') || '').trim(),
+    markupPct: estFieldNum('f_est_markup'),
+    glass: estFieldNum('f_est_glass'),
+    freight: estFieldNum('f_est_freight'),
+    install: estFieldNum('f_est_install'),
+    notes: (fv('f_est_notes') || '').trim(),
+  };
+}
+function applyEstimateMeta(meta) {
+  if (!meta) return;
+  const set = (id, val) => {
+    const el = document.getElementById(id);
+    if (el && val != null && val !== '') el.value = val;
+  };
+  set('f_est_client', meta.client || '');
+  const mk = document.getElementById('f_est_markup');
+  if (mk) mk.value = meta.markupPct != null ? String(meta.markupPct) : '0';
+  set('f_est_glass', meta.glass || '');
+  set('f_est_freight', meta.freight || '');
+  set('f_est_install', meta.install || '');
+  set('f_est_notes', meta.notes || '');
+  try { localStorage.setItem('dtx_estimate_worksheet', JSON.stringify(readEstimateMeta())); } catch (e) {}
+  refreshEstimateWorksheet();
+}
+function onEstimateInput() {
+  try { localStorage.setItem('dtx_estimate_worksheet', JSON.stringify(readEstimateMeta())); } catch (e) {}
+  refreshEstimateWorksheet();
+}
+function jobPriceSummary(cart) {
+  const doors = (cart || getCart()).filter(d => d && d._kind !== 'estimate-meta');
+  let net = 0;
+  let unpriced = 0;
+  doors.forEach(d => {
+    const n = Number(d.estimatedTotal);
+    if (Number.isFinite(n) && n > 0) net += n;
+    else unpriced += 1;
+  });
+  const meta = readEstimateMeta();
+  const markup = estMoney(net * meta.markupPct / 100);
+  const allowances = estMoney(meta.glass) + estMoney(meta.freight) + estMoney(meta.install);
+  return {
+    doors, net, unpriced, meta, markup, allowances,
+    sell: estMoney(net + markup + allowances),
+  };
+}
+function fmtEst(n) {
+  return '$' + Math.round(n).toLocaleString();
+}
+function refreshEstimateWorksheet() {
+  const box = document.getElementById('est-lines');
+  if (!box) return;
+  const s = jobPriceSummary();
+  const rows = [
+    ['Doortronix package (contractor net)', s.net > 0 ? fmtEst(s.net) : '—'],
+  ];
+  if (s.meta.markupPct > 0) rows.push(['Your markup (' + s.meta.markupPct + '%)', fmtEst(s.markup)]);
+  if (s.meta.glass > 0) rows.push(['Glass allowance (your figure)', fmtEst(s.meta.glass)]);
+  if (s.meta.freight > 0) rows.push(['Freight allowance (your figure)', fmtEst(s.meta.freight)]);
+  if (s.meta.install > 0) rows.push(['Installation allowance (your figure)', fmtEst(s.meta.install)]);
+  rows.push(['Estimate for your client', s.doors.length ? fmtEst(s.sell) : '—']);
+  box.innerHTML = rows.map((r, i) =>
+    '<div class="est-line' + (i === rows.length - 1 ? ' total' : '') + '"><span>' + r[0] + '</span><span>' + r[1] + '</span></div>'
+  ).join('') + (s.unpriced ? '<p class="est-note">One or more openings have no package price yet. The total covers only the priced openings.</p>' : '');
+}
+function escEst(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+}
+function openingLine(d) {
+  const tag = d.locationTags ? d.locationTags + ' — ' : '';
+  const size = d.kind === 'operator' ? (d.widthStr || '') : ((d.widthStr || '—') + ' × ' + (d.heightStr || '—'));
+  const name = (d.configLabel || 'Opening') + (d.configCode ? ' (' + d.configCode + ')' : '');
+  return tag + name + (size ? ' · ' + size : '');
+}
+function clientEstimateHtml() {
+  const s = jobPriceSummary();
+  const project = fv('f_project') || 'Job estimate';
+  const loc = fv('f_location') || '';
+  const when = new Date().toLocaleDateString();
+  const rows = s.doors.map((d, i) => {
+    const price = Number(d.estimatedTotal);
+    const shown = Number.isFinite(price) && price > 0 ? fmtEst(price) : 'Call';
+    return '<tr><td>' + (i + 1) + '</td><td>' + escEst(openingLine(d)) + '</td><td>' + escEst(d.quantity || 1) + '</td><td style="text-align:right">' + shown + '</td></tr>';
+  }).join('');
+  const extra = [];
+  if (s.meta.markupPct > 0) extra.push(['Your markup (' + s.meta.markupPct + '%)', fmtEst(s.markup)]);
+  if (s.meta.glass > 0) extra.push(['Glass allowance — estimator’s figure, not a Doortronix price', fmtEst(s.meta.glass)]);
+  if (s.meta.freight > 0) extra.push(['Freight allowance — estimator’s figure, not a Doortronix price', fmtEst(s.meta.freight)]);
+  if (s.meta.install > 0) extra.push(['Installation allowance — estimator’s figure, not a Doortronix price', fmtEst(s.meta.install)]);
+  return '<!DOCTYPE html><html><head><meta charset="utf-8"><title>' + escEst(project) + '</title>' +
+    '<style>body{font-family:Arial,Helvetica,sans-serif;color:#111;margin:28px;}h1{font-size:20px;margin:0 0 4px;color:#1B4F8A;}p{font-size:13px;line-height:1.4;}table{width:100%;border-collapse:collapse;margin-top:14px;}th,td{border-bottom:1px solid #ccc;padding:6px 8px;font-size:13px;text-align:left;vertical-align:top;}th{font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:#555;} .tot{font-size:16px;font-weight:800;color:#1B4F8A;} .foot{font-size:11px;color:#555;margin-top:16px;}</style></head><body>' +
+    '<h1>Doortronix estimate</h1>' +
+    '<p><strong>' + escEst(project) + '</strong>' + (loc ? ' · ' + escEst(loc) : '') + '<br>' +
+    (s.meta.client ? 'Prepared for ' + escEst(s.meta.client) + '<br>' : '') +
+    escEst(when) + '</p>' +
+    '<table><thead><tr><th>#</th><th>Opening</th><th>Qty</th><th style="text-align:right">Doortronix net</th></tr></thead><tbody>' +
+    rows + '</tbody></table>' +
+    '<table><tbody>' +
+    '<tr><td>Doortronix package</td><td style="text-align:right">' + (s.net > 0 ? fmtEst(s.net) : '—') + '</td></tr>' +
+    extra.map(r => '<tr><td>' + escEst(r[0]) + '</td><td style="text-align:right">' + r[1] + '</td></tr>').join('') +
+    '<tr><td class="tot">Estimate for your client</td><td class="tot" style="text-align:right">' + (s.doors.length ? fmtEst(s.sell) : '—') + '</td></tr>' +
+    '</tbody></table>' +
+    (s.meta.notes ? '<p><strong>Notes</strong><br>' + escEst(s.meta.notes).replace(/\n/g, '<br>') + '</p>' : '') +
+    '<p class="foot">Doortronix package prices are published contractor net for the aluminum door package. They do not include glass, freight, installation, or tax. Markup and allowances on this sheet were entered by the estimator and are not a factory quote. This sheet does not place an order and does not release fabrication. Drawings are preliminary until Doortronix issues a confirmation to sign. Glass by others. Doortronix Inc., Malakoff, Texas · (888) 453-5196</p>' +
+    '</body></html>';
+}
+function printClientEstimate() {
+  const status = document.getElementById('estimate-status');
+  const say = (msg) => {
+    if (!status) return;
+    status.style.display = 'block';
+    status.style.color = '#B91C1C';
+    status.textContent = msg;
+  };
+  if (!getCart().length) { say('Add at least one opening to the project, then print.'); return; }
+  if (status) status.style.display = 'none';
+  const w = window.open('', 'dtx-client-estimate');
+  if (!w) { say('The browser blocked the estimate window. Allow pop-ups for this site and print again.'); return; }
+  w.document.open();
+  w.document.write(clientEstimateHtml());
+  w.document.close();
+  w.focus();
+  setTimeout(() => { try { w.print(); } catch (e) {} }, 250);
+}
+
 async function savePortalDraft() {
   const t = localStorage.getItem('dtx_session');
   const statusEl = document.getElementById('save-quote-status');
@@ -2210,7 +2400,7 @@ async function savePortalDraft() {
     });
   };
   if (!t) {
-    setStatus('To save this quote and reopen it later, <a href="portal/login.html" style="color:#166534;font-weight:700;">sign in</a> or <a href="portal/signup.html" style="color:#166534;font-weight:700;">create an account</a>. It only takes a minute.', false);
+    setStatus('To keep this estimate on your dashboard, <a href="portal/login.html" style="color:#166534;font-weight:700;">sign in</a> or <a href="portal/signup.html" style="color:#166534;font-weight:700;">create an account</a>. You can still print it now without sending it.', false);
     return;
   }
 
@@ -2230,16 +2420,23 @@ async function savePortalDraft() {
   }
 
   const cart = getCart();
-  if (!cart.length) { setStatus('Add or configure at least one door before saving.', false); return; }
+  if (!cart.length) { setStatus('Add at least one opening before saving the estimate.', false); return; }
 
   const hdr = buildDraftHeader();
-  const listTotal = cart.reduce((s, d) => s + (d.estimatedTotal || 0), 0);
-  const title = hdr.projectName || hdr.poNumber || ('Quote ' + new Date().toLocaleDateString());
+  const priced = jobPriceSummary(cart);
+  const listTotal = priced.net;
+  const title = hdr.projectName || hdr.poNumber || (fv('f_est_client') ? ('Estimate for ' + fv('f_est_client')) : ('Estimate ' + new Date().toLocaleDateString()));
+  const doors = cart.map(d => {
+    const copy = Object.assign({}, d);
+    delete copy.estimateMeta;
+    return copy;
+  });
+  if (doors[0]) doors[0].estimateMeta = readEstimateMeta();
   const payload = {
     title, name: hdr.name, email: hdr.email, phone: hdr.phone,
     projectName: hdr.projectName, location: hdr.location,
     poNumber: hdr.poNumber, shipDate: hdr.shipDate, shipTo: hdr.shipTo,
-    doors: cart, listTotal,
+    doors: doors, listTotal,
   };
 
   saveQuoteBtns().forEach(b => { b.disabled = true; b.textContent = 'Saving…'; });
@@ -2251,11 +2448,11 @@ async function savePortalDraft() {
       body: JSON.stringify(payload),
     });
     const data = await res.json().catch(() => ({}));
-    if (!res.ok) throw new Error(data.error || 'Could not save this quote.');
+    if (!res.ok) throw new Error(data.error || 'Could not save this estimate.');
     if (data.draft && data.draft.id) _currentDraftId = data.draft.id;
-    setStatus('✓ Saved to your account.' + inProgressNote + ' Find it under <a href="portal/quotes.html" style="color:#166534;font-weight:700;">Saved quotes →</a>', true);
+    setStatus('✓ Saved on your dashboard. Doortronix has not been asked to confirm it.' + inProgressNote + ' <a href="portal/quotes.html" style="color:#166534;font-weight:700;">Saved estimates →</a>', true);
   } catch (err) {
-    setStatus(err.message || 'Could not save this quote.', false);
+    setStatus(err.message || 'Could not save this estimate.', false);
   } finally {
     saveQuoteBtns().forEach(b => { b.disabled = false; });
     syncSaveQuoteButtons();
@@ -2278,7 +2475,7 @@ function syncAccountBox(me) {
   if (!signed || !guest) return;
   if (me) {
     signed.style.display = '';
-    signed.textContent = 'Signed in as ' + me.email + ' — this quote will save to your account so you can pay, track, and reorder.';
+    signed.textContent = 'Signed in as ' + me.email + ' — Save estimate keeps this job on your dashboard. Sending it to Doortronix is a separate step.';
     guest.style.display = 'none';
   } else {
     signed.style.display = 'none';
@@ -4153,11 +4350,15 @@ function clearCart() {
 function startNewProject() {
   clearCart();
   _currentDraftId = null;
-  ['f_project', 'f_po', 'f_location', 'f_shipto', 'f_ship_phone', 'f_ship_email', 'f_location_tags'].forEach(id => {
+  ['f_project', 'f_po', 'f_location', 'f_shipto', 'f_ship_phone', 'f_ship_email', 'f_location_tags', 'f_est_client', 'f_est_glass', 'f_est_freight', 'f_est_install', 'f_est_notes'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = '';
   });
+  const mk = document.getElementById('f_est_markup');
+  if (mk) mk.value = '0';
+  try { localStorage.removeItem('dtx_estimate_worksheet'); } catch (e) {}
   if (typeof resetDoorForm === 'function') resetDoorForm();
+  if (typeof refreshEstimateWorksheet === 'function') refreshEstimateWorksheet();
 }
 
 function captureCurrentDoor() {
@@ -4674,6 +4875,7 @@ function renderCart() {
 
   if (cart.length === 0) {
     cartSection.style.display = 'none';
+    refreshEstimateWorksheet();
     if (_orderKind === 'operator') {
       if (lbl) lbl.textContent  = 'Configuring Swing Operator';
       if (addBtn) addBtn.textContent = 'Add operator to project';
@@ -4690,7 +4892,7 @@ function renderCart() {
 
   cartSection.style.display = 'block';
   const projTotal = cart.reduce((s, d) => s + (d.estimatedTotal || 0), 0);
-  document.getElementById('cart-total-badge').textContent = 'Est. Total: ' + (projTotal > 0 ? '$' + projTotal.toLocaleString() : '—');
+  document.getElementById('cart-total-badge').textContent = 'Doortronix net: ' + (projTotal > 0 ? '$' + projTotal.toLocaleString() : '—');
 
   cartCards.innerHTML = cart.map((d, i) => {
     const isEditing = d.id === _editingDoorId;
@@ -4740,6 +4942,7 @@ function renderCart() {
       ? 'Update Door in Project' : 'Add to project & configure another';
   }
   syncProjectScopeCopy();
+  refreshEstimateWorksheet();
 }
 
 async function submitAllDoors() {
@@ -4819,19 +5022,19 @@ async function submitAllDoors() {
   };
 
   const btn = document.querySelector('.btn-submit-all');
-  if (btn) { btn.textContent = 'Submitting…'; btn.disabled = true; }
+  if (btn) { btn.textContent = 'Sending…'; btn.disabled = true; }
 
   if (FORMSPREE && FORMSPREE !== 'https://formspree.io/f/YOUR_FORM_ID') {
     try {
       const res = await fetch(FORMSPREE, { method:'POST', headers:{'Content-Type':'application/json','Accept':'application/json'}, body: JSON.stringify(payload) });
       if (!res.ok) {
         const errData = await res.json().catch(() => ({}));
-        if (btn) { btn.textContent = 'Submit Full Project Quote →'; btn.disabled = false; }
+        if (btn) { btn.textContent = 'Send to Doortronix to confirm'; btn.disabled = false; }
         showCartError('Submission failed (' + res.status + '): ' + (errData.error || 'Please try again or call (888) 453-5196.'));
         return;
       }
     } catch(err) {
-      if (btn) { btn.textContent = 'Submit Full Project Quote →'; btn.disabled = false; }
+      if (btn) { btn.textContent = 'Send to Doortronix to confirm'; btn.disabled = false; }
       showCartError('Network error — please check your connection and try again.');
       console.error('Formspree error:', err);
       return;
@@ -4842,13 +5045,13 @@ async function submitAllDoors() {
   try {
     portalSaved = await savePortalOrder(hdr, cart, projTotal);
   } catch (err) {
-    if (btn) { btn.textContent = 'Submit Full Project Quote →'; btn.disabled = false; }
+    if (btn) { btn.textContent = 'Send to Doortronix to confirm'; btn.disabled = false; }
     showCartError('Quote email sent, but your account did not save the order: ' + err.message + ' Keep this cart and try again, or call (888) 453-5196.');
     return;
   }
 
   clearCart();
-  if (btn) { btn.textContent = 'Submit Full Project Quote →'; btn.disabled = false; }
+  if (btn) { btn.textContent = 'Send to Doortronix to confirm'; btn.disabled = false; }
 
   // Show inline success instead of alert (Safari blocks alert)
   const successDiv = document.createElement('div');
@@ -9048,7 +9251,13 @@ renderCart();
     localStorage.removeItem('dtx_restore_order');
     const r = JSON.parse(raw);
     if (!r.doors || !r.doors.length) return;
-    saveCart(r.doors);
+    let restoredMeta = null;
+    r.doors.forEach(d => {
+      if (d && d.estimateMeta) restoredMeta = d.estimateMeta;
+      if (d) delete d.estimateMeta;
+    });
+    const doorsOnly = r.doors.filter(d => d && d._kind !== 'estimate-meta');
+    saveCart(doorsOnly);
     // Reopened from a saved quote → keep the draft id so "Save" updates it.
     if (r.draftId) _currentDraftId = r.draftId;
     const hdr = Object.assign({}, getHeader() || {});
@@ -9082,8 +9291,18 @@ renderCart();
     if (le && r.location && !le.value) le.value = r.location;
     const poe = document.getElementById('f_po');
     if (poe && r.poNumber && !poe.value) poe.value = r.poNumber;
+    if (restoredMeta) applyEstimateMeta(restoredMeta);
+    window._estimateRestored = true;
     renderCart();
   } catch (e) { console.warn('Could not restore copied order', e); }
+})();
+(function loadSavedWorksheet() {
+  if (window._estimateRestored) return;
+  try {
+    const raw = localStorage.getItem('dtx_estimate_worksheet');
+    if (!raw) { refreshEstimateWorksheet(); return; }
+    applyEstimateMeta(JSON.parse(raw));
+  } catch (e) { refreshEstimateWorksheet(); }
 })();
 
 portalMe().then(function (me) {
@@ -9103,7 +9322,7 @@ portalMe().then(function (me) {
     } else {
       a.href = 'portal/login.html?next=' + encodeURIComponent('../quote-combined.html');
       a.style.cssText = 'color:#B8CCE4;font-weight:700;';
-      a.textContent = 'Sign in or create an account to submit';
+      a.textContent = 'Sign in to save estimates on your dashboard';
     }
     chip.appendChild(a);
   }

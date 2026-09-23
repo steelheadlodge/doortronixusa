@@ -113,9 +113,9 @@
     }
     links.innerHTML =
       '<a href="index.html">Dashboard</a>' +
-      '<a href="quotes.html">Saved Quotes</a>' +
+      '<a href="quotes.html">Saved Estimates</a>' +
       '<a href="orders.html">Orders</a>' +
-      '<a href="' + quote + '">New Order</a>' +
+      '<a href="' + quote + '">Price a job</a>' +
       '<a href="account.html">Account</a>' +
       (me.isAdmin ? '<a href="admin.html">Admin</a>' : '') +
       '<a href="#" class="out" id="nav-out">Sign out</a>';
@@ -220,14 +220,14 @@
     if (draftStat) draftStat.textContent = drafts.length;
     const recent = document.getElementById('recent-body');
     if (!orders.length) {
-      recent.innerHTML = '<tr><td colspan="7" class="muted">No orders yet. Start a quote and submit it to your account.</td></tr>';
+      recent.innerHTML = '<tr><td colspan="7" class="muted">No orders yet. An estimate stays on your dashboard until you send it to Doortronix.</td></tr>';
     } else {
       recent.innerHTML = orders.slice(0, 8).map(orderRow).join('');
     }
     const dbody = document.getElementById('dash-drafts-body');
     if (dbody) {
       if (!drafts.length) {
-        dbody.innerHTML = '<tr><td colspan="5" class="muted">No saved quotes yet. Start a quote, add doors, and hit “Save quote.”</td></tr>';
+        dbody.innerHTML = '<tr><td colspan="5" class="muted">No saved estimates yet. Price a job, add the openings, and hit “Save estimate.”</td></tr>';
       } else {
         dbody.innerHTML = drafts.slice(0, 6).map(draftRow).join('');
         wireDraftActions(dbody);
@@ -269,7 +269,7 @@
     const body = document.getElementById('quotes-body');
     const drafts = data.drafts || [];
     if (!drafts.length) {
-      body.innerHTML = '<tr><td colspan="5" class="muted">No saved quotes yet. Start a quote, add doors, and hit “Save quote.”</td></tr>';
+      body.innerHTML = '<tr><td colspan="5" class="muted">No saved estimates yet. Price a job, add the openings, and hit “Save estimate.”</td></tr>';
       return;
     }
     body.innerHTML = drafts.map(draftRow).join('');
@@ -303,14 +303,14 @@
           e.target.disabled = false;
         }
       } else if (delId) {
-        if (!confirm('Delete this saved quote? This cannot be undone.')) return;
+        if (!confirm('Delete this saved estimate? This cannot be undone.')) return;
         e.target.disabled = true;
         try {
           await api('/drafts/' + delId, { method: 'DELETE' });
           const tr = e.target.closest('tr');
           if (tr) tr.remove();
           if (!body.querySelector('tr')) {
-            body.innerHTML = '<tr><td colspan="5" class="muted">No saved quotes yet.</td></tr>';
+            body.innerHTML = '<tr><td colspan="5" class="muted">No saved estimates yet.</td></tr>';
           }
         } catch (err) {
           showErr('page-err', err.message);
@@ -321,7 +321,7 @@
   }
 
   function draftRow(q) {
-    const name = q.title || q.projectName || q.poNumber || 'Untitled quote';
+    const name = q.title || q.projectName || q.poNumber || 'Untitled estimate';
     const saved = (q.updatedAt || q.createdAt || '').slice(0, 16).replace('T', ' ');
     return '<tr>' +
       '<td><strong>' + esc(name) + '</strong>' + (q.location ? '<br><span class="muted" style="font-size:12px">' + esc(q.location) + '</span>' : '') + '</td>' +
