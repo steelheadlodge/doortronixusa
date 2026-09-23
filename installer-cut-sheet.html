@@ -1182,12 +1182,9 @@ function swingSideliteProfileStr() {
   return swingFaceIn() === 2 ? '2" × 4-1/2"' : '1-3/4" × 4-1/2"';
 }
 function defaultSwingMuntinAff() {
-  const hIn = getHeightIn() || 90;
-  const leafH = hIn - 5.75;
-  const glassIf4 = leafH - 4 - 4;
-  const fromTop = 4 + (glassIf4 - 2) / 2 + 1;
-  const aff = Math.round(leafH - fromTop);
-  return Math.max(30, Math.min(54, aff || 42));
+  const clearH = (getHeightIn() || 90) - 5.75;
+  const rail = ORDER.door.bottomRail === '10in' ? 10 : 6;
+  return Math.round((clearH + rail - 2.5) / 2);
 }
 // Slider default muntin AFF: centered (equal lites) up to 8'0"; held at the typical
 // 7'6" position above 8'0" so the muntin doesn't ride too high on tall doors.
@@ -1329,10 +1326,31 @@ function calcGlass() {
   }
   return out;
 }
+function swingBottomRailIn(v) {
+  return v === '10in' ? 10 : 6;
+}
+// Door glass. Width: opening between the jambs, minus 9" (7-5/8" stiles with felt,
+// 1" finger guard, 3/8" glass bite). Height: clear opening under the header to the
+// bottom of the jambs, minus 1-1/8" threshold, 1/2" undercut, and 1/8" at the top,
+// then the bottom rail, the 4" top rail, and each 2" muntin. Muntin AFF is the center.
+function swingLeafGlass(betweenJambs, clearH, railIn, affs) {
+  const w = betweenJambs - 9;
+  const bars = (affs || []).filter(a => a > 0).sort((a, b) => a - b);
+  const heights = [];
+  if (!bars.length) {
+    heights.push(clearH - 1.75 - railIn - 4);
+  } else {
+    let cursor = 1.625 + railIn;
+    bars.forEach(a => {
+      heights.push((a - 1) - cursor);
+      cursor = a + 1;
+    });
+    heights.push((clearH - 0.125 - 4) - cursor);
+  }
+  return heights.map(h => ({ w, h }));
+}
 function calcSwingGlass(cfg, d, W, Hhdr) {
   const face = swingFaceIn();
-  const stile = 3.75;
-  const fg = 1;
   // Non-door frames (sidelites, transoms, center lites): cut glass = daylight opening + 5/8".
   const GLASS_ADD = 0.625;
   // Split a framed opening's daylight HEIGHT into rows at the horizontal muntin bar(s).
@@ -1364,17 +1382,21 @@ function calcSwingGlass(cfg, d, W, Hhdr) {
   }
   if (cfg.isTwin) {
     const hasMuntin = !!(d.muntin && !/no muntin/i.test(d.muntin));
-    const railDeduct = d.bottomRail === '10in' ? 6 : d.bottomRail === '6in' ? 2 : 0;
-    const leafH = Hhdr - 5.75;
-    const noMuntinH = leafH - 8;
-    const muntinH = (leafH - 4 - 4 - 2) / 2;
-    const topH = hasMuntin ? muntinH : noMuntinH;
-    const botH = hasMuntin ? muntinH - railDeduct : noMuntinH - railDeduct;
-    const out = { liteW: 0, topH, botH, hasMuntin, panels: 0, fixedLbl: 'leaf', isBi: false, transoms: [], swing: true, twin: true, doors: [] };
+    const railIn = swingBottomRailIn(d.bottomRail);
+    const clearH = Hhdr - 5.75;
+    const affs = hasMuntin ? swingMuntinAffs() : [];
+    const out = { liteW: 0, topH: 0, botH: 0, hasMuntin, panels: 0, fixedLbl: 'leaf', isBi: false, transoms: [], swing: true, twin: true, doors: [] };
     ['left', 'right'].forEach(side => {
-      const liteW = (twinDoorIn(side) - face * 2) - stile * 2 - fg;
-      out.doors.push({ label: side === 'left' ? 'Left door' : 'Right door', liteW, topH, botH });
+      const pieces = swingLeafGlass(twinDoorIn(side) - face * 2, clearH, railIn, affs);
+      out.doors.push({
+        label: side === 'left' ? 'Left door' : 'Right door',
+        pieces,
+        liteW: pieces[0].w,
+        botH: pieces[0].h,
+        topH: pieces[pieces.length - 1].h
+      });
     });
+    if (out.doors[0]) { out.liteW = out.doors[0].liteW; out.botH = out.doors[0].botH; out.topH = out.doors[0].topH; }
     if (d.transom) {
       const ftth = d.ftthFt ? getFTTHIn() : Hhdr;
       const tH = (ftth - Hhdr) - face * 2;
@@ -1392,16 +1414,16 @@ function calcSwingGlass(cfg, d, W, Hhdr) {
   }
   const isBi = cfg.isBi;
   const hasMuntin = !!(d.muntin && !/no muntin/i.test(d.muntin));
-  const railDeduct = d.bottomRail === '10in' ? 6 : d.bottomRail === '6in' ? 2 : 0;
+  const railIn = swingBottomRailIn(d.bottomRail);
+  const clearH = Hhdr - 5.75;
+  const affs = hasMuntin ? swingMuntinAffs() : [];
   const leafW = isBi ? (W - face * 2) / 2 : (W - face * 2);
-  const liteW = leafW - stile * 2 - fg;
-  const leafH = Hhdr - 5.75;
-  const noMuntinH = leafH - 8;
-  const muntinH = (leafH - 4 - 4 - 2) / 2;
-  const topH = hasMuntin ? muntinH : noMuntinH;
-  const botH = hasMuntin ? muntinH - railDeduct : noMuntinH - railDeduct;
+  const pieces = swingLeafGlass(leafW, clearH, railIn, affs);
   const panels = isBi ? 2 : 1;
-  const out = { liteW, topH, botH, hasMuntin, panels, fixedLbl: 'leaf', isBi, transoms: [], swing: true };
+  const out = {
+    pieces, liteW: pieces[0].w, botH: pieces[0].h, topH: pieces[pieces.length - 1].h,
+    hasMuntin, panels, fixedLbl: 'leaf', isBi, transoms: [], swing: true
+  };
   if (d.transom) {
     const ftth = d.ftthFt ? getFTTHIn() : Hhdr;
     const tH = (ftth - Hhdr) - face * 2;
@@ -1419,9 +1441,6 @@ function calcSwingGlass(cfg, d, W, Hhdr) {
   }
   return out;
 }
-// Swing door-panel glass math is not shop-correct yet — Andrew will supply
-// the factory formula. Hide sizes so nobody cuts from this sheet.
-// Medium-stile slider formulas are also unfinished.
 function calcStorefrontGlass(d, W, H) {
   const GLASS_ADD = 0.625;
   const face = storefrontFaceIn(d);
@@ -1445,14 +1464,14 @@ function calcStorefrontGlass(d, W, H) {
   });
   return { liteW: 0, topH: 0, botH: 0, hasMuntin: false, panels: 0, fixedLbl: 'lite', isBi: false, transoms, storefront: true };
 }
-// Swing door-panel glass math is not shop-correct yet — Andrew will supply
-// the factory formula. Hide sizes so nobody cuts from this sheet.
-// Medium-stile slider formulas are also unfinished.
+// Medium-stile slider glass is not shop-correct yet. Swing door glass uses the
+// factory deduction and is printed.
 function glassSizesHidden() {
   const d = ORDER && ORDER.door;
   if (!d) return false;
   if (isStorefrontCfg(CONFIGS[d.configKey]) || d.typeCategory === 'storefront' || d.configKey === 'storefront-fixed') return false;
-  return isSwingCfg(CONFIGS[d.configKey]) || d.stileWidth === 'medium';
+  if (isSwingCfg(CONFIGS[d.configKey])) return false;
+  return d.stileWidth === 'medium';
 }
 
 function glassSizeRows() {
@@ -1469,19 +1488,32 @@ function glassSizeRows() {
   }
   if (g.twin && g.doors) {
     g.doors.forEach(dr => {
-      if (g.hasMuntin && Math.abs(dr.topH - dr.botH) > 0.01) {
-        rows.push(row(dr.label + ' top', 1, dr.liteW, dr.topH));
-        rows.push(row(dr.label + ' bot', 1, dr.liteW, dr.botH));
-      } else {
-        rows.push(row(dr.label, g.hasMuntin ? 2 : 1, dr.liteW, dr.topH));
-      }
+      const pcs = (dr.pieces || [{ w: dr.liteW, h: dr.topH }]).slice().reverse();
+      if (pcs.length === 1) rows.push(row(dr.label, 1, pcs[0].w, pcs[0].h));
+      else if (pcs.length === 2) {
+        rows.push(row(dr.label + ' top', 1, pcs[0].w, pcs[0].h));
+        rows.push(row(dr.label + ' bot', 1, pcs[1].w, pcs[1].h));
+      } else pcs.forEach((p, i) => {
+        const name = i === 0 ? ' top' : i === pcs.length - 1 ? ' bot' : (pcs.length === 3 ? ' mid' : ' mid ' + i);
+        rows.push(row(dr.label + name, 1, p.w, p.h));
+      });
     });
     g.transoms.forEach(t => rows.push(row(t.label, t.qty, t.w, t.h)));
     return rows;
   }
   const pcs = g.panels;
   const doorLbl = g.swing ? (g.isBi ? 'Leaf' : 'Door') : ('SX / ' + g.fixedLbl);
-  if (g.hasMuntin && Math.abs(g.topH - g.botH) > 0.01) {
+  if (g.swing && g.pieces && g.pieces.length) {
+    const stack = g.pieces.slice().reverse();
+    if (stack.length === 1) rows.push(row(doorLbl, pcs, stack[0].w, stack[0].h));
+    else if (stack.length === 2) {
+      rows.push(row(doorLbl + ' top', pcs, stack[0].w, stack[0].h));
+      rows.push(row(doorLbl + ' bot', pcs, stack[1].w, stack[1].h));
+    } else stack.forEach((p, i) => {
+      const name = i === 0 ? ' top' : i === stack.length - 1 ? ' bot' : (stack.length === 3 ? ' mid' : ' mid ' + i);
+      rows.push(row(doorLbl + name, pcs, p.w, p.h));
+    });
+  } else if (g.hasMuntin && Math.abs(g.topH - g.botH) > 0.01) {
     rows.push(row(doorLbl + ' top', pcs, g.liteW, g.topH));
     rows.push(row(doorLbl + ' bot', pcs, g.liteW, g.botH));
   } else {

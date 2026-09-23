@@ -670,6 +670,9 @@ body.sheet-mode #plan-svg { background:#fff; }
 
         </div><!-- /configGrid-storefront -->
 
+        <p id="arch-dwg-line" style="font-size:13px;margin-top:8px;">
+          <a id="arch-dwg-link" href="docs/BIPART%20SLIDE%20FBO%20SO-SX-SX-SO.pdf" target="_blank" rel="noopener" style="font-weight:700;color:var(--blue);">Architectural drawing for this configuration →</a>
+        </p>
         <p style="font-size:11px;color:var(--mgray);margin-top:6px;">ESA and custom configurations: call <strong>(888) 453-5196</strong>.</p>
       </div>
 
@@ -4047,6 +4050,10 @@ function syncSwingUi() {
     const sSel = document.getElementById('muntin_aff');
     if (sSel && sSel.options.length) sSel.value = String(defaultSliderMuntinAff());
   }
+  if (swing && !_muntinAffTouched) {
+    const sSel = document.getElementById('muntin_aff');
+    if (sSel && sSel.options.length) sSel.value = String(defaultSwingMuntinAff());
+  }
   const mhLbl = document.getElementById('muntin-aff-label');
   if (mhLbl) mhLbl.textContent = nMunt >= 2 ? 'Muntin 1 height' : 'Muntin height';
   const mhHint = document.getElementById('muntin-aff-hint');
@@ -5408,6 +5415,63 @@ function calcSliderGlass() {
   }
   return { liteW, topH, botH, hasMuntin, panels, transoms, isBi };
 }
+function swingBottomRailIn() {
+  return rv('bottomRail') === '10in' ? 10 : 6;
+}
+// Same factory deduction as the cut sheet. Width is the opening between the jambs
+// minus 9". Height starts at the clear opening (under the header to the bottom of
+// the jambs), then takes off threshold, undercut, top gap, rails, and muntins.
+function swingLeafGlass(betweenJambs, clearH, railIn, affs) {
+  const w = betweenJambs - 9;
+  const bars = (affs || []).filter(a => a > 0).sort((a, b) => a - b);
+  const heights = [];
+  if (!bars.length) {
+    heights.push(clearH - 1.75 - railIn - 4);
+  } else {
+    let cursor = 1.625 + railIn;
+    bars.forEach(a => {
+      heights.push((a - 1) - cursor);
+      cursor = a + 1;
+    });
+    heights.push((clearH - 0.125 - 4) - cursor);
+  }
+  return heights.map(h => ({ w, h }));
+}
+function swingGlassSummaryRows() {
+  const cfg = getConfig();
+  if (!cfg || !cfg.isSwing) return [];
+  const clearH = calcSwingClearHeightIn();
+  if (clearH == null) return [];
+  const face = getSwingFrameFaceIn();
+  const rail = swingBottomRailIn();
+  const affs = swingMuntinCount() ? getSwingMuntinAffs() : [];
+  const rows = [];
+  function pushLeaf(label, between, qty) {
+    const pieces = swingLeafGlass(between, clearH, rail, affs).slice().reverse();
+    const size = p => fmtInches(p.w) + ' × ' + fmtInches(p.h);
+    if (pieces.length === 1) {
+      rows.push(['Glass — ' + label, '(Qty ' + qty + ')  ' + size(pieces[0])]);
+    } else if (pieces.length === 2) {
+      rows.push(['Glass — ' + label + ' top', '(Qty ' + qty + ')  ' + size(pieces[0])]);
+      rows.push(['Glass — ' + label + ' bot', '(Qty ' + qty + ')  ' + size(pieces[1])]);
+    } else {
+      pieces.forEach((p, i) => {
+        const name = i === 0 ? ' top' : i === pieces.length - 1 ? ' bot' : (pieces.length === 3 ? ' mid' : ' mid ' + i);
+        rows.push(['Glass — ' + label + name, '(Qty ' + qty + ')  ' + size(p)]);
+      });
+    }
+  }
+  if (cfg.isTwin) {
+    pushLeaf('left door', getTwinDoorIn('left') - face * 2, 1);
+    pushLeaf('right door', getTwinDoorIn('right') - face * 2, 1);
+  } else {
+    const w = getWidthIn();
+    if (w == null) return rows;
+    const between = w - face * 2;
+    pushLeaf(cfg.isBi ? 'leaf' : 'door', cfg.isBi ? between / 2 : between, cfg.isBi ? 2 : 1);
+  }
+  return rows;
+}
 function sliderGlassSummaryRows() {
   // Medium-stile slider glass formulas are not production-verified yet, so we
   // withhold those cut sizes (the cut sheet hides them too). Narrow stile only.
@@ -5437,12 +5501,9 @@ function getSwingSideliteProfileStr() {
   return getSwingSideliteFaceIn() === 2 ? '2" × 4-1/2" (1" glass)' : '1-3/4" × 4-1/2" (1/4" glass)';
 }
 function defaultSwingMuntinAff() {
-  const hIn = getHeightIn() || SWING_STD_H;
-  const leafH = hIn - 5.75;
-  const glassIf4 = leafH - 4 - 4;
-  const fromTop = 4 + (glassIf4 - 2) / 2 + 1;
-  const aff = Math.round(leafH - fromTop);
-  return Math.max(30, Math.min(54, aff || 42));
+  const clearH = (getHeightIn() || SWING_STD_H) - 5.75;
+  const rail = rv('bottomRail') === '10in' ? 10 : 6;
+  return Math.round((clearH + rail - 2.5) / 2);
 }
 // Slider default muntin AFF: centered (equal lites) up to 8'0"; held at the typical
 // 7'6" position above 8'0" so the muntin doesn't ride too high on tall doors.
@@ -6529,7 +6590,7 @@ function updateSpecSummary() {
     ['Header Height', getHeightStr()],
     ...(rv('transom') === 'yes' ? [['Overall Frame Height', getFtthStr() || '—']] : []),
     [(cfg && cfg.isSwing) ? 'Clear Door Opening' : 'Net Opening', getOpenStr() || '—'],
-    ...((cfg && !cfg.isSwing && !cfg.isStorefront) ? sliderGlassSummaryRows() : []),
+    ...((cfg && cfg.isSwing) ? swingGlassSummaryRows() : (cfg && !cfg.isStorefront) ? sliderGlassSummaryRows() : []),
     ['Alarm Contacts', alarmContacts],
     ['Quantity', fv('f_qty') || '—'],
   ];
@@ -8439,6 +8500,30 @@ function ensureSwingWidth() {
   else if (w > maxW) setFrameWidthIn(maxW);
 }
 
+const ARCH_DWG = {
+  'fbo-bi':          ['docs/BIPART SLIDE FBO SO-SX-SX-SO.pdf', 'Architectural drawing — FBO bi-part (SO-SX-SX-SO) →'],
+  'fsl-bi':          ['docs/BIPART SLIDE FSL O-SX-SX-O.pdf', 'Architectural drawing — FSL bi-part (O-SX-SX-O) →'],
+  'fbo-single-rh':   ['docs/SINGLE SLIDE FBO RH SX-SO.pdf', 'Architectural drawing — FBO single RH (SX-SO) →'],
+  'fbo-single-lh':   ['docs/SINGLE SLIDE FBO LH SO-SX.pdf', 'Architectural drawing — FBO single LH (SO-SX) →'],
+  'fsl-single-lh':   ['docs/SINGLE SLIDE FSL LH O-SX.pdf', 'Architectural drawing — FSL single LH (O-SX) →'],
+  'fsl-single-rh':   ['docs/SINGLE SLIDE FSL RH SX-O.pdf', 'Architectural drawing — FSL single RH (SX-O) →'],
+  'swing-single':    ['docs/DOORTRONIX OHC SINGLE SWING.pdf', 'Architectural drawing — OHC single swing →'],
+  'swing-single-rh': ['docs/DOORTRONIX OHC SINGLE SWING.pdf', 'Architectural drawing — OHC single swing →'],
+  'swing-single-lh': ['docs/DOORTRONIX OHC SINGLE SWING.pdf', 'Architectural drawing — OHC single swing →'],
+  'swing-pair':      ['docs/DOORTRONIX OHC SWING PAIR.pdf', 'Architectural drawing — OHC swing pair →'],
+  'swing-twin-center': ['docs/DOORTRONIX OHC SINGLE SWING.pdf', 'Architectural drawing — OHC single (each leaf) →'],
+};
+function syncArchDrawing() {
+  const line = document.getElementById('arch-dwg-line');
+  const link = document.getElementById('arch-dwg-link');
+  if (!line || !link) return;
+  const key = rv('config');
+  const hit = ARCH_DWG[key];
+  if (!hit || _orderKind === 'operator') { line.hidden = true; return; }
+  line.hidden = false;
+  link.href = encodeURI(hit[0]);
+  link.textContent = hit[1];
+}
 function updateAll() {
   ensureSwingWidth();
   ensureSliderWidth();
@@ -8461,6 +8546,7 @@ function updateAll() {
   updateNetOpeningDisplay();
   calcPrice();
   updateSpecSummary();
+  syncArchDrawing();
   if (document.body.classList.contains('sheet-mode')) {
     drawDoor('door-svg', 840, 460, true);
     if (getConfig() && getConfig().isStorefront) drawStorefrontPlan('plan-svg', 840);
