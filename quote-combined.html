@@ -321,20 +321,28 @@ body.sheet-mode #plan-svg { background:#fff; }
 .btn-submit-all:hover { background:#EEF4FB; }
 .btn-print-est { background:var(--blue); color:#fff; border:none; border-radius:7px; padding:9px 14px; font-size:13px; font-weight:700; cursor:pointer; white-space:nowrap; }
 .btn-print-est:hover { background:var(--dblue); }
-#job-estimate { background:#fff; border:2px solid var(--blue); border-radius:10px; padding:14px 16px 12px; margin:0 0 20px; }
-#job-estimate h2 { margin:0 0 4px; font-size:15px; color:var(--blue); }
-#job-estimate .est-lead { margin:0 0 12px; font-size:12px; line-height:1.45; color:#334155; }
-#job-estimate .est-grid { display:grid; grid-template-columns:1.4fr 0.7fr 0.8fr 0.8fr 0.8fr; gap:8px; }
+#job-estimate { background:#fff; border:1px solid #C5D3E3; border-radius:10px; padding:0; margin:0 0 20px; overflow:hidden; box-shadow:0 1px 3px rgba(27,79,138,.06); }
+#job-estimate .est-head { padding:14px 16px 12px; border-bottom:1px solid #E5EAF0; }
+#job-estimate h2 { margin:0 0 4px; font-size:16px; letter-spacing:.2px; color:var(--blue); }
+#job-estimate .est-lead { margin:0; font-size:12px; line-height:1.5; color:#475569; }
+#job-estimate .est-body { padding:12px 16px 14px; }
+#job-estimate .est-sec { margin:0 0 14px; }
+#job-estimate .est-sec:last-of-type { margin-bottom:0; }
+#job-estimate .est-k { font-size:10px; font-weight:800; letter-spacing:.7px; text-transform:uppercase; color:#1B4F8A; margin:0 0 8px; }
+#job-estimate .est-grid { display:grid; grid-template-columns:repeat(4, 1fr); gap:8px 10px; }
+#job-estimate .est-grid.cols-2 { grid-template-columns:1.6fr 0.8fr; }
 #job-estimate label { display:block; font-size:11px; font-weight:700; color:#334155; margin-bottom:3px; }
+#job-estimate .hint { display:block; font-size:10px; color:#64748b; margin-top:3px; line-height:1.35; font-weight:400; }
 #job-estimate input, #job-estimate textarea { width:100%; box-sizing:border-box; padding:7px 8px; border:1px solid #c0cfe0; border-radius:6px; font-size:13px; }
-#job-estimate textarea { min-height:52px; resize:vertical; margin-top:8px; }
-.est-lines { margin-top:10px; border-top:1px solid #E5EAF0; padding-top:8px; }
-.est-line { display:flex; justify-content:space-between; gap:12px; font-size:13px; padding:3px 0; }
-.est-line.total { font-size:16px; font-weight:800; color:var(--blue); border-top:2px solid var(--blue); margin-top:4px; padding-top:6px; }
-.est-actions { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:10px; }
-.est-note { font-size:11px; color:#64748b; line-height:1.4; margin:8px 0 0; }
+#job-estimate textarea { min-height:58px; resize:vertical; }
+.est-lines { background:#F7FAFC; border:1px solid #E5EAF0; border-radius:8px; padding:10px 12px; margin:4px 0 12px; }
+.est-line { display:flex; justify-content:space-between; gap:12px; font-size:13px; padding:4px 0; color:#1e293b; }
+.est-line.sub { color:#64748b; border-top:1px dashed #D0DCEA; margin-top:4px; padding-top:6px; }
+.est-line.total { font-size:16px; font-weight:800; color:var(--blue); border-top:2px solid var(--blue); margin-top:6px; padding-top:8px; }
+.est-actions { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+.est-note { font-size:11px; color:#64748b; line-height:1.45; margin:10px 0 0; }
 @media (max-width: 800px) {
-  #job-estimate .est-grid { grid-template-columns:1fr 1fr; }
+  #job-estimate .est-grid, #job-estimate .est-grid.cols-2 { grid-template-columns:1fr 1fr; }
 }
 .btn-save-quote { background:#166534; color:#fff; border:none; border-radius:7px; padding:9px 16px; font-size:13px; font-weight:700; cursor:pointer; transition:background .15s; white-space:nowrap; }
 .btn-save-quote:hover { background:#14532d; }
@@ -342,14 +350,16 @@ body.sheet-mode #plan-svg { background:#fff; }
 .btn-clear-cart { background:none; border:1.5px solid #c00; color:#c00; border-radius:7px; padding:7px 12px; font-size:11px; font-weight:700; cursor:pointer; }
 .btn-clear-cart:hover { background:#fdecea; }
 #cart-cards { display:flex; flex-wrap:wrap; gap:8px; }
-.cart-card { background:#fff; border:1.5px solid var(--border); border-radius:8px; padding:10px 12px; min-width:140px; max-width:190px; flex:1; box-shadow:0 1px 4px rgba(0,0,0,.06); }
+.cart-card { background:#fff; border:1.5px solid var(--border); border-radius:8px; padding:10px 12px; min-width:168px; max-width:220px; flex:1; box-shadow:0 1px 4px rgba(0,0,0,.06); cursor:pointer; text-align:left; }
+.cart-card:hover { border-color:var(--blue); box-shadow:0 2px 8px rgba(27,79,138,.12); }
+.cart-card:focus { outline:2px solid var(--blue); outline-offset:2px; }
 .cart-card-num { font-size:10px; font-weight:700; color:var(--orange); text-transform:uppercase; letter-spacing:.4px; margin-bottom:3px; }
 .cart-card-type { font-size:12px; font-weight:700; color:var(--blue); line-height:1.2; }
 .cart-card-code { font-size:10px; color:var(--mgray); letter-spacing:.3px; margin-top:1px; }
 .cart-card-dims { font-size:11px; color:#111; margin-top:4px; font-weight:600; }
 .cart-card-price { font-size:13px; font-weight:700; color:var(--orange); margin-top:3px; }
-.cart-card-actions { display:flex; gap:5px; margin-top:7px; }
-.cart-card-actions button { flex:1; padding:4px 0; border-radius:5px; font-size:11px; font-weight:700; cursor:pointer; border:1.5px solid var(--border); background:#fff; color:var(--blue); }
+.cart-card-actions { display:flex; flex-wrap:wrap; gap:5px; margin-top:7px; }
+.cart-card-actions button { flex:1 1 46%; padding:5px 0; border-radius:5px; font-size:11px; font-weight:700; cursor:pointer; border:1.5px solid var(--border); background:#fff; color:var(--blue); }
 .cart-card-actions button:hover { border-color:var(--blue); background:#EEF4FB; }
 .cart-card-actions .btn-remove { color:#c00; border-color:#f5c6c6; }
 .cart-card-actions .btn-remove:hover { background:#fdecea; border-color:#c00; }
@@ -487,44 +497,83 @@ body.sheet-mode #plan-svg { background:#fff; }
           <button type="button" class="btn-save-quote" id="btn-save-quote" onclick="savePortalDraft()" style="display:none;">Save estimate</button>
         </div>
       </div>
+      <p class="est-note" id="cart-click-hint" style="margin:0 0 8px;">Click an opening to edit it. Use Drawing for that opening’s preliminary sheet.</p>
       <div id="cart-cards"></div>
       <div id="save-quote-status" style="display:none;font-size:12px;font-weight:600;margin-top:8px;"></div>
     </div>
 
     <div id="job-estimate">
-      <h2>Price this job</h2>
-      <p class="est-lead">Doortronix net is the package price. Add your markup, and any glass, freight, or installation allowance you want on the sheet you give your client. Those allowances are your figures. Saving and printing do not send this job to the factory.</p>
-      <div class="est-grid">
-        <div>
-          <label for="f_est_client">Estimate for</label>
-          <input type="text" id="f_est_client" placeholder="Your client or GC" oninput="onEstimateInput()">
-        </div>
-        <div>
-          <label for="f_est_markup">Your markup %</label>
-          <input type="number" id="f_est_markup" min="0" step="0.5" value="0" oninput="onEstimateInput()">
-        </div>
-        <div>
-          <label for="f_est_glass">Glass allowance $</label>
-          <input type="number" id="f_est_glass" min="0" step="1" placeholder="0" oninput="onEstimateInput()">
-        </div>
-        <div>
-          <label for="f_est_freight">Freight allowance $</label>
-          <input type="number" id="f_est_freight" min="0" step="1" placeholder="0" oninput="onEstimateInput()">
-        </div>
-        <div>
-          <label for="f_est_install">Install allowance $</label>
-          <input type="number" id="f_est_install" min="0" step="1" placeholder="0" oninput="onEstimateInput()">
-        </div>
+      <div class="est-head">
+        <h2>Job estimate</h2>
+        <p class="est-lead">The Doortronix package is contractor net. Glass, freight, labor, miscellaneous, and travel are your figures for the client sheet. Markup applies to the whole job. Saving and printing do not send this to the factory.</p>
       </div>
-      <textarea id="f_est_notes" placeholder="Notes for your client sheet — scope, exclusions, lead time you are quoting. Not sent unless you send the job." oninput="onEstimateInput()"></textarea>
-      <div class="est-lines" id="est-lines"></div>
-      <div class="est-actions">
-        <button type="button" class="btn-save-quote" id="btn-save-quote-est" onclick="savePortalDraft()">Save estimate</button>
-        <button type="button" class="btn-print-est" onclick="printClientEstimate()">Print client estimate</button>
-        <button type="button" class="btn-submit-all" onclick="submitAllDoors()">Send to Doortronix to confirm</button>
+      <div class="est-body">
+        <div class="est-sec">
+          <div class="est-k">Prepared for</div>
+          <div class="est-grid cols-2">
+            <div>
+              <label for="f_est_client">Client</label>
+              <input type="text" id="f_est_client" placeholder="General contractor or owner" oninput="onEstimateInput()">
+            </div>
+            <div>
+              <label for="f_est_markup">Markup on the job %</label>
+              <input type="number" id="f_est_markup" min="0" step="0.5" value="0" oninput="onEstimateInput()">
+              <span class="hint">Applied after package, glass, freight, labor, miscellaneous, and travel.</span>
+            </div>
+          </div>
+        </div>
+        <div class="est-sec">
+          <div class="est-k">Glass &amp; freight</div>
+          <div class="est-grid cols-2">
+            <div>
+              <label for="f_est_glass">Glass $</label>
+              <input type="number" id="f_est_glass" min="0" step="1" placeholder="0" oninput="onEstimateInput()">
+              <span class="hint">Your glass or an allowance. Not a Doortronix price.</span>
+            </div>
+            <div>
+              <label for="f_est_freight">Freight $</label>
+              <input type="number" id="f_est_freight" min="0" step="1" placeholder="0" oninput="onEstimateInput()">
+              <span class="hint">Carrier to the shop or the job.</span>
+            </div>
+          </div>
+        </div>
+        <div class="est-sec">
+          <div class="est-k">Installation</div>
+          <div class="est-grid">
+            <div>
+              <label for="f_est_labor_hrs">Labor hours</label>
+              <input type="number" id="f_est_labor_hrs" min="0" step="0.5" placeholder="0" oninput="onEstimateInput()">
+            </div>
+            <div>
+              <label for="f_est_labor_rate">Crew rate $ / hr</label>
+              <input type="number" id="f_est_labor_rate" min="0" step="1" placeholder="0" oninput="onEstimateInput()">
+              <span class="hint">Your loaded rate, not a factory rate.</span>
+            </div>
+            <div>
+              <label for="f_est_misc">Miscellaneous $</label>
+              <input type="number" id="f_est_misc" min="0" step="1" placeholder="0" oninput="onEstimateInput()">
+              <span class="hint">Caulk, shims, anchors, angles, screws.</span>
+            </div>
+            <div>
+              <label for="f_est_travel">Travel $</label>
+              <input type="number" id="f_est_travel" min="0" step="1" placeholder="0" oninput="onEstimateInput()">
+              <span class="hint">Miles, tolls, parking, lodging.</span>
+            </div>
+          </div>
+        </div>
+        <div class="est-sec">
+          <label for="f_est_notes">Notes on the client sheet</label>
+          <textarea id="f_est_notes" placeholder="Scope, exclusions, and the lead time you are quoting. Not sent unless you send the job." oninput="onEstimateInput()"></textarea>
+        </div>
+        <div class="est-lines" id="est-lines"></div>
+        <div class="est-actions">
+          <button type="button" class="btn-save-quote" id="btn-save-quote-est" onclick="savePortalDraft()">Save estimate</button>
+          <button type="button" class="btn-print-est" onclick="printClientEstimate()">Print client estimate</button>
+          <button type="button" class="btn-submit-all" onclick="submitAllDoors()">Send to Doortronix to confirm</button>
+        </div>
+        <p class="est-note">Send this only when you want Malakoff to confirm the package price and issue a drawing to sign. Labor, miscellaneous, travel, and markup stay on your sheet.</p>
+        <div id="estimate-status" style="display:none;font-size:12px;font-weight:600;margin-top:8px;"></div>
       </div>
-      <p class="est-note">Send this only when you want Malakoff to confirm the package price and issue a drawing to sign. Your markup and allowances stay on your sheet — they are not the factory price.</p>
-      <div id="estimate-status" style="display:none;font-size:12px;font-weight:600;margin-top:8px;"></div>
     </div>
 
     <form id="quoteForm" novalidate>
@@ -2196,11 +2245,36 @@ function syncSaveQuoteButtons() {
   saveQuoteBtns().forEach(b => { b.style.display = ''; b.textContent = txt; });
 }
 
-// Is the user mid-configuring a door that isn't in the cart yet? If so, Save
-// should fold that work in first so nothing gets lost.
+// After a door is added, the form is reset to a ready-to-configure next
+// opening (size filled in). That leftover template must not be saved as
+// another door. Only treat the form as in-progress if they changed it,
+// they are editing a cart item, or the project is still empty.
+let _idleOpeningSig = '';
+function openingFormSig() {
+  const cfg = rv('config') || '';
+  const addons = [..._checkedAddons].sort().join(',');
+  return [
+    _currentDoorType || '',
+    cfg,
+    getWidthIn() || 0,
+    getHeightIn() || 0,
+    fv('f_qty') || '1',
+    (fv('f_location_tags') || '').trim(),
+    (fv('f_notes') || '').trim(),
+    addons,
+  ].join('|');
+}
+function markOpeningIdle() {
+  _idleOpeningSig = openingFormSig();
+}
+function isIdleNextOpening() {
+  return !!_idleOpeningSig && openingFormSig() === _idleOpeningSig;
+}
+
 function hasInProgressDoor() {
   if (_editingDoorId !== null) return true;
   if (!rv('config')) return false;
+  if (getCart().length && isIdleNextOpening()) return false;
   const cfg = getConfig();
   const doors = (cfg && cfg.isTwin)
     ? [getTwinDoorIn('left'), getTwinDoorIn('right')]
@@ -2265,7 +2339,10 @@ function readEstimateMeta() {
     markupPct: estFieldNum('f_est_markup'),
     glass: estFieldNum('f_est_glass'),
     freight: estFieldNum('f_est_freight'),
-    install: estFieldNum('f_est_install'),
+    laborHours: estFieldNum('f_est_labor_hrs'),
+    laborRate: estFieldNum('f_est_labor_rate'),
+    misc: estFieldNum('f_est_misc'),
+    travel: estFieldNum('f_est_travel'),
     notes: (fv('f_est_notes') || '').trim(),
   };
 }
@@ -2273,21 +2350,39 @@ function applyEstimateMeta(meta) {
   if (!meta) return;
   const set = (id, val) => {
     const el = document.getElementById(id);
-    if (el && val != null && val !== '') el.value = val;
+    if (!el) return;
+    if (val == null || val === '') return;
+    el.value = val;
   };
   set('f_est_client', meta.client || '');
   const mk = document.getElementById('f_est_markup');
   if (mk) mk.value = meta.markupPct != null ? String(meta.markupPct) : '0';
   set('f_est_glass', meta.glass || '');
   set('f_est_freight', meta.freight || '');
-  set('f_est_install', meta.install || '');
+  set('f_est_labor_hrs', meta.laborHours || '');
+  set('f_est_labor_rate', meta.laborRate || '');
+  set('f_est_misc', meta.misc || '');
+  set('f_est_travel', meta.travel || '');
   set('f_est_notes', meta.notes || '');
+  if ((!meta.laborHours && !meta.laborRate) && meta.install) {
+    const hrs = document.getElementById('f_est_labor_hrs');
+    const rate = document.getElementById('f_est_labor_rate');
+    if (hrs && !hrs.value) hrs.value = '1';
+    if (rate && !rate.value) rate.value = String(meta.install);
+  }
   try { localStorage.setItem('dtx_estimate_worksheet', JSON.stringify(readEstimateMeta())); } catch (e) {}
   refreshEstimateWorksheet();
 }
 function onEstimateInput() {
   try { localStorage.setItem('dtx_estimate_worksheet', JSON.stringify(readEstimateMeta())); } catch (e) {}
   refreshEstimateWorksheet();
+}
+function laborCost(meta) {
+  const hours = Number(meta.laborHours) || 0;
+  const rate = Number(meta.laborRate) || 0;
+  const fromHours = estMoney(hours * rate);
+  if (fromHours > 0) return fromHours;
+  return estMoney(meta.labor || meta.install || 0);
 }
 function jobPriceSummary(cart) {
   const doors = (cart || getCart()).filter(d => d && d._kind !== 'estimate-meta');
@@ -2299,31 +2394,51 @@ function jobPriceSummary(cart) {
     else unpriced += 1;
   });
   const meta = readEstimateMeta();
-  const markup = estMoney(net * meta.markupPct / 100);
-  const allowances = estMoney(meta.glass) + estMoney(meta.freight) + estMoney(meta.install);
+  const glass = estMoney(meta.glass);
+  const freight = estMoney(meta.freight);
+  const labor = laborCost(meta);
+  const misc = estMoney(meta.misc);
+  const travel = estMoney(meta.travel);
+  const direct = estMoney(net + glass + freight + labor + misc + travel);
+  const markup = estMoney(direct * meta.markupPct / 100);
   return {
-    doors, net, unpriced, meta, markup, allowances,
-    sell: estMoney(net + markup + allowances),
+    doors, net, unpriced, meta, glass, freight, labor, misc, travel, direct, markup,
+    sell: estMoney(direct + markup),
   };
 }
 function fmtEst(n) {
   return '$' + Math.round(n).toLocaleString();
 }
+function laborLabel(meta, amount) {
+  if ((meta.laborHours || 0) > 0 && (meta.laborRate || 0) > 0) {
+    return 'Labor — ' + meta.laborHours + ' hr @ ' + fmtEst(meta.laborRate);
+  }
+  return amount > 0 ? 'Labor' : 'Labor';
+}
+function estimateCostRows(s) {
+  const rows = [
+    ['Doortronix package (contractor net)', s.net > 0 ? fmtEst(s.net) : '—'],
+  ];
+  if (s.glass > 0) rows.push(['Glass', fmtEst(s.glass)]);
+  if (s.freight > 0) rows.push(['Freight', fmtEst(s.freight)]);
+  if (s.labor > 0) rows.push([laborLabel(s.meta, s.labor), fmtEst(s.labor)]);
+  if (s.misc > 0) rows.push(['Miscellaneous materials', fmtEst(s.misc)]);
+  if (s.travel > 0) rows.push(['Travel', fmtEst(s.travel)]);
+  rows.push(['Subtotal', s.doors.length ? fmtEst(s.direct) : '—']);
+  if (s.meta.markupPct > 0) rows.push(['Markup (' + s.meta.markupPct + '%)', fmtEst(s.markup)]);
+  rows.push(['Estimate total', s.doors.length ? fmtEst(s.sell) : '—']);
+  return rows;
+}
 function refreshEstimateWorksheet() {
   const box = document.getElementById('est-lines');
   if (!box) return;
   const s = jobPriceSummary();
-  const rows = [
-    ['Doortronix package (contractor net)', s.net > 0 ? fmtEst(s.net) : '—'],
-  ];
-  if (s.meta.markupPct > 0) rows.push(['Your markup (' + s.meta.markupPct + '%)', fmtEst(s.markup)]);
-  if (s.meta.glass > 0) rows.push(['Glass allowance (your figure)', fmtEst(s.meta.glass)]);
-  if (s.meta.freight > 0) rows.push(['Freight allowance (your figure)', fmtEst(s.meta.freight)]);
-  if (s.meta.install > 0) rows.push(['Installation allowance (your figure)', fmtEst(s.meta.install)]);
-  rows.push(['Estimate for your client', s.doors.length ? fmtEst(s.sell) : '—']);
-  box.innerHTML = rows.map((r, i) =>
-    '<div class="est-line' + (i === rows.length - 1 ? ' total' : '') + '"><span>' + r[0] + '</span><span>' + r[1] + '</span></div>'
-  ).join('') + (s.unpriced ? '<p class="est-note">One or more openings have no package price yet. The total covers only the priced openings.</p>' : '');
+  const rows = estimateCostRows(s);
+  box.innerHTML = rows.map((r, i) => {
+    const last = i === rows.length - 1;
+    const sub = r[0] === 'Subtotal';
+    return '<div class="est-line' + (last ? ' total' : '') + (sub ? ' sub' : '') + '"><span>' + r[0] + '</span><span>' + r[1] + '</span></div>';
+  }).join('') + (s.unpriced ? '<p class="est-note">One or more openings have no package price yet. The total covers only the priced openings.</p>' : '');
 }
 function escEst(s) {
   return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
@@ -2339,32 +2454,55 @@ function clientEstimateHtml() {
   const project = fv('f_project') || 'Job estimate';
   const loc = fv('f_location') || '';
   const when = new Date().toLocaleDateString();
-  const rows = s.doors.map((d, i) => {
+  const prepared = fv('f_company') || fv('f_name') || '';
+  const openings = s.doors.map((d, i) => {
     const price = Number(d.estimatedTotal);
-    const shown = Number.isFinite(price) && price > 0 ? fmtEst(price) : 'Call';
-    return '<tr><td>' + (i + 1) + '</td><td>' + escEst(openingLine(d)) + '</td><td>' + escEst(d.quantity || 1) + '</td><td style="text-align:right">' + shown + '</td></tr>';
+    const shown = Number.isFinite(price) && price > 0 ? fmtEst(price) : '—';
+    return '<tr><td>' + (i + 1) + '</td><td>' + escEst(openingLine(d)) + '</td><td>' + escEst(d.quantity || 1) + '</td><td class="num">' + shown + '</td></tr>';
   }).join('');
-  const extra = [];
-  if (s.meta.markupPct > 0) extra.push(['Your markup (' + s.meta.markupPct + '%)', fmtEst(s.markup)]);
-  if (s.meta.glass > 0) extra.push(['Glass allowance — estimator’s figure, not a Doortronix price', fmtEst(s.meta.glass)]);
-  if (s.meta.freight > 0) extra.push(['Freight allowance — estimator’s figure, not a Doortronix price', fmtEst(s.meta.freight)]);
-  if (s.meta.install > 0) extra.push(['Installation allowance — estimator’s figure, not a Doortronix price', fmtEst(s.meta.install)]);
+  const costs = estimateCostRows(s).map((r, i, arr) => {
+    const last = i === arr.length - 1;
+    const sub = r[0] === 'Subtotal';
+    return '<tr class="' + (last ? 'tot' : '') + (sub ? ' sub' : '') + '"><td>' + escEst(r[0]) + '</td><td class="num">' + r[1] + '</td></tr>';
+  }).join('');
   return '<!DOCTYPE html><html><head><meta charset="utf-8"><title>' + escEst(project) + '</title>' +
-    '<style>body{font-family:Arial,Helvetica,sans-serif;color:#111;margin:28px;}h1{font-size:20px;margin:0 0 4px;color:#1B4F8A;}p{font-size:13px;line-height:1.4;}table{width:100%;border-collapse:collapse;margin-top:14px;}th,td{border-bottom:1px solid #ccc;padding:6px 8px;font-size:13px;text-align:left;vertical-align:top;}th{font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:#555;} .tot{font-size:16px;font-weight:800;color:#1B4F8A;} .foot{font-size:11px;color:#555;margin-top:16px;}</style></head><body>' +
-    '<h1>Doortronix estimate</h1>' +
-    '<p><strong>' + escEst(project) + '</strong>' + (loc ? ' · ' + escEst(loc) : '') + '<br>' +
-    (s.meta.client ? 'Prepared for ' + escEst(s.meta.client) + '<br>' : '') +
-    escEst(when) + '</p>' +
-    '<table><thead><tr><th>#</th><th>Opening</th><th>Qty</th><th style="text-align:right">Doortronix net</th></tr></thead><tbody>' +
-    rows + '</tbody></table>' +
-    '<table><tbody>' +
-    '<tr><td>Doortronix package</td><td style="text-align:right">' + (s.net > 0 ? fmtEst(s.net) : '—') + '</td></tr>' +
-    extra.map(r => '<tr><td>' + escEst(r[0]) + '</td><td style="text-align:right">' + r[1] + '</td></tr>').join('') +
-    '<tr><td class="tot">Estimate for your client</td><td class="tot" style="text-align:right">' + (s.doors.length ? fmtEst(s.sell) : '—') + '</td></tr>' +
-    '</tbody></table>' +
-    (s.meta.notes ? '<p><strong>Notes</strong><br>' + escEst(s.meta.notes).replace(/\n/g, '<br>') + '</p>' : '') +
-    '<p class="foot">Doortronix package prices are published contractor net for the aluminum door package. They do not include glass, freight, installation, or tax. Markup and allowances on this sheet were entered by the estimator and are not a factory quote. This sheet does not place an order and does not release fabrication. Drawings are preliminary until Doortronix issues a confirmation to sign. Glass by others. Doortronix Inc., Malakoff, Texas · (888) 453-5196</p>' +
-    '</body></html>';
+    '<style>' +
+    'body{font-family:Arial,Helvetica,sans-serif;color:#111;margin:0;}' +
+    '.page{max-width:760px;margin:0 auto;padding:28px 32px 36px;}' +
+    '.bar{height:6px;background:#E87722;}' +
+    '.brand{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #1B4F8A;padding:18px 0 12px;}' +
+    '.brand h1{margin:0;font-size:22px;letter-spacing:.4px;color:#1B4F8A;}' +
+    '.brand .co{font-size:11px;color:#475569;text-align:right;line-height:1.45;}' +
+    '.meta{display:grid;grid-template-columns:1fr 1fr;gap:8px 24px;margin:16px 0 6px;font-size:13px;}' +
+    '.meta .k{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#64748b;}' +
+    'h2{font-size:12px;margin:20px 0 6px;color:#1B4F8A;letter-spacing:.5px;text-transform:uppercase;}' +
+    'table{width:100%;border-collapse:collapse;}' +
+    'th,td{padding:7px 8px;font-size:13px;text-align:left;vertical-align:top;border-bottom:1px solid #E2E8F0;}' +
+    'th{font-size:10px;text-transform:uppercase;letter-spacing:.45px;color:#64748b;background:#F8FAFC;}' +
+    '.num{text-align:right;white-space:nowrap;}' +
+    'tr.sub td{border-top:1px dashed #94A3B8;color:#475569;}' +
+    'tr.tot td{border-top:2px solid #1B4F8A;font-size:16px;font-weight:800;color:#1B4F8A;}' +
+    '.notes{font-size:13px;line-height:1.45;margin:16px 0 0;}' +
+    '.foot{font-size:11px;color:#64748b;line-height:1.5;margin-top:22px;border-top:1px solid #E2E8F0;padding-top:12px;}' +
+    '@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}.page{padding:12px 16px;}}' +
+    '</style></head><body><div class="bar"></div><div class="page">' +
+    '<div class="brand"><div><h1>JOB ESTIMATE</h1></div>' +
+    '<div class="co">Doortronix Inc.<br>5783 County Road 1219, Malakoff, TX 75148<br>(888) 453-5196 · doortronixusa.com</div></div>' +
+    '<div class="meta">' +
+    '<div><div class="k">Project</div>' + escEst(project) + '</div>' +
+    '<div><div class="k">Date</div>' + escEst(when) + '</div>' +
+    '<div><div class="k">Prepared for</div>' + escEst(s.meta.client || '—') + '</div>' +
+    '<div><div class="k">Job location</div>' + escEst(loc || '—') + '</div>' +
+    (prepared ? '<div><div class="k">Prepared by</div>' + escEst(prepared) + '</div>' : '') +
+    '</div>' +
+    '<h2>Openings</h2>' +
+    '<table><thead><tr><th>#</th><th>Description</th><th>Qty</th><th class="num">Doortronix net</th></tr></thead><tbody>' +
+    openings + '</tbody></table>' +
+    '<h2>Cost summary</h2>' +
+    '<table><tbody>' + costs + '</tbody></table>' +
+    (s.meta.notes ? '<div class="notes"><strong>Notes</strong><br>' + escEst(s.meta.notes).replace(/\n/g, '<br>') + '</div>' : '') +
+    '<p class="foot">Doortronix package prices are published contractor net for the aluminum door package. Glass, freight, labor, miscellaneous materials, and travel were entered by the estimator and are not a factory quote. Markup is the estimator’s figure on the job. This sheet does not place an order and does not release fabrication. Drawings are preliminary until Doortronix issues a confirmation to sign. Glass by others. Electrical and permits are excluded unless noted.</p>' +
+    '</div></body></html>';
 }
 function printClientEstimate() {
   const status = document.getElementById('estimate-status');
@@ -4350,7 +4488,7 @@ function clearCart() {
 function startNewProject() {
   clearCart();
   _currentDraftId = null;
-  ['f_project', 'f_po', 'f_location', 'f_shipto', 'f_ship_phone', 'f_ship_email', 'f_location_tags', 'f_est_client', 'f_est_glass', 'f_est_freight', 'f_est_install', 'f_est_notes'].forEach(id => {
+  ['f_project', 'f_po', 'f_location', 'f_shipto', 'f_ship_phone', 'f_ship_email', 'f_location_tags', 'f_est_client', 'f_est_glass', 'f_est_freight', 'f_est_labor_hrs', 'f_est_labor_rate', 'f_est_misc', 'f_est_travel', 'f_est_notes'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = '';
   });
@@ -4597,7 +4735,20 @@ function editCartDoor(id) {
   if (door.kind === 'operator') loadOperatorIntoForm(door);
   else loadDoorIntoForm(door);
   renderCart();
-  document.getElementById('door-section-label').scrollIntoView({ behavior: 'smooth' });
+  const lbl = document.getElementById('door-section-label');
+  if (lbl) lbl.scrollIntoView({ behavior: 'smooth' });
+}
+
+function printCartDoor(id) {
+  const door = getCart().find(d => d.id === id);
+  if (!door) return;
+  if (door.kind === 'operator') {
+    const href = (document.getElementById('op-spec-doc') || {}).href || 'docs/condor/spec-general.pdf';
+    window.open(href, '_blank', 'noopener');
+    return;
+  }
+  if (_editingDoorId !== id) editCartDoor(id);
+  printQuoteDrawing();
 }
 
 function removeCartDoor(id) {
@@ -4728,8 +4879,8 @@ function loadDoorIntoForm(door) {
 }
 
 function resetDoorForm() {
-  setDoorType('bi-part');
-  document.getElementById('cfg_fbo_bi').checked = true;
+  const keepType = (_orderKind === 'operator') ? 'bi-part' : (_currentDoorType || 'bi-part');
+  setDoorType(keepType);
   ['f_wft','f_win','f_w16'].forEach(id => { const e = document.getElementById(id); if(e) e.value = id==='f_wft'?'':0; });
   document.getElementById('f_hft').value = '7';
   document.getElementById('f_hin').value = '6';
@@ -4772,6 +4923,7 @@ function resetDoorForm() {
   const tagsEl = document.getElementById('f_location_tags'); if (tagsEl) tagsEl.value = '';
   updateQtyUI();
   updateAll();
+  markOpeningIdle();
 }
 
 function showAddSuccess(msg) {
@@ -4896,30 +5048,24 @@ function renderCart() {
 
   cartCards.innerHTML = cart.map((d, i) => {
     const isEditing = d.id === _editingDoorId;
-    if (d.kind === 'operator') {
-      return `<div class="cart-card${isEditing ? ' editing' : ''}">
-      <div class="cart-card-num">ITEM ${i+1}${isEditing ? ' ✏️' : ''}</div>
+    const kind = d.kind === 'operator' ? 'ITEM' : (isStorefrontItem(d) ? 'FRAME' : 'DOOR');
+    const dims = d.kind === 'operator'
+      ? `${d.opConfigLabel} · ${d.opArmLabel}<br>${d.widthStr}${(d.quantity||1)>1 ? ' <strong>×'+d.quantity+'</strong>' : ''}`
+      : `${d.widthStr || '—'} × ${d.heightStr || '—'}${d.twinDoorWInL || (d.swingSidelite && d.swingSidelite !== 'none') ? ' + sidelites' : ''}${(d.quantity||1)>1 ? ' <strong>×'+d.quantity+'</strong>' : ''}`;
+    const price = d.estimatedTotal
+      ? '$'+d.estimatedTotal.toLocaleString()+(d.kind !== 'operator' && d.quantity>1?' ea':'')
+      : 'Call';
+    return `<div class="cart-card${isEditing ? ' editing' : ''}" role="button" tabindex="0" onclick="editCartDoor(${d.id})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();editCartDoor(${d.id});}">
+      <div class="cart-card-num">${kind} ${i+1}${isEditing ? ' · editing' : ''}</div>
       <div class="cart-card-type">${d.configLabel}</div>
-      <div class="cart-card-code">${d.configCode}</div>
-      <div class="cart-card-dims">${d.opConfigLabel} · ${d.opArmLabel}<br>${d.widthStr}${(d.quantity||1)>1 ? ' <strong>×'+d.quantity+'</strong>' : ''}</div>
+      <div class="cart-card-code">${d.configCode || ''}</div>
+      <div class="cart-card-dims">${dims}</div>
       ${d.locationTags ? `<div style="font-size:10px;color:var(--mgray);margin-top:2px;font-style:italic;">${d.locationTags}</div>` : ''}
-      <div class="cart-card-price">${d.estimatedTotal ? '$'+d.estimatedTotal.toLocaleString() : 'Call'}</div>
+      <div class="cart-card-price">${price}</div>
       <div class="cart-card-actions">
-        <button type="button" onclick="editCartDoor(${d.id})">Edit</button>
-        <button type="button" class="btn-remove" onclick="removeCartDoor(${d.id})">Delete</button>
-      </div>
-    </div>`;
-    }
-    return `<div class="cart-card${isEditing ? ' editing' : ''}">
-      <div class="cart-card-num">${isStorefrontItem(d) ? 'FRAME' : 'DOOR'} ${i+1}${isEditing ? ' ✏️' : ''}</div>
-      <div class="cart-card-type">${d.configLabel}</div>
-      <div class="cart-card-code">${d.configCode}</div>
-      <div class="cart-card-dims">${d.widthStr || '—'} × ${d.heightStr || '—'}${d.twinDoorWInL || (d.swingSidelite && d.swingSidelite !== 'none') ? ' + sidelites' : ''}${(d.quantity||1)>1 ? ' <strong>×'+d.quantity+'</strong>' : ''}</div>
-      ${d.locationTags ? `<div style="font-size:10px;color:var(--mgray);margin-top:2px;font-style:italic;">${d.locationTags}</div>` : ''}
-      <div class="cart-card-price">${d.estimatedTotal ? '$'+d.estimatedTotal.toLocaleString()+(d.quantity>1?' ea':'') : 'Call'}</div>
-      <div class="cart-card-actions">
-        <button type="button" onclick="editCartDoor(${d.id})">Edit</button>
-        <button type="button" class="btn-remove" onclick="removeCartDoor(${d.id})">Delete</button>
+        <button type="button" onclick="event.stopPropagation();editCartDoor(${d.id})">Edit</button>
+        <button type="button" onclick="event.stopPropagation();printCartDoor(${d.id})">${d.kind === 'operator' ? 'Spec' : 'Drawing'}</button>
+        <button type="button" class="btn-remove" onclick="event.stopPropagation();removeCartDoor(${d.id})">Delete</button>
       </div>
     </div>`;
   }).join('');
@@ -9243,6 +9389,7 @@ if (_startParams.get('sheet') === '1') {
 })();
 
 renderCart();
+if (getCart().length) markOpeningIdle();
 
 (function restorePortalDup() {
   try {
@@ -9294,6 +9441,7 @@ renderCart();
     if (restoredMeta) applyEstimateMeta(restoredMeta);
     window._estimateRestored = true;
     renderCart();
+    markOpeningIdle();
   } catch (e) { console.warn('Could not restore copied order', e); }
 })();
 (function loadSavedWorksheet() {
