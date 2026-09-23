@@ -409,8 +409,8 @@ body.sheet-mode #plan-svg { background:#fff; }
 
     <!-- ── DOOR FAMILY CHOOSER (first step) ── -->
     <div id="type-chooser" style="margin:18px 0 4px;">
-      <div class="section-header" style="margin-top:0;">What Are You Quoting?</div>
-      <p style="font-size:13px;color:var(--mgray);margin:0 0 14px;">Pick a product family to begin. You can switch types anytime.</p>
+      <div class="section-header" style="margin-top:0;" id="chooser-heading">What Are You Quoting?</div>
+      <p style="font-size:13px;color:var(--mgray);margin:0 0 14px;" id="chooser-lead">Pick a product family to begin. You can switch types anytime.</p>
       <div class="type-choice-grid">
         <button type="button" class="type-choice" onclick="chooseDoorFamily('slide', true)">
           <svg viewBox="0 0 96 52" width="96" height="52" aria-hidden="true">
@@ -659,6 +659,7 @@ body.sheet-mode #plan-svg { background:#fff; }
       </div><!-- /project-section-wrapper -->
 
       <!-- ── CONFIGURATION (door types + swing operator) ── -->
+      <div id="opening-form-block">
       <p id="door-section-label" style="font-size:15px;font-weight:700;color:var(--blue);margin:20px 0 4px;">Configuring Door #1</p>
 
       <!-- Family toggle: door types + standalone swing operator -->
@@ -2065,6 +2066,7 @@ body.sheet-mode #plan-svg { background:#fff; }
         <button type="submit" class="btn-submit" id="btn-submit-one" style="background:#6B7280;margin-top:0;">Send this opening to Doortronix →</button>
         <p id="quote-submit-hint" style="font-size:10px;color:var(--mgray);margin-top:8px;text-align:center;">This sends the opening for confirmation. To price the job for your client, add it to the project and use Save estimate or Print client estimate. Nothing is sent until you choose to send it.</p>
       </div>
+      </div><!-- /opening-form-block -->
 
     </form>
     </div><!-- /quote-flow -->
@@ -2272,6 +2274,7 @@ function isIdleNextOpening() {
 }
 
 function hasInProgressDoor() {
+  if (_awaitingNextOpening) return false;
   if (_editingDoorId !== null) return getCart().some(d => d.id === _editingDoorId);
   if (!rv('config')) return false;
   if (getCart().length) return false;
@@ -3130,16 +3133,79 @@ function setDoorType(type) {
   syncProjectScopeCopy();
 }
 
-// Reveal the full quote form and lock in a door family from the first-step chooser.
-function chooseDoorFamily(fam, fresh) {
-  // A deliberate pick from the "Request a Quote" chooser (or a product-page
-  // "Get a quote" deep link) starts a clean new project. Restoring a saved
-  // quote / duplicating an order passes fresh=false so the cart survives.
-  if (fresh) startNewProject();
+function syncChooserCopy() {
+  const heading = document.getElementById('chooser-heading');
+  const lead = document.getElementById('chooser-lead');
+  const n = (typeof getCart === 'function') ? getCart().length : 0;
+  if (heading) heading.textContent = n ? 'Add another opening' : 'What Are You Quoting?';
+  if (lead) {
+    lead.textContent = n
+      ? 'Nothing is on the form until you pick the next type. Click a saved opening to edit or print it.'
+      : 'Pick a product family to begin. You can switch types anytime.';
+  }
+}
+
+function showIdlePreview() {
+  const svg = document.getElementById('door-svg');
+  if (svg) { svg.innerHTML = ''; svg.removeAttribute('viewBox'); svg.setAttribute('viewBox', '0 0 600 300'); }
+  const plan = document.getElementById('plan-svg');
+  if (plan) { plan.innerHTML = ''; }
+  const pf = document.getElementById('pf-config'); if (pf) pf.textContent = '';
+  const pd = document.getElementById('pf-dims'); if (pd) pd.textContent = '';
+  const spec = document.getElementById('spec-summary');
+  if (spec) spec.innerHTML = '<p style="margin:0;font-size:13px;color:#64748b;">Pick the next opening to preview it. Click a door on the job to edit or print that drawing.</p>';
+  const cart = (typeof getCart === 'function') ? getCart() : [];
+  const priced = (cart.length && typeof jobPriceSummary === 'function') ? jobPriceSummary(cart) : null;
+  const money = priced
+    ? '$' + Number(priced.net).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+    : '';
+  const empty = cart.length
+    ? '<div class="price-empty">This job has ' + cart.length + ' opening' + (cart.length === 1 ? '' : 's') + '. Pick the next type, or click an opening to edit.</div>'
+    : '<div class="price-empty">Select a configuration above to see pricing.</div>';
+  const body = document.getElementById('price-body'); if (body) body.innerHTML = empty;
+  const fbody = document.getElementById('form-price-body'); if (fbody) fbody.innerHTML = empty;
+  const ht = document.getElementById('price-header-total'); if (ht) ht.textContent = money;
+  const fht = document.getElementById('form-price-header-total'); if (fht) fht.textContent = money;
+  const st = document.getElementById('sticky-price-total'); if (st) st.textContent = money || '—';
+  const dw = document.getElementById('drawing-wrap'); if (dw) dw.style.display = '';
+  const ow = document.getElementById('operator-drawing-wrap'); if (ow) ow.style.display = 'none';
+  const pb = document.getElementById('btn-print-drawing'); if (pb) pb.style.display = 'none';
+}
+
+function showNextOpeningChooser() {
+  _editingDoorId = null;
+  _awaitingNextOpening = true;
+  if (_orderKind === 'operator') setOperatorMode(false);
+  const block = document.getElementById('opening-form-block');
+  if (block) block.style.display = 'none';
+  const flow = document.getElementById('quote-flow');
+  if (flow) flow.style.display = '';
+  const chooser = document.getElementById('type-chooser');
+  if (chooser) chooser.style.display = '';
+  syncChooserCopy();
+  markOpeningIdle();
+  showIdlePreview();
+  syncProjectScopeCopy();
+}
+
+function showOpeningForm() {
+  _awaitingNextOpening = false;
   const chooser = document.getElementById('type-chooser');
   if (chooser) chooser.style.display = 'none';
   const flow = document.getElementById('quote-flow');
   if (flow) flow.style.display = '';
+  const block = document.getElementById('opening-form-block');
+  if (block) block.style.display = '';
+  const pb = document.getElementById('btn-print-drawing');
+  if (pb && _orderKind !== 'operator') pb.style.display = '';
+}
+
+// Reveal the full quote form and lock in a door family from the first-step chooser.
+function chooseDoorFamily(fam, fresh) {
+  // After a door is on the job, the chooser is "add another" — do not wipe the cart.
+  // A first pick (or a product-page deep link) still starts a clean project.
+  if (fresh && !_awaitingNextOpening) startNewProject();
+  showOpeningForm();
   if (fam === 'operator') { setOperatorMode(true); return; }
   if (fam === 'storefront') { setDoorType('storefront'); return; }
   setDoorType(fam === 'swing' ? 'swing' : 'bi-part');
@@ -3667,9 +3733,10 @@ function setOperatorMode(on) {
 // packages only, or a mixed project (doors + operators on the same job).
 function projectScopeKind() {
   const cart = (typeof getCart === 'function') ? getCart() : [];
-  const hasOp = cart.some(d => d.kind === 'operator') || _orderKind === 'operator';
-  const hasStorefront = cart.some(isStorefrontItem) || (_orderKind !== 'operator' && _currentDoorType === 'storefront');
-  const hasDoor = cart.some(d => d.kind !== 'operator' && !isStorefrontItem(d)) || (_orderKind !== 'operator' && _currentDoorType !== 'storefront');
+  const formCounts = !_awaitingNextOpening;
+  const hasOp = cart.some(d => d.kind === 'operator') || (formCounts && _orderKind === 'operator');
+  const hasStorefront = cart.some(isStorefrontItem) || (formCounts && _orderKind !== 'operator' && _currentDoorType === 'storefront');
+  const hasDoor = cart.some(d => d.kind !== 'operator' && !isStorefrontItem(d)) || (formCounts && _orderKind !== 'operator' && _currentDoorType !== 'storefront');
   const kinds = [hasOp, hasDoor, hasStorefront].filter(Boolean).length;
   if (kinds > 1) return 'mixed';
   if (hasOp) return 'operator';
@@ -4087,6 +4154,7 @@ function _addOperatorToCartImpl(opts) {
   saveCart(cart);
   lockContactSection();
   renderCart();
+  showNextOpeningChooser();
   showAddSuccess(qty > 1 ? `${qty} operators added to your project!` : 'Operator added to your project!');
   const cartEl = document.getElementById('project-cart-section');
   if (cartEl) {
@@ -4478,6 +4546,7 @@ const CART_KEY   = 'dtx_project_cart';
 const HEADER_KEY = 'dtx_project_header';
 let _projectHeader = null;
 let _editingDoorId = null;
+let _awaitingNextOpening = false;
 
 function getCart()        { try { return JSON.parse(localStorage.getItem(CART_KEY))   || []; } catch { return []; } }
 function saveCart(cart)   { localStorage.setItem(CART_KEY, JSON.stringify(cart)); }
@@ -4721,8 +4790,8 @@ function _addDoorToCartImpl(opts) {
 
   saveCart(cart);
   lockContactSection();
-  resetDoorForm();
   renderCart();
+  showNextOpeningChooser();
 
   // Show success toast near the button
   showAddSuccess(qty > 1
@@ -4746,6 +4815,7 @@ function editCartDoor(id) {
   const door = cart.find(d => d.id === id);
   if (!door) return;
   _editingDoorId = id;
+  showOpeningForm();
   if (door.kind === 'operator') loadOperatorIntoForm(door);
   else loadDoorIntoForm(door);
   renderCart();
@@ -4770,8 +4840,8 @@ function removeCartDoor(id) {
   saveCart(cart);
   if (cart.length === 0) unlockContactSection();
   if (_editingDoorId === id) _editingDoorId = null;
-  resetDoorForm();
   renderCart();
+  showNextOpeningChooser();
 }
 
 function loadDoorIntoForm(door) {
@@ -4952,6 +5022,12 @@ function showAddSuccess(msg) {
   }
   el.textContent = '✓ ' + msg;
   el.style.display = 'block';
+  const cartEl = document.getElementById('project-cart-section');
+  if (cartEl && el.parentNode !== cartEl.parentNode) cartEl.parentNode.insertBefore(el, cartEl);
+  else {
+    const btn = document.getElementById('btn-add-to-cart');
+    if (btn && el.parentNode !== btn.parentNode) btn.parentNode.insertBefore(el, btn);
+  }
   setTimeout(() => { if (el) el.style.display = 'none'; }, 4000);
 }
 
@@ -5369,7 +5445,10 @@ function getExtraDoorsText() {
 // ── Helpers ─────────────────────────────────────────────────────────
 function fv(id) { const e=document.getElementById(id); return e?e.value.trim():''; }
 function rv(n)  { const e=document.querySelector(`input[name="${n}"]:checked`); return e?e.value:''; }
-function getConfig() { return CONFIGS[rv('config')] || null; }
+function getConfig() {
+  if (_awaitingNextOpening) return null;
+  return CONFIGS[rv('config')] || null;
+}
 
 function getTwinDoorIn(side) {
   const ftId = side === 'right' ? 'tw_rwft' : 'tw_lwft';
@@ -8932,6 +9011,7 @@ function syncArchDrawing() {
   link.textContent = hit[1];
 }
 function updateAll() {
+  if (_awaitingNextOpening) { showIdlePreview(); return; }
   ensureSwingWidth();
   ensureSliderWidth();
   ensureStorefrontWidth();
@@ -9379,9 +9459,8 @@ if (_startParams.get('sheet') === '1') {
     if (flow) flow.style.display = '';
     setDoorType((_startType === 'storefront' || _startType === 'lite' || _startType === 'lites') ? 'storefront' : (_startType === 'swing' ? 'swing' : 'bi-part'));
   } else if (restoringDup) {
-    // Reopening a saved quote or duplicating an order — land on the form with
-    // the restored cart, no chooser, and DON'T start a new project.
-    chooseDoorFamily('slide', false);
+    const flow = document.getElementById('quote-flow');
+    if (flow) flow.style.display = '';
   } else if (_startType === 'swing') {
     // Product-page "Get a quote" deep link → fresh new project.
     chooseDoorFamily('swing', true);
@@ -9460,8 +9539,12 @@ if (getCart().length) markOpeningIdle();
     window._estimateRestored = true;
     renderCart();
     markOpeningIdle();
+    showNextOpeningChooser();
   } catch (e) { console.warn('Could not restore copied order', e); }
 })();
+if (_startParams.get('sheet') !== '1' && !_startType && getCart().length && !_editingDoorId) {
+  showNextOpeningChooser();
+}
 (function loadSavedWorksheet() {
   if (window._estimateRestored) return;
   try {
