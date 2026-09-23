@@ -364,6 +364,10 @@ body.sheet-mode #plan-svg { background:#fff; }
 .cart-card-actions .btn-remove { color:#c00; border-color:#f5c6c6; }
 .cart-card-actions .btn-remove:hover { background:#fdecea; border-color:#c00; }
 .cart-card.editing { border-color:var(--orange); box-shadow:0 0 0 2px rgba(232,119,34,.2); }
+.btn-add-another { background:var(--blue); color:#fff; border:none; border-radius:7px; padding:8px 14px; font-size:12px; font-weight:700; cursor:pointer; white-space:nowrap; }
+.btn-add-another:hover { background:var(--dblue); }
+#add-another-slot:not(:empty) { margin-top:14px; padding:14px 14px 10px; background:#F4F8FC; border:1.5px solid #C5D6EA; border-left:5px solid var(--blue); border-radius:8px; }
+#add-another-slot #type-chooser { margin:0; }
 
 /* ── Contact lock bar ── */
 #contact-unlock-bar { display:none; background:#FFF8F3; border:1px solid var(--orange); border-radius:6px; padding:7px 14px; margin-bottom:12px; align-items:center; justify-content:space-between; gap:8px; font-size:12px; color:var(--mgray); }
@@ -407,7 +411,8 @@ body.sheet-mode #plan-svg { background:#fff; }
       <span class="trust-chip">✓ Ships as Early as 3–4 Weeks</span>
     </div>
 
-    <!-- ── DOOR FAMILY CHOOSER (first step) ── -->
+    <!-- ── DOOR FAMILY CHOOSER (first step, and again under the job) ── -->
+    <div id="chooser-home">
     <div id="type-chooser" style="margin:18px 0 4px;">
       <div class="section-header" style="margin-top:0;" id="chooser-heading">What Are You Quoting?</div>
       <p style="font-size:13px;color:var(--mgray);margin:0 0 14px;" id="chooser-lead">Pick a product family to begin. You can switch types anytime.</p>
@@ -477,6 +482,7 @@ body.sheet-mode #plan-svg { background:#fff; }
         </button>
       </div>
     </div>
+    </div><!-- /chooser-home -->
 
     <div id="quote-flow" style="display:none;">
 
@@ -493,12 +499,14 @@ body.sheet-mode #plan-svg { background:#fff; }
           <span class="cart-total-badge" id="cart-total-badge">Doortronix net: —</span>
         </div>
         <div class="cart-header-right">
+          <button type="button" class="btn-add-another" id="btn-add-another" onclick="startAddAnotherOpening()">+ Add another opening</button>
           <button type="button" class="btn-clear-cart" onclick="clearCart()">Clear All</button>
           <button type="button" class="btn-save-quote" id="btn-save-quote" onclick="savePortalDraft()" style="display:none;">Save estimate</button>
         </div>
       </div>
-      <p class="est-note" id="cart-click-hint" style="margin:0 0 8px;">Click an opening to edit it. Use Drawing for that opening’s preliminary sheet.</p>
+      <p class="est-note" id="cart-click-hint" style="margin:0 0 8px;">These openings are already on this job. Click one to edit or print it. To add another door, use <strong>Add another opening</strong> and pick the type.</p>
       <div id="cart-cards"></div>
+      <div id="add-another-slot"></div>
       <div id="save-quote-status" style="display:none;font-size:12px;font-weight:600;margin-top:8px;"></div>
     </div>
 
@@ -2062,7 +2070,7 @@ body.sheet-mode #plan-svg { background:#fff; }
             </div>
           </div>
         </div>
-        <button type="button" class="btn-add-cart" id="btn-add-to-cart" onclick="addDoorToCart()">Add to project &amp; configure another</button>
+        <button type="button" class="btn-add-cart" id="btn-add-to-cart" onclick="addDoorToCart()">Add this opening to the job</button>
         <button type="submit" class="btn-submit" id="btn-submit-one" style="background:#6B7280;margin-top:0;">Send this opening to Doortronix →</button>
         <p id="quote-submit-hint" style="font-size:10px;color:var(--mgray);margin-top:8px;text-align:center;">This sends the opening for confirmation. To price the job for your client, add it to the project and use Save estimate or Print client estimate. Nothing is sent until you choose to send it.</p>
       </div>
@@ -3139,16 +3147,34 @@ function setDoorType(type) {
   syncProjectScopeCopy();
 }
 
+function placeChooser() {
+  const chooser = document.getElementById('type-chooser');
+  const home = document.getElementById('chooser-home');
+  const slot = document.getElementById('add-another-slot');
+  if (!chooser) return;
+  const onJob = (typeof getCart === 'function') && getCart().length > 0 && _awaitingNextOpening;
+  if (onJob && slot) slot.appendChild(chooser);
+  else if (home) home.appendChild(chooser);
+}
+
 function syncChooserCopy() {
   const heading = document.getElementById('chooser-heading');
   const lead = document.getElementById('chooser-lead');
   const n = (typeof getCart === 'function') ? getCart().length : 0;
-  if (heading) heading.textContent = n ? 'Add another opening' : 'What Are You Quoting?';
+  if (heading) heading.textContent = n ? 'Add another opening to this job' : 'What Are You Quoting?';
   if (lead) {
     lead.textContent = n
-      ? 'Nothing is on the form until you pick the next type. Click a saved opening to edit or print it.'
+      ? 'These doors stay on this project. Pick the next type — sliding, swing, operator, or storefront — then configure it. Click a door above to edit one that is already on the job.'
       : 'Pick a product family to begin. You can switch types anytime.';
   }
+  const addBtn = document.getElementById('btn-add-another');
+  if (addBtn) addBtn.style.display = n ? '' : 'none';
+}
+
+function startAddAnotherOpening() {
+  showNextOpeningChooser();
+  const chooser = document.getElementById('type-chooser');
+  if (chooser) chooser.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
 function showIdlePreview() {
@@ -3189,6 +3215,7 @@ function showNextOpeningChooser() {
   const chooser = document.getElementById('type-chooser');
   if (chooser) chooser.style.display = '';
   syncChooserCopy();
+  placeChooser();
   markOpeningIdle();
   showIdlePreview();
   syncProjectScopeCopy();
@@ -3204,6 +3231,8 @@ function showOpeningForm() {
   if (block) block.style.display = '';
   const pb = document.getElementById('btn-print-drawing');
   if (pb && _orderKind !== 'operator') pb.style.display = '';
+  placeChooser();
+  syncChooserCopy();
 }
 
 // Reveal the full quote form and lock in a door family from the first-step chooser.
@@ -4164,9 +4193,11 @@ function _addOperatorToCartImpl(opts) {
   showAddSuccess(qty > 1 ? `${qty} operators added to your project!` : 'Operator added to your project!');
   const cartEl = document.getElementById('project-cart-section');
   if (cartEl) {
-    cartEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    setTimeout(() => { cartEl.classList.add('flash'); setTimeout(() => cartEl.classList.remove('flash'), 700); }, 400);
+    cartEl.classList.add('flash');
+    setTimeout(() => cartEl.classList.remove('flash'), 700);
   }
+  const next = document.getElementById('type-chooser');
+  if (next) next.scrollIntoView({ behavior: 'smooth', block: 'center' });
   return true;
 }
 
@@ -4587,6 +4618,12 @@ function clearCart() {
   _editingDoorId = null;
   unlockContactSection();
   renderCart();
+  _awaitingNextOpening = false;
+  const chooser = document.getElementById('type-chooser');
+  const home = document.getElementById('chooser-home');
+  if (chooser && home) home.appendChild(chooser);
+  if (chooser) chooser.style.display = '';
+  if (typeof syncChooserCopy === 'function') syncChooserCopy();
 }
 
 // Start a brand-new project (used when the buyer picks a door type from the
@@ -4825,15 +4862,13 @@ function _addDoorToCartImpl(opts) {
     ? `${qty} ${isStorefront() ? 'frames' : 'doors'} added to your project!`
     : (isStorefront() ? 'Frame added to your project!' : 'Door added to your project!'));
 
-  // Scroll to cart so user sees the confirmation, then flash it
   const cartEl = document.getElementById('project-cart-section');
   if (cartEl) {
-    cartEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    setTimeout(() => {
-      cartEl.classList.add('flash');
-      setTimeout(() => cartEl.classList.remove('flash'), 700);
-    }, 400);
+    cartEl.classList.add('flash');
+    setTimeout(() => cartEl.classList.remove('flash'), 700);
   }
+  const next = document.getElementById('type-chooser');
+  if (next) next.scrollIntoView({ behavior: 'smooth', block: 'center' });
   return true;
 }
 
@@ -5091,8 +5126,8 @@ function updateQtyUI() {
   }
   if (addBtn && !addBtn.textContent.includes('Update')) {
     addBtn.textContent = qty > 1
-      ? (isStorefront() ? `Add ${qty} frames to project` : `Add ${qty} doors to project`)
-      : 'Add to project & configure another';
+      ? (isStorefront() ? `Add ${qty} frames to this job` : `Add ${qty} doors to this job`)
+      : 'Add this opening to the job';
   }
 }
 
@@ -5148,13 +5183,13 @@ function renderCart() {
     refreshEstimateWorksheet();
     if (_orderKind === 'operator') {
       if (lbl) lbl.textContent  = 'Configuring Swing Operator';
-      if (addBtn) addBtn.textContent = 'Add operator to project';
+      if (addBtn) addBtn.textContent = 'Add this operator to the job';
     } else if (_currentDoorType === 'storefront') {
       if (lbl) lbl.textContent  = 'Configuring Frame #1';
-      if (addBtn) addBtn.textContent = 'Add to project & configure another';
+      if (addBtn) addBtn.textContent = 'Add this frame to the job';
     } else {
       if (lbl) lbl.textContent  = 'Configuring Door #1';
-      if (addBtn) addBtn.textContent = 'Add to project & configure another';
+      if (addBtn) addBtn.textContent = 'Add this opening to the job';
     }
     syncProjectScopeCopy();
     return;
@@ -5197,18 +5232,19 @@ function renderCart() {
   const editingSf = _editingDoorId !== null && isStorefrontItem(cart.find(d => d.id === _editingDoorId) || {});
   if (_orderKind === 'operator' || editingOp) {
     if (lbl) lbl.textContent = _editingDoorId !== null ? `Editing Operator #${nextNum}` : 'Configuring Swing Operator';
-    if (addBtn) addBtn.textContent = _editingDoorId !== null ? 'Update operator in project' : 'Add operator to project';
+    if (addBtn) addBtn.textContent = _editingDoorId !== null ? 'Update operator in project' : 'Add this operator to the job';
   } else if (_currentDoorType === 'storefront' || editingSf) {
     if (lbl) lbl.textContent = _editingDoorId !== null ? `Editing Frame #${nextNum}` : `Configuring Frame #${nextNum}`;
-    if (addBtn) addBtn.textContent = _editingDoorId !== null ? 'Update frame in project' : 'Add to project & configure another';
+    if (addBtn) addBtn.textContent = _editingDoorId !== null ? 'Update frame in project' : 'Add this frame to the job';
   } else {
     if (lbl) lbl.textContent = _editingDoorId !== null
       ? `Editing Door #${nextNum}` : `Configuring Door #${nextNum}`;
     if (addBtn) addBtn.textContent = _editingDoorId !== null
-      ? 'Update Door in Project' : 'Add to project & configure another';
+      ? 'Update Door in Project' : 'Add this opening to the job';
   }
   syncProjectScopeCopy();
   refreshEstimateWorksheet();
+  if (typeof syncChooserCopy === 'function') syncChooserCopy();
 }
 
 async function submitAllDoors() {
