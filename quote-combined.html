@@ -2464,7 +2464,7 @@ function escEst(s) {
 }
 function openingLine(d) {
   const tag = d.locationTags ? d.locationTags + ' — ' : '';
-  const size = d.kind === 'operator' ? (d.widthStr || '') : ((d.widthStr || '—') + ' × ' + (d.heightStr || '—'));
+  const size = d.kind === 'operator' ? (cartDoorWidthStr(d) || '') : (cartDoorWidthStr(d) + ' × ' + cartDoorHeightStr(d));
   const name = (d.configLabel || 'Opening') + (d.configCode ? ' (' + d.configCode + ')' : '');
   return tag + name + (size ? ' · ' + size : '');
 }
@@ -2583,6 +2583,12 @@ async function savePortalDraft() {
   const title = hdr.projectName || hdr.poNumber || (fv('f_est_client') ? ('Estimate for ' + fv('f_est_client')) : ('Estimate ' + new Date().toLocaleDateString()));
   const doors = cart.map(d => {
     const copy = Object.assign({}, d);
+    if (copy.kind !== 'operator') {
+      copy.widthStr = cartDoorWidthStr(copy);
+      copy.heightStr = cartDoorHeightStr(copy);
+    } else {
+      copy.widthStr = cartDoorWidthStr(copy);
+    }
     delete copy.estimateMeta;
     return copy;
   });
@@ -5140,9 +5146,11 @@ function renderCart() {
   cartCards.innerHTML = cart.map((d, i) => {
     const isEditing = d.id === _editingDoorId;
     const kind = d.kind === 'operator' ? 'ITEM' : (isStorefrontItem(d) ? 'FRAME' : 'DOOR');
+    const wLabel = cartDoorWidthStr(d);
+    const hLabel = cartDoorHeightStr(d);
     const dims = d.kind === 'operator'
-      ? `${d.opConfigLabel} · ${d.opArmLabel}<br>${d.widthStr}${(d.quantity||1)>1 ? ' <strong>×'+d.quantity+'</strong>' : ''}`
-      : `${d.widthStr || '—'} × ${d.heightStr || '—'}${d.twinDoorWInL || (d.swingSidelite && d.swingSidelite !== 'none') ? ' + sidelites' : ''}${(d.quantity||1)>1 ? ' <strong>×'+d.quantity+'</strong>' : ''}`;
+      ? `${d.opConfigLabel} · ${d.opArmLabel}<br>${wLabel}${(d.quantity||1)>1 ? ' <strong>×'+d.quantity+'</strong>' : ''}`
+      : `${wLabel} × ${hLabel}${d.twinDoorWInL || (d.swingSidelite && d.swingSidelite !== 'none') ? ' + sidelites' : ''}${(d.quantity||1)>1 ? ' <strong>×'+d.quantity+'</strong>' : ''}`;
     const price = d.estimatedTotal
       ? '$'+d.estimatedTotal.toLocaleString()+(d.kind !== 'operator' && d.quantity>1?' ea':'')
       : 'Call';
@@ -5629,6 +5637,32 @@ function dimFtIn(ft, inches, six) {
   const frac = six ? ' ' + SIXTEENTH_LABELS[six] : '';
   if (!ft) return String(inches || 0) + frac + '"';
   return ft + "'-" + (inches || 0) + frac + '"';
+}
+function formatFtInFromInches(n) {
+  if (n == null || !isFinite(n) || n < 0) return '';
+  const total16 = Math.round(Number(n) * 16);
+  const ft = Math.floor(total16 / 192);
+  const rem16 = total16 - ft * 192;
+  return dimFtIn(ft, Math.floor(rem16 / 16), rem16 % 16);
+}
+function cleanFtInStr(s) {
+  return String(s || '')
+    .replace(/'(\s*)(\d+)-(\d+\/\d+)"/g, "'-$2 $3\"")
+    .replace(/(\d+)-(\d+\/\d+)"/g, '$1 $2"');
+}
+function cartDoorWidthStr(d) {
+  if (!d) return '—';
+  if (d.kind === 'operator') return cleanFtInStr(d.widthStr) || d.widthStr || '';
+  if (d.twinDoorWInL || d.twinDoorWInR) {
+    return formatFtInFromInches(d.twinDoorWInL) + ' / ' + formatFtInFromInches(d.twinDoorWInR);
+  }
+  if (Number(d.widthIn) > 0) return formatFtInFromInches(d.widthIn);
+  return cleanFtInStr(d.widthStr) || '—';
+}
+function cartDoorHeightStr(d) {
+  if (!d || d.kind === 'operator') return '';
+  if (Number(d.heightIn) > 0) return formatFtInFromInches(d.heightIn);
+  return cleanFtInStr(d.heightStr) || '—';
 }
 function getHeightIn() {
   const ft = parseInt(fv('f_hft'));
