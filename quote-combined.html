@@ -9596,6 +9596,14 @@ if (_startParams.get('sheet') === '1') {
   // show the first-step Sliding/Swing chooser at the top.
 })();
 
+// Dashboard "Price a job" starts empty. Opening a saved estimate still restores that job.
+if (_startParams.get('new') === '1' && !localStorage.getItem('dtx_restore_order')) {
+  startNewProject();
+  const clean = new URL(location.href);
+  clean.searchParams.delete('new');
+  history.replaceState(null, '', clean.pathname + clean.search + clean.hash);
+}
+
 // Restore project header and lock if a saved cart exists
 (function() {
   const savedCart   = getCart();
@@ -9689,8 +9697,8 @@ portalMe().then(function (me) {
     const a = document.createElement('a');
     if (me) {
       a.href = 'portal/index.html';
-      a.style.cssText = 'color:#fff;font-weight:700;text-decoration:underline;';
-      a.textContent = 'Account — ' + me.company + (me.discountPct ? ' · ' + me.discountPct + '% off' : '');
+      a.style.cssText = 'display:inline-block;background:#fff;color:#1B4F8A;font-weight:700;text-decoration:none;padding:6px 12px;border-radius:6px;font-size:12px;';
+      a.textContent = 'Dashboard';
     } else {
       a.href = 'portal/login.html?next=' + encodeURIComponent('../quote-combined.html');
       a.style.cssText = 'color:#B8CCE4;font-weight:700;';

@@ -103,7 +103,7 @@
   function nav(me) {
     const links = document.getElementById('nav-links');
     if (!links) return;
-    const quote = '../quote-combined.html';
+    const quote = '../quote-combined.html?new=1';
     if (!me) {
       links.innerHTML =
         '<a href="login.html">Sign In</a>' +
