@@ -322,7 +322,13 @@ body.sheet-mode #plan-svg { background:#fff; }
 .btn-print-est { background:var(--blue); color:#fff; border:none; border-radius:7px; padding:9px 14px; font-size:13px; font-weight:700; cursor:pointer; white-space:nowrap; }
 .btn-print-est:hover { background:var(--dblue); }
 #job-estimate { background:#fff; border:1px solid #C5D3E3; border-radius:10px; padding:0; margin:0 0 20px; overflow:hidden; box-shadow:0 1px 3px rgba(27,79,138,.06); }
-#job-estimate .est-head { padding:14px 16px 12px; border-bottom:1px solid #E5EAF0; }
+#job-estimate .est-head { padding:14px 16px 12px; border-bottom:1px solid #E5EAF0; display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
+#job-estimate .est-head-copy { min-width:0; }
+#job-estimate.est-collapsed .est-head { border-bottom:none; }
+#job-estimate.est-collapsed .est-body { display:none; }
+#job-estimate .est-foot { padding:0 16px 14px; }
+.btn-est-toggle { flex:0 0 auto; background:#fff; color:var(--blue); border:1.5px solid var(--blue); border-radius:7px; padding:8px 12px; font-size:12px; font-weight:700; cursor:pointer; white-space:nowrap; }
+.btn-est-toggle:hover { background:#EEF4FB; }
 #job-estimate h2 { margin:0 0 4px; font-size:16px; letter-spacing:.2px; color:var(--blue); }
 #job-estimate .est-lead { margin:0; font-size:12px; line-height:1.5; color:#475569; }
 #job-estimate .est-body { padding:12px 16px 14px; }
@@ -343,6 +349,7 @@ body.sheet-mode #plan-svg { background:#fff; }
 .est-note { font-size:11px; color:#64748b; line-height:1.45; margin:10px 0 0; }
 @media (max-width: 800px) {
   #job-estimate .est-grid, #job-estimate .est-grid.cols-2 { grid-template-columns:1fr 1fr; }
+  #job-estimate .est-head { flex-direction:column; }
 }
 .btn-save-quote { background:#166534; color:#fff; border:none; border-radius:7px; padding:9px 16px; font-size:13px; font-weight:700; cursor:pointer; transition:background .15s; white-space:nowrap; }
 .btn-save-quote:hover { background:#14532d; }
@@ -510,10 +517,13 @@ body.sheet-mode #plan-svg { background:#fff; }
       <div id="save-quote-status" style="display:none;font-size:12px;font-weight:600;margin-top:8px;"></div>
     </div>
 
-    <div id="job-estimate">
+    <div id="job-estimate" class="est-collapsed">
       <div class="est-head">
-        <h2>Job estimate</h2>
-        <p class="est-lead">The Doortronix package is contractor net. Glass, freight, labor, miscellaneous, and travel are your figures for the client sheet. Markup applies to the whole job. Saving and printing do not send this to the factory.</p>
+        <div class="est-head-copy">
+          <h2>Job estimate</h2>
+          <p class="est-lead">Optional. Use this only if you want glass, freight, labor, and markup on the client sheet. Most people price the install their own way.</p>
+        </div>
+        <button type="button" class="btn-est-toggle" id="btn-est-toggle" onclick="toggleJobEstimate()">Use the job estimator</button>
       </div>
       <div class="est-body">
         <div class="est-sec">
@@ -574,6 +584,8 @@ body.sheet-mode #plan-svg { background:#fff; }
           <textarea id="f_est_notes" placeholder="Scope, exclusions, and the lead time you are quoting. Not sent unless you send the job." oninput="onEstimateInput()"></textarea>
         </div>
         <div class="est-lines" id="est-lines"></div>
+      </div>
+      <div class="est-foot">
         <div class="est-actions">
           <button type="button" class="btn-save-quote" id="btn-save-quote-est" onclick="savePortalDraft()">Save estimate</button>
           <button type="button" class="btn-print-est" onclick="printClientEstimate()">Print client estimate</button>
@@ -2373,6 +2385,20 @@ function readEstimateMeta() {
     notes: (fv('f_est_notes') || '').trim(),
   };
 }
+function toggleJobEstimate(forceOpen) {
+  const box = document.getElementById('job-estimate');
+  const btn = document.getElementById('btn-est-toggle');
+  if (!box) return;
+  const open = typeof forceOpen === 'boolean' ? forceOpen : box.classList.contains('est-collapsed');
+  box.classList.toggle('est-collapsed', !open);
+  if (btn) btn.textContent = open ? 'Hide job estimator' : 'Use the job estimator';
+}
+function estimateHasFigures(meta) {
+  if (!meta) return false;
+  const filled = ['client', 'glass', 'freight', 'laborHours', 'laborRate', 'misc', 'travel', 'notes']
+    .some(k => meta[k] != null && String(meta[k]).trim() !== '');
+  return filled || Number(meta.markupPct) > 0;
+}
 function applyEstimateMeta(meta) {
   if (!meta) return;
   const set = (id, val) => {
@@ -2398,6 +2424,7 @@ function applyEstimateMeta(meta) {
     if (rate && !rate.value) rate.value = String(meta.install);
   }
   try { localStorage.setItem('dtx_estimate_worksheet', JSON.stringify(readEstimateMeta())); } catch (e) {}
+  if (estimateHasFigures(meta)) toggleJobEstimate(true);
   refreshEstimateWorksheet();
 }
 function onEstimateInput() {
@@ -3884,24 +3911,11 @@ function setOperatorPriceDisplays() {
   syncOperatorAccLabels();
   const price = operatorPrice();
   window._operatorPrice = price;
-  const isAdmin = !!(window._portalUser && window._portalUser.isAdmin);
-  const costLines = price.lines.filter(l => l.kind !== 'sell' && !l.call);
   const extraLines = price.lines.filter(l => l.kind === 'sell' || l.call);
   const sizeLines = price.lines.filter(l => l.kind === 'size' && l.amount);
   const pubLines = sizeLines.concat(extraLines.filter(l => l.amount || l.call));
   let html;
-  if (isAdmin) {
-    html = costLines.map(l => `<div class="price-line"><span class="pl">${l.label}</span><span class="pv${l.amount > 0 ? ' add' : ''}">${opLineVal(l)}</span></div>`).join('');
-    html += '<hr class="price-divider">';
-    html += `<div class="price-line"><span class="pl">Net cost (operator + Motion options)</span><span class="pv">${fmt(price.cost)}</span></div>`;
-    if (extraLines.length) {
-      html += extraLines.map(l => `<div class="price-line"><span class="pl">${l.label}</span><span class="pv${l.amount > 0 ? ' add' : ''}">${opLineVal(l)}</span></div>`).join('');
-    }
-    html += `<div class="price-line"><span class="pl">Contractor (33% MU + accessories)</span><span class="pv">${fmt(price.contractorPrice)}</span></div>`;
-    html += `<div class="price-line"><span class="pl">Retail (50% MU + accessories)</span><span class="pv">${fmt(price.retailPrice)}</span></div>`;
-    html += `<div class="price-total-row"><span class="pt-label">Showing (${price.tier})</span><span class="pt-value">${fmt(price.sell)}</span></div>`;
-    html += '<div class="price-note">Internal view. Net cost = Motion Access dealer price. Accessory sell prices match the swing-package list. Excludes freight, glass, and installation.</div>';
-  } else if (price.tier === 'contractor') {
+  if (price.tier === 'contractor') {
     html = pubLines.map(l => `<div class="price-line"><span class="pl">${l.label}</span><span class="pv${l.amount > 0 ? ' add' : ''}">${opLineVal(l, OP_MARKUP_CONTRACTOR)}</span></div>`).join('');
     html += `<div class="price-total-row"><span class="pt-label">Contractor price</span><span class="pt-value">${fmt(price.sell)}</span></div>`;
     html += '<div class="price-note">Your approved contractor pricing. Excludes freight, glass, installation, and taxes. Doortronix confirms final pricing within 24 hours.</div>';
