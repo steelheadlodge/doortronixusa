@@ -4541,7 +4541,11 @@ function syncSwingUi() {
   // Slider muntin height: keep the menu showing the auto position until the buyer overrides it.
   if (!swing && !storefront && !_muntinAffTouched) {
     const sSel = document.getElementById('muntin_aff');
-    if (sSel && sSel.options.length) sSel.value = String(defaultSliderMuntinAff());
+    if (sSel && sSel.options.length) {
+      const aff = defaultSliderMuntinAff();
+      ensureMuntinAffOption(sSel, aff);
+      sSel.value = String(aff);
+    }
   }
   if (swing && !_muntinAffTouched) {
     const sSel = document.getElementById('muntin_aff');
@@ -5006,9 +5010,15 @@ function loadDoorIntoForm(door) {
   const setSel = (id, val) => { const el = document.getElementById(id); if (el && val) el.value = String(val); };
   setSel('cbh_hi', door.crashHHi || door.crashHIn1 || door.crashHOut1);
   setSel('cbh_lo', door.crashHLo || door.crashHIn2 || door.crashHOut2);
-  setSel('muntin_aff', door.muntinAff);
   setSel('muntin_aff2', door.muntinAff2 || (door.muntinAffs && door.muntinAffs[1]));
-  _muntinAffTouched = door.muntinAff != null;
+  const savedAff = parseFloat(door.muntinAff);
+  const autoAff = !(savedAff > 0) || savedAff === legacySliderMuntinAff(door.heightIn, door.bottomRail === '10in' ? 10 : door.bottomRail === '6in' ? 6 : 4);
+  _muntinAffTouched = !autoAff;
+  if (!autoAff) {
+    const mSel = document.getElementById('muntin_aff');
+    ensureMuntinAffOption(mSel, savedAff);
+    setSel('muntin_aff', savedAff);
+  }
   _muntinAff2Touched = (door.muntinAff2 != null) || !!(door.muntinAffs && door.muntinAffs[1] != null);
   _crashQtyPrev = Math.max(getSwingCrashQty('swingCrashIn'), getSwingCrashQty('swingCrashOut'));
   _checkedAddons.clear();
@@ -6083,12 +6093,21 @@ function defaultSwingMuntinAff() {
   const rail = rv('bottomRail') === '10in' ? 10 : 6;
   return Math.round((clearH + rail - 2.5) / 2);
 }
-// Slider default muntin AFF: centered (equal lites) up to 8'0"; held at the typical
-// 7'6" position above 8'0" so the muntin doesn't ride too high on tall doors.
+// Stile cut = header − 9". On a 4" bottom rail the muntin is centered on that stile
+// (equal lites) up to 8'0"; above 8'0" it holds at the 7'6" stile center.
+// 6" / 10" rails move the bar up so only the bottom lite shortens.
+function sliderRailIn() {
+  return rv('bottomRail') === '10in' ? 10 : rv('bottomRail') === '6in' ? 6 : 4;
+}
 function defaultSliderMuntinAff() {
   const H = getHeightIn() || 90;
-  const railIn = rv('bottomRail') === '10in' ? 10 : rv('bottomRail') === '6in' ? 6 : 4;
+  const railIn = sliderRailIn();
+  const railDeduct = railIn === 10 ? 6 : railIn === 6 ? 2 : 0;
   const Href = H > 96 ? 90 : H;
+  return (Href - 9) / 2 + railDeduct;
+}
+function legacySliderMuntinAff(H, railIn) {
+  const Href = (H || 90) > 96 ? 90 : (H || 90);
   return Math.round((Href - 13.5 + railIn) / 2);
 }
 function defaultMuntinAff() {
@@ -6097,8 +6116,18 @@ function defaultMuntinAff() {
 }
 function getSliderMuntinAffIn() {
   if (!_muntinAffTouched) return defaultSliderMuntinAff();
-  const n = parseInt(fv('muntin_aff'), 10);
+  const n = parseFloat(fv('muntin_aff'));
   return n > 0 ? n : defaultSliderMuntinAff();
+}
+function ensureMuntinAffOption(sel, n) {
+  if (!sel || !(n > 0)) return;
+  const v = String(n);
+  if (![...sel.options].some(o => o.value === v)) {
+    const opt = document.createElement('option');
+    opt.value = v;
+    opt.textContent = fmtInches(n) + ' AFF';
+    sel.appendChild(opt);
+  }
 }
 function fillMuntinAffSelect(sel, selected) {
   if (!sel || sel.options.length) return;
@@ -7146,7 +7175,7 @@ function updateSpecSummary() {
     ['Stile Width', (cfg && cfg.isSwing) ? 'Medium 3-3/4" (std)' : (rv('stileWidth') === 'medium' ? 'Medium 3-3/4"' : 'Narrow (std)')],
     ...(!cfg || cfg.isSwing || cfg.isStorefront ? [] : [['Frame profile', getSliderFrameProfileStr()]]),
     ['Bottom Rail', rv('bottomRail') === '6in' ? '6"' : rv('bottomRail') === '10in' ? '10"' : '4" (std)'],
-    ['Horizontal Muntin', (rv('muntin') || '2" Muntin (std)') + (swingMuntinCount() ? ' @ ' + (cfg && cfg.isSwing ? getSwingMuntinAffs() : [getSliderMuntinAffIn()]).map(a => a + '" AFF').join(' / ') : '')],
+    ['Horizontal Muntin', (rv('muntin') || '2" Muntin (std)') + (swingMuntinCount() ? ' @ ' + (cfg && cfg.isSwing ? getSwingMuntinAffs() : [getSliderMuntinAffIn()]).map(a => (cfg && cfg.isSwing ? a + '"' : fmtInches(a)) + ' AFF').join(' / ') : '')],
     ['Threshold', rv('threshold') || '—'],
     ...(cfg && cfg.isSwing ? [
       ['Swing', cfg.isTwin ? getTwinSwingStr() : getSwingStr() + (rv('swingDir') === 'in' ? ' (breaks out)' : '')],
@@ -7704,7 +7733,7 @@ function drawDoor(svgId, vW, vH, isConf) {
     }
   }
 
-  // Horizontal muntin — centered when header ≤ 8'0"; fixed at 42" AFF when header > 8'0"
+  // Horizontal muntin — centered on the stile when header ≤ 8'0" (4" bottom rail)
   const floorY = pY + pH;
   if (panels.length > 0 && rv('muntin') !== 'No Muntin') {
     panels.forEach(({x, w}) => r(x, muntY, w, muntH, panelFill, frame, 0.4));
@@ -7715,7 +7744,7 @@ function drawDoor(svgId, vW, vH, isConf) {
     l(lx - 6, yy, lx + 6, yy, '#1B4F8A', 0.7);
     l(lx - 6, floorY, lx + 6, floorY, '#1B4F8A', 0.7);
     l(lx + 6, yy, dX - 4, yy, '#1B4F8A', 0.55, '3,2');
-    t(Math.max(6, lx - 8), yy + 4, muntAff + '" CL', 14, '#1B4F8A', 'end', '700');
+    t(Math.max(6, lx - 8), yy + 4, fmtInches(muntAff) + ' CL', 14, '#1B4F8A', 'end', '700');
   }
   if (junctionFace) {
     const { x: jfX, stY: jfStY, stH: jfStH } = junctionFace;
@@ -9238,7 +9267,7 @@ document.getElementById('quoteForm').addEventListener('submit', async function(e
               inToStr(getStorefrontHeaderTopAff()) + ' top of bar = hdr top'
             ]).join(' / ')
           : getStorefrontHorizAffs().map(a => inToStr(a) + ' AFF').join(' / ')) : 'None')
-      : ((rv('muntin') || '2" Muntin (std)') + (swingMuntinCount() ? ' @ ' + (cfg && cfg.isSwing ? getSwingMuntinAffs() : [getSliderMuntinAffIn()]).map(a => a + '" AFF').join(' / ') : '')),
+      : ((rv('muntin') || '2" Muntin (std)') + (swingMuntinCount() ? ' @ ' + (cfg && cfg.isSwing ? getSwingMuntinAffs() : [getSliderMuntinAffIn()]).map(a => (cfg && cfg.isSwing ? a + '"' : fmtInches(a)) + ' AFF').join(' / ') : '')),
     threshold: cfg && cfg.isStorefront ? '—' : rv('threshold'),
     sensor: cfg && cfg.isStorefront ? '—' : ((['Optex i-oneXT','BEA IXIO'].includes(rv('sensor'))) ? rv('sensor') : 'Standard (incl.)'),
     transom: (cfg && cfg.isStorefront) ? 'No' : (rv('transom') === 'yes' ? 'Yes' : 'No'),

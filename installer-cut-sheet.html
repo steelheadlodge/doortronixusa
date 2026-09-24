@@ -871,7 +871,7 @@ function calcCutList() {
   }
 
   // Leaves
-  const leafH = Hhdr - 8.5;   // stile length: header 8" + 1/2" threshold allowance
+  const leafH = Hhdr - 9;     // stile cut: header height − 9"
   const railLen = g.liteW;    // rail size = glass width between the stiles
   const nPanels = g.panels;
   const nActive = cfg.isBi ? 2 : 1;
@@ -902,7 +902,7 @@ function calcCutList() {
   panels.push(mk(cfg.isFBO ? 'Fixed leaf (SO)' : 'Fixed leaf (O)', nFixed));
 
   notes.push('Stiles run full leaf height. Rail size on this list is the glass width between the stiles. Top rail, bottom rail, and muntin are cut to that rail size.');
-  notes.push('Leaf height = header height − 8" header − 1/2" threshold.');
+  notes.push('Stile cut = header height − 9". SX and SO stiles are the same length.');
   if (shopCuts) {
     notes.push('Header length is the beam between the jambs. Rod, narrow filler, stops, and crash bars use the production lengths. No astragal.');
     if (cfg.isBi) notes.push('Bipart snap-in door stop is the single-slide length (rail + 2-3/4") minus 1/8".');
@@ -1234,17 +1234,26 @@ function defaultSwingMuntinAff() {
   const rail = ORDER.door.bottomRail === '10in' ? 10 : 6;
   return Math.round((clearH + rail - 2.5) / 2);
 }
-// Slider default muntin AFF: centered (equal lites) up to 8'0"; held at the typical
-// 7'6" position above 8'0" so the muntin doesn't ride too high on tall doors.
+// Stile cut = header − 9". On a 4" bottom rail the muntin is centered on that stile.
 function defaultSliderMuntinAff() {
   const H = getHeightIn() || 90;
-  const railIn = ORDER.door.bottomRail === '10in' ? 10 : ORDER.door.bottomRail === '6in' ? 6 : 4;
+  const rail = ORDER.door.bottomRail;
+  const railIn = rail === '10in' ? 10 : rail === '6in' ? 6 : 4;
+  const railDeduct = railIn === 10 ? 6 : railIn === 6 ? 2 : 0;
+  const Href = H > 96 ? 90 : H;
+  return (Href - 9) / 2 + railDeduct;
+}
+function legacySliderMuntinAff() {
+  const H = getHeightIn() || 90;
+  const rail = ORDER.door.bottomRail;
+  const railIn = rail === '10in' ? 10 : rail === '6in' ? 6 : 4;
   const Href = H > 96 ? 90 : H;
   return Math.round((Href - 13.5 + railIn) / 2);
 }
 function sliderMuntinAffIn() {
-  const n = parseInt(ORDER.door.muntinAff, 10);
-  return n > 0 ? n : defaultSliderMuntinAff();
+  const n = parseFloat(ORDER.door.muntinAff);
+  if (!(n > 0) || n === legacySliderMuntinAff()) return defaultSliderMuntinAff();
+  return n;
 }
 function swingMuntinAffs() {
   const d = ORDER.door;
@@ -1331,7 +1340,7 @@ function calcGlass() {
     topBase = Hhdr / 2 - 10;
     botBase = topBase - railDeduct;
   } else {
-    botBase = STD_TOP - railDeduct;              // held at typical → muntin stays ~41" AFF
+    botBase = STD_TOP - railDeduct;              // held at the 7'6" lite; muntin stays at that stile's center (40-1/2" on a 4" rail)
     topBase = (Hhdr - 20 - railDeduct) - botBase; // = Hhdr - 55; top lite absorbs the extra height
   }
   // Shift the top/bot lites when the buyer moves the muntin off the default AFF.
@@ -2981,7 +2990,7 @@ function drawDoor() {
     l(lx - 6, yy, lx + 6, yy, '#1B4F8A', 0.7);
     l(lx - 6, floorY, lx + 6, floorY, '#1B4F8A', 0.7);
     l(lx + 6, yy, dX - 4, yy, '#1B4F8A', 0.55, '3,2');
-    t(Math.max(6, lx - 8), yy + 4, muntAff + '" CL', 11, '#1B4F8A', 'end', '700');
+    t(Math.max(6, lx - 8), yy + 4, formatInches(muntAff) + ' CL', 11, '#1B4F8A', 'end', '700');
   }
 
   // Junction face line: two short segments in the rail zones (not the glass zone)
