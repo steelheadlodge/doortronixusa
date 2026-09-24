@@ -469,7 +469,7 @@ body.sheet-mode #plan-svg { background:#fff; }
           </svg>
           <div class="tc-name">Swing Operators</div>
           <div class="tc-desc">Condor auto operator — unit only, no door/frame</div>
-          <div class="tc-price">from $1,218</div>
+          <div class="tc-price">from $1,620</div>
         </button>
         <button type="button" class="type-choice" onclick="chooseDoorFamily('storefront', true)">
           <svg viewBox="0 0 96 52" width="96" height="52" aria-hidden="true">
@@ -3484,20 +3484,11 @@ const OP_SWITCH_QV = {
   key4:    { sku: 'MA44111', label: '4-position key',    sell: 104, img: 'images/operator/ma-44111.jpg', note: '4- and 3-position key only (no knob). Universal. Code F on the Condor model.' },
 };
 const OP_EXT_PER_FT   = 57; // <X> extended single over 4'
-// Two price tiers, both markups on our net cost:
-//   Contractor (must apply / be approved): 33% markup  → cost × 1.33
-//   Retail (everyone else, default):       50% markup  → cost × 1.50
+// Public operator price is 33% over Motion Access net for everyone.
+// 50% stays in the file for when pricing is raised. Accounts to hold at 33% get decided then.
 const OP_MARKUP_CONTRACTOR = 1.33;
 const OP_MARKUP_RETAIL     = 1.50;
-
-// An account gets contractor pricing once approved. Until the backend has a
-// dedicated flag, we treat admins and accounts with a set distributor discount
-// (i.e. approved accounts) as contractor tier.
-function isContractorTier() {
-  const u = window._portalUser;
-  return !!(u && (u.isAdmin || u.contractorApproved || u.priceTier === 'contractor' || u.discountPct > 0));
-}
-function operatorMarkup() { return isContractorTier() ? OP_MARKUP_CONTRACTOR : OP_MARKUP_RETAIL; }
+function operatorMarkup() { return OP_MARKUP_CONTRACTOR; }
 function opMoney(n) { return Math.round(Number(n) * 100) / 100; }
 function operatorAccSell(acc, markup) {
   if (!acc) return 0;
@@ -3758,7 +3749,7 @@ function operatorPrice() {
 
     if (rv('opHdrSafe') === 'yes') addFixed('MS Sedco DH94 header safety', 245);
   }
-  const tier = isContractorTier() ? 'contractor' : 'retail';
+  const tier = 'contractor';
   const decalContractor = operatorAccRows().reduce((s, r) => s + operatorAccSell(r.acc, OP_MARKUP_CONTRACTOR) * r.qty, 0);
   const decalRetail = operatorAccRows().reduce((s, r) => s + operatorAccSell(r.acc, OP_MARKUP_RETAIL) * r.qty, 0);
   const sell = Math.round(cost * operatorMarkup()) + extrasSell;
@@ -3914,16 +3905,9 @@ function setOperatorPriceDisplays() {
   const extraLines = price.lines.filter(l => l.kind === 'sell' || l.call);
   const sizeLines = price.lines.filter(l => l.kind === 'size' && l.amount);
   const pubLines = sizeLines.concat(extraLines.filter(l => l.amount || l.call));
-  let html;
-  if (price.tier === 'contractor') {
-    html = pubLines.map(l => `<div class="price-line"><span class="pl">${l.label}</span><span class="pv${l.amount > 0 ? ' add' : ''}">${opLineVal(l, OP_MARKUP_CONTRACTOR)}</span></div>`).join('');
-    html += `<div class="price-total-row"><span class="pt-label">Contractor price</span><span class="pt-value">${fmt(price.sell)}</span></div>`;
-    html += '<div class="price-note">Your approved contractor pricing. Excludes freight, glass, installation, and taxes. Doortronix confirms final pricing within 24 hours.</div>';
-  } else {
-    html = pubLines.map(l => `<div class="price-line"><span class="pl">${l.label}</span><span class="pv${l.amount > 0 ? ' add' : ''}">${opLineVal(l, OP_MARKUP_RETAIL)}</span></div>`).join('');
-    html += `<div class="price-total-row"><span class="pt-label">Price</span><span class="pt-value">${fmt(price.sell)}</span></div>`;
-    html += '<div class="price-note">Excludes freight, glass, installation, and taxes. <strong>Contractors:</strong> <a href="portal/signup.html" style="color:var(--blue);font-weight:700;">apply for contractor pricing</a> to unlock your net.</div>';
-  }
+  const html = pubLines.map(l => `<div class="price-line"><span class="pl">${l.label}</span><span class="pv${l.amount > 0 ? ' add' : ''}">${opLineVal(l, operatorMarkup())}</span></div>`).join('')
+    + `<div class="price-total-row"><span class="pt-label">Price</span><span class="pt-value">${fmt(price.sell)}</span></div>`
+    + '<div class="price-note">Operator only — no door or frame. Excludes freight and installation.</div>';
   const tot = fmt(price.sell);
   const body = document.getElementById('price-body');       if (body) body.innerHTML = html;
   const formBody = document.getElementById('form-price-body'); if (formBody) formBody.innerHTML = html;
