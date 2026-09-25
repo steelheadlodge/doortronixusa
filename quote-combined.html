@@ -1554,6 +1554,7 @@ body.sheet-mode #plan-svg { background:#fff; }
             <label for="tgp_1in">1"</label>
           </div>
           <span class="hint">Transom glass prep is 1/4" or 1" only. 1" glass in the transom changes the jamb from 1-3/4" to 2" × 4-1/2" and the door lite widths change with the fatter jambs.</span>
+          <span class="hint" id="transom-glass-match" style="display:none;color:#B45309;font-weight:700;"></span>
         </div>
 
         <div class="field full" id="transom-verticals-field" style="display:none;">
@@ -5010,7 +5011,10 @@ function loadDoorIntoForm(door) {
   setSel('cbh_lo', door.crashHLo || door.crashHIn2 || door.crashHOut2);
   setSel('muntin_aff2', door.muntinAff2 || (door.muntinAffs && door.muntinAffs[1]));
   const savedAff = parseFloat(door.muntinAff);
-  const autoAff = !(savedAff > 0) || savedAff === legacySliderMuntinAff(door.heightIn, door.bottomRail === '10in' ? 10 : door.bottomRail === '6in' ? 6 : 4);
+  const railInSaved = door.bottomRail === '10in' ? 10 : door.bottomRail === '6in' ? 6 : 4;
+  const HrefSaved = (door.heightIn || 90) > 96 ? 90 : (door.heightIn || 90);
+  const raisedAff = (HrefSaved - 9) / 2 + (railInSaved === 10 ? 6 : railInSaved === 6 ? 2 : 0);
+  const autoAff = !(savedAff > 0) || savedAff === legacySliderMuntinAff(door.heightIn, railInSaved) || savedAff === raisedAff;
   _muntinAffTouched = !autoAff;
   if (!autoAff) {
     const mSel = document.getElementById('muntin_aff');
@@ -6092,18 +6096,16 @@ function defaultSwingMuntinAff() {
   const rail = rv('bottomRail') === '10in' ? 10 : 6;
   return Math.round((clearH + rail - 2.5) / 2);
 }
-// Stile cut = header − 9". On a 4" bottom rail the muntin is centered on that stile
-// (equal lites) up to 8'0"; above 8'0" it holds at the 7'6" stile center.
-// 6" / 10" rails move the bar up so only the bottom lite shortens.
+// Stile cut = header − 9". The muntin stays at the center of that stile up to 8'0";
+// above 8'0" it holds at the 7'6" stile center. A 6" or 10" bottom rail shortens
+// only the bottom lite — the bar does not move up.
 function sliderRailIn() {
   return rv('bottomRail') === '10in' ? 10 : rv('bottomRail') === '6in' ? 6 : 4;
 }
 function defaultSliderMuntinAff() {
   const H = getHeightIn() || 90;
-  const railIn = sliderRailIn();
-  const railDeduct = railIn === 10 ? 6 : railIn === 6 ? 2 : 0;
   const Href = H > 96 ? 90 : H;
-  return (Href - 9) / 2 + railDeduct;
+  return (Href - 9) / 2;
 }
 function legacySliderMuntinAff(H, railIn) {
   const Href = (H || 90) > 96 ? 90 : (H || 90);
@@ -6619,6 +6621,22 @@ function updateFTTH() {
   if (tg) tg.style.display = (hasTransom && _currentDoorType !== 'swing' && _currentDoorType !== 'storefront') ? '' : 'none';
   const tv = document.getElementById('transom-verticals-field');
   if (tv) tv.style.display = (hasTransom && _currentDoorType !== 'swing' && _currentDoorType !== 'storefront') ? '' : 'none';
+  const tgMatch = document.getElementById('transom-glass-match');
+  if (tgMatch && tg) {
+    const doorG = rv('glassPrep') || '1/4"';
+    const transomG = rv('transomGlassPrep') || '1/4"';
+    const sliderTransom = hasTransom && _currentDoorType !== 'swing' && _currentDoorType !== 'storefront';
+    const mismatch = sliderTransom && doorG !== '1/4"' && transomG === '1/4"';
+    tgMatch.style.display = mismatch ? '' : 'none';
+    tg.style.outline = mismatch ? '2px solid #B45309' : '';
+    tg.style.borderRadius = mismatch ? '6px' : '';
+    tg.style.padding = mismatch ? '8px' : '';
+    if (mismatch) {
+      tgMatch.textContent = doorG === '1"'
+        ? 'Door glass is 1". Transom is still 1/4". Change this to 1" so they match.'
+        : 'Door glass is ' + doorG + '. Transom is still 1/4". Set the transom thickness to match.';
+    }
+  }
   // Swap Frame Height label based on transom selection
   const hl = document.getElementById('height-field-label');
   if (hl) {

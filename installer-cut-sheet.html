@@ -1234,14 +1234,12 @@ function defaultSwingMuntinAff() {
   const rail = ORDER.door.bottomRail === '10in' ? 10 : 6;
   return Math.round((clearH + rail - 2.5) / 2);
 }
-// Stile cut = header − 9". On a 4" bottom rail the muntin is centered on that stile.
+// Stile cut = header − 9". The muntin stays at that stile's center.
+// A 6" or 10" bottom rail shortens only the bottom lite.
 function defaultSliderMuntinAff() {
   const H = getHeightIn() || 90;
-  const rail = ORDER.door.bottomRail;
-  const railIn = rail === '10in' ? 10 : rail === '6in' ? 6 : 4;
-  const railDeduct = railIn === 10 ? 6 : railIn === 6 ? 2 : 0;
   const Href = H > 96 ? 90 : H;
-  return (Href - 9) / 2 + railDeduct;
+  return (Href - 9) / 2;
 }
 function legacySliderMuntinAff() {
   const H = getHeightIn() || 90;
