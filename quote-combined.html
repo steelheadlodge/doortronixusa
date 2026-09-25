@@ -5972,13 +5972,14 @@ function calcSliderGlass() {
   const transoms = [];
   if (rv('transom') === 'yes') {
     const ftth = getFtthIn() || Hhdr;
-    const tH = (ftth - Hhdr) - 2;
+    // 2" is the 1-3/4" tube deduction. A 2" tube (1" glass) takes another 1/4" off the height.
+    const tH = (ftth - Hhdr) - 2 - (face - 1.75);
     const extraV = parseInt(rv('transomV'), 10) || 0;
     if (tH > 0) {
       if (!isBi) {
-        const lites = 2 + extraV;
+        const lites = 1 + extraV;
         transoms.push({
-          label: lites === 2 ? 'Transom' : 'Transom (' + lites + ' lites)',
+          label: lites === 1 ? 'Transom' : 'Transom (' + lites + ' lites)',
           qty: lites,
           w: (W - face * (lites + 1)) / lites + GLASS_ADD,
           h: tH
@@ -7531,10 +7532,9 @@ function drawDoor(svgId, vW, vH, isConf) {
     const glassStopH = Math.max(1.5, sc * 1);       // 1" glass stop line thickness
     const tGlassH = transomH - frameT - glassStopH; // glass fills to just above glass stop
 
-    // Single slide always splits the transom at center (SX / SO). Extra
-    // transom verticals add mullions on top of that included split.
+    // None (std) is one lite. Each selected vertical is one mullion.
     const _pX = dX + frameT, _pW = dW - frameT * 2;
-    const nMull = isBi ? numV : (numV + 1);
+    const nMull = numV;
     const vertXs = [];
     if (nMull > 0) {
       if (numV === 2 && isBi) {
