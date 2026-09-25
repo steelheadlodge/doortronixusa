@@ -2294,6 +2294,12 @@ function isIdleNextOpening() {
   return !!_idleOpeningSig && openingFormSig() === _idleOpeningSig;
 }
 
+function formDoorShouldJoinJob() {
+  if (_awaitingNextOpening || _editingDoorId != null) return false;
+  if (isIdleNextOpening()) return false;
+  if (_orderKind === 'operator') return true;
+  return !!rv('config') && (getCart().length > 0 || hasInProgressDoor());
+}
 function hasInProgressDoor() {
   if (_awaitingNextOpening) return false;
   if (_editingDoorId !== null) return getCart().some(d => d.id === _editingDoorId);
@@ -2597,17 +2603,14 @@ async function savePortalDraft() {
     return;
   }
 
-  // Save the openings already on the job. Do not add the leftover "next door"
-  // on the form. That form is always filled with a default slider, and writing
-  // it back is how a deleted extra door kept returning.
+  // The door on the form is part of the job once they have configured it.
+  // The blank "next opening" left after Add this opening is not.
   let inProgressNote = '';
-  if (getCart().length === 0) {
-    if (_orderKind === 'operator' || hasInProgressDoor()) {
-      const ok = addDoorToCart({ lenient: true });
-      if (!ok) return;
-    }
-  } else {
+  if (_editingDoorId != null) {
     syncEditedDoorIntoCart();
+  } else if (formDoorShouldJoinJob()) {
+    const ok = addDoorToCart({ lenient: true, quiet: true });
+    if (!ok) return;
   }
 
   const cart = getCart();
@@ -4189,14 +4192,16 @@ function _addOperatorToCartImpl(opts) {
   lockContactSection();
   renderCart();
   showNextOpeningChooser();
-  showAddSuccess(qty > 1 ? `${qty} operators added to your project!` : 'Operator added to your project!');
-  const cartEl = document.getElementById('project-cart-section');
-  if (cartEl) {
-    cartEl.classList.add('flash');
-    setTimeout(() => cartEl.classList.remove('flash'), 700);
+  if (!opts.quiet) {
+    showAddSuccess(qty > 1 ? `${qty} operators added to your project!` : 'Operator added to your project!');
+    const cartEl = document.getElementById('project-cart-section');
+    if (cartEl) {
+      cartEl.classList.add('flash');
+      setTimeout(() => cartEl.classList.remove('flash'), 700);
+    }
+    const next = document.getElementById('type-chooser');
+    if (next) next.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
-  const next = document.getElementById('type-chooser');
-  if (next) next.scrollIntoView({ behavior: 'smooth', block: 'center' });
   return true;
 }
 
@@ -4860,18 +4865,18 @@ function _addDoorToCartImpl(opts) {
   renderCart();
   showNextOpeningChooser();
 
-  // Show success toast near the button
-  showAddSuccess(qty > 1
-    ? `${qty} ${isStorefront() ? 'frames' : 'doors'} added to your project!`
-    : (isStorefront() ? 'Frame added to your project!' : 'Door added to your project!'));
-
-  const cartEl = document.getElementById('project-cart-section');
-  if (cartEl) {
-    cartEl.classList.add('flash');
-    setTimeout(() => cartEl.classList.remove('flash'), 700);
+  if (!opts.quiet) {
+    showAddSuccess(qty > 1
+      ? `${qty} ${isStorefront() ? 'frames' : 'doors'} added to your project!`
+      : (isStorefront() ? 'Frame added to your project!' : 'Door added to your project!'));
+    const cartEl = document.getElementById('project-cart-section');
+    if (cartEl) {
+      cartEl.classList.add('flash');
+      setTimeout(() => cartEl.classList.remove('flash'), 700);
+    }
+    const next = document.getElementById('type-chooser');
+    if (next) next.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
-  const next = document.getElementById('type-chooser');
-  if (next) next.scrollIntoView({ behavior: 'smooth', block: 'center' });
   return true;
 }
 
