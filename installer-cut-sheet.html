@@ -2721,7 +2721,17 @@ function drawDoor() {
   const hasMuntinBar = !!(d.muntin && d.muntin !== 'No Muntin');
   // Muntin CL label sits on the left; frame-height dims sit on the right
   // (transom needs room for nested header + overall dimensions).
-  const mL = hasMuntinBar ? 90 : 44, mR = hasTransom ? 84 : 52, mT = titleH + 12;
+  // The label is end-anchored left of the dimension line. A wide bi-part
+  // fills the sheet, so the margin has to include the whole label or
+  // "41 1/2\" CL" runs off the left edge.
+  const muntFs = 11;
+  const muntLabel = hasMuntinBar ? (formatInches(sliderMuntinAffIn()) + ' CL') : '';
+  const muntLabelW = hasMuntinBar ? Math.ceil(muntLabel.length * muntFs * 0.72) : 0;
+  const muntDimOff = 34;
+  const mR = hasTransom ? 84 : 52;
+  const wantML = hasMuntinBar ? (10 + muntLabelW + 12 + muntDimOff) : 44;
+  const mL = Math.min(wantML, Math.max(44, vW - mR - 100));
+  const mT = titleH + 12;
   // Bottom margin: width dim gap + label/tick clearance below door
   const mB = widthDimGap + 16;
   const availW = vW - mL - mR, availH = vH - mT - mB;
@@ -2982,14 +2992,13 @@ function drawDoor() {
   const floorY = pY + pH;
   if (panels.length > 0 && d.muntin && d.muntin !== 'No Muntin') {
     panels.forEach(({x, w}) => r(x, muntY, w, muntH, panelFill, frame, 0.4));
-    const muntAff = sliderMuntAff;
-    const lx = Math.max(40, dX - 34);
+    const lx = dX - muntDimOff;
     const yy = muntY + muntH / 2;
     l(lx, yy, lx, floorY, '#1B4F8A', 0.7);
     l(lx - 6, yy, lx + 6, yy, '#1B4F8A', 0.7);
     l(lx - 6, floorY, lx + 6, floorY, '#1B4F8A', 0.7);
     l(lx + 6, yy, dX - 4, yy, '#1B4F8A', 0.55, '3,2');
-    t(Math.max(6, lx - 8), yy + 4, formatInches(muntAff) + ' CL', 11, '#1B4F8A', 'end', '700');
+    t(lx - 10, yy + 4, muntLabel, muntFs, '#1B4F8A', 'end', '700');
   }
 
   // Junction face line: two short segments in the rail zones (not the glass zone)

@@ -7450,7 +7450,15 @@ function drawDoor(svgId, vW, vH, isConf) {
 
   // ── Scale to fit viewBox while maintaining true aspect ratio ───────
   const hasMuntinBar = rv('muntin') !== 'No Muntin';
-  const mL = isConf ? (hasMuntinBar ? 110 : 55) : (hasMuntinBar ? 130 : 110), mR = isConf ? 55 : (hasTransom ? 118 : 90);
+  const muntFs = 14;
+  const muntLabel = hasMuntinBar ? (fmtInches(getSliderMuntinAffIn()) + ' CL') : '';
+  const muntLabelW = hasMuntinBar ? Math.ceil(muntLabel.length * muntFs * 0.72) : 0;
+  // Confirmation also draws the overall height on the left, so the muntin
+  // CL sits further out. Either way the full label has to stay on the sheet.
+  const muntDimOff = isConf ? 64 : 42;
+  const muntLeft = hasMuntinBar ? (10 + muntLabelW + 12 + muntDimOff) : 0;
+  const mL = hasMuntinBar ? Math.max(isConf ? 120 : 130, muntLeft) : (isConf ? 55 : 110);
+  const mR = isConf ? 55 : (hasTransom ? 118 : 90);
   const mT = isConf ? titleH + 20 : 52, mB = isConf ? 70 : 72;
   const availW = vW - mL - mR;
   let sc, dW, dH, dX, dY;
@@ -7758,14 +7766,13 @@ function drawDoor(svgId, vW, vH, isConf) {
   const floorY = pY + pH;
   if (panels.length > 0 && rv('muntin') !== 'No Muntin') {
     panels.forEach(({x, w}) => r(x, muntY, w, muntH, panelFill, frame, 0.4));
-    const muntAff = sliderMuntAff;
-    const lx = Math.max(40, dX - 40);
+    const lx = dX - muntDimOff;
     const yy = muntY + muntH / 2;
     l(lx, yy, lx, floorY, '#1B4F8A', 0.7);
     l(lx - 6, yy, lx + 6, yy, '#1B4F8A', 0.7);
     l(lx - 6, floorY, lx + 6, floorY, '#1B4F8A', 0.7);
     l(lx + 6, yy, dX - 4, yy, '#1B4F8A', 0.55, '3,2');
-    t(Math.max(6, lx - 8), yy + 4, fmtInches(muntAff) + ' CL', 14, '#1B4F8A', 'end', '700');
+    t(lx - 10, yy + 4, muntLabel, muntFs, '#1B4F8A', 'end', '700');
   }
   if (junctionFace) {
     const { x: jfX, stY: jfStY, stH: jfStH } = junctionFace;
