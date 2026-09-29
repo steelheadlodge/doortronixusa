@@ -2719,18 +2719,16 @@ function drawDoor() {
   const realTotalH = realFtth;
 
   const hasMuntinBar = !!(d.muntin && d.muntin !== 'No Muntin');
-  // Muntin CL label sits on the left; frame-height dims sit on the right
-  // (transom needs room for nested header + overall dimensions).
-  // The label is end-anchored left of the dimension line. A wide bi-part
-  // fills the sheet, so the margin has to include the whole label or
-  // "41 1/2\" CL" runs off the left edge.
+  // Muntin CL label sits on the left; frame-height dims sit on the right.
+  // Keep the original 90px gutter. Grow it only when this label is wider
+  // than that, so a wide bi-part stays centered and the text stays on the sheet.
   const muntFs = 11;
   const muntLabel = hasMuntinBar ? (formatInches(sliderMuntinAffIn()) + ' CL') : '';
-  const muntLabelW = hasMuntinBar ? Math.ceil(muntLabel.length * muntFs * 0.72) : 0;
-  const muntDimOff = 34;
+  const muntLabelW = hasMuntinBar ? Math.ceil(muntLabel.length * muntFs * 0.55) : 0;
+  const muntPad = 4, muntGap = 8, muntLeader = 22;
   const mR = hasTransom ? 84 : 52;
-  const wantML = hasMuntinBar ? (10 + muntLabelW + 12 + muntDimOff) : 44;
-  const mL = Math.min(wantML, Math.max(44, vW - mR - 100));
+  const needML = muntPad + muntLabelW + muntGap + muntLeader;
+  const mL = hasMuntinBar ? Math.max(90, needML) : 44;
   const mT = titleH + 12;
   // Bottom margin: width dim gap + label/tick clearance below door
   const mB = widthDimGap + 16;
@@ -2992,13 +2990,15 @@ function drawDoor() {
   const floorY = pY + pH;
   if (panels.length > 0 && d.muntin && d.muntin !== 'No Muntin') {
     panels.forEach(({x, w}) => r(x, muntY, w, muntH, panelFill, frame, 0.4));
-    const lx = dX - muntDimOff;
+    let lx = dX - muntLeader;
+    const minLx = muntPad + muntLabelW + muntGap;
+    if (lx < minLx) lx = Math.min(minLx, dX - 12);
     const yy = muntY + muntH / 2;
     l(lx, yy, lx, floorY, '#1B4F8A', 0.7);
     l(lx - 6, yy, lx + 6, yy, '#1B4F8A', 0.7);
     l(lx - 6, floorY, lx + 6, floorY, '#1B4F8A', 0.7);
     l(lx + 6, yy, dX - 4, yy, '#1B4F8A', 0.55, '3,2');
-    t(lx - 10, yy + 4, muntLabel, muntFs, '#1B4F8A', 'end', '700');
+    t(lx - muntGap, yy + 4, muntLabel, muntFs, '#1B4F8A', 'end', '700');
   }
 
   // Junction face line: two short segments in the rail zones (not the glass zone)
