@@ -605,6 +605,7 @@ body.mode-submittal .cs-brand .cs-sheet {
 
 // ── Submission endpoint — different from quote form to separate signed orders ──
 const FORMSPREE = "https://formspree.io/f/mykorzwy";  // TODO: dedicated endpoint
+const FORMSPREE_CC = "service@doortronix.com";
 const SIXTEENTH_LABELS = ['','1/16','1/8','3/16','1/4','5/16','3/8','7/16','1/2','9/16','5/8','11/16','3/4','13/16','7/8','15/16'];
 
 const CONFIGS = {
@@ -1738,6 +1739,7 @@ async function submitApproval() {
 
   const sigDataUrl = sigCanvas.toDataURL('image/png');
   const payload = {
+    _cc: FORMSPREE_CC,
     _subject: `SIGNED Order Confirmation — ${ORDER.ref}`,
     ref: ORDER.ref,
     issuedDate: ORDER.issuedDate,

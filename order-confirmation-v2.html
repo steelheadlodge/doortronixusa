@@ -262,6 +262,7 @@ body { font-family:Arial, Helvetica, sans-serif; font-size:14px; background:#F0F
 <script src="js/dtx-terms.js"></script>
 <script>
 const FORMSPREE = "https://formspree.io/f/mykorzwy";
+const FORMSPREE_CC = "service@doortronix.com";
 let ORDER = null;
 
 function encodeOrder(obj) {
@@ -472,6 +473,7 @@ async function submitApproval() {
   const pr = ORDER.pricing || {};
   const fmt = n => '$' + Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const payload = {
+    _cc: FORMSPREE_CC,
     _subject: 'SIGNED Order Confirmation — ' + (ORDER.ref || ''),
     ref: ORDER.ref,
     issuedDate: ORDER.issuedDate,

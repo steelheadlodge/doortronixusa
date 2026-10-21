@@ -2208,6 +2208,8 @@ body.sheet-mode #plan-svg { background:#fff; }
 <script src="js/dtx-terms.js"></script>
 <script>
 const FORMSPREE = "https://formspree.io/f/mykorzwy";
+// CC the shop inbox — Formspree's primary notify is still the Gmail accounts on the form.
+const FORMSPREE_CC = "service@doortronix.com";
 const PORTAL_API = (location.hostname === 'localhost' || location.hostname === '127.0.0.1') && location.port !== '8788'
   ? 'http://127.0.0.1:8788/api' : 'https://doortronix-portal.misty-snow-1625.workers.dev/api';
 window._portalUser = null;
@@ -5330,6 +5332,7 @@ async function submitAllDoors() {
   }).join('\n\n');
 
   const payload = {
+    _cc: FORMSPREE_CC,
     name: hdr.name, company: hdr.company, role: hdr.role,
     phone: hdr.phone, email: hdr.email,
     projectName: hdr.projectName || '', location: hdr.location,
@@ -7452,10 +7455,10 @@ function drawDoor(svgId, vW, vH, isConf) {
   const hasMuntinBar = rv('muntin') !== 'No Muntin';
   const muntFs = 14;
   const muntLabel = hasMuntinBar ? (fmtInches(getSliderMuntinAffIn()) + ' CL') : '';
-  const muntLabelW = hasMuntinBar ? Math.ceil(muntLabel.length * muntFs * 0.55) : 0;
-  const muntPad = 4, muntGap = 8, muntLeader = isConf ? 40 : 28;
+  const muntLabelW = hasMuntinBar ? Math.ceil(muntLabel.length * muntFs * 0.50) : 0;
+  const muntPad = 3, muntGap = 8, muntLeader = isConf ? 36 : 28;
   const needML = muntPad + muntLabelW + muntGap + muntLeader;
-  const mL = hasMuntinBar ? Math.max(isConf ? 110 : 130, needML) : (isConf ? 55 : 110);
+  const mL = hasMuntinBar ? (isConf ? needML : Math.max(130, needML)) : (isConf ? 55 : 110);
   const mR = isConf ? 55 : (hasTransom ? 118 : 90);
   const mT = isConf ? titleH + 20 : 52, mB = isConf ? 70 : 72;
   const availW = vW - mL - mR;
@@ -9263,6 +9266,7 @@ document.getElementById('quoteForm').addEventListener('submit', async function(e
   const alarmContacts2 = _checkedAddons.has('addon_alarm_contacts')
     ? 'Monitor Breakout + Door Position' : 'None';
   const data = {
+    _cc: FORMSPREE_CC,
     name: fv('f_name'), company: fv('f_company'), role: fv('f_role'),
     phone: fv('f_phone'), email: fv('f_email'),
     projectName: fv('f_project'), location: fv('f_location'),

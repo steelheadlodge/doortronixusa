@@ -864,6 +864,7 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
 
 <script>
 const FORMSPREE = "https://formspree.io/f/mykorzwy";
+const FORMSPREE_CC = "service@doortronix.com";
 
 // ── Addon state (JS-authoritative, not CSS-derived) ──────────────────
 const _checkedAddons = new Set();
@@ -2011,6 +2012,7 @@ document.getElementById('quoteForm').addEventListener('submit', async function(e
   const alarmContacts2 = _checkedAddons.has('addon_alarm_contacts')
     ? 'Monitor Breakout + Door Position' : 'None';
   const data = {
+    _cc: FORMSPREE_CC,
     name: fv('f_name'), company: fv('f_company'), role: fv('f_role'),
     phone: fv('f_phone'), email: fv('f_email'),
     projectName: fv('f_project'), location: fv('f_location'),
