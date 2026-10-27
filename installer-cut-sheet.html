@@ -256,6 +256,9 @@ const CONFIGS = {
   'fbo-bi':        { label:'FBO Bi-Part',     code:'SO-SX-SX-SO', isFBO:true,  isBi:true  },
   'fsl-bi':        { label:'FSL Bi-Part',     code:'O-SX-SX-O',   isFBO:false, isBi:true  },
   'psx-bi':        { label:'P-Panel Bi-Part', code:'P-SX-SX-P',   isFBO:false, isBi:true, isP:true },
+  'isa-bi':        { label:'ISA Bi-Part',     code:'P-X-X-P',     isFBO:false, isBi:true, isP:true, isISA:true },
+  'isa-single-lh': { label:'ISA Single — LH', code:'P-X',         isFBO:false, isBi:false, isP:true, isISA:true },
+  'isa-single-rh': { label:'ISA Single — RH', code:'X-P',         isFBO:false, isBi:false, isP:true, isISA:true },
   'swing-single':    { label:'Single Swing',      code:'OHC',      isFBO:false, isBi:false, isSwing:true },
   'swing-single-rh': { label:'Single Swing — RH', code:'OHC RH',   isFBO:false, isBi:false, isSwing:true },
   'swing-single-lh': { label:'Single Swing — LH', code:'OHC LH',   isFBO:false, isBi:false, isSwing:true },
@@ -521,7 +524,9 @@ function syncPlanNotes() {
     return;
   }
   const ansi = (isSwingCfg(cfg) && d.swingEnergy === 'low') ? 'ANSI/BHMA A156.19' : 'ANSI/BHMA A156.10';
-  const pNote = cfg && cfg.isP
+  const pNote = cfg && cfg.isISA
+    ? '2. INTERIOR MOUNTED. HEADER AND P STILES SET AGAINST THE INTERIOR FACE OF THE WALL. SERVICE COVER ACCESS IS FROM THE INTERIOR. NO BREAK-AWAY FUNCTION. P IS A VERTICAL STILE ON THE GUIDE RAIL, IN LINE WITH THE X TRAILING STILE WHEN CLOSED — NOT A GLAZED SIDELITE.<br>'
+    : cfg && cfg.isP
     ? '2. HEADER AND P STILES SET AGAINST THE WALL. SERVICE COVER ACCESS IS FROM THE EXTERIOR ONLY. P IS A VERTICAL STILE ON THE GUIDE RAIL, IN LINE WITH THE SX TRAILING STILE WHEN CLOSED — NOT A GLAZED SIDELITE.<br>'
     : '2. ROUGH OPENING SHALL PROVIDE 1/4"[6] SHIM SPACE ON SIDES AND TOP OF PACKAGE.<br>';
   el.innerHTML =
@@ -911,8 +916,10 @@ function calcCutList() {
     stiles: '2 × ' + cutFmt(leafH) + ' (' + stileTxt + ')',
     rails: 'Top ' + cutFmt(railLen) + ' (4") · Bot ' + cutFmt(railLen) + ' (' + railIn + '")',
     muntin: hasMuntin ? '1 × ' + cutFmt(railLen) + ' (2")' : '—' });
-  panels.push(mk('Active leaf (SX)', nActive));
-  if (cfg.isP) {
+  panels.push(mk(cfg.isISA ? 'Active leaf (X)' : 'Active leaf (SX)', nActive));
+  if (cfg.isISA) {
+    notes.push('ISA — interior mounted, no breakaway. P is a vertical stile on the guide rail, lined up with the X trailing stile when closed. Not a glazed sidelite. Header and P stiles set against the interior wall. Cover access from the interior.');
+  } else if (cfg.isP) {
     notes.push('P is a vertical stile on the FSL guide rail, lined up with the SX trailing stile when closed. Not a glazed sidelite. Header and P stiles set against the wall. Cover access from the exterior only.');
   } else {
     panels.push(mk(cfg.isFBO ? 'Fixed leaf (SO)' : 'Fixed leaf (O)', nFixed));
@@ -2833,7 +2840,7 @@ function drawDoor() {
   const frame = getFrameColor();
   const hasTransom = !!d.transom;
   const isBi = cfg.isBi;
-  const isLH = cfg.code === 'O-SX' || cfg.code === 'SO-SX' || cfg.code === 'O-SX-SX-O';
+  const isLH = cfg.code === 'O-SX' || cfg.code === 'SO-SX' || cfg.code === 'O-SX-SX-O' || cfg.code === 'P-X';
   const isFBO = cfg.isFBO;
   const isP = !!cfg.isP;
 
@@ -2984,7 +2991,7 @@ function drawDoor() {
   const sensY = hdrY + headerH - sensH - Math.max(2, headerH * 0.14);
   r(sensX, sensY, sensW, sensH, '#1a1a1a', '#111', 0.7, 1.2);
   r(sensX + 2, sensY + sensH * 0.52, sensW - 4, Math.max(1.6, sensH * 0.3), '#5a6570', 'none', 0, 0.5);
-  if (isP) t(hdrX + 6, hdrY + headerH / 2 + 3, 'EXTERIOR ACCESS ONLY', 8, '#1B4F8A', 'start', '700');
+  if (isP) t(hdrX + 6, hdrY + headerH / 2 + 3, cfg.isISA ? 'INTERIOR MOUNTED · NO BREAKAWAY' : 'EXTERIOR ACCESS ONLY', 8, '#1B4F8A', 'start', '700');
 
   // Jambs
   r(dX, dY+transomH, frameT, dH-transomH-sillH, frame);
@@ -3101,7 +3108,23 @@ function drawDoor() {
       const fX = faceOnRight ? meetX + stileW / 2 : meetX - stileW / 2;
       junctionFace = { x: fX, stY, stH };
     }
-    if (isLH) {
+    if (isP) {
+      // Wall on the P side; P is only the stile at the X trailing edge when closed.
+      const wx = isLH ? pX : pX + sxW;
+      const xx = isLH ? pX + soW : pX;
+      r(wx, pY, soW, pH, '#E8E2D6', '#C4BBAE', 0.7);
+      for (let y = pY + 10; y < pY + pH - btmRH - 4; y += 14) l(wx + 5, y, wx + soW - 5, y, '#D2CBBE', 0.6);
+      r(wx, pY + pH - btmRH, soW, btmRH, panelFill, frame, 0.8);
+      t(wx + soW / 2, pY + pH * 0.42, 'WALL', 10, '#8A8175', 'middle', '700');
+      const pStX = isLH ? xx : xx + sxW - stileW;
+      r(pStX, pY, stileW, pH, panelFill, frame, 1.4);
+      t(isLH ? pStX - 4 : pStX + stileW + 4, pY + 14, 'P', 10, '#1B4F8A', isLH ? 'end' : 'start', '700');
+      drawP(xx, pY, sxW, pH, frame, 1.5, false);
+      l(xx + stileW + 3, aY, xx + sxW - stileW - 3, aY, '#1B4F8A', 1.2, '5,3');
+      if (isLH) path(`M${xx + stileW + 3},${aY}l5,-3.5l0,7Z`, '#1B4F8A');
+      else path(`M${xx + sxW - stileW - 3},${aY}l-5,-3.5l0,7Z`, '#1B4F8A');
+      panels = [{ x: xx + stileW, w: G }];
+    } else if (isLH) {
       const jX = pX + soW;
       if (isFBO) {
         drawP(jX, pY, sxW, pH, frame, 1.5, false, true, false);
@@ -3189,7 +3212,7 @@ function drawPlanView() {
   const frame = getFrameColor();
   const panelFill = getPanelFill();
   const isBi = cfg.isBi;
-  const isLH = cfg.code === 'O-SX' || cfg.code === 'SO-SX' || cfg.code === 'O-SX-SX-O';
+  const isLH = cfg.code === 'O-SX' || cfg.code === 'SO-SX' || cfg.code === 'O-SX-SX-O' || cfg.code === 'P-X';
   const isFBO = cfg.isFBO;
   const isP = !!cfg.isP;
 
@@ -3309,148 +3332,140 @@ function drawPlanView() {
     r(frameX + frameW - jambW, jambY, jambW, jambDepth, frame, '#94A3B8', 0.9);
   }
 
+  // P-panel packages: wall beside the opening (ESA: interior face, ISA: exterior face).
+  // P is only the stile at each sliding panel's trailing edge when closed.
+  const isISA = !!cfg.isISA;
+  const pMarkW = Math.max(2.5, stileW);
+  function drawWallBand(yBase) {
+    const bandH = Math.max(7, sc * 4);
+    const y = isISA ? yFront(yBase) + panH + 2 : yBack(yBase) - bandH - 2;
+    if (isISA) {
+      // Wall opening between the closed sliding panels; panels park behind the wall.
+      const g1 = isBi ? pos.biLeftSX : (isLH ? pos.lhSX : openX);
+      const g2 = isBi ? pos.biRightSX + panelLen : (isLH ? openX + openW : pos.rhSX + sxPanelLen);
+      if (g1 > frameX) r(frameX, y, g1 - frameX, bandH, '#E8E2D6', '#C4BBAE', 0.6);
+      if (frameX + frameW > g2) r(g2, y, frameX + frameW - g2, bandH, '#E8E2D6', '#C4BBAE', 0.6);
+    } else {
+      r(frameX, y, frameW, bandH, '#E8E2D6', '#C4BBAE', 0.6);
+    }
+    t((isISA && !isBi && !isLH) ? frameX + frameW - 8 : frameX + 8, y + bandH - 2, 'WALL', 8, '#8A8175', (isISA && !isBi && !isLH) ? 'end' : 'start', '700');
+  }
+  function drawFixed(yBase) {
+    const y = yFixedTrack(yBase);
+    if (isP) {
+      drawWallBand(yBase);
+      if (isBi) {
+        r(pos.biLeftSX, y, pMarkW, panH, panelFill, frame, 1.5);
+        r(pos.biRightSX + panelLen - pMarkW, y, pMarkW, panH, panelFill, frame, 1.5);
+      } else if (isLH) {
+        r(pos.lhSX, y, pMarkW, panH, panelFill, frame, 1.5);
+      } else {
+        r(pos.rhSX + sxPanelLen - pMarkW, y, pMarkW, panH, panelFill, frame, 1.5);
+      }
+    } else if (isBi) {
+      drawPlanPanel(pos.biLeftFixed,  y, panelLen, fixedLbl, true);
+      drawPlanPanel(pos.biRightFixed, y, panelLen, fixedLbl, true);
+    } else if (isLH) {
+      drawPlanPanel(pos.lhFixed, y, fixedPanelLen, fixedLbl, true);
+    } else {
+      drawPlanPanel(pos.rhFixed, y, fixedPanelLen, fixedLbl, true);
+    }
+  }
+
   // ── CLOSED ──────────────────────────────────────────────────────────
   const yClosedBase = titleH + 18;
   t(stateLblX, yStateLbl(yClosedBase), 'Closed', 12, '#1B4F8A', 'end', '700');
   jambMarks(yClosedBase);
-
-  function drawWallBand(yBase) {
-    const bandH = Math.max(7, sc * 4);
-    const y = yBack(yBase) - bandH - 2;
-    r(frameX, y, frameW, bandH, '#E8E2D6', '#C4BBAE', 0.6);
-    t(frameX + 8, y + bandH - 2, 'WALL', 8, '#8A8175', 'start', '700');
-  }
-  function drawPMark(trailX, y) {
-    r(trailX, y, Math.max(2.5, stileW), panH, panelFill, frame, 1.5);
-  }
-  const pLeftX = pos.biLeftSX;
-  const pRightX = pos.biRightSX + panelLen - Math.max(2.5, stileW);
-
-  if (isBi && isP) {
-    drawWallBand(yClosedBase);
-    drawPMark(pLeftX, yFixedTrack(yClosedBase));
+  drawFixed(yClosedBase);
+  if (isBi) {
     drawPlanPanel(pos.biLeftSX,  ySlideTrack(yClosedBase), panelLen, 'SX', false);
     drawPlanPanel(pos.biRightSX, ySlideTrack(yClosedBase), panelLen, 'SX', false);
-    drawPMark(pRightX, yFixedTrack(yClosedBase));
-    inlineArrow(pos.biLeftSX + panelLen / 2,  ySlideTrack(yClosedBase) - 5, '#1B4F8A', true);
-    inlineArrow(pos.biRightSX + panelLen / 2, ySlideTrack(yClosedBase) - 5, '#1B4F8A', false);
-  } else if (isBi) {
-    drawPlanPanel(pos.biLeftFixed,  yFixedTrack(yClosedBase), panelLen, fixedLbl, true);
-    drawPlanPanel(pos.biLeftSX,     ySlideTrack(yClosedBase), panelLen, 'SX', false);
-    drawPlanPanel(pos.biRightSX,    ySlideTrack(yClosedBase), panelLen, 'SX', false);
-    drawPlanPanel(pos.biRightFixed, yFixedTrack(yClosedBase), panelLen, fixedLbl, true);
     inlineArrow(pos.biLeftSX + panelLen / 2,  ySlideTrack(yClosedBase) - 5, '#1B4F8A', true);
     inlineArrow(pos.biRightSX + panelLen / 2, ySlideTrack(yClosedBase) - 5, '#1B4F8A', false);
   } else if (isLH) {
-    drawPlanPanel(pos.lhFixed, yFixedTrack(yClosedBase), fixedPanelLen, fixedLbl, true);
-    drawPlanPanel(pos.lhSX,    ySlideTrack(yClosedBase), sxPanelLen, 'SX', false);
+    drawPlanPanel(pos.lhSX, ySlideTrack(yClosedBase), sxPanelLen, 'SX', false);
     inlineArrow(pos.lhSX + sxPanelLen / 2, ySlideTrack(yClosedBase) - 5, '#1B4F8A', true);
   } else {
-    drawPlanPanel(pos.rhSX,    ySlideTrack(yClosedBase), sxPanelLen, 'SX', false);
-    drawPlanPanel(pos.rhFixed, yFixedTrack(yClosedBase), fixedPanelLen, fixedLbl, true);
+    drawPlanPanel(pos.rhSX, ySlideTrack(yClosedBase), sxPanelLen, 'SX', false);
     inlineArrow(pos.rhSX + sxPanelLen / 2, ySlideTrack(yClosedBase) - 5, '#1B4F8A', false);
   }
 
-  // ── OPEN — SX stops 3" short of fully open; fixed panels stay at jambs ─
+  // ── OPEN — sliding panels stop 3" short of fully open; fixed panels stay at jambs ─
   const yOpenBase = yFront(yClosedBase) + panH + stateGap;
   const yOpenBottom = Math.max(ySlideTrack(yOpenBase), yFixedTrack(yOpenBase)) + panH;
-  const yOpenDim  = yOpenBottom + 16;
+  const yOpenDim  = yOpenBottom + (isISA ? 28 : 16);
   t(stateLblX, yStateLbl(yOpenBase), 'Open', 12, '#1B4F8A', 'end', '700');
   jambMarks(yOpenBase);
-
+  drawFixed(yOpenBase);
   if (isBi) {
     const leftSxX  = openX + openInset;
     const rightSxX = pos.biRightFixed - openInset;
-    if (isP) {
-      drawWallBand(yOpenBase);
-      drawPMark(pLeftX, yFixedTrack(yOpenBase));
-      drawPMark(pRightX, yFixedTrack(yOpenBase));
-    } else {
-      drawPlanPanel(pos.biLeftFixed,  yFixedTrack(yOpenBase), panelLen, fixedLbl, true);
-      drawPlanPanel(pos.biRightFixed, yFixedTrack(yOpenBase), panelLen, fixedLbl, true);
-    }
     drawPlanPanel(leftSxX,  ySlideTrack(yOpenBase), panelLen, 'SX', false);
     drawPlanPanel(rightSxX, ySlideTrack(yOpenBase), panelLen, 'SX', false);
     dimLine(leftSxX + panelLen, yOpenDim, rightSxX, yOpenDim,
             'Clear Door Opening: ' + getClearOpeningStr());
   } else if (isLH) {
     const sxOpenX = openX + openInset;
-    drawPlanPanel(pos.lhFixed, yFixedTrack(yOpenBase), fixedPanelLen, fixedLbl, true);
-    drawPlanPanel(sxOpenX,   ySlideTrack(yOpenBase), sxPanelLen, 'SX', false);
+    drawPlanPanel(sxOpenX, ySlideTrack(yOpenBase), sxPanelLen, 'SX', false);
     dimLine(sxOpenX + sxPanelLen, yOpenDim, openX + openW, yOpenDim,
             'Clear Door Opening: ' + getClearOpeningStr());
   } else {
     const sxOpenX = openX + openW - sxPanelLen - openInset;
-    drawPlanPanel(sxOpenX,   ySlideTrack(yOpenBase), sxPanelLen, 'SX', false);
-    drawPlanPanel(pos.rhFixed, yFixedTrack(yOpenBase), fixedPanelLen, fixedLbl, true);
+    drawPlanPanel(sxOpenX, ySlideTrack(yOpenBase), sxPanelLen, 'SX', false);
     dimLine(openX, yOpenDim, sxOpenX, yOpenDim,
             'Clear Door Opening: ' + getClearOpeningStr());
   }
 
-  // ── BREAKAWAY — footprints + SX nose arcs (fixed panels: FBO only) ───
-  const yBreakBase = yOpenDim + 44;
-  t(stateLblX, yStateLbl(yBreakBase), 'Breakaway', 12, '#1B4F8A', 'end', '700');
-  const swingR = isBi ? panelLen : Math.max(fixedPanelLen, sxPanelLen);
-  const yBreakFootLbl = ySlideTrack(yBreakBase) + panH + swingR + footGap;
-  jambMarks(yBreakBase);
-
-  if (isBi) {
-    if (isP) {
-      drawWallBand(yBreakBase);
-      drawPMark(pLeftX, yFixedTrack(yBreakBase));
-      drawPMark(pRightX, yFixedTrack(yBreakBase));
+  // ── BREAKAWAY — footprints + nose arcs (fixed panels: FBO only; ISA has none) ───
+  let yFootLbl = yOpenDim + 50;
+  if (!isISA) {
+    const yBreakBase = yOpenDim + 44;
+    t(stateLblX, yStateLbl(yBreakBase), 'Breakaway', 12, '#1B4F8A', 'end', '700');
+    const swingR = isBi ? panelLen : Math.max(fixedPanelLen, sxPanelLen);
+    yFootLbl = ySlideTrack(yBreakBase) + panH + swingR + footGap;
+    jambMarks(yBreakBase);
+    drawFixed(yBreakBase);
+    if (isBi) {
+      drawPlanPanel(pos.biLeftSX,  ySlideTrack(yBreakBase), panelLen, 'SX', false);
+      drawPlanPanel(pos.biRightSX, ySlideTrack(yBreakBase), panelLen, 'SX', false);
+    } else if (isLH) {
+      drawPlanPanel(pos.lhSX, ySlideTrack(yBreakBase), sxPanelLen, 'SX', false);
     } else {
-      drawPlanPanel(pos.biLeftFixed,  yFixedTrack(yBreakBase), panelLen, fixedLbl, true);
-      drawPlanPanel(pos.biRightFixed, yFixedTrack(yBreakBase), panelLen, fixedLbl, true);
+      drawPlanPanel(pos.rhSX, ySlideTrack(yBreakBase), sxPanelLen, 'SX', false);
     }
-    drawPlanPanel(pos.biLeftSX,  ySlideTrack(yBreakBase), panelLen, 'SX', false);
-    drawPlanPanel(pos.biRightSX, ySlideTrack(yBreakBase), panelLen, 'SX', false);
-  } else if (isLH) {
-    drawPlanPanel(pos.lhFixed, yFixedTrack(yBreakBase), fixedPanelLen, fixedLbl, true);
-    drawPlanPanel(pos.lhSX,    ySlideTrack(yBreakBase), sxPanelLen, 'SX', false);
-  } else {
-    drawPlanPanel(pos.rhSX,    ySlideTrack(yBreakBase), sxPanelLen, 'SX', false);
-    drawPlanPanel(pos.rhFixed, yFixedTrack(yBreakBase), fixedPanelLen, fixedLbl, true);
-  }
 
-  // Nose arc (dotted quarter-circle) + vertical swung line from hinge at panel edge
-  function noseArc(hx, hy, nxRest, nyRest, nxOut, nyOut, sweep, radius) {
-    const r = radius != null ? radius : swingR;
-    path(`M ${nxRest} ${nyRest} A ${r} ${r} 0 0 ${sweep} ${nxOut} ${nyOut}`,
-         'none', '#1B4F8A', 1.3, '4,4');
-    l(hx, hy, hx, hy + r, frame, 1.4);
-  }
+    // Nose arc (dotted quarter-circle) + vertical swung line from hinge at panel edge
+    const noseArc = (hx, hy, nxRest, nyRest, nxOut, nyOut, sweep, radius) => {
+      const rr = radius != null ? radius : swingR;
+      path(`M ${nxRest} ${nyRest} A ${rr} ${rr} 0 0 ${sweep} ${nxOut} ${nyOut}`,
+           'none', '#1B4F8A', 1.3, '4,4');
+      l(hx, hy, hx, hy + rr, frame, 1.4);
+    };
 
-  if (isBi) {
     const yFixed = yFixedTrack(yBreakBase) + panH / 2;
     const ySlide = ySlideTrack(yBreakBase) + panH / 2;
-    const leftSxHeel  = pos.biLeftSX;
-    const leftSxNose  = pos.biLeftSX + panelLen;
-    const rightSxHeel = pos.biRightSX + panelLen;
-    const rightSxNose = pos.biRightSX;
-    if (isFBO) noseArc(frameX, yFixed, pos.biLeftFixed + panelLen, yFixed, frameX, yFixed + swingR, 1);
-    noseArc(leftSxHeel, ySlide, leftSxNose, ySlide, leftSxHeel, ySlide + swingR, 1);
-    noseArc(rightSxHeel, ySlide, rightSxNose, ySlide, rightSxHeel, ySlide + swingR, 0);
-    if (isFBO) noseArc(frameX + frameW, yFixed, pos.biRightFixed, yFixed, frameX + frameW, yFixed + swingR, 0);
-  } else if (isLH) {
-    const yFixed = yFixedTrack(yBreakBase) + panH / 2;
-    const ySlide = ySlideTrack(yBreakBase) + panH / 2;
-    if (isFBO) noseArc(openX, yFixed, pos.lhFixed + fixedPanelLen, yFixed, openX, yFixed + fixedPanelLen, 1, fixedPanelLen);
-    noseArc(pos.lhSX, ySlide, pos.lhSX + sxPanelLen, ySlide, pos.lhSX, ySlide + sxPanelLen, 1, sxPanelLen);
-  } else {
-    const yFixed = yFixedTrack(yBreakBase) + panH / 2;
-    const ySlide = ySlideTrack(yBreakBase) + panH / 2;
-    noseArc(pos.rhSX + sxPanelLen, ySlide, pos.rhSX, ySlide, pos.rhSX + sxPanelLen, ySlide + sxPanelLen, 0, sxPanelLen);
-    if (isFBO) noseArc(openX + openW, yFixed, pos.rhFixed, yFixed, openX + openW, yFixed + fixedPanelLen, 0, fixedPanelLen);
+    if (isBi) {
+      if (isFBO) noseArc(frameX, yFixed, pos.biLeftFixed + panelLen, yFixed, frameX, yFixed + swingR, 1);
+      noseArc(pos.biLeftSX, ySlide, pos.biLeftSX + panelLen, ySlide, pos.biLeftSX, ySlide + swingR, 1);
+      noseArc(pos.biRightSX + panelLen, ySlide, pos.biRightSX, ySlide, pos.biRightSX + panelLen, ySlide + swingR, 0);
+      if (isFBO) noseArc(frameX + frameW, yFixed, pos.biRightFixed, yFixed, frameX + frameW, yFixed + swingR, 0);
+    } else if (isLH) {
+      if (isFBO) noseArc(openX, yFixed, pos.lhFixed + fixedPanelLen, yFixed, openX, yFixed + fixedPanelLen, 1, fixedPanelLen);
+      noseArc(pos.lhSX, ySlide, pos.lhSX + sxPanelLen, ySlide, pos.lhSX, ySlide + sxPanelLen, 1, sxPanelLen);
+    } else {
+      noseArc(pos.rhSX + sxPanelLen, ySlide, pos.rhSX, ySlide, pos.rhSX + sxPanelLen, ySlide + sxPanelLen, 0, sxPanelLen);
+      if (isFBO) noseArc(openX + openW, yFixed, pos.rhFixed, yFixed, openX + openW, yFixed + fixedPanelLen, 0, fixedPanelLen);
+    }
   }
 
-  t(frameX + frameW / 2, yBreakFootLbl,
-    isP ? 'Exterior access only. P stiles stay against the wall. Only SX panels break out.'
+  t(frameX + frameW / 2, yFootLbl,
+    isISA ? '*** NO BREAK-AWAY FUNCTION *** Interior mounted.'
+          : isP ? 'Exterior access only. P stiles stay against the wall. Only SX panels break out.'
           : isFBO ? ('FBO — All ' + numPanels + ' panels pivot open for full emergency egress')
           : ('FSL — Only sliding (SX) panels break out; fixed panels (O) do not'),
-    12, '#666', 'middle', '700');
+    12, isISA ? '#C0392B' : '#666', 'middle', '700');
 
-  svg.setAttribute('viewBox', `0 0 ${vW} ${Math.ceil(yBreakFootLbl + 18)}`);
+  svg.setAttribute('viewBox', `0 0 ${vW} ${Math.ceil(yFootLbl + 18)}`);
 }
 
 // ════════════════════════════════════════════════════════════════════════

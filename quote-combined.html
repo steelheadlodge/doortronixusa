@@ -726,6 +726,14 @@ body.sheet-mode #plan-svg { background:#fff; }
             <div class="cc-price">from $3,600</div>
           </label>
 
+          <input type="radio" name="config" id="cfg_isa_bi" value="isa-bi">
+          <label for="cfg_isa_bi" class="config-card">
+            <svg class="cc-icon" width="70" height="36" viewBox="0 0 70 36"><rect x="0" y="0" width="70" height="36" fill="#EEF4FB" rx="3"/><rect x="0" y="0" width="70" height="6" fill="#1B4F8A"/><rect x="4" y="6" width="15" height="28" fill="#E8E2D6" stroke="#C4BBAE" stroke-width="1"/><rect x="20" y="6" width="15" height="28" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1"/><rect x="36" y="6" width="15" height="28" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1"/><rect x="52" y="6" width="15" height="28" fill="#E8E2D6" stroke="#C4BBAE" stroke-width="1"/><text x="11.5" y="23" font-size="7" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">P</text><text x="27.5" y="23" font-size="7" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">X</text><text x="43.5" y="23" font-size="7" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">X</text><text x="59.5" y="23" font-size="7" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">P</text></svg>
+            <div class="cc-name">ISA Bi-Part</div>
+            <div class="cc-code">P-X-X-P · interior mounted</div>
+            <div class="cc-price">from $3,600</div>
+          </label>
+
         </div><!-- /configGrid-bipart -->
 
         <!-- Single Slide configs -->
@@ -763,6 +771,22 @@ body.sheet-mode #plan-svg { background:#fff; }
             <div class="cc-name">FSL Single — LH</div>
             <div class="cc-code">O-SX → ext.</div>
             <div class="cc-price">from $3,200</div>
+          </label>
+
+          <input type="radio" name="config" id="cfg_isa_ss_rh" value="isa-single-rh">
+          <label for="cfg_isa_ss_rh" class="config-card">
+            <svg class="cc-icon" width="70" height="36" viewBox="0 0 70 36"><rect x="0" y="0" width="70" height="36" fill="#EEF4FB" rx="3"/><rect x="0" y="0" width="70" height="6" fill="#1B4F8A"/><rect x="2" y="6" width="32" height="28" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1"/><rect x="37" y="6" width="32" height="28" fill="#E8E2D6" stroke="#C4BBAE" stroke-width="1"/><text x="18" y="21" font-size="8" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">X</text><text x="18" y="31" font-size="10" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">→</text><text x="53" y="21" font-size="8" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">P</text></svg>
+            <div class="cc-name">ISA Single — RH</div>
+            <div class="cc-code">X-P · interior mounted</div>
+            <div class="cc-price">from $2,900</div>
+          </label>
+
+          <input type="radio" name="config" id="cfg_isa_ss_lh" value="isa-single-lh">
+          <label for="cfg_isa_ss_lh" class="config-card">
+            <svg class="cc-icon" width="70" height="36" viewBox="0 0 70 36"><rect x="0" y="0" width="70" height="36" fill="#EEF4FB" rx="3"/><rect x="0" y="0" width="70" height="6" fill="#1B4F8A"/><rect x="2" y="6" width="32" height="28" fill="#E8E2D6" stroke="#C4BBAE" stroke-width="1"/><rect x="37" y="6" width="32" height="28" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1"/><text x="18" y="21" font-size="8" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">P</text><text x="53" y="21" font-size="8" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">X</text><text x="53" y="31" font-size="10" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">←</text></svg>
+            <div class="cc-name">ISA Single — LH</div>
+            <div class="cc-code">P-X · interior mounted</div>
+            <div class="cc-price">from $2,900</div>
           </label>
 
         </div><!-- /configGrid-single -->
@@ -2797,6 +2821,9 @@ const CONFIGS = {
   'fbo-bi':        { label:'FBO Bi-Part',      code:'SO-SX-SX-SO', base:3900, transom:250, minW:96,  maxW:192, panels:2, isFBO:true,  isBi:true  },
   'fsl-bi':        { label:'FSL Bi-Part',      code:'O-SX-SX-O',  base:3900, transom:250, minW:96,  maxW:192, panels:2, isFBO:false, isBi:true  },
   'psx-bi':        { label:'ESA Bi-Part',      code:'P-SX-SX-P',  base:3600, transom:250, minW:96,  maxW:192, panels:2, isFBO:false, isBi:true, isP:true },
+  'isa-bi':        { label:'ISA Bi-Part',      code:'P-X-X-P',    base:3600, transom:250, minW:96,  maxW:192, panels:2, isFBO:false, isBi:true, isP:true, isISA:true },
+  'isa-single-lh': { label:'ISA Single — LH',  code:'P-X',        base:2900, transom:250, minW:78,  maxW:108, panels:1, isFBO:false, isBi:false, isP:true, isISA:true },
+  'isa-single-rh': { label:'ISA Single — RH',  code:'X-P',        base:2900, transom:250, minW:78,  maxW:108, panels:1, isFBO:false, isBi:false, isP:true, isISA:true },
   'fbo-single-rh': { label:'FBO Single — RH',  code:'SX-SO',      base:3200, transom:250, minW:78,  maxW:108, panels:1, isFBO:true,  isBi:false },
   'fbo-single-lh': { label:'FBO Single — LH',  code:'SO-SX',      base:3200, transom:250, minW:78,  maxW:108, panels:1, isFBO:true,  isBi:false },
   'fsl-single-rh': { label:'FSL Single — RH',  code:'SX-O',       base:3200, transom:250, minW:78,  maxW:108, panels:1, isFBO:false, isBi:false },
@@ -6704,7 +6731,7 @@ function updateAddonVisibility() {
   slideOnly.forEach(id => {
     const el = document.getElementById(id);
     if (!el) return;
-    if (cfg && (cfg.isSwing || cfg.isStorefront)) {
+    if (cfg && (cfg.isSwing || cfg.isStorefront || (cfg.isISA && id === 'addon_nose_casters'))) {
       el.style.display = 'none';
       el.classList.remove('checked');
       _checkedAddons.delete(id);
@@ -7489,7 +7516,7 @@ function drawDoor(svgId, vW, vH, isConf) {
   const frame = getFrameColor();
   const hasTransom = rv('transom') === 'yes';
   const isBi = cfg ? cfg.isBi : true;
-  const isLH = cfg && (cfg.code === 'O-SX' || cfg.code === 'SO-SX' || cfg.code === 'O-SX-SX-O');
+  const isLH = cfg && (cfg.code === 'O-SX' || cfg.code === 'SO-SX' || cfg.code === 'O-SX-SX-O' || cfg.code === 'P-X');
   const isFBO = cfg ? cfg.isFBO : false;
 
   const titleH = isConf ? 60 : 0;
@@ -7801,7 +7828,23 @@ function drawDoor(svgId, vW, vH, isConf) {
       const fX = faceOnRight ? meetX + stileW / 2 : meetX - stileW / 2;
       junctionFace = { x: fX, stY, stH };
     }
-    if (isLH) {
+    if (cfg.isP) {
+      // Wall on the P side; P is only the stile at the X trailing edge when closed.
+      const wx = isLH ? pX : pX + sxW;
+      const xx = isLH ? pX + soW : pX;
+      r(wx, pY, soW, pH, '#E8E2D6', '#C4BBAE', 0.7);
+      for (let y = pY + 10; y < pY + pH - btmRH - 4; y += 14) l(wx + 5, y, wx + soW - 5, y, '#D2CBBE', 0.6);
+      r(wx, pY + pH - btmRH, soW, btmRH, panelFill, frame, 0.8);
+      t(wx + soW / 2, pY + pH * 0.42, 'WALL', 10, '#8A8175', 'middle', '700');
+      const pStX = isLH ? xx : xx + sxW - stileW;
+      r(pStX, pY, stileW, pH, panelFill, frame, 1.4);
+      t(isLH ? pStX - 4 : pStX + stileW + 4, pY + 14, 'P', 10, '#1B4F8A', isLH ? 'end' : 'start', '700');
+      drawP(xx, pY, sxW, pH, frame, 1.5, false);
+      l(xx + stileW + 3, aY, xx + sxW - stileW - 3, aY, '#1B4F8A', 1.2, '5,3');
+      if (isLH) path(`M${xx + stileW + 3},${aY}l5,-3.5l0,7Z`, '#1B4F8A');
+      else path(`M${xx + sxW - stileW - 3},${aY}l-5,-3.5l0,7Z`, '#1B4F8A');
+      panels = [{x:xx+stileW, w:G}];
+    } else if (isLH) {
       const jX = pX + soW;
       if (isFBO) {
         drawP(jX, pY, sxW, pH, frame, 1.5, false, true, false);
@@ -8860,7 +8903,7 @@ function drawPlanView() {
   const frame = getFrameColor();
   const panelFill = getPanelFill();
   const isBi = cfg.isBi;
-  const isLH = cfg.code === 'O-SX' || cfg.code === 'SO-SX' || cfg.code === 'O-SX-SX-O';
+  const isLH = cfg.code === 'O-SX' || cfg.code === 'SO-SX' || cfg.code === 'O-SX-SX-O' || cfg.code === 'P-X';
   const isFBO = cfg.isFBO;
 
   const frameX = _doorScale.dX;
@@ -8959,91 +9002,109 @@ function drawPlanView() {
     r(frameX + frameW - jambW,   jambY, jambW, jambDepth, frame, '#94A3B8', 0.9);
   }
 
-  // ESA: wall behind the opening; P is only the stile at each SX trailing edge.
+  // P-panel packages: wall beside the opening (ESA: interior face, ISA: exterior face).
+  // P is only the stile at each sliding panel's trailing edge when closed.
   const pMarkW = Math.max(2.5, stileW);
-  const pLeftX = pos.biLeftSX;
-  const pRightX = pos.biRightSX + panelLen - pMarkW;
-  function drawBiFixed(yBase) {
-    if (cfg.isP) {
-      const bandH = Math.max(7, sc * 4);
-      const by = yBack(yBase) - bandH - 2;
-      r(frameX, by, frameW, bandH, '#E8E2D6', '#C4BBAE', 0.6);
-      t(frameX + 8, by + bandH - 2, 'WALL', 8, '#8A8175', 'start', '700');
-      r(pLeftX,  yFixedTrack(yBase), pMarkW, panH, panelFill, frame, 1.5);
-      r(pRightX, yFixedTrack(yBase), pMarkW, panH, panelFill, frame, 1.5);
+  const isISA = !!cfg.isISA;
+  function wallBand(yBase) {
+    const bandH = Math.max(7, sc * 4);
+    const by = isISA ? yFront(yBase) + panH + 2 : yBack(yBase) - bandH - 2;
+    if (isISA) {
+      // Wall opening between the closed sliding panels; panels park behind the wall.
+      const g1 = isBi ? pos.biLeftSX : (isLH ? pos.lhSX : openX);
+      const g2 = isBi ? pos.biRightSX + panelLen : (isLH ? openX + openW : pos.rhSX + sxPanelLen);
+      if (g1 > frameX) r(frameX, by, g1 - frameX, bandH, '#E8E2D6', '#C4BBAE', 0.6);
+      if (frameX + frameW > g2) r(g2, by, frameX + frameW - g2, bandH, '#E8E2D6', '#C4BBAE', 0.6);
     } else {
-      drawPlanPanel(pos.biLeftFixed,  yFixedTrack(yBase), panelLen, fixedLbl, true);
-      drawPlanPanel(pos.biRightFixed, yFixedTrack(yBase), panelLen, fixedLbl, true);
+      r(frameX, by, frameW, bandH, '#E8E2D6', '#C4BBAE', 0.6);
+    }
+    t((isISA && !isBi && !isLH) ? frameX + frameW - 8 : frameX + 8, by + bandH - 2, 'WALL', 8, '#8A8175', (isISA && !isBi && !isLH) ? 'end' : 'start', '700');
+  }
+  function drawFixed(yBase) {
+    const y = yFixedTrack(yBase);
+    if (cfg.isP) {
+      wallBand(yBase);
+      if (isBi) {
+        r(pos.biLeftSX, y, pMarkW, panH, panelFill, frame, 1.5);
+        r(pos.biRightSX + panelLen - pMarkW, y, pMarkW, panH, panelFill, frame, 1.5);
+      } else if (isLH) {
+        r(pos.lhSX, y, pMarkW, panH, panelFill, frame, 1.5);
+      } else {
+        r(pos.rhSX + sxPanelLen - pMarkW, y, pMarkW, panH, panelFill, frame, 1.5);
+      }
+    } else if (isBi) {
+      drawPlanPanel(pos.biLeftFixed,  y, panelLen, fixedLbl, true);
+      drawPlanPanel(pos.biRightFixed, y, panelLen, fixedLbl, true);
+    } else if (isLH) {
+      drawPlanPanel(pos.lhFixed, y, fixedPanelLen, fixedLbl, true);
+    } else {
+      drawPlanPanel(pos.rhFixed, y, fixedPanelLen, fixedLbl, true);
     }
   }
 
   // ── CLOSED ──
-  const yClosedBase = cfg.isP ? 26 : 16;
+  const yClosedBase = (cfg.isP && !isISA) ? 26 : 16;
   t(stateLblX, yStateLbl(yClosedBase), 'Closed', 16, '#1B4F8A', 'end', '700');
   jambMarks(yClosedBase);
+  drawFixed(yClosedBase);
   if (isBi) {
-    drawBiFixed(yClosedBase);
     drawPlanPanel(pos.biLeftSX,     ySlideTrack(yClosedBase), panelLen, 'SX', false);
     drawPlanPanel(pos.biRightSX,    ySlideTrack(yClosedBase), panelLen, 'SX', false);
     inlineArrow(pos.biLeftSX + panelLen / 2,  ySlideTrack(yClosedBase) - 5, '#1B4F8A', true);
     inlineArrow(pos.biRightSX + panelLen / 2, ySlideTrack(yClosedBase) - 5, '#1B4F8A', false);
   } else if (isLH) {
-    drawPlanPanel(pos.lhFixed, yFixedTrack(yClosedBase), fixedPanelLen, fixedLbl, true);
     drawPlanPanel(pos.lhSX,    ySlideTrack(yClosedBase), sxPanelLen, 'SX', false);
     inlineArrow(pos.lhSX + sxPanelLen / 2, ySlideTrack(yClosedBase) - 5, '#1B4F8A', true);
   } else {
     drawPlanPanel(pos.rhSX,    ySlideTrack(yClosedBase), sxPanelLen, 'SX', false);
-    drawPlanPanel(pos.rhFixed, yFixedTrack(yClosedBase), fixedPanelLen, fixedLbl, true);
     inlineArrow(pos.rhSX + sxPanelLen / 2, ySlideTrack(yClosedBase) - 5, '#1B4F8A', false);
   }
 
   // ── OPEN ──
   const yOpenBase = yFront(yClosedBase) + panH + 34;
-  const yOpenDim  = ySlideTrack(yOpenBase) + panH + 14;
+  const yOpenDim  = ySlideTrack(yOpenBase) + panH + (isISA ? 26 : 14);
   t(stateLblX, yStateLbl(yOpenBase), 'Open', 16, '#1B4F8A', 'end', '700');
   jambMarks(yOpenBase);
+  drawFixed(yOpenBase);
   if (isBi) {
     const leftSxX  = openX + openInset;
     const rightSxX = pos.biRightFixed - openInset;
-    drawBiFixed(yOpenBase);
     drawPlanPanel(leftSxX,          ySlideTrack(yOpenBase), panelLen, 'SX', false);
     drawPlanPanel(rightSxX,         ySlideTrack(yOpenBase), panelLen, 'SX', false);
     dimLine(leftSxX + panelLen, yOpenDim, rightSxX, yOpenDim, 'Clear Door Opening: ' + getOpenStr());
   } else if (isLH) {
     const sxOpenX = openX + openInset;
-    drawPlanPanel(pos.lhFixed, yFixedTrack(yOpenBase), fixedPanelLen, fixedLbl, true);
     drawPlanPanel(sxOpenX, ySlideTrack(yOpenBase), sxPanelLen, 'SX', false);
     dimLine(sxOpenX + sxPanelLen, yOpenDim, openX + openW, yOpenDim, 'Clear Door Opening: ' + getOpenStr());
   } else {
     const sxOpenX = openX + openW - sxPanelLen - openInset;
     drawPlanPanel(sxOpenX,   ySlideTrack(yOpenBase), sxPanelLen, 'SX', false);
-    drawPlanPanel(pos.rhFixed, yFixedTrack(yOpenBase), fixedPanelLen, fixedLbl, true);
     dimLine(openX, yOpenDim, sxOpenX, yOpenDim, 'Clear Door Opening: ' + getOpenStr());
   }
 
-  // ── BREAKAWAY ──
+  // ── BREAKAWAY (ISA has none) ──
+  let yFootLbl = yOpenDim + 50;
+  if (!isISA) {
   const yBreakBase = yOpenDim + 44;
   const swingR = isBi ? panelLen : Math.max(fixedPanelLen, sxPanelLen);
-  const yBreakFootLbl = ySlideTrack(yBreakBase) + panH + swingR + 40;
+  yFootLbl = ySlideTrack(yBreakBase) + panH + swingR + 40;
   t(stateLblX, yStateLbl(yBreakBase), 'Breakaway', 16, '#1B4F8A', 'end', '700');
   jambMarks(yBreakBase);
+  drawFixed(yBreakBase);
   if (isBi) {
-    drawBiFixed(yBreakBase);
     drawPlanPanel(pos.biLeftSX,     ySlideTrack(yBreakBase), panelLen, 'SX', false);
     drawPlanPanel(pos.biRightSX,    ySlideTrack(yBreakBase), panelLen, 'SX', false);
   } else if (isLH) {
-    drawPlanPanel(pos.lhFixed, yFixedTrack(yBreakBase), fixedPanelLen, fixedLbl, true);
     drawPlanPanel(pos.lhSX,    ySlideTrack(yBreakBase), sxPanelLen, 'SX', false);
   } else {
     drawPlanPanel(pos.rhSX,    ySlideTrack(yBreakBase), sxPanelLen, 'SX', false);
-    drawPlanPanel(pos.rhFixed, yFixedTrack(yBreakBase), fixedPanelLen, fixedLbl, true);
   }
 
-  function noseArc(hx, hy, nxRest, nyRest, nxOut, nyOut, sweep, radius) {
+  const noseArc = (hx, hy, nxRest, nyRest, nxOut, nyOut, sweep, radius) => {
     const r2 = radius != null ? radius : swingR;
     path(`M ${nxRest} ${nyRest} A ${r2} ${r2} 0 0 ${sweep} ${nxOut} ${nyOut}`, 'none', '#1B4F8A', 1.3, '4,4');
     l(hx, hy, hx, hy + r2, frame, 1.4);
-  }
+  };
   if (isBi) {
     const yFixed = yFixedTrack(yBreakBase) + panH / 2;
     const ySlide = ySlideTrack(yBreakBase) + panH / 2;
@@ -9062,14 +9123,16 @@ function drawPlanView() {
     noseArc(pos.rhSX + sxPanelLen, ySlide, pos.rhSX, ySlide, pos.rhSX + sxPanelLen, ySlide + sxPanelLen, 0, sxPanelLen);
     if (isFBO) noseArc(openX + openW, yFixed, pos.rhFixed, yFixed, openX + openW, yFixed + fixedPanelLen, 0, fixedPanelLen);
   }
+  }
 
-  vH = Math.ceil(yBreakFootLbl + 16);
+  vH = Math.ceil(yFootLbl + 16);
   svg.setAttribute('viewBox', `0 0 ${vW} ${vH}`);
-  t(vW/2, yBreakFootLbl,
-    cfg.isP ? 'Exterior access only. P stiles stay against the wall. Only SX panels break out.'
+  t(vW/2, yFootLbl,
+    isISA ? '*** NO BREAK-AWAY FUNCTION *** Interior mounted.'
+    : cfg.isP ? 'Exterior access only. P stiles stay against the wall. Only SX panels break out.'
     : isFBO ? ('FBO — All ' + numPanels + ' panels pivot open for full emergency egress')
           : ('FSL — Only sliding (SX) panels break out; fixed panels (O) do not'),
-    14, '#666', 'middle', '700');
+    14, isISA ? '#C0392B' : '#666', 'middle', '700');
 
   const foot = document.getElementById('plan-footer');
   if (foot) foot.style.display = '';
@@ -9090,13 +9153,18 @@ function updateNoseCasters() {
   const wFt = parseInt(fv('f_wft')) || 0;
   const wIn = parseInt(fv('f_win')) || 0;
   const totalIn = wFt * 12 + wIn;
-  const required = totalIn > 168; // over 14'0"
+  const required = !(cfg && cfg.isISA) && totalIn > 168; // over 14'0"; ISA has no breakaway
+  const wasRequired = el.classList.contains('required-addon');
   if (required) {
     el.classList.add('checked', 'required-addon');
     _checkedAddons.add('addon_nose_casters');
     qtySel.value = '2';
   } else {
     el.classList.remove('required-addon');
+    if (wasRequired) {
+      el.classList.remove('checked');
+      _checkedAddons.delete('addon_nose_casters');
+    }
     // Only auto-deselect if it was required (not manually checked by user at smaller width)
     // We leave user's manual selection intact when dropping below threshold
   }

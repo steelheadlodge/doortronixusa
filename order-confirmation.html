@@ -615,6 +615,10 @@ const CONFIGS = {
   'fsl-single-lh': { label:'FSL Single — LH', code:'O-SX',        isFBO:false, isBi:false },
   'fbo-bi':        { label:'FBO Bi-Part',     code:'SO-SX-SX-SO', isFBO:true,  isBi:true  },
   'fsl-bi':        { label:'FSL Bi-Part',     code:'O-SX-SX-O',   isFBO:false, isBi:true  },
+  'psx-bi':        { label:'ESA Bi-Part',     code:'P-SX-SX-P',   isFBO:false, isBi:true, isP:true },
+  'isa-bi':        { label:'ISA Bi-Part',     code:'P-X-X-P',     isFBO:false, isBi:true, isP:true, isISA:true },
+  'isa-single-lh': { label:'ISA Single — LH', code:'P-X',         isFBO:false, isBi:false, isP:true, isISA:true },
+  'isa-single-rh': { label:'ISA Single — RH', code:'X-P',         isFBO:false, isBi:false, isP:true, isISA:true },
 };
 
 // Current order state — populated from URL or sample
