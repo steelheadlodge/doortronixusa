@@ -1066,15 +1066,15 @@ let _doorScale = null;
 function isDarkBronze() { return ORDER.door.frameFinish === '313 Dark Bronze'; }
 function isBlackFinish() { return /black/i.test(ORDER.door.frameFinish || ''); }
 function getFrameColor() {
-  if (isBlackFinish()) return '#1A1A1A';
+  if (isBlackFinish()) return '#2B2825';
   return isDarkBronze() ? '#3D2710' : '#B8C4D0';
 }
 function getPanelFill() {
-  if (isBlackFinish()) return '#2A2A2A';
+  if (isBlackFinish()) return '#38342F';
   return isDarkBronze() ? '#4A3018' : '#7A9CB8';
 }
 function getGlazeFill() {
-  if (isBlackFinish()) return { fill: '#3A3A3A', stroke: '#222' };
+  if (isBlackFinish()) return { fill:'#C8B8A0', stroke:'#8A7060' };
   return isDarkBronze()
     ? { fill:'#C8B8A0', stroke:'#8A7060' }
     : { fill:'#E8F4FD', stroke:'#A8D4F5' };

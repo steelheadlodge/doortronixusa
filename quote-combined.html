@@ -7283,15 +7283,15 @@ function frameFinishLabel() {
   return 'Clear Anodized';
 }
 function getFrameColor() {
-  if (isBlackFinish()) return '#1A1A1A';
+  if (isBlackFinish()) return '#36322F';
   return isDarkBronze() ? '#4E3818' : '#B8C4D0';
 }
 function getPanelFill() {
-  if (isBlackFinish()) return '#2A2A2A';
+  if (isBlackFinish()) return '#45403B';
   return isDarkBronze() ? '#5C3E22' : '#7A9CB8';
 }
 function getGlazeFill() {
-  if (isBlackFinish()) return { fill: '#3A3A3A', stroke: '#222' };
+  if (isBlackFinish()) return { fill:'#C8B8A0', stroke:'#8A7060' };
   return isDarkBronze()
     ? { fill:'#C8B8A0', stroke:'#8A7060' }
     : { fill:'#E8F4FD', stroke:'#A8D4F5' };
