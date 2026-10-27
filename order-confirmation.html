@@ -617,6 +617,8 @@ const CONFIGS = {
   'fsl-bi':        { label:'FSL Bi-Part',     code:'O-SX-SX-O',   isFBO:false, isBi:true  },
   'psx-bi':        { label:'ESA Bi-Part',     code:'P-SX-SX-P',   isFBO:false, isBi:true, isP:true },
   'isa-bi':        { label:'ISA Bi-Part',     code:'P-X-X-P',     isFBO:false, isBi:true, isP:true, isISA:true },
+  'psx-single-lh': { label:'ESA Single — LH', code:'P-SX',        isFBO:false, isBi:false, isP:true },
+  'psx-single-rh': { label:'ESA Single — RH', code:'SX-P',        isFBO:false, isBi:false, isP:true },
   'isa-single-lh': { label:'ISA Single — LH', code:'P-X',         isFBO:false, isBi:false, isP:true, isISA:true },
   'isa-single-rh': { label:'ISA Single — RH', code:'X-P',         isFBO:false, isBi:false, isP:true, isISA:true },
 };
@@ -1101,7 +1103,7 @@ function drawDoor() {
   const frame = getFrameColor();
   const hasTransom = !!d.transom;
   const isBi = cfg.isBi;
-  const isLH = cfg.code === 'O-SX' || cfg.code === 'SO-SX' || cfg.code === 'O-SX-SX-O';
+  const isLH = cfg.code === 'O-SX' || cfg.code === 'SO-SX' || cfg.code === 'O-SX-SX-O' || cfg.code === 'P-X' || cfg.code === 'P-SX';
   const isFBO = cfg.isFBO;
 
   const titleH = IS_SUBMITTAL ? 28 : 72;
@@ -1395,7 +1397,7 @@ function drawPlanView() {
   const frame = getFrameColor();
   const panelFill = getPanelFill();
   const isBi = cfg.isBi;
-  const isLH = cfg.code === 'O-SX' || cfg.code === 'SO-SX' || cfg.code === 'O-SX-SX-O';
+  const isLH = cfg.code === 'O-SX' || cfg.code === 'SO-SX' || cfg.code === 'O-SX-SX-O' || cfg.code === 'P-X' || cfg.code === 'P-SX';
   const isFBO = cfg.isFBO;
 
   const frameX = _doorScale.dX;   // outer frame left — matches elevation
