@@ -9035,8 +9035,9 @@ function drawPlanView() {
 
   const yBack  = (y) => y;
   const yFront = (y) => y + trackSep;
-  const yFixedTrack = (y) => isFBO ? yFront(y) : yBack(y);
-  const ySlideTrack = (y) => isFBO ? yBack(y)  : yFront(y);
+  // ISA mirrors ESA: sliding panel + header inside, P stile against the inside face of the wall.
+  const yFixedTrack = (y) => (isFBO || cfg.isISA) ? yFront(y) : yBack(y);
+  const ySlideTrack = (y) => (isFBO || cfg.isISA) ? yBack(y)  : yFront(y);
   const yStateLbl   = (y) => y + trackSep / 2 + panH / 2 + 3;
 
   function drawPlanPanel(x, y, w, label, isSO) {
