@@ -7811,13 +7811,22 @@ function drawDoor(svgId, vW, vH, isConf) {
       r(x4 - stileW, pY, stileW, pH, panelFill, frame, 1.4);
       t((x1 + x2) / 2, pY + pH * 0.42, 'WALL', 10, '#8A8175', 'middle', '700');
       t((x4 + x4 + soW) / 2, pY + pH * 0.42, 'WALL', 10, '#8A8175', 'middle', '700');
-      t(x2 - 4, pY + 14, 'P', 10, '#1B4F8A', 'end', '700');
-      t(x4 + 4, pY + 14, 'P', 10, '#1B4F8A', 'start', '700');
+      if (!cfg.isISA) {
+        t(x2 - 4, pY + 14, 'P', 10, '#1B4F8A', 'end', '700');
+        t(x4 + 4, pY + 14, 'P', 10, '#1B4F8A', 'start', '700');
+      }
       drawP(x2, pY, sxW, pH, frame, 1.5, false);
       drawP(x3, pY, sxW, pH, frame, 1.5, false);
       if (cfg.isISA) {
+        // Interior mounted: closure stile and P sit behind the wall; only the pivot stile shows.
         r(x2 + stileW, pY, stileW, pH, panelFill, frame, 1.2);
         r(x4 - stileW * 2, pY, stileW, pH, panelFill, frame, 1.2);
+        wallBay(x1, soW + stileW);
+        wallBay(x4 - stileW, soW + stileW);
+        r(x1, pY + pH - btmRH, soW + stileW, btmRH, panelFill, frame, 0.8);
+        r(x4 - stileW, pY + pH - btmRH, soW + stileW, btmRH, panelFill, frame, 0.8);
+        t((x1 + x2) / 2, pY + pH * 0.42, 'WALL', 10, '#8A8175', 'middle', '700');
+        t((x4 + x4 + soW) / 2, pY + pH * 0.42, 'WALL', 10, '#8A8175', 'middle', '700');
       }
     } else {
       drawP(x1, pY, soW, pH, sdStroke, sdSW, false, false, true);
@@ -7866,10 +7875,17 @@ function drawDoor(svgId, vW, vH, isConf) {
       t(wx + soW / 2, pY + pH * 0.42, 'WALL', 10, '#8A8175', 'middle', '700');
       const pStX = isLH ? xx : xx + sxW - stileW;
       r(pStX, pY, stileW, pH, panelFill, frame, 1.4);
-      t(isLH ? pStX - 4 : pStX + stileW + 4, pY + 14, 'P', 10, '#1B4F8A', isLH ? 'end' : 'start', '700');
+      if (!cfg.isISA) t(isLH ? pStX - 4 : pStX + stileW + 4, pY + 14, 'P', 10, '#1B4F8A', isLH ? 'end' : 'start', '700');
       drawP(xx, pY, sxW, pH, frame, 1.5, false);
       const hW = cfg.isISA ? stileW : 0;
       if (cfg.isISA) r(isLH ? xx + stileW : xx + sxW - stileW * 2, pY, stileW, pH, panelFill, frame, 1.2);
+      if (cfg.isISA) {
+        const cx = isLH ? pX : wx - stileW, cw = soW + stileW;
+        r(cx, pY, cw, pH, '#E8E2D6', '#C4BBAE', 0.7);
+        for (let y = pY + 10; y < pY + pH - btmRH - 4; y += 14) l(cx + 5, y, cx + cw - 5, y, '#D2CBBE', 0.6);
+        r(cx, pY + pH - btmRH, cw, btmRH, panelFill, frame, 0.8);
+        t(wx + soW / 2, pY + pH * 0.42, 'WALL', 10, '#8A8175', 'middle', '700');
+      }
       const aL = xx + stileW + 3 + (isLH ? hW : 0), aR = xx + sxW - stileW - 3 - (isLH ? 0 : hW);
       l(aL, aY, aR, aY, '#1B4F8A', 1.2, '5,3');
       if (isLH) path(`M${aL},${aY}l5,-3.5l0,7Z`, '#1B4F8A');
