@@ -3341,17 +3341,15 @@ function drawPlanView() {
   const pMarkW = Math.max(2.5, stileW);
   function drawWallBand(yBase) {
     const bandH = Math.max(7, sc * 4);
-    const y = isISA ? yFront(yBase) + panH : yBack(yBase) - bandH - 2;
-    if (isISA) {
-      // Wall opening between the closed sliding panels; panels park behind the wall.
+    const y = isISA ? yFront(yBase) + panH : yBack(yBase) - bandH;
+    {
+      // Wall opening between the P stiles; the P stiles sit on the wall face.
       const g1 = isBi ? pos.biLeftSX + pMarkW : (isLH ? pos.lhSX + pMarkW : openX);
       const g2 = isBi ? pos.biRightSX + panelLen - pMarkW : (isLH ? openX + openW : pos.rhSX + sxPanelLen - pMarkW);
       if (g1 > frameX) r(frameX, y, g1 - frameX, bandH, '#E8E2D6', '#C4BBAE', 0.6);
       if (frameX + frameW > g2) r(g2, y, frameX + frameW - g2, bandH, '#E8E2D6', '#C4BBAE', 0.6);
-    } else {
-      r(frameX, y, frameW, bandH, '#E8E2D6', '#C4BBAE', 0.6);
     }
-    t((isISA && !isBi && !isLH) ? frameX + frameW - 8 : frameX + 8, y + bandH - 2, 'WALL', 8, '#8A8175', (isISA && !isBi && !isLH) ? 'end' : 'start', '700');
+    t((!isBi && !isLH) ? frameX + frameW - 8 : frameX + 8, y + bandH - 2, 'WALL', 8, '#8A8175', (!isBi && !isLH) ? 'end' : 'start', '700');
   }
   function drawFixed(yBase) {
     const y = yFixedTrack(yBase);
