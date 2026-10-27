@@ -2980,7 +2980,13 @@ function drawDoor() {
   // Bi-part opens at the center; a single slide opens over the sliding (SX)
   // leaf, so center the sensor on that leaf, not the middle of the header.
   const hdrX = dX + frameT, hdrY = dY + transomH, hdrW = dW - frameT * 2;
-  r(hdrX, hdrY, hdrW, headerH, frame, '#777', 1);
+  if (cfg.isISA) {
+    // Interior mounted: header is behind the wall from the exterior — hidden lines.
+    r(hdrX, hdrY, hdrW, headerH, '#E8E2D6');
+    r(hdrX, hdrY, hdrW, headerH, 'none', '#777', 1).setAttribute('stroke-dasharray', '5,3');
+  } else {
+    r(hdrX, hdrY, hdrW, headerH, frame, '#777', 1);
+  }
   const sensW = Math.max(12, sc * 11);
   const sensH = Math.max(5, Math.min(headerH * 0.4, sc * 2.25));
   let sensCenterX = dX + dW / 2;
@@ -2993,7 +2999,12 @@ function drawDoor() {
   const sensY = hdrY + headerH - sensH - Math.max(2, headerH * 0.14);
   r(sensX, sensY, sensW, sensH, '#1a1a1a', '#111', 0.7, 1.2);
   r(sensX + 2, sensY + sensH * 0.52, sensW - 4, Math.max(1.6, sensH * 0.3), '#5a6570', 'none', 0, 0.5);
-  if (isP) t(hdrX + 6, hdrY + headerH / 2 + 3, cfg.isISA ? 'INTERIOR MOUNTED' : 'EXTERIOR ACCESS ONLY', 8, '#1B4F8A', 'start', '700');
+  if (isP) {
+    const lblRight = sensCenterX < hdrX + hdrW / 2 && !isBi;
+    t(lblRight ? hdrX + hdrW - 6 : hdrX + 6, hdrY + headerH / 2 + 3,
+      cfg.isISA ? 'HEADER BEHIND WALL' : 'EXTERIOR ACCESS ONLY',
+      8, '#1B4F8A', lblRight ? 'end' : 'start', '700');
+  }
 
   // Jambs
   r(dX, dY+transomH, frameT, dH-transomH-sillH, frame);
