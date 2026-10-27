@@ -2941,7 +2941,7 @@ function drawDoor() {
   }
 
   // Outer frame
-  r(dX, dY, dW, dH, '#E8EEF4', frame, 2);
+  r(dX, dY, dW, dH, '#E8EEF4', cfg.isISA ? null : frame, 2);
   // Sill — omitted when the order is no threshold
   if (!/no threshold/i.test(d.threshold || '')) r(dX, dY+dH-sillH, dW, sillH, frame);
 
@@ -3007,8 +3007,15 @@ function drawDoor() {
   }
 
   // Jambs
-  r(dX, dY+transomH, frameT, dH-transomH-sillH, frame);
-  r(dX+dW-frameT, dY+transomH, frameT, dH-transomH-sillH, frame);
+  if (cfg && cfg.isISA) {
+    [dX, dX+dW-frameT].forEach(jx => {
+      r(jx, dY+transomH, frameT, dH-transomH-sillH, '#E8E2D6');
+      r(jx, dY+transomH, frameT, dH-transomH-sillH, 'none', '#777', 1).setAttribute('stroke-dasharray', '5,3');
+    });
+  } else {
+    r(dX, dY+transomH, frameT, dH-transomH-sillH, frame);
+    r(dX+dW-frameT, dY+transomH, frameT, dH-transomH-sillH, frame);
+  }
 
   // Panel zone
   const pY = dY+transomH+headerH+2, pH = dH-transomH-headerH-sillH-4;
@@ -3090,8 +3097,8 @@ function drawDoor() {
         r(x4 - stileW * 2, pY, stileW, pH, panelFill, frame, 1.2);
         wallBay(x1, soW + stileW);
         wallBay(x4 - stileW, soW + stileW);
-        r(x1, pY + pH - btmRH, soW + stileW, btmRH, panelFill, frame, 0.8);
-        r(x4 - stileW, pY + pH - btmRH, soW + stileW, btmRH, panelFill, frame, 0.8);
+        r(x1, pY + pH - btmRH, soW + stileW, btmRH, 'none', '#777', 1).setAttribute('stroke-dasharray', '5,3');
+        r(x4 - stileW, pY + pH - btmRH, soW + stileW, btmRH, 'none', '#777', 1).setAttribute('stroke-dasharray', '5,3');
         t((x1 + x2) / 2, pY + pH * 0.42, 'WALL', 10, '#8A8175', 'middle', '700');
         t((x4 + x4 + soW) / 2, pY + pH * 0.42, 'WALL', 10, '#8A8175', 'middle', '700');
       }
@@ -3155,7 +3162,7 @@ function drawDoor() {
         const cx = isLH ? pX : wx - stileW, cw = soW + stileW;
         r(cx, pY, cw, pH, '#E8E2D6', '#C4BBAE', 0.7);
         for (let y = pY + 10; y < pY + pH - btmRH - 4; y += 14) l(cx + 5, y, cx + cw - 5, y, '#D2CBBE', 0.6);
-        r(cx, pY + pH - btmRH, cw, btmRH, panelFill, frame, 0.8);
+        r(cx, pY + pH - btmRH, cw, btmRH, 'none', '#777', 1).setAttribute('stroke-dasharray', '5,3');
         t(wx + soW / 2, pY + pH * 0.42, 'WALL', 10, '#8A8175', 'middle', '700');
       }
       const aL = xx + stileW + 3 + (isLH ? hW : 0), aR = xx + sxW - stileW - 3 - (isLH ? 0 : hW);
