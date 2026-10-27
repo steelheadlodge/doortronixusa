@@ -2965,6 +2965,16 @@ function drawDoor() {
       }
     }
     const liteEdges = [tx, ...vertXs.flatMap(vx => [vx - frameT/2, vx + frameT/2]), tx + tw];
+    if (cfg.isISA) {
+      // Interior mounted: transom is behind the wall from the exterior — hidden lines.
+      r(dX, dY, dW, transomH, '#E8E2D6');
+      r(dX, dY, dW, transomH, 'none', '#777', 1).setAttribute('stroke-dasharray', '5,3');
+      for (let i = 0; i < liteEdges.length - 1; i += 2) {
+        const lx = liteEdges[i], lw = liteEdges[i+1] - liteEdges[i];
+        if (lw > 1) r(lx, tGlassY, lw, tGlassH, 'none', '#777', 0.8).setAttribute('stroke-dasharray', '5,3');
+      }
+      t(dX + dW / 2, tGlassY + tGlassH / 2 + 3, 'TRANSOM BEHIND WALL', 8, '#1B4F8A', 'middle', '700');
+    } else {
     for (let i = 0; i < liteEdges.length - 1; i += 2) {
       const lx = liteEdges[i], lw = liteEdges[i+1] - liteEdges[i];
       if (lw > 1) r(lx, tGlassY, lw, tGlassH, glaze.fill, glaze.stroke, 0.5);
@@ -2974,6 +2984,7 @@ function drawDoor() {
     r(dX + dW - frameT, dY, frameT, transomH, frame);
     vertXs.forEach(vx => r(vx - frameT/2, tGlassY, frameT, tGlassH, frame));
     l(dX, tGlassY + tGlassH + glassStopH/2, dX + dW, tGlassY + tGlassH + glassStopH/2, frame, glassStopH);
+    }
   }
 
   // Header — motion sensor sits over the clear walk-through opening.
