@@ -731,6 +731,7 @@ body.sheet-mode #plan-svg { background:#fff; }
             <svg class="cc-icon" width="70" height="36" viewBox="0 0 70 36"><rect x="0" y="0" width="70" height="36" fill="#EEF4FB" rx="3"/><rect x="0" y="0" width="70" height="6" fill="#1B4F8A"/><rect x="4" y="6" width="15" height="28" fill="#E8E2D6" stroke="#C4BBAE" stroke-width="1"/><rect x="20" y="6" width="15" height="28" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1"/><rect x="36" y="6" width="15" height="28" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1"/><rect x="52" y="6" width="15" height="28" fill="#E8E2D6" stroke="#C4BBAE" stroke-width="1"/><text x="11.5" y="23" font-size="7" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">P</text><text x="27.5" y="23" font-size="7" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">X</text><text x="43.5" y="23" font-size="7" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">X</text><text x="59.5" y="23" font-size="7" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">P</text></svg>
             <div class="cc-name">ISA Bi-Part</div>
             <div class="cc-code">P-X-X-P · interior mounted</div>
+            <div class="cc-code" style="color:#C0392B;font-weight:700;">No breakaway</div>
             <div class="cc-price">from $3,600</div>
           </label>
 
@@ -778,6 +779,7 @@ body.sheet-mode #plan-svg { background:#fff; }
             <svg class="cc-icon" width="70" height="36" viewBox="0 0 70 36"><rect x="0" y="0" width="70" height="36" fill="#EEF4FB" rx="3"/><rect x="0" y="0" width="70" height="6" fill="#1B4F8A"/><rect x="2" y="6" width="32" height="28" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1"/><rect x="37" y="6" width="32" height="28" fill="#E8E2D6" stroke="#C4BBAE" stroke-width="1"/><text x="18" y="21" font-size="8" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">X</text><text x="18" y="31" font-size="10" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">→</text><text x="53" y="21" font-size="8" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">P</text></svg>
             <div class="cc-name">ISA Single — RH</div>
             <div class="cc-code">X-P · interior mounted</div>
+            <div class="cc-code" style="color:#C0392B;font-weight:700;">No breakaway</div>
             <div class="cc-price">from $2,900</div>
           </label>
 
@@ -786,6 +788,7 @@ body.sheet-mode #plan-svg { background:#fff; }
             <svg class="cc-icon" width="70" height="36" viewBox="0 0 70 36"><rect x="0" y="0" width="70" height="36" fill="#EEF4FB" rx="3"/><rect x="0" y="0" width="70" height="6" fill="#1B4F8A"/><rect x="2" y="6" width="32" height="28" fill="#E8E2D6" stroke="#C4BBAE" stroke-width="1"/><rect x="37" y="6" width="32" height="28" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1"/><text x="18" y="21" font-size="8" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">P</text><text x="53" y="21" font-size="8" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">X</text><text x="53" y="31" font-size="10" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">←</text></svg>
             <div class="cc-name">ISA Single — LH</div>
             <div class="cc-code">P-X · interior mounted</div>
+            <div class="cc-code" style="color:#C0392B;font-weight:700;">No breakaway</div>
             <div class="cc-price">from $2,900</div>
           </label>
 
@@ -1687,6 +1690,17 @@ body.sheet-mode #plan-svg { background:#fff; }
             <label for="hb_std">Included (std)</label>
             <input type="radio" name="holdBeams" id="hb_none" value="None">
             <label for="hb_none">No Hold Beams (no credit)</label>
+          </div>
+        </div>
+
+        <div class="field" id="isa-egress-field" style="display:none; grid-column:1/-1;">
+          <div style="border:1.5px solid #C0392B; background:#FDF1EF; border-radius:6px; padding:10px 12px; font-size:12.5px; line-height:1.45; color:#5A1E16;">
+            <strong style="color:#C0392B;">Interior mounted — no breakaway.</strong>
+            ISA doors do not break out for emergency egress. Not for use as a required means of egress unless approved by the local building official (IBC 1010.3.2 / ANSI/BHMA A156.10). Verify with your architect or AHJ before ordering.
+            <label for="isa_egress_ack" style="display:flex; gap:8px; align-items:flex-start; margin:8px 0 0; font-size:12.5px; font-weight:600; text-transform:none; letter-spacing:0; color:#222; cursor:pointer;">
+              <input type="checkbox" id="isa_egress_ack" style="width:16px; height:16px; min-width:16px; margin:1px 0 0; padding:0; flex:0 0 auto;" onchange="this.closest('#isa-egress-field').firstElementChild.style.borderColor=''">
+              <span>I confirm this opening is not a required egress door, or the local building official has approved a non-breakaway door. *</span>
+            </label>
           </div>
         </div>
 
@@ -4355,6 +4369,8 @@ function syncSwingUi() {
   if (sSlide) sSlide.style.display = (swing || storefront) ? 'none' : '';
   const hbF = document.getElementById('hold-beams-field');
   if (hbF) hbF.style.display = (swing || storefront) ? 'none' : '';
+  const isaF = document.getElementById('isa-egress-field');
+  if (isaF) isaF.style.display = (cfg && cfg.isISA && !swing && !storefront) ? '' : 'none';
   const stileF = document.getElementById('stile-width-field');
   if (stileF) stileF.style.display = (swing || storefront) ? 'none' : '';
   if (swing) {
@@ -4761,6 +4777,7 @@ function captureCurrentDoor() {
     threshold:     rv('threshold'),
     sensor:        rv('sensor'),
     holdBeams:     noHoldBeams() ? 'None' : 'Included',
+    isaEgressAck:  !!(cfg && cfg.isISA && document.getElementById('isa_egress_ack')?.checked),
     swingDir:      rv('swingDir'),
     swingHand:     rv('swingHand'),
     swingEnergy:   rv('swingEnergy'),
@@ -4873,6 +4890,10 @@ function _addDoorToCartImpl(opts) {
     const wftEl = document.getElementById(_cfg.isTwin ? 'tw_lwft' : 'f_wft');
     if (wftEl) { wftEl.style.borderColor = 'var(--red)'; wftEl.style.boxShadow = '0 0 0 3px rgba(220,38,38,.15)'; wftEl.scrollIntoView({ behavior:'smooth', block:'center' }); }
     showCartError(`Width ${inchesToStr(bad)} is outside the valid range for this configuration (${inchesToStr(cfgMinW(_cfg))} – ${inchesToStr(_cfg.maxW)}).`);
+    return;
+  }
+  if (!opts.lenient && isaEgressMissing()) {
+    showCartError('Interior mounted doors have no breakaway. Check the egress acknowledgment to continue.');
     return;
   }
 
@@ -5003,6 +5024,8 @@ function loadDoorIntoForm(door) {
   }
   const hbStd = document.getElementById('hb_std');
   if (hbStd) hbStd.checked = true;
+  const isaAck = document.getElementById('isa_egress_ack');
+  if (isaAck) isaAck.checked = !!door.isaEgressAck;
   ['glazing','transom','transomGlassPrep','glassPrep','stileWidth','bottomRail','muntin','threshold','sensor','holdBeams','swingDir','swingHand','swingEnergy','swingStop','swingCrashIn','swingCrashOut','swingScan','swingApproach','swingHdrSafe','swingPlate','swingPlateLogo','swingPlateFinish','swingPlateWireless','swingPull','swingPushBar','swingSidelite','swingSideliteGlass'].forEach(name => {
     const v = door[name]; if (!v && v !== '0') return;
     const el = document.querySelector(`input[name="${name}"][value='${v}']`);
@@ -5377,7 +5400,7 @@ async function submitAllDoors() {
            `  Width: ${d.widthStr} | Height: ${d.heightStr}\n` +
            `  Finish: ${d.glazing} | Glass Prep: ${d.glassPrep} | Threshold: ${d.threshold}\n` +
            swingLine +
-           `  Sensor: ${sensor}${d.holdBeams === 'None' ? ' | NO HOLD BEAMS' : ''} | Transom: ${d.transom === 'yes' ? 'Yes (+$250)' : 'No'} | Stile: ${stile} | Bottom Rail: ${rail}\n` +
+           `  Sensor: ${sensor}${d.holdBeams === 'None' ? ' | NO HOLD BEAMS' : ''}${d.isaEgressAck ? ' | NO BREAKAWAY — egress ack confirmed' : ''} | Transom: ${d.transom === 'yes' ? 'Yes (+$250)' : 'No'} | Stile: ${stile} | Bottom Rail: ${rail}\n` +
            `  Muntin: ${d.muntin}${d.muntinAffs && d.muntinAffs.length ? ' @ ' + d.muntinAffs.map(a => a + '" AFF').join(' / ') : ''} | Add-ons: ${d.addons.join(', ') || 'None'}\n` +
            `  Est. Price: ${d.estimatedTotal ? '$'+d.estimatedTotal.toLocaleString() : 'Call for pricing'}` +
            (d.locationTags ? `\n  Locations: ${d.locationTags}` : '') +
@@ -6756,6 +6779,16 @@ function pricingGated() { return false; }
 function noHoldBeams() {
   const cfg = getConfig();
   return !!(cfg && !cfg.isSwing && !cfg.isStorefront && rv('holdBeams') === 'None');
+}
+
+function isaEgressMissing() {
+  const cfg = getConfig();
+  if (!cfg || !cfg.isISA) return false;
+  const cb = document.getElementById('isa_egress_ack');
+  if (cb && cb.checked) return false;
+  const box = document.querySelector('#isa-egress-field > div');
+  if (box) { box.style.borderColor = 'var(--red)'; box.scrollIntoView({ behavior:'smooth', block:'center' }); }
+  return true;
 }
 
 function calcPrice() {
@@ -9398,6 +9431,7 @@ document.getElementById('quoteForm').addEventListener('submit', async function(e
   if (_orderKind === 'operator') { addDoorToCart(); return; }
   if (!rv('config')) { alert('Please select a door configuration.'); return; }
   if (!ok) { alert('Please fill in all required fields marked with *.'); return; }
+  if (isaEgressMissing()) { alert('Interior mounted doors have no breakaway. Check the egress acknowledgment before submitting.'); return; }
   if (!termsAgreed()) { alert('Read and check the terms below the price before submitting.'); return; }
   if (!(await maybeCreateAccount())) return;
   if (!localStorage.getItem('dtx_session')) {
@@ -9459,6 +9493,7 @@ document.getElementById('quoteForm').addEventListener('submit', async function(e
     threshold: cfg && cfg.isStorefront ? '—' : rv('threshold'),
     sensor: cfg && cfg.isStorefront ? '—' : ((['Optex i-oneXT','BEA IXIO'].includes(rv('sensor'))) ? rv('sensor') : 'Standard (incl.)'),
     holdBeams: (cfg && !cfg.isSwing && !cfg.isStorefront) ? (noHoldBeams() ? 'None (no credit)' : 'Included') : 'N/A',
+    egressAcknowledgment: (cfg && cfg.isISA) ? 'Customer confirmed: not a required egress door, or AHJ approved non-breakaway' : 'N/A',
     transom: (cfg && cfg.isStorefront) ? 'No' : (rv('transom') === 'yes' ? 'Yes' : 'No'),
     sfGlass: cfg && cfg.isStorefront ? storefrontGlassStr() : '',
     sfVerticals: cfg && cfg.isStorefront ? getStorefrontVerticals() : 0,
