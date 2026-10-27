@@ -7749,6 +7749,24 @@ function drawDoor(svgId, vW, vH, isConf) {
       l(x2 + stileW, biStY + biStH,  x2 + stileW, pY + pH,        frame, 1.5);
       l(x4 - stileW, biStY - stileW, x4 - stileW, biStY,          frame, 1.5);
       l(x4 - stileW, biStY + biStH,  x4 - stileW, pY + pH,        frame, 1.5);
+    } else if (cfg.isP) {
+      // Outer bays are the wall. P is only the stile at the SX trailing edge when closed.
+      function wallBay(x, w) {
+        r(x, pY, w, pH, '#E8E2D6', '#C4BBAE', 0.7);
+        for (let y = pY + 10; y < pY + pH - btmRH - 4; y += 14) l(x + 5, y, x + w - 5, y, '#D2CBBE', 0.6);
+      }
+      wallBay(x1, soW);
+      wallBay(x4, soW);
+      r(x1, pY + pH - btmRH, soW, btmRH, panelFill, frame, 0.8);
+      r(x4, pY + pH - btmRH, soW, btmRH, panelFill, frame, 0.8);
+      r(x2, pY, stileW, pH, panelFill, frame, 1.4);
+      r(x4 - stileW, pY, stileW, pH, panelFill, frame, 1.4);
+      t((x1 + x2) / 2, pY + pH * 0.42, 'WALL', 10, '#8A8175', 'middle', '700');
+      t((x4 + x4 + soW) / 2, pY + pH * 0.42, 'WALL', 10, '#8A8175', 'middle', '700');
+      t(x2 - 4, pY + 14, 'P', 10, '#1B4F8A', 'end', '700');
+      t(x4 + 4, pY + 14, 'P', 10, '#1B4F8A', 'start', '700');
+      drawP(x2, pY, sxW, pH, frame, 1.5, false);
+      drawP(x3, pY, sxW, pH, frame, 1.5, false);
     } else {
       drawP(x1, pY, soW, pH, sdStroke, sdSW, false, false, true);
       drawP(x4, pY, soW, pH, sdStroke, sdSW, false, true, false);
@@ -7762,7 +7780,9 @@ function drawDoor(svgId, vW, vH, isConf) {
     path(`M${x2 + stileW + 3},${aY}l5,-3.5l0,7Z`, '#1B4F8A');
     l(x3 + stileW + 3, aY, x4 - stileW - 3, aY, '#1B4F8A', 1.2, '5,3');
     path(`M${x4 - stileW - 3},${aY}l-5,-3.5l0,7Z`, '#1B4F8A');
-    panels = [{x:x1+stileW, w:G}, {x:x2+stileW, w:G}, {x:x3+stileW, w:G}, {x:x4, w:G}];
+    panels = cfg.isP
+      ? [{x:x2+stileW, w:G}, {x:x3+stileW, w:G}]
+      : [{x:x1+stileW, w:G}, {x:x2+stileW, w:G}, {x:x3+stileW, w:G}, {x:x4, w:G}];
   } else {
     const panW = pW / 2;
     const soW  = panW - stileW / 2;
@@ -8939,15 +8959,32 @@ function drawPlanView() {
     r(frameX + frameW - jambW,   jambY, jambW, jambDepth, frame, '#94A3B8', 0.9);
   }
 
+  // ESA: wall behind the opening; P is only the stile at each SX trailing edge.
+  const pMarkW = Math.max(2.5, stileW);
+  const pLeftX = pos.biLeftSX;
+  const pRightX = pos.biRightSX + panelLen - pMarkW;
+  function drawBiFixed(yBase) {
+    if (cfg.isP) {
+      const bandH = Math.max(7, sc * 4);
+      const by = yBack(yBase) - bandH - 2;
+      r(frameX, by, frameW, bandH, '#E8E2D6', '#C4BBAE', 0.6);
+      t(frameX + 8, by + bandH - 2, 'WALL', 8, '#8A8175', 'start', '700');
+      r(pLeftX,  yFixedTrack(yBase), pMarkW, panH, panelFill, frame, 1.5);
+      r(pRightX, yFixedTrack(yBase), pMarkW, panH, panelFill, frame, 1.5);
+    } else {
+      drawPlanPanel(pos.biLeftFixed,  yFixedTrack(yBase), panelLen, fixedLbl, true);
+      drawPlanPanel(pos.biRightFixed, yFixedTrack(yBase), panelLen, fixedLbl, true);
+    }
+  }
+
   // ── CLOSED ──
-  const yClosedBase = 16;
+  const yClosedBase = cfg.isP ? 26 : 16;
   t(stateLblX, yStateLbl(yClosedBase), 'Closed', 16, '#1B4F8A', 'end', '700');
   jambMarks(yClosedBase);
   if (isBi) {
-    drawPlanPanel(pos.biLeftFixed,  yFixedTrack(yClosedBase), panelLen, fixedLbl, true);
+    drawBiFixed(yClosedBase);
     drawPlanPanel(pos.biLeftSX,     ySlideTrack(yClosedBase), panelLen, 'SX', false);
     drawPlanPanel(pos.biRightSX,    ySlideTrack(yClosedBase), panelLen, 'SX', false);
-    drawPlanPanel(pos.biRightFixed, yFixedTrack(yClosedBase), panelLen, fixedLbl, true);
     inlineArrow(pos.biLeftSX + panelLen / 2,  ySlideTrack(yClosedBase) - 5, '#1B4F8A', true);
     inlineArrow(pos.biRightSX + panelLen / 2, ySlideTrack(yClosedBase) - 5, '#1B4F8A', false);
   } else if (isLH) {
@@ -8968,10 +9005,9 @@ function drawPlanView() {
   if (isBi) {
     const leftSxX  = openX + openInset;
     const rightSxX = pos.biRightFixed - openInset;
-    drawPlanPanel(pos.biLeftFixed,  yFixedTrack(yOpenBase), panelLen, fixedLbl, true);
+    drawBiFixed(yOpenBase);
     drawPlanPanel(leftSxX,          ySlideTrack(yOpenBase), panelLen, 'SX', false);
     drawPlanPanel(rightSxX,         ySlideTrack(yOpenBase), panelLen, 'SX', false);
-    drawPlanPanel(pos.biRightFixed, yFixedTrack(yOpenBase), panelLen, fixedLbl, true);
     dimLine(leftSxX + panelLen, yOpenDim, rightSxX, yOpenDim, 'Clear Door Opening: ' + getOpenStr());
   } else if (isLH) {
     const sxOpenX = openX + openInset;
@@ -8992,10 +9028,9 @@ function drawPlanView() {
   t(stateLblX, yStateLbl(yBreakBase), 'Breakaway', 16, '#1B4F8A', 'end', '700');
   jambMarks(yBreakBase);
   if (isBi) {
-    drawPlanPanel(pos.biLeftFixed,  yFixedTrack(yBreakBase), panelLen, fixedLbl, true);
+    drawBiFixed(yBreakBase);
     drawPlanPanel(pos.biLeftSX,     ySlideTrack(yBreakBase), panelLen, 'SX', false);
     drawPlanPanel(pos.biRightSX,    ySlideTrack(yBreakBase), panelLen, 'SX', false);
-    drawPlanPanel(pos.biRightFixed, yFixedTrack(yBreakBase), panelLen, fixedLbl, true);
   } else if (isLH) {
     drawPlanPanel(pos.lhFixed, yFixedTrack(yBreakBase), fixedPanelLen, fixedLbl, true);
     drawPlanPanel(pos.lhSX,    ySlideTrack(yBreakBase), sxPanelLen, 'SX', false);
@@ -9031,7 +9066,8 @@ function drawPlanView() {
   vH = Math.ceil(yBreakFootLbl + 16);
   svg.setAttribute('viewBox', `0 0 ${vW} ${vH}`);
   t(vW/2, yBreakFootLbl,
-    isFBO ? ('FBO — All ' + numPanels + ' panels pivot open for full emergency egress')
+    cfg.isP ? 'Exterior access only. P stiles stay against the wall. Only SX panels break out.'
+    : isFBO ? ('FBO — All ' + numPanels + ' panels pivot open for full emergency egress')
           : ('FSL — Only sliding (SX) panels break out; fixed panels (O) do not'),
     14, '#666', 'middle', '700');
 
