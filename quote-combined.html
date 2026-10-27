@@ -718,6 +718,14 @@ body.sheet-mode #plan-svg { background:#fff; }
             <div class="cc-price">from $3,900</div>
           </label>
 
+          <input type="radio" name="config" id="cfg_psx_bi" value="psx-bi">
+          <label for="cfg_psx_bi" class="config-card">
+            <svg class="cc-icon" width="70" height="36" viewBox="0 0 70 36"><rect x="0" y="0" width="70" height="36" fill="#EEF4FB" rx="3"/><rect x="0" y="0" width="70" height="6" fill="#1B4F8A"/><rect x="4" y="6" width="15" height="28" fill="#B8D4F0" stroke="#1B4F8A" stroke-width="1"/><rect x="20" y="6" width="15" height="28" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1"/><rect x="36" y="6" width="15" height="28" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1"/><rect x="52" y="6" width="15" height="28" fill="#B8D4F0" stroke="#1B4F8A" stroke-width="1"/><text x="11.5" y="23" font-size="7" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">P</text><text x="27.5" y="23" font-size="7" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">SX</text><text x="43.5" y="23" font-size="7" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">SX</text><text x="59.5" y="23" font-size="7" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">P</text></svg>
+            <div class="cc-name">ESA Bi-Part</div>
+            <div class="cc-code">P-SX-SX-P · surface applied</div>
+            <div class="cc-price">from $3,600</div>
+          </label>
+
         </div><!-- /configGrid-bipart -->
 
         <!-- Single Slide configs -->
@@ -808,7 +816,7 @@ body.sheet-mode #plan-svg { background:#fff; }
         <p id="arch-dwg-line" style="font-size:13px;margin-top:8px;">
           <a id="arch-dwg-link" href="docs/BIPART%20SLIDE%20FBO%20SO-SX-SX-SO.pdf" target="_blank" rel="noopener" style="font-weight:700;color:var(--blue);">Architectural drawing for this configuration →</a>
         </p>
-        <p style="font-size:11px;color:var(--mgray);margin-top:6px;">ESA and custom configurations: call <strong>(888) 453-5196</strong>.</p>
+        <p style="font-size:11px;color:var(--mgray);margin-top:6px;">ESA single slides and custom configurations: call <strong>(888) 453-5196</strong>.</p>
       </div>
 
       <div id="swing-config-block" style="display:none;margin-bottom:16px;">
@@ -1194,8 +1202,10 @@ body.sheet-mode #plan-svg { background:#fff; }
             <label for="gl_clear">204 Clear Anodized</label>
             <input type="radio" name="glazing" id="gl_bronze" value="313 Dark Bronze">
             <label for="gl_bronze">313 Dark Bronze</label>
+            <input type="radio" name="glazing" id="gl_black" value="Black Anodized">
+            <label for="gl_black">Black Anodized (+10%)</label>
           </div>
-          <span class="hint">Aluminum frame finish only. Glass/glazing supplied &amp; installed by others.</span>
+          <span class="hint">Aluminum frame finish only. Black is +10% of the package. Glass/glazing supplied &amp; installed by others.</span>
         </div>
 
         <!-- Frame Width -->
@@ -1643,6 +1653,16 @@ body.sheet-mode #plan-svg { background:#fff; }
             <label for="sn_optex">Optex i-oneXT (+$220)</label>
             <input type="radio" name="sensor" id="sn_bea" value="BEA IXIO">
             <label for="sn_bea">BEA IXIO (+$280)</label>
+          </div>
+        </div>
+
+        <div class="field" id="hold-beams-field">
+          <label>Hold Beams</label>
+          <div class="chip-group">
+            <input type="radio" name="holdBeams" id="hb_std" value="Included" checked>
+            <label for="hb_std">Included (std)</label>
+            <input type="radio" name="holdBeams" id="hb_none" value="None">
+            <label for="hb_none">No Hold Beams (no credit)</label>
           </div>
         </div>
 
@@ -2776,6 +2796,7 @@ function getStileW(sc) {
 const CONFIGS = {
   'fbo-bi':        { label:'FBO Bi-Part',      code:'SO-SX-SX-SO', base:3900, transom:250, minW:96,  maxW:192, panels:2, isFBO:true,  isBi:true  },
   'fsl-bi':        { label:'FSL Bi-Part',      code:'O-SX-SX-O',  base:3900, transom:250, minW:96,  maxW:192, panels:2, isFBO:false, isBi:true  },
+  'psx-bi':        { label:'ESA Bi-Part',      code:'P-SX-SX-P',  base:3600, transom:250, minW:96,  maxW:192, panels:2, isFBO:false, isBi:true, isP:true },
   'fbo-single-rh': { label:'FBO Single — RH',  code:'SX-SO',      base:3200, transom:250, minW:78,  maxW:108, panels:1, isFBO:true,  isBi:false },
   'fbo-single-lh': { label:'FBO Single — LH',  code:'SO-SX',      base:3200, transom:250, minW:78,  maxW:108, panels:1, isFBO:true,  isBi:false },
   'fsl-single-rh': { label:'FSL Single — RH',  code:'SX-O',       base:3200, transom:250, minW:78,  maxW:108, panels:1, isFBO:false, isBi:false },
@@ -4305,6 +4326,8 @@ function syncSwingUi() {
   if (netLbl) netLbl.textContent = swing ? 'Clear Door Opening' : 'Net Slide Opening (clear door width)';
   const sSlide = document.getElementById('sensor-field-slide');
   if (sSlide) sSlide.style.display = (swing || storefront) ? 'none' : '';
+  const hbF = document.getElementById('hold-beams-field');
+  if (hbF) hbF.style.display = (swing || storefront) ? 'none' : '';
   const stileF = document.getElementById('stile-width-field');
   if (stileF) stileF.style.display = (swing || storefront) ? 'none' : '';
   if (swing) {
@@ -4687,7 +4710,7 @@ function captureCurrentDoor() {
     sfHoriz2:      (cfg && cfg.isStorefront) ? fv('sf_h2') : '',
     sfHoriz3:      (cfg && cfg.isStorefront) ? fv('sf_h3') : '',
     sfGlassStr:    (cfg && cfg.isStorefront) ? storefrontGlassStr() : '',
-    frameFinish:   rv('glazing') === '313 Dark Bronze' ? '313 Dark Bronze' : 'Clear Anodized',
+    frameFinish:   frameFinishLabel(),
     configKey:     rv('config'),
     widthFt:       isSwingTwin() ? Math.floor(getTwinDoorIn('left') / 12) : parseInt(fv('f_wft'), 10) || 0,
     widthInParts:  isSwingTwin() ? (getTwinDoorIn('left') % 12) : parseInt(fv('f_win'), 10) || 0,
@@ -4710,6 +4733,7 @@ function captureCurrentDoor() {
     muntinAffs:    (cfg && cfg.isStorefront) ? getStorefrontHorizAffs() : ((cfg && cfg.isSwing) ? getSwingMuntinAffs() : [getSliderMuntinAffIn()]),
     threshold:     rv('threshold'),
     sensor:        rv('sensor'),
+    holdBeams:     noHoldBeams() ? 'None' : 'Included',
     swingDir:      rv('swingDir'),
     swingHand:     rv('swingHand'),
     swingEnergy:   rv('swingEnergy'),
@@ -4950,7 +4974,9 @@ function loadDoorIntoForm(door) {
   } else if (door.swingSideliteWIn) {
     slWidthSetIds('sl_rwft', 'sl_rwin', door.swingSideliteWIn);
   }
-  ['glazing','transom','transomGlassPrep','glassPrep','stileWidth','bottomRail','muntin','threshold','sensor','swingDir','swingHand','swingEnergy','swingStop','swingCrashIn','swingCrashOut','swingScan','swingApproach','swingHdrSafe','swingPlate','swingPlateLogo','swingPlateFinish','swingPlateWireless','swingPull','swingPushBar','swingSidelite','swingSideliteGlass'].forEach(name => {
+  const hbStd = document.getElementById('hb_std');
+  if (hbStd) hbStd.checked = true;
+  ['glazing','transom','transomGlassPrep','glassPrep','stileWidth','bottomRail','muntin','threshold','sensor','holdBeams','swingDir','swingHand','swingEnergy','swingStop','swingCrashIn','swingCrashOut','swingScan','swingApproach','swingHdrSafe','swingPlate','swingPlateLogo','swingPlateFinish','swingPlateWireless','swingPull','swingPushBar','swingSidelite','swingSideliteGlass'].forEach(name => {
     const v = door[name]; if (!v && v !== '0') return;
     const el = document.querySelector(`input[name="${name}"][value='${v}']`);
     if (el) el.checked = true;
@@ -5324,7 +5350,7 @@ async function submitAllDoors() {
            `  Width: ${d.widthStr} | Height: ${d.heightStr}\n` +
            `  Finish: ${d.glazing} | Glass Prep: ${d.glassPrep} | Threshold: ${d.threshold}\n` +
            swingLine +
-           `  Sensor: ${sensor} | Transom: ${d.transom === 'yes' ? 'Yes (+$250)' : 'No'} | Stile: ${stile} | Bottom Rail: ${rail}\n` +
+           `  Sensor: ${sensor}${d.holdBeams === 'None' ? ' | NO HOLD BEAMS' : ''} | Transom: ${d.transom === 'yes' ? 'Yes (+$250)' : 'No'} | Stile: ${stile} | Bottom Rail: ${rail}\n` +
            `  Muntin: ${d.muntin}${d.muntinAffs && d.muntinAffs.length ? ' @ ' + d.muntinAffs.map(a => a + '" AFF').join(' / ') : ''} | Add-ons: ${d.addons.join(', ') || 'None'}\n` +
            `  Est. Price: ${d.estimatedTotal ? '$'+d.estimatedTotal.toLocaleString() : 'Call for pricing'}` +
            (d.locationTags ? `\n  Locations: ${d.locationTags}` : '') +
@@ -5440,6 +5466,7 @@ function addExtraDoor() {
         <select id="ed_finish_${n}">
           <option value="204 Clear Anodized">204 Clear Anodized</option>
           <option value="313 Dark Bronze">313 Dark Bronze</option>
+          <option value="Black Anodized">Black Anodized (+10%)</option>
         </select>
       </div>
       <div class="ed-field">
@@ -6075,6 +6102,8 @@ function sliderGlassSummaryRows() {
   // Medium-stile slider glass formulas are not production-verified yet, so we
   // withhold those cut sizes (the cut sheet hides them too). Narrow stile only.
   if (rv('stileWidth') === 'medium') return [];
+  const pCfg = getConfig();
+  if (pCfg && pCfg.isP) return [['Glass — door', 'Confirm with factory']];
   const g = calcSliderGlass();
   if (!g) return [];
   const rows = [];
@@ -6697,6 +6726,10 @@ function updateAddonVisibility() {
 // ── Price calculation ───────────────────────────────────────────────
 // Swing package prices are public contractor net, same as sliders.
 function pricingGated() { return false; }
+function noHoldBeams() {
+  const cfg = getConfig();
+  return !!(cfg && !cfg.isSwing && !cfg.isStorefront && rv('holdBeams') === 'None');
+}
 
 function calcPrice() {
   const body = document.getElementById('price-body');
@@ -6800,6 +6833,7 @@ function calcPrice() {
   } else if (!cfg.isStorefront && sensorVal === 'BEA IXIO') {
     total += 280; lines.push({ label: 'BEA IXIO Sensor', amount: 280 });
   }
+  if (noHoldBeams()) lines.push({ label: 'No hold beams (no credit)', amount: 0 });
   if (cfg.isSwing) {
     lines.push({ label: 'Medium 3-3/4" stile', amount: 0 });
     lines.push({ label: 'Frame profile ' + getSwingFrameProfileStr(), amount: 0 });
@@ -7113,6 +7147,13 @@ function calcPrice() {
     lines.push({ label: name + (qty > 1 ? ' \xd7' + qty : ''), amount });
   });
 
+  // Black anodized: +10% of the full package (covers anodizer black uplift)
+  if (isBlackFinish() && total > 0) {
+    const finishAmt = Math.round(total * 0.10);
+    total += finishAmt;
+    lines.push({ label: 'Black anodized finish (+10%)', amount: finishAmt });
+  }
+
   // Per-unit display
   const qty = parseInt(fv('f_qty')) || 1;
   const grandTotal = total * qty;
@@ -7218,6 +7259,7 @@ function updateSpecSummary() {
       ['Sidelites', (getSwingSideliteLoc() === 'none' && !cfg.isTwin) ? 'None' : getSwingSideliteStr() + ' · ' + getSwingSideliteProfileStr()],
     ] : []),
     ['Sensor', (['Optex i-oneXT','BEA IXIO'].includes(rv('sensor'))) ? rv('sensor') : (rv('sensor') || '—')],
+    ...(cfg && !cfg.isSwing && !cfg.isStorefront ? [['Hold Beams', noHoldBeams() ? 'None (no credit)' : 'Included']] : []),
     ['Transom', rv('transom') === 'yes' ? `Yes (+$250)${ftthStr && ftthStr !== '—' ? ' — overall ' + ftthStr : ''}` : 'No'],
     ['Frame Width', getWidthStr() + (cfg && cfg.isSwing && (getSwingSideliteLoc() !== 'none' || cfg.isTwin) ? ' door · ' + inToStr(getSwingOverallIn()) + ' overall' : '')],
     ['Header Height', getHeightStr()],
@@ -7234,13 +7276,22 @@ function updateSpecSummary() {
 
 // ── SVG Drawing ─────────────────────────────────────────────────────
 function isDarkBronze() { return rv('glazing') === '313 Dark Bronze'; }
+function isBlackFinish() { return /black/i.test(rv('glazing') || ''); }
+function frameFinishLabel() {
+  if (isDarkBronze()) return '313 Dark Bronze';
+  if (isBlackFinish()) return 'Black Anodized';
+  return 'Clear Anodized';
+}
 function getFrameColor() {
+  if (isBlackFinish()) return '#1A1A1A';
   return isDarkBronze() ? '#4E3818' : '#B8C4D0';
 }
 function getPanelFill() {
+  if (isBlackFinish()) return '#2A2A2A';
   return isDarkBronze() ? '#5C3E22' : '#7A9CB8';
 }
 function getGlazeFill() {
+  if (isBlackFinish()) return { fill: '#3A3A3A', stroke: '#222' };
   return isDarkBronze()
     ? { fill:'#C8B8A0', stroke:'#8A7060' }
     : { fill:'#E8F4FD', stroke:'#A8D4F5' };
@@ -8855,7 +8906,7 @@ function drawPlanView() {
   const openInset = sc * 3;
   const meetX = openX + openW / 2;
   const stateLblX = frameX - 14;
-  const fixedLbl = isFBO ? 'SO' : 'O';
+  const fixedLbl = cfg.isP ? 'P' : (isFBO ? 'SO' : 'O');
 
   const pos = {
     biLeftFixed:  openX,
@@ -9142,6 +9193,7 @@ function ensureSwingWidth() {
 const ARCH_DWG = {
   'fbo-bi':          ['docs/BIPART SLIDE FBO SO-SX-SX-SO.pdf', 'Architectural drawing — FBO bi-part (SO-SX-SX-SO) →'],
   'fsl-bi':          ['docs/BIPART SLIDE FSL O-SX-SX-O.pdf', 'Architectural drawing — FSL bi-part (O-SX-SX-O) →'],
+  'psx-bi':          ['docs/BIPART SLIDE ESA P-SX-SX-P.pdf', 'Architectural drawing — ESA bi-part (P-SX-SX-P) →'],
   'fbo-single-rh':   ['docs/SINGLE SLIDE FBO RH SX-SO.pdf', 'Architectural drawing — FBO single RH (SX-SO) →'],
   'fbo-single-lh':   ['docs/SINGLE SLIDE FBO LH SO-SX.pdf', 'Architectural drawing — FBO single LH (SO-SX) →'],
   'fsl-single-lh':   ['docs/SINGLE SLIDE FSL LH O-SX.pdf', 'Architectural drawing — FSL single LH (O-SX) →'],
@@ -9302,6 +9354,7 @@ document.getElementById('quoteForm').addEventListener('submit', async function(e
       : ((rv('muntin') || '2" Muntin (std)') + (swingMuntinCount() ? ' @ ' + (cfg && cfg.isSwing ? getSwingMuntinAffs() : [getSliderMuntinAffIn()]).map(a => (cfg && cfg.isSwing ? a + '"' : fmtInches(a)) + ' AFF').join(' / ') : '')),
     threshold: cfg && cfg.isStorefront ? '—' : rv('threshold'),
     sensor: cfg && cfg.isStorefront ? '—' : ((['Optex i-oneXT','BEA IXIO'].includes(rv('sensor'))) ? rv('sensor') : 'Standard (incl.)'),
+    holdBeams: (cfg && !cfg.isSwing && !cfg.isStorefront) ? (noHoldBeams() ? 'None (no credit)' : 'Included') : 'N/A',
     transom: (cfg && cfg.isStorefront) ? 'No' : (rv('transom') === 'yes' ? 'Yes' : 'No'),
     sfGlass: cfg && cfg.isStorefront ? storefrontGlassStr() : '',
     sfVerticals: cfg && cfg.isStorefront ? getStorefrontVerticals() : 0,
@@ -9386,7 +9439,7 @@ function buildSheetOrder() {
   });
   const door = {
     configKey: rv('config'),
-    frameFinish: rv('glazing') === '313 Dark Bronze' ? '313 Dark Bronze' : 'Clear Anodized',
+    frameFinish: frameFinishLabel(),
     doorGlassPrep: (cfg && cfg.isSwing) ? getSwingGlassPrep() : rv('glassPrep'),
     transomGlassPrep: (cfg && cfg.isSwing) ? getSwingGlassPrep() : rv('transomGlassPrep'),
     transom: (cfg && cfg.isStorefront) ? false : transom,
@@ -9410,6 +9463,7 @@ function buildSheetOrder() {
     sfHoriz3: (cfg && cfg.isStorefront) ? fv('sf_h3') : '',
     threshold: rv('threshold'),
     sensor: (cfg && cfg.isSwing) ? '' : (rv('sensor') === 'Standard Optex (incl.)' ? 'Standard (incl.)' : rv('sensor')),
+    holdBeams: noHoldBeams() ? 'None' : 'Included',
     locking: cfg && cfg.isSwing ? (cfg.isBi ? 'Deadbolt + flushbolts' : cfg.isTwin ? 'Deadbolt ×2' : 'Adams Rite deadbolt') : rv('locking'),
     widthFt, widthIn, width16,
     heightFt: parseInt(fv('f_hft'), 10) || 0,
@@ -9559,6 +9613,7 @@ function showConf(data, pd) {
     ['Stile Width',data.stileWidth],['Bottom Rail',data.bottomRail],
     ['Horizontal Muntin',data.muntin],
     ['Threshold',data.threshold],['Sensor',data.sensor],
+    ...(data.holdBeams && data.holdBeams !== 'N/A' ? [['Hold Beams',data.holdBeams]] : []),
     ['Transom',data.transom + (data.ftth && data.ftth !== 'N/A' ? ' — FTTH: '+data.ftth : '')],
     ['Frame Width',data.frameWidth],['Frame Height',data.frameHeight],
     [data.packageType && data.packageType.indexOf('swing') >= 0 ? 'Clear Door Opening' : 'Net Opening', data.netOpening||'—'],

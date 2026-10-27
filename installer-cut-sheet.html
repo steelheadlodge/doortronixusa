@@ -68,6 +68,13 @@ html, body { background:#E8EEF4; color:var(--ink); font-family:Arial, Helvetica,
 .tbl td:first-child { width:42%; color:#555; }
 .tbl td:last-child { font-weight:700; }
 #glass-tbl td { padding:2px 7px; font-size:10px; }
+.glass-size-tbl { user-select: text; -webkit-user-select: text; }
+.glass-size-tbl th { font-size:9px; font-weight:700; color:#555; text-align:left; padding:2px 7px; border-bottom:1px solid #CBD5E1; background:#F8FAFC; }
+.glass-size-tbl td.num, .glass-size-tbl th.num { text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
+.glass-size-tbl td.num { -webkit-user-select:all; user-select:all; cursor:text; }
+.glass-size-tbl td:first-child { width:auto; }
+.elev, .plan, .elev svg, .plan svg, img.print-raster { -webkit-user-select:none; user-select:none; }
+img.print-raster { width:100%; height:100%; display:block; object-fit:contain; }
 .note { font-size:9px; color:#666; padding:2px 7px 4px; line-height:1.25; }
 
 .options-scroll { flex:1 1 auto; min-height:0; overflow:auto; }
@@ -106,12 +113,12 @@ html.embed .sheet { margin:0 auto 0; }
 .cut-note { font-size:9.5px; color:#64748b; margin:0 0 12px; }
 .cut-flag { background:#FEF3C7; border-left:4px solid #F59E0B; padding:8px 12px; font-size:10px; color:#78350F; border-radius:4px; margin:6px 0 14px; }
 @media print {
-  html, body { background:#fff; }
+  html, body { background:#fff; width:8.5in; height:11in; margin:0; overflow:hidden; }
   .sheet, .sheet * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-  .screen-bar, .screen-only { display:none !important; }
-  .sheet {
-    width:8.5in; min-height:11in; margin:0; border:none;
-    page-break-after:avoid; page-break-inside:avoid;
+  .screen-bar, .screen-only, #cutlist-sheet { display:none !important; }
+  #sheet {
+    width:8.5in; height:11in; max-height:11in; min-height:0; margin:0; border:none;
+    overflow:hidden; page-break-after:auto; page-break-inside:auto;
   }
   @page { size: letter portrait; margin: 0; }
 }
@@ -124,7 +131,7 @@ html.embed .sheet { margin:0 auto 0; }
     <span style="font-size:11px;color:#667;margin-left:8px;">Tip: in the print window, set <b>Destination</b> to <b>“Save as PDF.”</b></span>
   </span>
   <span>
-    <button type="button" onclick="window.print()">Print</button>
+    <button type="button" onclick="printSheet()">Print</button>
     <button type="button" onclick="savePdf()">Save as PDF</button>
     <button type="button" id="btn-cutlist" onclick="showCutList(true)" style="background:#7C2D12;color:#fff;display:none;">Factory cut list →</button>
   </span>
@@ -164,8 +171,8 @@ html.embed .sheet { margin:0 auto 0; }
       <h3>Configuration</h3>
       <table class="tbl" id="particulars"></table>
       <h3 id="glass-h">Glass sizes</h3>
-      <table class="tbl" id="glass-tbl"></table>
-      <div class="note" id="glass-note">Glass by others. Do not cut until signed.</div>
+      <table class="tbl glass-size-tbl" id="glass-tbl"></table>
+      <div class="note" id="glass-note">Glass by others. Do not cut until signed. Click a Width or Height, then Ctrl+C / ⌘C.</div>
       <h3>Options</h3>
       <div class="options-scroll">
         <table class="tbl" id="options-tbl"></table>
@@ -248,6 +255,7 @@ const CONFIGS = {
   'fsl-single-lh': { label:'FSL Single — LH', code:'O-SX',        isFBO:false, isBi:false },
   'fbo-bi':        { label:'FBO Bi-Part',     code:'SO-SX-SX-SO', isFBO:true,  isBi:true  },
   'fsl-bi':        { label:'FSL Bi-Part',     code:'O-SX-SX-O',   isFBO:false, isBi:true  },
+  'psx-bi':        { label:'P-Panel Bi-Part', code:'P-SX-SX-P',   isFBO:false, isBi:true, isP:true },
   'swing-single':    { label:'Single Swing',      code:'OHC',      isFBO:false, isBi:false, isSwing:true },
   'swing-single-rh': { label:'Single Swing — RH', code:'OHC RH',   isFBO:false, isBi:false, isSwing:true },
   'swing-single-lh': { label:'Single Swing — LH', code:'OHC LH',   isFBO:false, isBi:false, isSwing:true },
@@ -327,7 +335,9 @@ function normalizeOrder(raw) {
   const d = wrapped.door || {};
   if (!d.configKey && d.config) d.configKey = d.config;
   if (d.glazing && !d.frameFinish) {
-    d.frameFinish = /bronze/i.test(d.glazing) ? '313 Dark Bronze' : 'Clear Anodized';
+    d.frameFinish = /bronze/i.test(d.glazing) ? '313 Dark Bronze'
+      : /black/i.test(d.glazing) ? 'Black Anodized'
+      : 'Clear Anodized';
   } else if (d.frameFinish === '204 Clear') {
     d.frameFinish = 'Clear Anodized';
   }
@@ -511,10 +521,13 @@ function syncPlanNotes() {
     return;
   }
   const ansi = (isSwingCfg(cfg) && d.swingEnergy === 'low') ? 'ANSI/BHMA A156.19' : 'ANSI/BHMA A156.10';
+  const pNote = cfg && cfg.isP
+    ? '2. HEADER AND P STILES SET AGAINST THE WALL. SERVICE COVER ACCESS IS FROM THE EXTERIOR ONLY. P IS A VERTICAL STILE ON THE GUIDE RAIL, IN LINE WITH THE SX TRAILING STILE WHEN CLOSED — NOT A GLAZED SIDELITE.<br>'
+    : '2. ROUGH OPENING SHALL PROVIDE 1/4"[6] SHIM SPACE ON SIDES AND TOP OF PACKAGE.<br>';
   el.innerHTML =
     '<strong>NOTES:</strong><br>' +
     '1. ELECTRICAL REQUIREMENTS: 120 VAC, 5 AMP MIN TO POWER OPERATOR BY ELECTRICAL CONTRACTOR.<br>' +
-    '2. ROUGH OPENING SHALL PROVIDE 1/4"[6] SHIM SPACE ON SIDES AND TOP OF PACKAGE.<br>' +
+    pNote +
     '3. LIMITS OF ACTIVATION AND SAFETY ZONES ARE FOR REFERENCE ONLY; SEE ' + ansi + ' FOR DETAILED REQUIREMENTS.<br>' +
     '4. SEE SPECIFICATIONS FOR ADDITIONAL INFORMATION.<br>' +
     '5. GLASS SIZES, DIMENSIONS, AND ALL DETAILS ON THIS DRAWING ARE PRELIMINARY UNTIL THIS SHEET IS SIGNED AND RETURNED, OR A SIGNED ORDER CONFIRMATION IS ISSUED. DO NOT CUT GLASS FROM THIS DRAWING UNTIL CONFIRMED. GLASS BY OTHERS.';
@@ -899,7 +912,11 @@ function calcCutList() {
     rails: 'Top ' + cutFmt(railLen) + ' (4") · Bot ' + cutFmt(railLen) + ' (' + railIn + '")',
     muntin: hasMuntin ? '1 × ' + cutFmt(railLen) + ' (2")' : '—' });
   panels.push(mk('Active leaf (SX)', nActive));
-  panels.push(mk(cfg.isFBO ? 'Fixed leaf (SO)' : 'Fixed leaf (O)', nFixed));
+  if (cfg.isP) {
+    notes.push('P is a vertical stile on the FSL guide rail, lined up with the SX trailing stile when closed. Not a glazed sidelite. Header and P stiles set against the wall. Cover access from the exterior only.');
+  } else {
+    panels.push(mk(cfg.isFBO ? 'Fixed leaf (SO)' : 'Fixed leaf (O)', nFixed));
+  }
 
   notes.push('Stiles run full leaf height. Rail size on this list is the glass width between the stiles. Top rail, bottom rail, and muntin are cut to that rail size.');
   notes.push('Stile cut = header height − 9". SX and SO stiles are the same length.');
@@ -954,16 +971,19 @@ function renderCutList() {
       : '<tbody><tr><td style="border:1px solid #cbd5e1;padding:6px;">Swing leaf cuts pending production formulas — see notes.</td></tr></tbody>');
   }
 
-  let gh = '<thead><tr><th>Lite</th><th class="num">Qty/opng</th><th class="num">Size</th><th class="num">Total (' + qty + ')</th></tr></thead><tbody>';
+  let gh = '<thead><tr><th>Lite</th><th class="num">Qty/opng</th><th class="num">Width</th><th class="num">Height</th><th class="num">Total (' + qty + ')</th></tr></thead><tbody>';
   if (glassSizesHidden()) {
-    gh += '<tr><td colspan="4" style="border:1px solid #cbd5e1;padding:6px;">Glass sizes provided separately — formulas TBD.</td></tr>';
+    gh += '<tr><td colspan="5" style="border:1px solid #cbd5e1;padding:6px;">Glass sizes provided separately — formulas TBD.</td></tr>';
   } else {
-    cl.glass.forEach(rw => {
-      const label = rw[0], val = rw[1];
-      const m = /\(Qty\s*(\d+)\)\s*(.*)/.exec(val);
-      const per = m ? parseInt(m[1], 10) : 1;
-      const size = m ? m[2] : val;
-      gh += '<tr><td>' + label + '</td><td class="num">' + per + '</td><td class="num">' + size + '</td><td class="num">' + (per * qty) + '</td></tr>';
+    glassSizeItems().forEach(it => {
+      if (it.w == null || it.h == null) {
+        gh += '<tr><td colspan="5" style="border:1px solid #cbd5e1;padding:6px;">' + (it.note || it.label) + '</td></tr>';
+        return;
+      }
+      const per = parseInt(it.qty, 10) || 1;
+      gh += '<tr><td>' + it.label + '</td><td class="num">' + per + '</td><td class="num">' +
+        formatInches(it.w) + '</td><td class="num">' + formatInches(it.h) +
+        '</td><td class="num">' + (per * qty) + '</td></tr>';
     });
   }
   gh += '</tbody>';
@@ -994,7 +1014,71 @@ function backToQuote() {
   if (window.history.length > 1) { window.history.back(); return; }
   window.location.href = 'quote-combined.html';
 }
-function savePdf() {
+// Flatten elevation/plan SVGs to images before print/PDF so frame dimension
+// text is not in the PDF text layer. Otherwise Ctrl+C / ⌘C on glass sizes
+// often grabs rotated header dims mixed in with the table.
+async function rasterizeDrawingSvgs() {
+  restoreDrawingSvgs();
+  const svgs = document.querySelectorAll('.elev svg, .plan svg');
+  for (const svg of svgs) {
+    const vb = svg.viewBox && svg.viewBox.baseVal;
+    const w = (vb && vb.width) || svg.clientWidth || 840;
+    const h = (vb && vb.height) || svg.clientHeight || 420;
+    const scale = 2;
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.max(1, Math.round(w * scale));
+    canvas.height = Math.max(1, Math.round(h * scale));
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    let xml = new XMLSerializer().serializeToString(svg);
+    if (!/\sxmlns=/.test(xml)) xml = xml.replace(/<svg\b/, '<svg xmlns="http://www.w3.org/2000/svg"');
+    const url = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(xml);
+    const img = await new Promise((resolve, reject) => {
+      const i = new Image();
+      i.onload = () => resolve(i);
+      i.onerror = () => reject(new Error('SVG rasterize failed'));
+      i.src = url;
+    });
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    const imgEl = document.createElement('img');
+    imgEl.className = 'print-raster';
+    imgEl.alt = '';
+    imgEl.src = canvas.toDataURL('image/png');
+    svg.style.display = 'none';
+    svg.dataset.rasterized = '1';
+    svg.parentNode.insertBefore(imgEl, svg.nextSibling);
+  }
+}
+function restoreDrawingSvgs() {
+  document.querySelectorAll('img.print-raster').forEach(img => img.remove());
+  document.querySelectorAll('svg[data-rasterized]').forEach(svg => {
+    svg.style.display = '';
+    delete svg.dataset.rasterized;
+  });
+}
+async function printSheet() {
+  try { await rasterizeDrawingSvgs(); } catch (err) { console.warn(err); }
+  let done = false;
+  const restore = () => {
+    if (done) return;
+    done = true;
+    window.removeEventListener('afterprint', restore);
+    restoreDrawingSvgs();
+  };
+  window.addEventListener('afterprint', restore);
+  // Safari sometimes skips afterprint
+  setTimeout(restore, 60 * 1000);
+  window.print();
+}
+// Route ⌘P / Ctrl+P through the same path so PDF text stays clean
+document.addEventListener('keydown', (e) => {
+  if ((e.metaKey || e.ctrlKey) && (e.key === 'p' || e.key === 'P')) {
+    e.preventDefault();
+    printSheet();
+  }
+});
+async function savePdf() {
   try {
     const p = (ORDER && ORDER.project) || {};
     const c = (ORDER && ORDER.customer) || {};
@@ -1002,7 +1086,7 @@ function savePdf() {
     const tag = (p.po || p.name || c.company || c.name || 'drawing').replace(/[^\w \-]/g, '').trim();
     document.title = 'Doortronix ' + (cutlistOn ? 'Cut List' : 'Confirmation') + ' - ' + tag;
   } catch (e) {}
-  window.print();
+  await printSheet();
 }
 
 function renderSheet() {
@@ -1047,6 +1131,7 @@ function renderSheet() {
     ['Stile width', stileLabel(d)],
     ['Muntin', muntinLabel(d)],
     ['Sensors', slideSensorStr(d)],
+    ['Hold beams', /none|no/i.test(d.holdBeams || '') ? 'NO HOLD BEAMS' : 'Included'],
     ['Glass prep', d.doorGlassPrep],
     ['Threshold', d.threshold],
     ['Locking', lockLabel()],
@@ -1054,18 +1139,21 @@ function renderSheet() {
     ['Bottom rail', railLabel(d)],
   ]);
 
-  fillTable('glass-tbl', glassSizeRows());
+  fillGlassTable();
   renderCutList();
   const hideGlass = glassSizesHidden();
   const prep = (d.doorGlassPrep || '').trim();
-  document.getElementById('glass-h').textContent = (prep && !hideGlass) ? 'Glass sizes — ' + prep : 'Glass sizes';
+  const glassH = document.getElementById('glass-h');
+  if (glassH) glassH.textContent = (prep && !hideGlass) ? ('Glass sizes — ' + prep) : 'Glass sizes';
   const glassNote = document.getElementById('glass-note');
   if (glassNote) {
     glassNote.textContent = hideGlass
-      ? 'Glass sizes provided separately. Glass by others. Do not cut until signed.'
+      ? ((cfg && cfg.isP)
+        ? 'Glass sizes not shown until confirmed with the factory. Do not cut glass from this sheet.'
+        : 'Glass sizes provided separately. Glass by others. Do not cut until signed.')
       : (isStorefrontCfg(cfg)
-        ? 'Cut size = daylight + 5/8". Glass by others. Do not cut until signed.'
-        : 'Glass by others. Do not cut until signed.');
+        ? 'Cut size = daylight + 5/8". Glass by others. Click Width or Height, then Ctrl+C / ⌘C.'
+        : 'Glass by others. Click a Width or Height cell, then Ctrl+C / ⌘C.');
   }
 
   fillTable('options-tbl', optionList());
@@ -1299,7 +1387,8 @@ function formatInches(n) {
   return whole + ' ' + num + '/' + den + '"';
 }
 function glassPair(w, h) {
-  return formatInches(w) + ' × ' + formatInches(h);
+  // ASCII "x" — the × glyph often pastes wrong from print-to-PDF.
+  return formatInches(w) + ' x ' + formatInches(h);
 }
 
 // Factory glass formulas from the 6/5/12 cut-list sheets (4" bottom rail).
@@ -1345,10 +1434,10 @@ function calcGlass() {
   const muntDelta = hasMuntin ? (sliderMuntinAffIn() - defaultSliderMuntinAff()) : 0;
   const topH = hasMuntin ? Math.max(1, topBase - muntDelta) : noMuntinH;
   const botH = hasMuntin ? Math.max(1, botBase + muntDelta) : noMuntinH - railDeduct;
-  const panels = isBi ? 4 : 2;
-  const fixedLbl = cfg.isFBO ? 'SO' : 'O';
+  const panels = cfg.isP ? 2 : (isBi ? 4 : 2);
+  const fixedLbl = cfg.isP ? 'P' : (cfg.isFBO ? 'SO' : 'O');
 
-  const out = { liteW, topH, botH, hasMuntin, panels, fixedLbl, isBi, transoms: [] };
+  const out = { liteW, topH, botH, hasMuntin, panels, fixedLbl, isBi, pPanel: !!cfg.isP, transoms: [] };
 
   if (d.transom) {
     const ftth = d.ftthFt ? getFTTHIn() : Hhdr;
@@ -1527,20 +1616,25 @@ function glassSizesHidden() {
   if (!d) return false;
   if (isStorefrontCfg(CONFIGS[d.configKey]) || d.typeCategory === 'storefront' || d.configKey === 'storefront-fixed') return false;
   if (isSwingCfg(CONFIGS[d.configKey])) return false;
+  if (CONFIGS[d.configKey] && CONFIGS[d.configKey].isP) return true;
   return d.stileWidth === 'medium';
 }
 
-function glassSizeRows() {
-  if (glassSizesHidden()) return [['Glass sizes', 'Provided separately']];
+/** Structured glass cut list — {label, qty, w, h}. w/h are inches (decimal). */
+function glassSizeItems() {
+  if (glassSizesHidden()) {
+    const cfg = CONFIGS[ORDER.door.configKey];
+    return [{ label: 'Glass sizes', qty: '', w: null, h: null, note: (cfg && cfg.isP) ? 'Confirm with factory' : 'Provided separately' }];
+  }
   const g = calcGlass();
-  if (!g) return [['Glass', '—']];
+  if (!g) return [{ label: 'Glass', qty: '', w: null, h: null, note: '—' }];
   function row(label, qty, w, h) {
-    return [label, '(Qty ' + qty + ')  ' + glassPair(w, h)];
+    return { label, qty, w, h };
   }
   const rows = [];
   if (g.storefront) {
     (g.transoms || []).forEach(t => rows.push(row(t.label, t.qty, t.w, t.h)));
-    return rows.length ? rows : [['Glass', '—']];
+    return rows.length ? rows : [{ label: 'Glass', qty: '', w: null, h: null, note: '—' }];
   }
   if (g.twin && g.doors) {
     g.doors.forEach(dr => {
@@ -1558,7 +1652,7 @@ function glassSizeRows() {
     return rows;
   }
   const pcs = g.panels;
-  const doorLbl = g.swing ? (g.isBi ? 'Leaf' : 'Door') : ('SX / ' + g.fixedLbl);
+  const doorLbl = g.pPanel ? 'SX' : (g.swing ? (g.isBi ? 'Leaf' : 'Door') : ('SX / ' + g.fixedLbl));
   if (g.swing && g.pieces && g.pieces.length) {
     const stack = g.pieces.slice().reverse();
     if (stack.length === 1) rows.push(row(doorLbl, pcs, stack[0].w, stack[0].h));
@@ -1581,6 +1675,30 @@ function glassSizeRows() {
   });
   return rows;
 }
+/** Legacy 2-col rows for callers that still expect [label, "(Qty n)  W x H"]. */
+function glassSizeRows() {
+  return glassSizeItems().map(it => {
+    if (it.note != null && (it.w == null || it.h == null)) return [it.label, it.note];
+    return [it.label, '(Qty ' + it.qty + ')  ' + glassPair(it.w, it.h)];
+  });
+}
+function fillGlassTable() {
+  const items = glassSizeItems();
+  const hide = glassSizesHidden() || items.every(it => it.w == null);
+  const head = hide
+    ? ''
+    : '<thead><tr><th>Lite</th><th class="num">Qty</th><th class="num">Width</th><th class="num">Height</th></tr></thead>';
+  const body = items.map(it => {
+    if (it.note != null && (it.w == null || it.h == null)) {
+      return '<tr><td>' + it.label + '</td><td colspan="3">' + it.note + '</td></tr>';
+    }
+    return '<tr><td>' + it.label + '</td>' +
+      '<td class="num">' + it.qty + '</td>' +
+      '<td class="num">' + formatInches(it.w) + '</td>' +
+      '<td class="num">' + formatInches(it.h) + '</td></tr>';
+  }).join('');
+  document.getElementById('glass-tbl').innerHTML = head + '<tbody>' + body + '</tbody>';
+}
 function getStileW(sc) {
   const d = ORDER.door;
   return Math.max(3, sc * (d.stileWidth === 'medium' ? 3.75 : 2.5));
@@ -1591,9 +1709,17 @@ let _doorScale = null;
 
 // ── Drawing colors based on finish ──────────────────────────────────────
 function isDarkBronze() { return ORDER.door.frameFinish === '313 Dark Bronze'; }
-function getFrameColor() { return isDarkBronze() ? '#3D2710' : '#B8C4D0'; }
-function getPanelFill()  { return isDarkBronze() ? '#4A3018' : '#7A9CB8'; }
+function isBlackFinish() { return /black/i.test(ORDER.door.frameFinish || ''); }
+function getFrameColor() {
+  if (isBlackFinish()) return '#1A1A1A';
+  return isDarkBronze() ? '#3D2710' : '#B8C4D0';
+}
+function getPanelFill() {
+  if (isBlackFinish()) return '#2A2A2A';
+  return isDarkBronze() ? '#4A3018' : '#7A9CB8';
+}
 function getGlazeFill() {
+  if (isBlackFinish()) return { fill: '#3A3A3A', stroke: '#222' };
   return isDarkBronze()
     ? { fill:'#C8B8A0', stroke:'#8A7060' }
     : { fill:'#E8F4FD', stroke:'#A8D4F5' };
@@ -2709,6 +2835,7 @@ function drawDoor() {
   const isBi = cfg.isBi;
   const isLH = cfg.code === 'O-SX' || cfg.code === 'SO-SX' || cfg.code === 'O-SX-SX-O';
   const isFBO = cfg.isFBO;
+  const isP = !!cfg.isP;
 
   const titleH = 34;
   const widthDimGap = 42;                // space from door bottom to width dim line
@@ -2720,15 +2847,14 @@ function drawDoor() {
 
   const hasMuntinBar = !!(d.muntin && d.muntin !== 'No Muntin');
   // Muntin CL label sits on the left; frame-height dims sit on the right.
-  // Keep the original 90px gutter. Grow it only when this label is wider
-  // than that, so a wide bi-part stays centered and the text stays on the sheet.
+  // Reserve only the real label width plus a short leader, so the door
+  // sits as far left as it can without the height running off the sheet.
   const muntFs = 11;
   const muntLabel = hasMuntinBar ? (formatInches(sliderMuntinAffIn()) + ' CL') : '';
-  const muntLabelW = hasMuntinBar ? Math.ceil(muntLabel.length * muntFs * 0.55) : 0;
-  const muntPad = 4, muntGap = 8, muntLeader = 22;
+  const muntLabelW = hasMuntinBar ? Math.ceil(muntLabel.length * muntFs * 0.50) : 0;
+  const muntPad = 3, muntGap = 8, muntLeader = 16;
   const mR = hasTransom ? 84 : 52;
-  const needML = muntPad + muntLabelW + muntGap + muntLeader;
-  const mL = hasMuntinBar ? Math.max(90, needML) : 44;
+  const mL = hasMuntinBar ? (muntPad + muntLabelW + muntGap + muntLeader) : 44;
   const mT = titleH + 12;
   // Bottom margin: width dim gap + label/tick clearance below door
   const mB = widthDimGap + 16;
@@ -2807,8 +2933,8 @@ function drawDoor() {
 
   // Outer frame
   r(dX, dY, dW, dH, '#E8EEF4', frame, 2);
-  // Sill
-  r(dX, dY+dH-sillH, dW, sillH, frame);
+  // Sill — omitted when the order is no threshold
+  if (!/no threshold/i.test(d.threshold || '')) r(dX, dY+dH-sillH, dW, sillH, frame);
 
   // Transom
   if (hasTransom) {
@@ -2858,6 +2984,7 @@ function drawDoor() {
   const sensY = hdrY + headerH - sensH - Math.max(2, headerH * 0.14);
   r(sensX, sensY, sensW, sensH, '#1a1a1a', '#111', 0.7, 1.2);
   r(sensX + 2, sensY + sensH * 0.52, sensW - 4, Math.max(1.6, sensH * 0.3), '#5a6570', 'none', 0, 0.5);
+  if (isP) t(hdrX + 6, hdrY + headerH / 2 + 3, 'EXTERIOR ACCESS ONLY', 8, '#1B4F8A', 'start', '700');
 
   // Jambs
   r(dX, dY+transomH, frameT, dH-transomH-sillH, frame);
@@ -2917,6 +3044,24 @@ function drawDoor() {
       l(x2 + stileW, biStY + biStH,  x2 + stileW, pY + pH,        frame, 1.5);
       l(x4 - stileW, biStY - stileW, x4 - stileW, biStY,          frame, 1.5);
       l(x4 - stileW, biStY + biStH,  x4 - stileW, pY + pH,        frame, 1.5);
+    } else if (isP) {
+      // Outer bays are the wall. P is only the stile at the SX trailing edge when closed.
+      function wallBay(x, w) {
+        r(x, pY, w, pH, '#E8E2D6', '#C4BBAE', 0.7);
+        for (let y = pY + 10; y < pY + pH - btmRH - 4; y += 14) l(x + 5, y, x + w - 5, y, '#D2CBBE', 0.6);
+      }
+      wallBay(x1, soW);
+      wallBay(x4, soW);
+      r(x1, pY + pH - btmRH, soW, btmRH, panelFill, frame, 0.8);
+      r(x4, pY + pH - btmRH, soW, btmRH, panelFill, frame, 0.8);
+      r(x2, pY, stileW, pH, panelFill, frame, 1.4);
+      r(x4 - stileW, pY, stileW, pH, panelFill, frame, 1.4);
+      t((x1 + x2) / 2, pY + pH * 0.42, 'WALL', 10, '#8A8175', 'middle', '700');
+      t((x4 + x4 + soW) / 2, pY + pH * 0.42, 'WALL', 10, '#8A8175', 'middle', '700');
+      t(x2 - 4, pY + 14, 'P', 10, '#1B4F8A', 'end', '700');
+      t(x4 + 4, pY + 14, 'P', 10, '#1B4F8A', 'start', '700');
+      drawP(x2, pY, sxW, pH, frame, 1.5, false);
+      drawP(x3, pY, sxW, pH, frame, 1.5, false);
     } else {
       drawP(x1, pY, soW, pH, sdStroke, sdSW, false, false, true);
       drawP(x4, pY, soW, pH, sdStroke, sdSW, false, true, false);
@@ -2930,7 +3075,9 @@ function drawDoor() {
     path(`M${x2 + stileW + 3},${aY}l5,-3.5l0,7Z`, '#1B4F8A');
     l(x3 + stileW + 3, aY, x4 - stileW - 3, aY, '#1B4F8A', 1.2, '5,3');
     path(`M${x4 - stileW - 3},${aY}l-5,-3.5l0,7Z`, '#1B4F8A');
-    panels = [{ x: x1 + stileW, w: G }, { x: x2 + stileW, w: G }, { x: x3 + stileW, w: G }, { x: x4, w: G }];
+    panels = isP
+      ? [{ x: x2 + stileW, w: G }, { x: x3 + stileW, w: G }]
+      : [{ x: x1 + stileW, w: G }, { x: x2 + stileW, w: G }, { x: x3 + stileW, w: G }, { x: x4, w: G }];
   } else {
     // Single slide — fixed narrower, SX wider → equal glass width G between stiles
     const panW = pW / 2;
@@ -3044,6 +3191,7 @@ function drawPlanView() {
   const isBi = cfg.isBi;
   const isLH = cfg.code === 'O-SX' || cfg.code === 'SO-SX' || cfg.code === 'O-SX-SX-O';
   const isFBO = cfg.isFBO;
+  const isP = !!cfg.isP;
 
   // Same door width and inch-scale as the elevation above
   const sc = _doorScale.sc;
@@ -3166,7 +3314,27 @@ function drawPlanView() {
   t(stateLblX, yStateLbl(yClosedBase), 'Closed', 12, '#1B4F8A', 'end', '700');
   jambMarks(yClosedBase);
 
-  if (isBi) {
+  function drawWallBand(yBase) {
+    const bandH = Math.max(7, sc * 4);
+    const y = yBack(yBase) - bandH - 2;
+    r(frameX, y, frameW, bandH, '#E8E2D6', '#C4BBAE', 0.6);
+    t(frameX + 8, y + bandH - 2, 'WALL', 8, '#8A8175', 'start', '700');
+  }
+  function drawPMark(trailX, y) {
+    r(trailX, y, Math.max(2.5, stileW), panH, panelFill, frame, 1.5);
+  }
+  const pLeftX = pos.biLeftSX;
+  const pRightX = pos.biRightSX + panelLen - Math.max(2.5, stileW);
+
+  if (isBi && isP) {
+    drawWallBand(yClosedBase);
+    drawPMark(pLeftX, yFixedTrack(yClosedBase));
+    drawPlanPanel(pos.biLeftSX,  ySlideTrack(yClosedBase), panelLen, 'SX', false);
+    drawPlanPanel(pos.biRightSX, ySlideTrack(yClosedBase), panelLen, 'SX', false);
+    drawPMark(pRightX, yFixedTrack(yClosedBase));
+    inlineArrow(pos.biLeftSX + panelLen / 2,  ySlideTrack(yClosedBase) - 5, '#1B4F8A', true);
+    inlineArrow(pos.biRightSX + panelLen / 2, ySlideTrack(yClosedBase) - 5, '#1B4F8A', false);
+  } else if (isBi) {
     drawPlanPanel(pos.biLeftFixed,  yFixedTrack(yClosedBase), panelLen, fixedLbl, true);
     drawPlanPanel(pos.biLeftSX,     ySlideTrack(yClosedBase), panelLen, 'SX', false);
     drawPlanPanel(pos.biRightSX,    ySlideTrack(yClosedBase), panelLen, 'SX', false);
@@ -3193,10 +3361,16 @@ function drawPlanView() {
   if (isBi) {
     const leftSxX  = openX + openInset;
     const rightSxX = pos.biRightFixed - openInset;
-    drawPlanPanel(pos.biLeftFixed,  yFixedTrack(yOpenBase), panelLen, fixedLbl, true);
-    drawPlanPanel(leftSxX,          ySlideTrack(yOpenBase), panelLen, 'SX', false);
-    drawPlanPanel(rightSxX,         ySlideTrack(yOpenBase), panelLen, 'SX', false);
-    drawPlanPanel(pos.biRightFixed, yFixedTrack(yOpenBase), panelLen, fixedLbl, true);
+    if (isP) {
+      drawWallBand(yOpenBase);
+      drawPMark(pLeftX, yFixedTrack(yOpenBase));
+      drawPMark(pRightX, yFixedTrack(yOpenBase));
+    } else {
+      drawPlanPanel(pos.biLeftFixed,  yFixedTrack(yOpenBase), panelLen, fixedLbl, true);
+      drawPlanPanel(pos.biRightFixed, yFixedTrack(yOpenBase), panelLen, fixedLbl, true);
+    }
+    drawPlanPanel(leftSxX,  ySlideTrack(yOpenBase), panelLen, 'SX', false);
+    drawPlanPanel(rightSxX, ySlideTrack(yOpenBase), panelLen, 'SX', false);
     dimLine(leftSxX + panelLen, yOpenDim, rightSxX, yOpenDim,
             'Clear Door Opening: ' + getClearOpeningStr());
   } else if (isLH) {
@@ -3221,10 +3395,16 @@ function drawPlanView() {
   jambMarks(yBreakBase);
 
   if (isBi) {
-    drawPlanPanel(pos.biLeftFixed,  yFixedTrack(yBreakBase), panelLen, fixedLbl, true);
-    drawPlanPanel(pos.biLeftSX,     ySlideTrack(yBreakBase), panelLen, 'SX', false);
-    drawPlanPanel(pos.biRightSX,    ySlideTrack(yBreakBase), panelLen, 'SX', false);
-    drawPlanPanel(pos.biRightFixed, yFixedTrack(yBreakBase), panelLen, fixedLbl, true);
+    if (isP) {
+      drawWallBand(yBreakBase);
+      drawPMark(pLeftX, yFixedTrack(yBreakBase));
+      drawPMark(pRightX, yFixedTrack(yBreakBase));
+    } else {
+      drawPlanPanel(pos.biLeftFixed,  yFixedTrack(yBreakBase), panelLen, fixedLbl, true);
+      drawPlanPanel(pos.biRightFixed, yFixedTrack(yBreakBase), panelLen, fixedLbl, true);
+    }
+    drawPlanPanel(pos.biLeftSX,  ySlideTrack(yBreakBase), panelLen, 'SX', false);
+    drawPlanPanel(pos.biRightSX, ySlideTrack(yBreakBase), panelLen, 'SX', false);
   } else if (isLH) {
     drawPlanPanel(pos.lhFixed, yFixedTrack(yBreakBase), fixedPanelLen, fixedLbl, true);
     drawPlanPanel(pos.lhSX,    ySlideTrack(yBreakBase), sxPanelLen, 'SX', false);
@@ -3265,7 +3445,8 @@ function drawPlanView() {
   }
 
   t(frameX + frameW / 2, yBreakFootLbl,
-    isFBO ? ('FBO — All ' + numPanels + ' panels pivot open for full emergency egress')
+    isP ? 'Exterior access only. P stiles stay against the wall. Only SX panels break out.'
+          : isFBO ? ('FBO — All ' + numPanels + ' panels pivot open for full emergency egress')
           : ('FSL — Only sliding (SX) panels break out; fixed panels (O) do not'),
     12, '#666', 'middle', '700');
 
