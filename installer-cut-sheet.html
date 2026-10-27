@@ -256,11 +256,11 @@ const CONFIGS = {
   'fbo-bi':        { label:'FBO Bi-Part',     code:'SO-SX-SX-SO', isFBO:true,  isBi:true  },
   'fsl-bi':        { label:'FSL Bi-Part',     code:'O-SX-SX-O',   isFBO:false, isBi:true  },
   'psx-bi':        { label:'ESA Bi-Part',     code:'P-SX-SX-P',   isFBO:false, isBi:true, isP:true },
-  'isa-bi':        { label:'ISA Bi-Part',     code:'P-X-X-P',     isFBO:false, isBi:true, isP:true, isISA:true },
+  'isa-bi':        { label:'ISA Bi-Part',     code:'P-SX-SX-P',   isFBO:false, isBi:true, isP:true, isISA:true },
   'psx-single-lh': { label:'ESA Single — LH', code:'P-SX',        isFBO:false, isBi:false, isP:true },
   'psx-single-rh': { label:'ESA Single — RH', code:'SX-P',        isFBO:false, isBi:false, isP:true },
-  'isa-single-lh': { label:'ISA Single — LH', code:'P-X',         isFBO:false, isBi:false, isP:true, isISA:true },
-  'isa-single-rh': { label:'ISA Single — RH', code:'X-P',         isFBO:false, isBi:false, isP:true, isISA:true },
+  'isa-single-lh': { label:'ISA Single — LH', code:'P-SX',        isFBO:false, isBi:false, isP:true, isISA:true },
+  'isa-single-rh': { label:'ISA Single — RH', code:'SX-P',        isFBO:false, isBi:false, isP:true, isISA:true },
   'swing-single':    { label:'Single Swing',      code:'OHC',      isFBO:false, isBi:false, isSwing:true },
   'swing-single-rh': { label:'Single Swing — RH', code:'OHC RH',   isFBO:false, isBi:false, isSwing:true },
   'swing-single-lh': { label:'Single Swing — LH', code:'OHC LH',   isFBO:false, isBi:false, isSwing:true },
@@ -527,7 +527,7 @@ function syncPlanNotes() {
   }
   const ansi = (isSwingCfg(cfg) && d.swingEnergy === 'low') ? 'ANSI/BHMA A156.19' : 'ANSI/BHMA A156.10';
   const pNote = cfg && cfg.isISA
-    ? '2. INTERIOR MOUNTED. HEADER AND P STILES SET AGAINST THE INTERIOR FACE OF THE WALL. SERVICE COVER ACCESS IS FROM THE INTERIOR. <b style="color:#C0392B">NO BREAK-AWAY FUNCTION — NOT FOR USE AS A REQUIRED MEANS OF EGRESS UNLESS APPROVED BY THE AHJ (IBC 1010.3.2).</b> P IS A VERTICAL STILE ON THE GUIDE RAIL, IN LINE WITH THE X TRAILING STILE WHEN CLOSED — NOT A GLAZED SIDELITE.<br>'
+    ? '2. INTERIOR MOUNTED. HEADER AND P STILES SET AGAINST THE INTERIOR FACE OF THE WALL. SERVICE COVER ACCESS IS FROM THE INTERIOR. EACH SX PANEL HAS TWO HEEL STILES: A CLOSURE STILE IN LINE WITH THE P STILE AND A PIVOT STILE THAT BREAKS OUT THROUGH THE WALL OPENING. P IS A VERTICAL STILE ON THE GUIDE RAIL — NOT A GLAZED SIDELITE.<br>'
     : cfg && cfg.isP
     ? '2. HEADER AND P STILES SET AGAINST THE WALL. SERVICE COVER ACCESS IS FROM THE EXTERIOR ONLY. P IS A VERTICAL STILE ON THE GUIDE RAIL, IN LINE WITH THE SX TRAILING STILE WHEN CLOSED — NOT A GLAZED SIDELITE.<br>'
     : '2. ROUGH OPENING SHALL PROVIDE 1/4"[6] SHIM SPACE ON SIDES AND TOP OF PACKAGE.<br>';
@@ -918,9 +918,9 @@ function calcCutList() {
     stiles: '2 × ' + cutFmt(leafH) + ' (' + stileTxt + ')',
     rails: 'Top ' + cutFmt(railLen) + ' (4") · Bot ' + cutFmt(railLen) + ' (' + railIn + '")',
     muntin: hasMuntin ? '1 × ' + cutFmt(railLen) + ' (2")' : '—' });
-  panels.push(mk(cfg.isISA ? 'Active leaf (X)' : 'Active leaf (SX)', nActive));
+  panels.push(mk('Active leaf (SX)', nActive));
   if (cfg.isISA) {
-    notes.push('ISA — interior mounted, no breakaway. P is a vertical stile on the guide rail, lined up with the X trailing stile when closed. Not a glazed sidelite. Header and P stiles set against the interior wall. Cover access from the interior.');
+    notes.push('ISA — interior mounted. Each SX leaf gets one extra heel stile: closure stile in line with P, pivot stile next to it breaks out through the wall opening. P is a vertical stile on the guide rail, not a glazed sidelite. Header and P stiles set against the interior wall. Cover access from the interior.');
   } else if (cfg.isP) {
     notes.push('P is a vertical stile on the FSL guide rail, lined up with the SX trailing stile when closed. Not a glazed sidelite. Header and P stiles set against the wall. Cover access from the exterior only.');
   } else {
@@ -2993,7 +2993,7 @@ function drawDoor() {
   const sensY = hdrY + headerH - sensH - Math.max(2, headerH * 0.14);
   r(sensX, sensY, sensW, sensH, '#1a1a1a', '#111', 0.7, 1.2);
   r(sensX + 2, sensY + sensH * 0.52, sensW - 4, Math.max(1.6, sensH * 0.3), '#5a6570', 'none', 0, 0.5);
-  if (isP) t(hdrX + 6, hdrY + headerH / 2 + 3, cfg.isISA ? 'INTERIOR MOUNTED · NO BREAKAWAY' : 'EXTERIOR ACCESS ONLY', 8, '#1B4F8A', 'start', '700');
+  if (isP) t(hdrX + 6, hdrY + headerH / 2 + 3, cfg.isISA ? 'INTERIOR MOUNTED' : 'EXTERIOR ACCESS ONLY', 8, '#1B4F8A', 'start', '700');
 
   // Jambs
   r(dX, dY+transomH, frameT, dH-transomH-sillH, frame);
@@ -3071,6 +3071,10 @@ function drawDoor() {
       t(x4 + 4, pY + 14, 'P', 10, '#1B4F8A', 'start', '700');
       drawP(x2, pY, sxW, pH, frame, 1.5, false);
       drawP(x3, pY, sxW, pH, frame, 1.5, false);
+      if (cfg.isISA) {
+        r(x2 + stileW, pY, stileW, pH, panelFill, frame, 1.2);
+        r(x4 - stileW * 2, pY, stileW, pH, panelFill, frame, 1.2);
+      }
     } else {
       drawP(x1, pY, soW, pH, sdStroke, sdSW, false, false, true);
       drawP(x4, pY, soW, pH, sdStroke, sdSW, false, true, false);
@@ -3080,11 +3084,14 @@ function drawDoor() {
     r(x3 - stileW, pY, stileW * 2, pH, panelFill, frame, 0.4);
     l(x3, pY, x3, pY + pH, frame, 1.2);
     const aY = muntY - 8;
-    l(x2 + stileW + 3, aY, x3 - stileW - 3, aY, '#1B4F8A', 1.2, '5,3');
-    path(`M${x2 + stileW + 3},${aY}l5,-3.5l0,7Z`, '#1B4F8A');
-    l(x3 + stileW + 3, aY, x4 - stileW - 3, aY, '#1B4F8A', 1.2, '5,3');
-    path(`M${x4 - stileW - 3},${aY}l-5,-3.5l0,7Z`, '#1B4F8A');
-    panels = isP
+    const heelW = cfg.isISA ? stileW * 2 : stileW;
+    l(x2 + heelW + 3, aY, x3 - stileW - 3, aY, '#1B4F8A', 1.2, '5,3');
+    path(`M${x2 + heelW + 3},${aY}l5,-3.5l0,7Z`, '#1B4F8A');
+    l(x3 + stileW + 3, aY, x4 - heelW - 3, aY, '#1B4F8A', 1.2, '5,3');
+    path(`M${x4 - heelW - 3},${aY}l-5,-3.5l0,7Z`, '#1B4F8A');
+    panels = cfg.isISA
+      ? [{ x: x2 + heelW, w: G - stileW }, { x: x3 + stileW, w: G - stileW }]
+      : isP
       ? [{ x: x2 + stileW, w: G }, { x: x3 + stileW, w: G }]
       : [{ x: x1 + stileW, w: G }, { x: x2 + stileW, w: G }, { x: x3 + stileW, w: G }, { x: x4, w: G }];
   } else {
@@ -3122,10 +3129,13 @@ function drawDoor() {
       r(pStX, pY, stileW, pH, panelFill, frame, 1.4);
       t(isLH ? pStX - 4 : pStX + stileW + 4, pY + 14, 'P', 10, '#1B4F8A', isLH ? 'end' : 'start', '700');
       drawP(xx, pY, sxW, pH, frame, 1.5, false);
-      l(xx + stileW + 3, aY, xx + sxW - stileW - 3, aY, '#1B4F8A', 1.2, '5,3');
-      if (isLH) path(`M${xx + stileW + 3},${aY}l5,-3.5l0,7Z`, '#1B4F8A');
-      else path(`M${xx + sxW - stileW - 3},${aY}l-5,-3.5l0,7Z`, '#1B4F8A');
-      panels = [{ x: xx + stileW, w: G }];
+      const hW = cfg.isISA ? stileW : 0;
+      if (cfg.isISA) r(isLH ? xx + stileW : xx + sxW - stileW * 2, pY, stileW, pH, panelFill, frame, 1.2);
+      const aL = xx + stileW + 3 + (isLH ? hW : 0), aR = xx + sxW - stileW - 3 - (isLH ? 0 : hW);
+      l(aL, aY, aR, aY, '#1B4F8A', 1.2, '5,3');
+      if (isLH) path(`M${aL},${aY}l5,-3.5l0,7Z`, '#1B4F8A');
+      else path(`M${aR},${aY}l-5,-3.5l0,7Z`, '#1B4F8A');
+      panels = [{ x: xx + stileW + (isLH ? hW : 0), w: G - hW }];
     } else if (isLH) {
       const jX = pX + soW;
       if (isFBO) {
@@ -3339,6 +3349,20 @@ function drawPlanView() {
   // P is only the stile at each sliding panel's trailing edge when closed.
   const isISA = !!cfg.isISA;
   const pMarkW = Math.max(2.5, stileW);
+  // ISA heel: closure stile lines up with P; pivot stile next to it breaks out through the wall opening.
+  function heelStiles(xHeel, y, heelAtLeft) {
+    const xc = heelAtLeft ? xHeel : xHeel - pMarkW;
+    const xp = heelAtLeft ? xHeel + pMarkW : xHeel - pMarkW * 2;
+    r(xc, y, pMarkW, panH, panelFill, frame, 1.5);
+    r(xp, y, pMarkW, panH, frame, frame, 1);
+  }
+  function isaHeels(yBase, xLeft, xRight) {
+    if (!isISA) return;
+    const y = ySlideTrack(yBase);
+    if (isBi) { heelStiles(xLeft, y, true); heelStiles(xRight + panelLen, y, false); }
+    else if (isLH) heelStiles(xLeft, y, true);
+    else heelStiles(xRight + sxPanelLen, y, false);
+  }
   function drawWallBand(yBase) {
     const bandH = Math.max(7, sc * 4);
     const y = isISA ? yFront(yBase) + panH : yBack(yBase) - bandH;
@@ -3390,6 +3414,7 @@ function drawPlanView() {
     drawPlanPanel(pos.rhSX, ySlideTrack(yClosedBase), sxPanelLen, 'SX', false);
     inlineArrow(pos.rhSX + sxPanelLen / 2, ySlideTrack(yClosedBase) - 5, '#1B4F8A', false);
   }
+  isaHeels(yClosedBase, isBi ? pos.biLeftSX : pos.lhSX, isBi ? pos.biRightSX : pos.rhSX);
 
   // ── OPEN — sliding panels stop 3" short of fully open; fixed panels stay at jambs ─
   const yOpenBase = yFront(yClosedBase) + panH + stateGap;
@@ -3403,23 +3428,26 @@ function drawPlanView() {
     const rightSxX = pos.biRightFixed - openInset;
     drawPlanPanel(leftSxX,  ySlideTrack(yOpenBase), panelLen, 'SX', false);
     drawPlanPanel(rightSxX, ySlideTrack(yOpenBase), panelLen, 'SX', false);
+    isaHeels(yOpenBase, leftSxX, rightSxX);
     dimLine(leftSxX + panelLen, yOpenDim, rightSxX, yOpenDim,
             'Clear Door Opening: ' + getClearOpeningStr());
   } else if (isLH) {
     const sxOpenX = openX + openInset;
     drawPlanPanel(sxOpenX, ySlideTrack(yOpenBase), sxPanelLen, 'SX', false);
+    isaHeels(yOpenBase, sxOpenX, sxOpenX);
     dimLine(sxOpenX + sxPanelLen, yOpenDim, openX + openW, yOpenDim,
             'Clear Door Opening: ' + getClearOpeningStr());
   } else {
     const sxOpenX = openX + openW - sxPanelLen - openInset;
     drawPlanPanel(sxOpenX, ySlideTrack(yOpenBase), sxPanelLen, 'SX', false);
+    isaHeels(yOpenBase, sxOpenX, sxOpenX);
     dimLine(openX, yOpenDim, sxOpenX, yOpenDim,
             'Clear Door Opening: ' + getClearOpeningStr());
   }
 
-  // ── BREAKAWAY — footprints + nose arcs (fixed panels: FBO only; ISA has none) ───
+  // ── BREAKAWAY — footprints + nose arcs (fixed panels: FBO only) ───
   let yFootLbl = yOpenDim + 50;
-  if (!isISA) {
+  {
     const yBreakBase = yOpenDim + 44;
     t(stateLblX, yStateLbl(yBreakBase), 'Breakaway', 12, '#1B4F8A', 'end', '700');
     const swingR = isBi ? panelLen : Math.max(fixedPanelLen, sxPanelLen);
@@ -3434,6 +3462,9 @@ function drawPlanView() {
     } else {
       drawPlanPanel(pos.rhSX, ySlideTrack(yBreakBase), sxPanelLen, 'SX', false);
     }
+    isaHeels(yBreakBase, isBi ? pos.biLeftSX : pos.lhSX, isBi ? pos.biRightSX : pos.rhSX);
+    // ISA swings about the pivot stile, one stile in from the heel.
+    const hk = isISA ? pMarkW : 0;
 
     // Nose arc (dotted quarter-circle) + vertical swung line from hinge at panel edge
     const noseArc = (hx, hy, nxRest, nyRest, nxOut, nyOut, sweep, radius) => {
@@ -3447,24 +3478,24 @@ function drawPlanView() {
     const ySlide = ySlideTrack(yBreakBase) + panH / 2;
     if (isBi) {
       if (isFBO) noseArc(frameX, yFixed, pos.biLeftFixed + panelLen, yFixed, frameX, yFixed + swingR, 1);
-      noseArc(pos.biLeftSX, ySlide, pos.biLeftSX + panelLen, ySlide, pos.biLeftSX, ySlide + swingR, 1);
-      noseArc(pos.biRightSX + panelLen, ySlide, pos.biRightSX, ySlide, pos.biRightSX + panelLen, ySlide + swingR, 0);
+      noseArc(pos.biLeftSX + hk, ySlide, pos.biLeftSX + panelLen, ySlide, pos.biLeftSX + hk, ySlide + swingR - hk, 1, swingR - hk);
+      noseArc(pos.biRightSX + panelLen - hk, ySlide, pos.biRightSX, ySlide, pos.biRightSX + panelLen - hk, ySlide + swingR - hk, 0, swingR - hk);
       if (isFBO) noseArc(frameX + frameW, yFixed, pos.biRightFixed, yFixed, frameX + frameW, yFixed + swingR, 0);
     } else if (isLH) {
       if (isFBO) noseArc(openX, yFixed, pos.lhFixed + fixedPanelLen, yFixed, openX, yFixed + fixedPanelLen, 1, fixedPanelLen);
-      noseArc(pos.lhSX, ySlide, pos.lhSX + sxPanelLen, ySlide, pos.lhSX, ySlide + sxPanelLen, 1, sxPanelLen);
+      noseArc(pos.lhSX + hk, ySlide, pos.lhSX + sxPanelLen, ySlide, pos.lhSX + hk, ySlide + sxPanelLen - hk, 1, sxPanelLen - hk);
     } else {
-      noseArc(pos.rhSX + sxPanelLen, ySlide, pos.rhSX, ySlide, pos.rhSX + sxPanelLen, ySlide + sxPanelLen, 0, sxPanelLen);
+      noseArc(pos.rhSX + sxPanelLen - hk, ySlide, pos.rhSX, ySlide, pos.rhSX + sxPanelLen - hk, ySlide + sxPanelLen - hk, 0, sxPanelLen - hk);
       if (isFBO) noseArc(openX + openW, yFixed, pos.rhFixed, yFixed, openX + openW, yFixed + fixedPanelLen, 0, fixedPanelLen);
     }
   }
 
   t(frameX + frameW / 2, yFootLbl,
-    isISA ? '*** NO BREAK-AWAY FUNCTION *** Interior mounted.'
+    isISA ? 'Interior mounted. SX panels pivot at the heel and break out through the wall opening.'
           : isP ? 'Exterior access only. P stiles stay against the wall. Only SX panels break out.'
           : isFBO ? ('FBO — All ' + numPanels + ' panels pivot open for full emergency egress')
           : ('FSL — Only sliding (SX) panels break out; fixed panels (O) do not'),
-    12, isISA ? '#C0392B' : '#666', 'middle', '700');
+    12, '#666', 'middle', '700');
 
   svg.setAttribute('viewBox', `0 0 ${vW} ${Math.ceil(yFootLbl + 18)}`);
 }

@@ -192,9 +192,9 @@ textarea { resize:vertical; min-height:60px; }
             <option value="psx-bi">ESA Bi-Part (P-SX-SX-P) — surface applied</option>
             <option value="psx-single-rh">ESA Single — RH (SX-P) — surface applied</option>
             <option value="psx-single-lh">ESA Single — LH (P-SX) — surface applied</option>
-            <option value="isa-bi">ISA Bi-Part (P-X-X-P) — interior mounted, no breakaway</option>
-            <option value="isa-single-rh">ISA Single — RH (X-P) — interior mounted, no breakaway</option>
-            <option value="isa-single-lh">ISA Single — LH (P-X) — interior mounted, no breakaway</option>
+            <option value="isa-bi">ISA Bi-Part (P-SX-SX-P) — interior mounted</option>
+            <option value="isa-single-rh">ISA Single — RH (SX-P) — interior mounted</option>
+            <option value="isa-single-lh">ISA Single — LH (P-SX) — interior mounted</option>
           </select>
         </div>
         <div><label>Frame Finish</label>
@@ -495,9 +495,6 @@ function buildOrder() {
   };
 
   const terms = document.getElementById('g_terms').value.split('\n').map(s => s.trim()).filter(Boolean);
-  if (cfg.startsWith('isa-') && !terms.some(t => /break-?away/i.test(t))) {
-    terms.push('ISA interior-mounted package has NO BREAK-AWAY FUNCTION. Not for use as a required means of egress unless approved by the AHJ (IBC 1010.3.2). Buyer confirms this opening is not a required egress door or has AHJ approval.');
-  }
 
   return {
     ref: document.getElementById('g_ref').value.trim() || genRef(),
