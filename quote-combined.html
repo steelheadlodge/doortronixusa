@@ -9053,13 +9053,20 @@ function drawPlanView() {
     r(frameX + frameW - jambW,   jambY, jambW, jambDepth, frame, '#94A3B8', 0.9);
   }
 
-  // P-panel packages: wall beside the opening (ESA: interior face, ISA: exterior face).
-  // P is only the stile at each sliding panel's trailing edge when closed.
+  // P-panel packages: wall sits directly against the P track (wall | P | sliding panel).
+  // ESA: P is only the stile at each sliding panel's trailing edge when closed.
   const pMarkW = Math.max(2.5, stileW);
   const isISA = !!cfg.isISA;
+  let curBase = 0;
+  // ISA: P is a door stile + bottom rail set tight against the wall; X slides on the room side of it.
+  function drawPPanel(x1, x2, stileAtLeft) {
+    const y = yFixedTrack(curBase);
+    r(x1 + 0.5, y, x2 - x1 - 1, panH, panelFill, frame, 1.2);
+    r(stileAtLeft ? x1 : x2 - pMarkW, y, pMarkW, panH, panelFill, frame, 1.5);
+  }
   function wallBand(yBase) {
     const bandH = Math.max(7, sc * 4);
-    const by = isISA ? yFront(yBase) + panH + 2 : yBack(yBase) - bandH - 2;
+    const by = yBack(yBase) - bandH - 2;
     if (isISA) {
       // Wall opening between the closed sliding panels; panels park behind the wall.
       const g1 = isBi ? pos.biLeftSX : (isLH ? pos.lhSX : openX);
@@ -9073,9 +9080,19 @@ function drawPlanView() {
   }
   function drawFixed(yBase) {
     const y = yFixedTrack(yBase);
+    curBase = yBase;
     if (cfg.isP) {
       wallBand(yBase);
-      if (isBi) {
+      if (isISA) {
+        if (isBi) {
+          drawPPanel(openX, pos.biLeftSX + pMarkW, false);
+          drawPPanel(pos.biRightSX + panelLen - pMarkW, openX + openW, true);
+        } else if (isLH) {
+          drawPPanel(openX, pos.lhSX + pMarkW, false);
+        } else {
+          drawPPanel(pos.rhSX + sxPanelLen - pMarkW, openX + openW, true);
+        }
+      } else if (isBi) {
         r(pos.biLeftSX, y, pMarkW, panH, panelFill, frame, 1.5);
         r(pos.biRightSX + panelLen - pMarkW, y, pMarkW, panH, panelFill, frame, 1.5);
       } else if (isLH) {
@@ -9094,7 +9111,7 @@ function drawPlanView() {
   }
 
   // ── CLOSED ──
-  const yClosedBase = (cfg.isP && !isISA) ? 26 : 16;
+  const yClosedBase = cfg.isP ? 26 : 16;
   t(stateLblX, yStateLbl(yClosedBase), 'Closed', 16, '#1B4F8A', 'end', '700');
   jambMarks(yClosedBase);
   drawFixed(yClosedBase);
@@ -9113,7 +9130,7 @@ function drawPlanView() {
 
   // ── OPEN ──
   const yOpenBase = yFront(yClosedBase) + panH + 34;
-  const yOpenDim  = ySlideTrack(yOpenBase) + panH + (isISA ? 26 : 14);
+  const yOpenDim  = ySlideTrack(yOpenBase) + panH + 14;
   t(stateLblX, yStateLbl(yOpenBase), 'Open', 16, '#1B4F8A', 'end', '700');
   jambMarks(yOpenBase);
   drawFixed(yOpenBase);
