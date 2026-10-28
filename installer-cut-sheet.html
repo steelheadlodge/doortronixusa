@@ -172,7 +172,7 @@ html.embed .sheet { margin:0 auto 0; }
       <table class="tbl" id="particulars"></table>
       <h3 id="glass-h">Glass sizes</h3>
       <table class="tbl glass-size-tbl" id="glass-tbl"></table>
-      <div class="note" id="glass-note">Glass by others. Do not cut until signed; glazier to verify sizes in the opening.</div>
+      <div class="note" id="glass-note">Glass by others. Do not cut until signed.</div>
       <h3>Options</h3>
       <div class="options-scroll">
         <table class="tbl" id="options-tbl"></table>
@@ -1162,8 +1162,8 @@ function renderSheet() {
         ? 'Glass sizes not shown until confirmed with the factory. Do not cut glass from this sheet.'
         : 'Glass sizes provided separately. Glass by others. Do not cut until signed.')
       : (isStorefrontCfg(cfg)
-        ? 'Cut size = daylight + 5/8". Glass by others. Do not cut until signed; glazier to verify sizes in the opening.' + copyHint
-        : 'Glass by others. Do not cut until signed; glazier to verify sizes in the opening.' + copyHint);
+        ? 'Cut size = daylight + 5/8". Glass by others. Do not cut until signed.' + copyHint
+        : 'Glass by others. Do not cut until signed.' + copyHint);
   }
 
   fillTable('options-tbl', optionList());
