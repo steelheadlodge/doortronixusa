@@ -28,7 +28,7 @@
     '<li>Before you sign, you must check field dimensions, handing, swing, finish, hardware, configuration, and glass sizes against the job.</li>',
     '<li>If you sign a sheet that has the wrong size, handing, or configuration, and we build that sheet, that error is yours. Changes after fabrication starts may be billed.</li>',
     '<li>If we build something different from the signed confirmation drawing, we will repair or replace that door package, or refund what you paid for it.</li>',
-    '<li>Do not cut glass from any drawing until the confirmation is signed. The glazier must still verify sizes in the opening. Doortronix is not responsible for glass cut too early or not field-checked.</li>',
+    '<li>Do not cut glass from any drawing until the confirmation is signed. Doortronix is not responsible for glass cut before the drawing is signed.</li>',
     '</ul>',
     '<h4>Payment, freight, and changes</h4>',
     '<ul>',
