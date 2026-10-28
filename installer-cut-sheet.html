@@ -172,7 +172,7 @@ html.embed .sheet { margin:0 auto 0; }
       <table class="tbl" id="particulars"></table>
       <h3 id="glass-h">Glass sizes</h3>
       <table class="tbl glass-size-tbl" id="glass-tbl"></table>
-      <div class="note" id="glass-note">Glass by others. Do not cut until signed. Click a Width or Height, then Ctrl+C / ⌘C.</div>
+      <div class="note" id="glass-note">Glass by others. Do not cut until signed; glazier to verify sizes in the opening.</div>
       <h3>Options</h3>
       <div class="options-scroll">
         <table class="tbl" id="options-tbl"></table>
@@ -1156,13 +1156,14 @@ function renderSheet() {
   if (glassH) glassH.textContent = (prep && !hideGlass) ? ('Glass sizes — ' + prep) : 'Glass sizes';
   const glassNote = document.getElementById('glass-note');
   if (glassNote) {
-    glassNote.textContent = hideGlass
+    const copyHint = ' <span class="screen-only">Click a Width or Height cell, then Ctrl+C / ⌘C.</span>';
+    glassNote.innerHTML = hideGlass
       ? ((cfg && cfg.isP)
         ? 'Glass sizes not shown until confirmed with the factory. Do not cut glass from this sheet.'
         : 'Glass sizes provided separately. Glass by others. Do not cut until signed.')
       : (isStorefrontCfg(cfg)
-        ? 'Cut size = daylight + 5/8". Glass by others. Click Width or Height, then Ctrl+C / ⌘C.'
-        : 'Glass by others. Click a Width or Height cell, then Ctrl+C / ⌘C.');
+        ? 'Cut size = daylight + 5/8". Glass by others. Do not cut until signed; glazier to verify sizes in the opening.' + copyHint
+        : 'Glass by others. Do not cut until signed; glazier to verify sizes in the opening.' + copyHint);
   }
 
   fillTable('options-tbl', optionList());

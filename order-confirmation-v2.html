@@ -112,15 +112,69 @@ body { font-family:Arial, Helvetica, sans-serif; font-size:14px; background:#F0F
 .success-ref { background:var(--lgreen); color:var(--green); padding:8px 18px;
   border-radius:20px; font-weight:700; display:inline-block; margin-top:14px; }
 
+/* Printed quotation — screen shows the interactive signing page instead */
+.quote-doc { display:none; }
+.qd { width:8.5in; min-height:11in; padding:0.5in 0.55in 0.45in; background:#fff; color:#111;
+  font-family:Arial, Helvetica, sans-serif; font-size:10.5px; line-height:1.4; display:flex; flex-direction:column; }
+.qd-head { display:flex; justify-content:space-between; align-items:flex-start;
+  border-bottom:2px solid var(--blue); padding-bottom:10px; }
+.qd-logo { font-size:22px; font-weight:800; color:var(--blue); letter-spacing:.3px; }
+.qd-logo span { color:var(--orange); }
+.qd-addr { font-size:9.5px; color:#444; margin-top:3px; line-height:1.45; }
+.qd-title { text-align:right; }
+.qd-title h1 { font-size:22px; font-weight:800; color:var(--blue); letter-spacing:1px; }
+.qd-meta { margin-top:4px; border-collapse:collapse; margin-left:auto; }
+.qd-meta td { padding:1px 0 1px 12px; font-size:10px; text-align:right; }
+.qd-meta td:first-child { color:#666; text-transform:uppercase; font-size:8.5px; letter-spacing:.4px; }
+.qd-meta td:last-child { font-weight:700; }
+.qd-parties { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:12px; }
+.qd-box { border:1px solid #C9D2DE; }
+.qd-box h3 { background:#EEF2F7; color:var(--blue); font-size:8.5px; letter-spacing:.6px;
+  text-transform:uppercase; padding:4px 8px; border-bottom:1px solid #C9D2DE; }
+.qd-box .b { padding:6px 8px; font-size:10px; line-height:1.5; min-height:56px; }
+.qd-box .b strong { font-size:11px; }
+.qd-items { width:100%; border-collapse:collapse; margin-top:14px; }
+.qd-items th { background:var(--blue); color:#fff; font-size:8.5px; text-transform:uppercase;
+  letter-spacing:.5px; text-align:left; padding:5px 8px; }
+.qd-items th.r, .qd-items td.r { text-align:right; white-space:nowrap; }
+.qd-items th.c, .qd-items td.c { text-align:center; }
+.qd-items td { border-bottom:1px solid #DDE3EA; padding:6px 8px; vertical-align:top; font-size:10px; }
+.qd-items .desc { font-weight:700; font-size:10.5px; }
+.qd-items .spec { color:#333; margin-top:2px; }
+.qd-items .incl { margin:4px 0 0 14px; padding:0; color:#333; }
+.qd-items .incl li { margin:1px 0; }
+.qd-items tr.muted td { color:#555; }
+.qd-totals { margin-left:auto; margin-top:8px; border-collapse:collapse; min-width:3.1in; }
+.qd-totals td { padding:4px 8px; font-size:10.5px; }
+.qd-totals td.r { text-align:right; font-weight:700; }
+.qd-totals tr.total td { background:var(--blue); color:#fff; font-size:13px; font-weight:800; }
+.qd-totals tr.dep td { background:#FEF3C7; color:#7C2D12; font-weight:700; }
+.qd-sec { margin-top:12px; }
+.qd-sec h4 { font-size:9px; color:var(--blue); text-transform:uppercase; letter-spacing:.6px;
+  border-bottom:1px solid #C9D2DE; padding-bottom:2px; margin-bottom:4px; }
+.qd-sec ul { margin:0 0 0 14px; padding:0; }
+.qd-sec li { margin:1.5px 0; font-size:9.5px; color:#222; }
+.qd-two { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.qd-accept { margin-top:14px; border:1.5px solid var(--orange); padding:8px 10px 10px; }
+.qd-accept h4 { font-size:9px; color:var(--orange); text-transform:uppercase; letter-spacing:.6px; margin-bottom:3px; }
+.qd-accept p { font-size:9px; color:#333; }
+.qd-sig { display:grid; grid-template-columns:1.3fr 1fr 1.3fr .8fr; gap:14px; margin-top:20px; }
+.qd-sig div { border-top:1px solid #111; padding-top:2px; font-size:8px; color:#555;
+  text-transform:uppercase; letter-spacing:.4px; }
+.qd-online { font-size:9px; margin-top:8px; color:#333; }
+.qd-online a { color:var(--blue); font-weight:700; }
+.qd-foot { margin-top:auto; padding-top:10px; border-top:1px solid #C9D2DE; font-size:8.5px;
+  color:#666; display:flex; justify-content:space-between; }
+
 @media print {
-  .topbar, .print-bar, .doc-foot { display:none !important; }
-  body { background:#fff; }
+  .topbar, .print-bar, .doc-foot, .intro, .card, .success-screen { display:none !important; }
+  body { background:#fff; min-height:0; }
   .shell { max-width:none; padding:0; }
-  .intro { display:none; }
-  .draw-frame-wrap { border:none; border-radius:0; overflow:visible; page-break-after:always; }
-  .draw-frame-wrap iframe { width:8.5in; height:11in; }
-  .approve-card { break-inside:avoid; }
-  @page { size: letter portrait; margin: 0.4in; }
+  .quote-doc { display:block; page-break-after:always; break-after:page; }
+  .quote-doc, .quote-doc * { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+  .draw-frame-wrap { border:none; border-radius:0; overflow:visible; margin:0; }
+  .draw-frame-wrap iframe { width:8.5in; height:10.95in; }
+  @page { size: letter portrait; margin: 0; }
 }
 @media (max-width:720px) {
   .topbar { flex-direction:column; gap:6px; padding:12px 16px; text-align:center; }
@@ -151,8 +205,10 @@ body { font-family:Arial, Helvetica, sans-serif; font-size:14px; background:#F0F
       <p>Review the drawing and sizes below. Until you sign, this drawing is preliminary — do not cut glass from it. Signing plus cleared deposit or full payment is what starts fabrication. Pay, track, and reorder from your Doortronix account.</p>
     </div>
 
+    <div class="quote-doc" id="quote-doc"></div>
+
     <div class="print-bar">
-      <p>Page 1 is the confirmation drawing (same sheet you can send to installers). Pricing and signature print after it.</p>
+      <p>Prints as a one-page quotation followed by the confirmation drawing.</p>
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
         <a class="btn-print ghost" id="open-drawing" href="installer-cut-sheet.html" target="_blank" rel="noopener">Open drawing only</a>
         <button type="button" class="btn-print" onclick="window.print()">Print / Save PDF</button>
@@ -164,7 +220,7 @@ body { font-family:Arial, Helvetica, sans-serif; font-size:14px; background:#F0F
     </div>
 
     <div class="card">
-      <div class="card-head">Pricing — Final</div>
+      <div class="card-head">Pricing</div>
       <div class="card-body">
         <div id="price-lines"></div>
         <div class="price-total">
@@ -342,14 +398,146 @@ const SAMPLE_ORDER = {
   notes: '',
 };
 
+const QD_CONFIGS = {
+  'fbo-bi': ['FBO Bi-Part', 'SO-SX-SX-SO'], 'fsl-bi': ['FSL Bi-Part', 'O-SX-SX-O'],
+  'psx-bi': ['ESA Bi-Part (surface applied)', 'P-SX-SX-P'], 'isa-bi': ['ISA Bi-Part (interior mounted)', 'P-SX-SX-P'],
+  'fbo-single-rh': ['FBO Single Slide — RH', 'SX-SO'], 'fbo-single-lh': ['FBO Single Slide — LH', 'SO-SX'],
+  'fsl-single-rh': ['FSL Single Slide — RH', 'SX-O'], 'fsl-single-lh': ['FSL Single Slide — LH', 'O-SX'],
+  'psx-single-rh': ['ESA Single Slide — RH (surface applied)', 'SX-P'], 'psx-single-lh': ['ESA Single Slide — LH (surface applied)', 'P-SX'],
+  'isa-single-rh': ['ISA Single Slide — RH (interior mounted)', 'SX-P'], 'isa-single-lh': ['ISA Single Slide — LH (interior mounted)', 'P-SX'],
+  'swing-single': ['Single Swing', 'OHC'], 'swing-single-rh': ['Single Swing — RH', 'OHC'], 'swing-single-lh': ['Single Swing — LH', 'OHC'],
+  'swing-pair': ['Swing Pair', 'OHC'], 'swing-twin-center': ['Entry/Exit Swings', 'OHC'],
+  'storefront-fixed': ['Storefront / Matching Lites — frame only', 'SF'],
+};
+const FRAC16 = ['', '1/16', '1/8', '3/16', '1/4', '5/16', '3/8', '7/16', '1/2', '9/16', '5/8', '11/16', '3/4', '13/16', '7/8', '15/16'];
+function ftIn(ft, inch, s16) {
+  const f = FRAC16[parseInt(s16, 10) || 0];
+  return (parseInt(ft, 10) || 0) + "'-" + (parseInt(inch, 10) || 0) + (f ? ' ' + f : '') + '"';
+}
+function fmtDate(iso) {
+  const d = iso ? new Date(iso + 'T12:00:00') : new Date();
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+function addDays(iso, n) {
+  const d = iso ? new Date(iso + 'T12:00:00') : new Date();
+  d.setDate(d.getDate() + n);
+  return d.toISOString().slice(0, 10);
+}
+function quoteScope(o) {
+  const d = o.door || {};
+  const key = d.configKey || '';
+  const cfg = QD_CONFIGS[key] || [key || 'Door package', ''];
+  const isSwing = /^swing/.test(key), isSF = /^storefront/.test(key);
+  const title = cfg[0] + (cfg[1] ? ' (' + cfg[1] + ')' : '');
+  const size = ftIn(d.widthFt, d.widthIn, d.width16) + ' W × ' + ftIn(d.heightFt, d.heightIn, d.height16) + ' H';
+  const spec = [size, d.frameFinish];
+  if (!isSF) {
+    spec.push(d.stileWidth === 'medium' ? 'Medium 3-3/4" stile' : 'Narrow stile');
+    if (d.doorGlassPrep) spec.push(d.doorGlassPrep + ' glass prep');
+    if (!isSwing) spec.push((({ '6in': '6"', '10in': '10"' })[d.bottomRail] || '4"') + ' bottom rail');
+    if (d.muntin) spec.push(/no muntin/i.test(d.muntin) ? 'No muntin' : d.muntin.replace(/\s*\(std\)/i, '').replace(/Muntin/, 'muntin'));
+    if (d.threshold) spec.push(/no threshold/i.test(d.threshold) ? 'No threshold' : d.threshold.replace(/Standard 1\/2"|1\/2" Standard/i, '1/2" standard') + ' threshold');
+  }
+  if (d.transom) spec.push('Transom' + (d.ftthFt ? ', overall frame ' + ftIn(d.ftthFt, d.ftthIn, d.ftth16) : ''));
+  const incl = [];
+  if (!isSwing && !isSF) {
+    incl.push('Automatic sliding operator, header, and controls');
+    incl.push((/IXIO|BEA/i.test(d.sensor || '') ? 'BEA IXIO' : 'Optex i-oneXT') + ' activation / safety sensors');
+    incl.push(/none|no/i.test(d.holdBeams || '') ? 'No hold beams' : 'Hold beams');
+    incl.push(d.locking || 'Standard hooklock');
+  }
+  const addons = o.addons || [];
+  const sw = addons.find(a => /rocker|key switch|knob switch|function switch/i.test(a.name || ''));
+  if (!isSF) incl.push(sw ? sw.name : (isSwing ? '' : '3-position rocker switch — On / Off / Hold Open'));
+  addons.filter(a => a !== sw).forEach(a => incl.push(a.name + (a.qty > 1 ? ' ×' + a.qty : '')));
+  return { title, spec: spec.filter(Boolean).join(' · '), incl: incl.filter(Boolean) };
+}
+function renderQuoteDoc() {
+  const o = ORDER, c = o.customer || {}, p = o.project || {}, pr = o.pricing || {};
+  const s = quoteScope(o);
+  const qty = pr.qty || p.quantity || 1;
+  const lines = pr.lines || [];
+  const money = n => '$' + fmtNum(n);
+  const rows = lines.map((l, i) => i === 0
+    ? '<tr><td><div class="desc">' + escHtml(s.title) + '</div><div class="spec">' + escHtml(s.spec) + '</div>' +
+      (s.incl.length ? '<ul class="incl">' + s.incl.map(t => '<li>' + escHtml(t) + '</li>').join('') + '</ul>' : '') +
+      (l.label && !/standard package/i.test(l.label) ? '<div class="spec">' + escHtml(l.label) + '</div>' : '') +
+      '</td><td class="c">' + qty + '</td><td class="r">' + money(l.amount) + '</td></tr>'
+    : '<tr><td>' + escHtml(l.label) + '</td><td class="c">' + qty + '</td><td class="r">' + money(l.amount) + '</td></tr>'
+  ).join('');
+  const muted = [
+    ['Freight — quoted at ship time, FOB Malakoff, TX', 'TBD'],
+    ['Glass and glazing — by others', '—'],
+    ['Installation and electrical — by others', '—'],
+  ].map(r => '<tr class="muted"><td>' + r[0] + '</td><td></td><td class="r">' + r[1] + '</td></tr>').join('');
+  const cust = [c.name ? '<strong>' + escHtml(c.name) + '</strong>' : '', escHtml(c.company || ''),
+    escHtml(c.role || ''), escHtml(c.phone || ''), escHtml(c.email || '')].filter(Boolean).join('<br>') || '—';
+  const proj = [
+    p.name ? '<strong>' + escHtml(p.name) + '</strong>' : '',
+    p.location ? escHtml(p.location) : '',
+    p.po ? 'Customer PO: ' + escHtml(p.po) : '',
+    p.jobNumber ? 'Job #: ' + escHtml(p.jobNumber) : '',
+    p.doorMark ? 'Door / tag: ' + escHtml(p.doorMark) : '',
+    'Quantity: ' + qty + (qty === 1 ? ' opening' : ' openings'),
+  ].filter(Boolean).join('<br>');
+  const lead = (o.leadTime || '4–5 weeks').replace(/\s*from cleared deposit.*$/i, '');
+  const deposit = pr.depositAmount
+    ? '<tr class="dep"><td>Deposit to begin fabrication' + (pr.depositPct ? ' (' + pr.depositPct + '%)' : '') + '</td><td class="r">' + money(pr.depositAmount) + '</td></tr>' : '';
+  document.getElementById('quote-doc').innerHTML =
+    '<div class="qd">' +
+      '<div class="qd-head"><div><div class="qd-logo">DOORTRONIX<span>USA</span></div>' +
+        '<div class="qd-addr">5783 County Road 1219, Malakoff, TX 75148<br>(888) 453-5196 · orders@doortronixusa.com · doortronixusa.com</div></div>' +
+        '<div class="qd-title"><h1>QUOTATION</h1><table class="qd-meta">' +
+          '<tr><td>Quote #</td><td>' + escHtml(o.ref || '—') + '</td></tr>' +
+          '<tr><td>Date</td><td>' + fmtDate(o.issuedDate) + '</td></tr>' +
+          '<tr><td>Valid until</td><td>' + fmtDate(addDays(o.issuedDate, 30)) + '</td></tr>' +
+        '</table></div></div>' +
+      '<div class="qd-parties"><div class="qd-box"><h3>Prepared for</h3><div class="b">' + cust + '</div></div>' +
+        '<div class="qd-box"><h3>Project</h3><div class="b">' + proj + '</div></div></div>' +
+      '<table class="qd-items"><thead><tr><th>Description</th><th class="c">Qty</th><th class="r">Unit price</th></tr></thead><tbody>' +
+        rows + muted + '</tbody></table>' +
+      '<table class="qd-totals">' +
+        (qty > 1 ? '<tr><td>Unit price</td><td class="r">' + money(pr.unitTotal) + '</td></tr><tr><td>Quantity</td><td class="r">× ' + qty + '</td></tr>' : '') +
+        '<tr class="total"><td>Total (USD, net)</td><td class="r">' + money(pr.grandTotal) + '</td></tr>' + deposit +
+      '</table>' +
+      '<div class="qd-two">' +
+        '<div class="qd-sec"><h4>Lead time &amp; payment</h4><ul>' +
+          '<li>Lead time: ' + escHtml(lead) + '. Starts when the deposit clears and the confirmation drawing is signed.</li>' +
+          '<li>' + (pr.depositPct ? 'Pay the ' + pr.depositPct + '% deposit or the full amount to begin fabrication; balance as invoiced.' : 'Payment as invoiced.') + '</li>' +
+          '<li>Title and risk of loss pass FOB our dock in Malakoff, TX.</li>' +
+        '</ul></div>' +
+        '<div class="qd-sec"><h4>Not included</h4><ul>' +
+          '<li>Glass and glazing (frames prepped for the glass thickness shown).</li>' +
+          '<li>Freight, installation, and applicable taxes.</li>' +
+          '<li>Electrical: 120 VAC, 5 A min to the operator by electrical contractor.</li>' +
+        '</ul></div>' +
+      '</div>' +
+      '<div class="qd-sec"><h4>Terms</h4><ul>' +
+        '<li>Pricing is net contractor pricing, valid 30 days from the quote date.</li>' +
+        '<li>The attached confirmation drawing is preliminary until signed. The signed drawing is the drawing of record — check field dimensions, handing, finish, hardware, and glass sizes before signing.</li>' +
+        '<li>Do not cut glass until the drawing is signed; the glazier must verify sizes in the opening.</li>' +
+        '<li>Changes after fabrication starts may be billed. One-year limited warranty against defects in materials and workmanship.</li>' +
+        '<li>Our responsibility for a Doortronix error is limited to repair, replacement, or refund of the door package — not delay, recut glass, or other job costs.</li>' +
+      '</ul></div>' +
+      '<div class="qd-accept"><h4>Acceptance</h4>' +
+        '<p>Signing below accepts this quotation and the attached confirmation drawing, and authorizes fabrication once the deposit clears.</p>' +
+        '<div class="qd-sig"><div>Name</div><div>Title</div><div>Signature</div><div>Date</div></div>' +
+        '<div class="qd-sig" style="grid-template-columns:1fr 1fr;margin-top:18px;"><div>Customer PO #</div><div>Company</div></div>' +
+        '<div class="qd-online">Or approve and sign online: <a href="' + escHtml('https://doortronixusa.com' + location.pathname + location.search) + '">Open this quote on doortronixusa.com</a></div>' +
+      '</div>' +
+      '<div class="qd-foot"><span>Doortronix USA · Manufactured in Malakoff, Texas</span><span>Quote ' + escHtml(o.ref || '') + ' · Page 1 of 2 — confirmation drawing attached</span></div>' +
+    '</div>';
+}
+
 function drawingSrc(order) {
-  return 'installer-cut-sheet.html?embed=1&d=' + encodeOrder(order);
+  return 'installer-cut-sheet.html?embed=1&confirm=1&d=' + encodeOrder(order);
 }
 
 function renderOrder() {
   if (!ORDER) return;
   document.getElementById('draw-frame').src = drawingSrc(ORDER);
   document.getElementById('open-drawing').href = 'installer-cut-sheet.html?d=' + encodeOrder(ORDER);
+  renderQuoteDoc();
 
   const pr = ORDER.pricing || {};
   const lines = pr.lines || [];
