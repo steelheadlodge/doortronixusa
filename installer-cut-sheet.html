@@ -314,7 +314,7 @@ const SAMPLE_ORDER = {
     bottomRail: 'std',
     muntin: '2" Muntin (std)',
     threshold: '1/2" Standard',
-    sensor: 'Standard (incl.)',
+    sensor: 'Optex i-oneXT',
     locking: 'Standard hooklock',
     widthFt: 10, widthIn: 0, width16: 0,
     heightFt: 7, heightIn: 6, height16: 0,
@@ -544,7 +544,7 @@ function slideSensorStr(d) {
   if (/i-oneXT/i.test(s)) return 'Optex i-oneXT';
   if (/IXIO/i.test(s)) return 'BEA IXIO';
   if (/BEA/i.test(s) && !/standard/i.test(s)) return 'BEA IXIO';
-  return 'Standard (incl.)';
+  return 'Optex i-oneXT';
 }
 function swingSensorStr(d) {
   if (d.sensor) return String(d.sensor).replace(/both faces/gi, 'both sides');

@@ -597,9 +597,8 @@ function makeDoorBlock(id) {
           <div class="door-spec-field">
             <div class="dsf-label">Sensor</div>
             <div class="chip-group">
-              <input type="radio" name="d${id}_sensor" id="d${id}_sn_std" value="—" checked><label for="d${id}_sn_std">Standard —</label>
-              <input type="radio" name="d${id}_sensor" id="d${id}_sn_optex" value="Optex i-oneXT"><label for="d${id}_sn_optex">Optex (+$220)</label>
-              <input type="radio" name="d${id}_sensor" id="d${id}_sn_bea" value="BEA IXIO"><label for="d${id}_sn_bea">BEA (+$280)</label>
+              <input type="radio" name="d${id}_sensor" id="d${id}_sn_optex" value="Optex i-oneXT" checked><label for="d${id}_sn_optex">Optex i-oneXT (std)</label>
+              <input type="radio" name="d${id}_sensor" id="d${id}_sn_bea" value="BEA IXIO"><label for="d${id}_sn_bea">BEA IXIO (+$60)</label>
             </div>
           </div>
         </div>
@@ -855,8 +854,7 @@ function calcDoorPrice(id) {
   if (rail === '6in')  total += rv('stileWidth') === 'medium' ? 0 : 50  * totalPanels;
   if (rail === '10in') total += 100 * totalPanels;
   const sensor = rv('sensor');
-  if (sensor === 'Optex i-oneXT') total += 220;
-  if (sensor === 'BEA IXIO')      total += 280;
+  if (sensor === 'BEA IXIO')      total += 60;
   const hIn = getHeightIn();
   const wIn = getWidthIn();
   if (hIn != null && hIn > 96) total += 200 * Math.ceil((hIn - 96) / 12);

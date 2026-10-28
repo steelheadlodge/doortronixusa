@@ -592,12 +592,10 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
         <div class="field">
           <label>Activation Sensor</label>
           <div class="chip-group">
-            <input type="radio" name="sensor" id="sn_std" value="Standard Optex (incl.)" checked>
-            <label for="sn_std">Standard (incl.)</label>
-            <input type="radio" name="sensor" id="sn_optex" value="Optex i-oneXT">
-            <label for="sn_optex">Optex i-oneXT (+$220)</label>
+            <input type="radio" name="sensor" id="sn_optex" value="Optex i-oneXT" checked>
+            <label for="sn_optex">Optex i-oneXT (std)</label>
             <input type="radio" name="sensor" id="sn_bea" value="BEA IXIO">
-            <label for="sn_bea">BEA IXIO (+$280)</label>
+            <label for="sn_bea">BEA IXIO (+$60)</label>
           </div>
         </div>
       </div>
@@ -959,9 +957,8 @@ function addExtraDoor() {
       <div class="ed-field">
         <label>Sensor</label>
         <select id="ed_sensor_${n}">
-          <option value="Standard Optex (incl.)">Standard Optex (included)</option>
-          <option value="Optex i-oneXT">Optex i-oneXT (upgrade)</option>
-          <option value="BEA IXIO">BEA IXIO (upgrade)</option>
+          <option value="Optex i-oneXT">Optex i-oneXT (included)</option>
+          <option value="BEA IXIO">BEA IXIO (+$60)</option>
         </select>
       </div>
       <div class="ed-field">
@@ -1242,10 +1239,10 @@ function calcPrice() {
     lines.push({ label: `10" Bottom Rails ×${totalPanels} panels`, amount: amt });
   }
   const sensorVal = rv('sensor');
-  if (sensorVal === 'Optex i-oneXT') {
-    total += 220; lines.push({ label: 'Optex i-oneXT Sensor', amount: 220 });
-  } else if (sensorVal === 'BEA IXIO') {
-    total += 280; lines.push({ label: 'BEA IXIO Sensor', amount: 280 });
+  if (sensorVal === 'BEA IXIO') {
+    total += 60; lines.push({ label: 'BEA IXIO Sensor upgrade', amount: 60 });
+  } else {
+    lines.push({ label: 'Optex i-oneXT Sensor (std)', amount: 0 });
   }
 
   // Size overage: $200/ft over 8'0" height (singles and bi-parts)
@@ -1385,7 +1382,7 @@ function updateSpecSummary() {
     ['Bottom Rail', rv('bottomRail') === '6in' ? '6"' : rv('bottomRail') === '10in' ? '10"' : '4" (std)'],
     ['Horizontal Muntin', rv('muntin') || '2" Muntin (std)'],
     ['Threshold', rv('threshold') || '—'],
-    ['Sensor', (['Optex i-oneXT','BEA IXIO'].includes(rv('sensor'))) ? rv('sensor') : '—'],
+    ['Sensor', rv('sensor') === 'BEA IXIO' ? 'BEA IXIO' : 'Optex i-oneXT'],
     ['Transom', rv('transom') === 'yes' ? `Yes (+$250)${ftthStr ? ' — FTTH: ' + ftthStr : ''}` : 'No'],
     ['Frame Width', getWidthStr()],
     [rv('transom') === 'yes' ? 'Header Height (FTTH)' : 'Frame Height', getHeightStr()],
@@ -2036,7 +2033,7 @@ document.getElementById('quoteForm').addEventListener('submit', async function(e
     bottomRail: rv('bottomRail') === '6in' ? '6"' : rv('bottomRail') === '10in' ? '10"' : '4" (std)',
     muntin: rv('muntin') || '2" Muntin (std)',
     threshold: rv('threshold'),
-    sensor: (['Optex i-oneXT','BEA IXIO'].includes(rv('sensor'))) ? rv('sensor') : 'Standard Optex (incl.)',
+    sensor: rv('sensor') === 'BEA IXIO' ? 'BEA IXIO' : 'Optex i-oneXT',
     transom: rv('transom') === 'yes' ? 'Yes' : 'No',
     ftth: ftthStr2 || 'N/A',
     frameWidth: getWidthStr(), frameHeight: getHeightStr(),

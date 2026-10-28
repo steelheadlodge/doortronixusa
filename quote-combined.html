@@ -1690,12 +1690,10 @@ body.sheet-mode #plan-svg { background:#fff; }
         <div class="field" id="sensor-field-slide">
           <label>Activation Sensor</label>
           <div class="chip-group">
-            <input type="radio" name="sensor" id="sn_std" value="Standard (incl.)" checked>
-            <label for="sn_std">Standard (incl.)</label>
-            <input type="radio" name="sensor" id="sn_optex" value="Optex i-oneXT">
-            <label for="sn_optex">Optex i-oneXT (+$220)</label>
+            <input type="radio" name="sensor" id="sn_optex" value="Optex i-oneXT" checked>
+            <label for="sn_optex">Optex i-oneXT (std)</label>
             <input type="radio" name="sensor" id="sn_bea" value="BEA IXIO">
-            <label for="sn_bea">BEA IXIO (+$280)</label>
+            <label for="sn_bea">BEA IXIO (+$60)</label>
           </div>
         </div>
 
@@ -3103,7 +3101,7 @@ function applyFamilyDefaults(type) {
   checkRadioId('tr_no');
   checkRadioId('gp_quarter');
   checkRadioId('th_std');
-  checkRadioId('sn_std');
+  checkRadioId('sn_optex');
   checkRadioId('sl_none');
   checkRadioId('cbi_0');
   checkRadioId('cbo_0');
@@ -5025,7 +5023,8 @@ function loadDoorIntoForm(door) {
   const hbStd = document.getElementById('hb_std');
   if (hbStd) hbStd.checked = true;
   ['glazing','transom','transomGlassPrep','glassPrep','stileWidth','bottomRail','muntin','threshold','sensor','holdBeams','swingDir','swingHand','swingEnergy','swingStop','swingCrashIn','swingCrashOut','swingScan','swingApproach','swingHdrSafe','swingPlate','swingPlateLogo','swingPlateFinish','swingPlateWireless','swingPull','swingPushBar','swingSidelite','swingSideliteGlass'].forEach(name => {
-    const v = door[name]; if (!v && v !== '0') return;
+    let v = door[name]; if (!v && v !== '0') return;
+    if (name === 'sensor') v = normSensor(v);
     const el = document.querySelector(`input[name="${name}"][value='${v}']`);
     if (el) el.checked = true;
   });
@@ -5125,7 +5124,7 @@ function resetDoorForm() {
   document.getElementById('f_hft').value = '7';
   document.getElementById('f_hin').value = '6';
   document.getElementById('f_h16').value = '0';
-  const defaults = {glazing:'204 Clear',transom:'no',glassPrep:'1/4"',stileWidth:'narrow',bottomRail:'std',muntin:'2" Muntin (std)',threshold:'Standard 1/2"',sensor:'Standard (incl.)',swingSidelite:'none'};
+  const defaults = {glazing:'204 Clear',transom:'no',glassPrep:'1/4"',stileWidth:'narrow',bottomRail:'std',muntin:'2" Muntin (std)',threshold:'Standard 1/2"',sensor:'Optex i-oneXT',swingSidelite:'none'};
   Object.entries(defaults).forEach(([name, val]) => { const el = document.querySelector(`input[name="${name}"][value='${val}']`); if(el) el.checked=true; });
   setSlVertRadio('left', 0);
   setSlVertRadio('right', 0);
@@ -5375,7 +5374,7 @@ async function submitAllDoors() {
     }
     const stile  = d.stileWidth === 'medium' ? 'Medium 3-3/4"' : 'Narrow (std)';
     const rail   = d.bottomRail === '6in' ? '6"' : d.bottomRail === '10in' ? '10"' : '4" (std)';
-    const sensor = (['Optex i-oneXT','BEA IXIO'].includes(d.sensor)) ? d.sensor : (d.sensor || 'Standard (incl.)');
+    const sensor = normSensor(d.sensor);
     if (isStorefrontItem(d)) {
       return `FRAME ${i+1}: ${d.configLabel} (${d.configCode}) — Qty: ${d.quantity||1}\n` +
              `  Aluminum frame only — no door, operator, or hardware. Glass by others.\n` +
@@ -5539,9 +5538,8 @@ function addExtraDoor() {
       <div class="ed-field">
         <label>Sensor</label>
         <select id="ed_sensor_${n}">
-          <option value="Standard (incl.)">Standard (included)</option>
-          <option value="Optex i-oneXT">Optex i-oneXT (upgrade)</option>
-          <option value="BEA IXIO">BEA IXIO (upgrade)</option>
+          <option value="Optex i-oneXT">Optex i-oneXT (included)</option>
+          <option value="BEA IXIO">BEA IXIO (+$60)</option>
         </select>
       </div>
       <div class="ed-field">
@@ -6778,6 +6776,10 @@ function noHoldBeams() {
   const cfg = getConfig();
   return !!(cfg && !cfg.isSwing && !cfg.isStorefront && rv('holdBeams') === 'None');
 }
+// Older saved quotes carry "Standard (incl.)" / "Standard Optex (incl.)"; the i-oneXT is now the included sensor.
+function normSensor(s) {
+  return /IXIO|BEA/i.test(s || '') ? 'BEA IXIO' : 'Optex i-oneXT';
+}
 
 function calcPrice() {
   const body = document.getElementById('price-body');
@@ -6876,10 +6878,12 @@ function calcPrice() {
     lines.push({ label: `10" Bottom Rails ×${totalPanels} panels`, amount: amt });
   }
   const sensorVal = rv('sensor');
-  if (!cfg.isStorefront && sensorVal === 'Optex i-oneXT') {
-    total += 220; lines.push({ label: 'Optex i-oneXT Sensor', amount: 220 });
-  } else if (!cfg.isStorefront && sensorVal === 'BEA IXIO') {
-    total += 280; lines.push({ label: 'BEA IXIO Sensor', amount: 280 });
+  if (!cfg.isStorefront && !cfg.isSwing) {
+    if (normSensor(sensorVal) === 'BEA IXIO') {
+      total += 60; lines.push({ label: 'BEA IXIO Sensor upgrade', amount: 60 });
+    } else {
+      lines.push({ label: 'Optex i-oneXT Sensor (std)', amount: 0 });
+    }
   }
   if (noHoldBeams()) lines.push({ label: 'No hold beams (no credit)', amount: 0 });
   if (cfg.isSwing) {
@@ -7306,7 +7310,7 @@ function updateSpecSummary() {
       ['Header safety', rv('swingHdrSafe') === 'yes' ? (cfg.isTwin ? 'MS Sedco DH94 (1 per door)' : 'MS Sedco DH94 (1 per opening)') : 'None'],
       ['Sidelites', (getSwingSideliteLoc() === 'none' && !cfg.isTwin) ? 'None' : getSwingSideliteStr() + ' · ' + getSwingSideliteProfileStr()],
     ] : []),
-    ['Sensor', (['Optex i-oneXT','BEA IXIO'].includes(rv('sensor'))) ? rv('sensor') : (rv('sensor') || '—')],
+    ...(cfg && !cfg.isSwing && !cfg.isStorefront ? [['Sensor', normSensor(rv('sensor'))]] : []),
     ...(cfg && !cfg.isSwing && !cfg.isStorefront ? [['Hold Beams', noHoldBeams() ? 'None (no credit)' : 'Included']] : []),
     ['Transom', rv('transom') === 'yes' ? `Yes (+$250)${ftthStr && ftthStr !== '—' ? ' — overall ' + ftthStr : ''}` : 'No'],
     ['Frame Width', getWidthStr() + (cfg && cfg.isSwing && (getSwingSideliteLoc() !== 'none' || cfg.isTwin) ? ' door · ' + inToStr(getSwingOverallIn()) + ' overall' : '')],
@@ -9554,7 +9558,7 @@ document.getElementById('quoteForm').addEventListener('submit', async function(e
           : getStorefrontHorizAffs().map(a => inToStr(a) + ' AFF').join(' / ')) : 'None')
       : ((rv('muntin') || '2" Muntin (std)') + (swingMuntinCount() ? ' @ ' + (cfg && cfg.isSwing ? getSwingMuntinAffs() : [getSliderMuntinAffIn()]).map(a => (cfg && cfg.isSwing ? a + '"' : fmtInches(a)) + ' AFF').join(' / ') : '')),
     threshold: cfg && cfg.isStorefront ? '—' : rv('threshold'),
-    sensor: cfg && cfg.isStorefront ? '—' : ((['Optex i-oneXT','BEA IXIO'].includes(rv('sensor'))) ? rv('sensor') : 'Standard (incl.)'),
+    sensor: cfg && (cfg.isStorefront || cfg.isSwing) ? '—' : normSensor(rv('sensor')),
     holdBeams: (cfg && !cfg.isSwing && !cfg.isStorefront) ? (noHoldBeams() ? 'None (no credit)' : 'Included') : 'N/A',
     transom: (cfg && cfg.isStorefront) ? 'No' : (rv('transom') === 'yes' ? 'Yes' : 'No'),
     sfGlass: cfg && cfg.isStorefront ? storefrontGlassStr() : '',
@@ -9663,7 +9667,7 @@ function buildSheetOrder() {
     sfHoriz2: (cfg && cfg.isStorefront) ? fv('sf_h2') : '',
     sfHoriz3: (cfg && cfg.isStorefront) ? fv('sf_h3') : '',
     threshold: rv('threshold'),
-    sensor: (cfg && cfg.isSwing) ? '' : (rv('sensor') === 'Standard Optex (incl.)' ? 'Standard (incl.)' : rv('sensor')),
+    sensor: (cfg && cfg.isSwing) ? '' : normSensor(rv('sensor')),
     holdBeams: noHoldBeams() ? 'None' : 'Included',
     locking: cfg && cfg.isSwing ? (cfg.isBi ? 'Deadbolt + flushbolts' : cfg.isTwin ? 'Deadbolt ×2' : 'Adams Rite deadbolt') : rv('locking'),
     widthFt, widthIn, width16,
