@@ -172,7 +172,7 @@ html.embed .sheet { margin:0 auto 0; }
       <table class="tbl" id="particulars"></table>
       <h3 id="glass-h">Glass sizes</h3>
       <table class="tbl glass-size-tbl" id="glass-tbl"></table>
-      <div class="note" id="glass-note">Glass by others. Do not cut until signed.</div>
+      <div class="note" id="glass-note">Glass by others. Do not cut glass until we receive your order request and send a confirmation drawing with approved, confirmed sizes.</div>
       <h3>Options</h3>
       <div class="options-scroll">
         <table class="tbl" id="options-tbl"></table>
@@ -1157,13 +1157,13 @@ function renderSheet() {
   const glassNote = document.getElementById('glass-note');
   if (glassNote) {
     const copyHint = ' <span class="screen-only">Click a Width or Height cell, then Ctrl+C / ⌘C.</span>';
+    const factorySheet = new URLSearchParams(location.search).get('factory') === '1';
+    const cutRule = factorySheet
+      ? 'Glass by others. Sizes confirmed for production; OK to cut from this sheet.'
+      : 'Glass by others. Do not cut glass until we receive your order request and send a confirmation drawing with approved, confirmed sizes.';
     glassNote.innerHTML = hideGlass
-      ? ((cfg && cfg.isP)
-        ? 'Glass sizes not shown until confirmed with the factory. Do not cut glass from this sheet.'
-        : 'Glass sizes provided separately. Glass by others. Do not cut until signed.')
-      : (isStorefrontCfg(cfg)
-        ? 'Cut size = daylight + 5/8". Glass by others. Do not cut until signed.' + copyHint
-        : 'Glass by others. Do not cut until signed.' + copyHint);
+      ? 'Glass sizes not shown until confirmed with the factory. Do not cut glass from this sheet.'
+      : (isStorefrontCfg(cfg) ? 'Cut size = daylight + 5/8". ' : '') + cutRule + copyHint;
   }
 
   fillTable('options-tbl', optionList());
@@ -1634,7 +1634,7 @@ function glassSizesHidden() {
 function glassSizeItems() {
   if (glassSizesHidden()) {
     const cfg = CONFIGS[ORDER.door.configKey];
-    return [{ label: 'Glass sizes', qty: '', w: null, h: null, note: (cfg && cfg.isP) ? 'Confirm with factory' : 'Provided separately' }];
+    return [{ label: 'Glass sizes', qty: '', w: null, h: null, note: 'Confirm with factory' }];
   }
   const g = calcGlass();
   if (!g) return [{ label: 'Glass', qty: '', w: null, h: null, note: '—' }];
