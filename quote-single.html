@@ -323,7 +323,7 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
             <svg class="cc-icon" width="70" height="36" viewBox="0 0 70 36"><rect x="0" y="0" width="70" height="36" fill="#EEF4FB" rx="3"/><rect x="0" y="0" width="70" height="6" fill="#1B4F8A"/><rect x="2" y="6" width="32" height="28" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1"/><rect x="37" y="6" width="32" height="28" fill="#B8D4F0" stroke="#1B4F8A" stroke-width="1"/><text x="18" y="21" font-size="8" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">SX</text><text x="18" y="31" font-size="10" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">→</text><text x="53" y="21" font-size="8" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">SO</text></svg>
             <div class="cc-name">FBO Single — RH</div>
             <div class="cc-code">SX-SO → exterior</div>
-            <div class="cc-price">from $3,200</div>
+            <div class="cc-price">from $3,420</div>
           </label>
 
           <input type="radio" name="config" id="cfg_fbo_lh" value="fbo-single-lh">
@@ -331,7 +331,7 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
             <svg class="cc-icon" width="70" height="36" viewBox="0 0 70 36"><rect x="0" y="0" width="70" height="36" fill="#EEF4FB" rx="3"/><rect x="0" y="0" width="70" height="6" fill="#1B4F8A"/><rect x="2" y="6" width="32" height="28" fill="#B8D4F0" stroke="#1B4F8A" stroke-width="1"/><rect x="37" y="6" width="32" height="28" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1"/><text x="18" y="21" font-size="8" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">SO</text><text x="53" y="21" font-size="8" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">SX</text><text x="53" y="31" font-size="10" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">←</text></svg>
             <div class="cc-name">FBO Single — LH</div>
             <div class="cc-code">SO-SX → exterior</div>
-            <div class="cc-price">from $3,200</div>
+            <div class="cc-price">from $3,420</div>
           </label>
 
           <input type="radio" name="config" id="cfg_fsl_rh" value="fsl-single-rh">
@@ -339,7 +339,7 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
             <svg class="cc-icon" width="70" height="36" viewBox="0 0 70 36"><rect x="0" y="0" width="70" height="36" fill="#EEF4FB" rx="3"/><rect x="0" y="0" width="70" height="6" fill="#1B4F8A"/><rect x="2" y="6" width="32" height="28" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1"/><rect x="37" y="6" width="32" height="28" fill="#B8D4F0" stroke="#1B4F8A" stroke-width="1"/><text x="18" y="21" font-size="8" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">SX</text><text x="18" y="31" font-size="10" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">→</text><text x="53" y="21" font-size="8" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">O</text></svg>
             <div class="cc-name">FSL Single — RH</div>
             <div class="cc-code">SX-O → exterior</div>
-            <div class="cc-price">from $3,200</div>
+            <div class="cc-price">from $3,420</div>
           </label>
 
           <input type="radio" name="config" id="cfg_fsl_lh" value="fsl-single-lh">
@@ -347,7 +347,7 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; background: #
             <svg class="cc-icon" style="margin:0 auto;" width="70" height="36" viewBox="0 0 70 36"><rect x="0" y="0" width="70" height="36" fill="#EEF4FB" rx="3"/><rect x="0" y="0" width="70" height="6" fill="#1B4F8A"/><rect x="2" y="6" width="32" height="28" fill="#B8D4F0" stroke="#1B4F8A" stroke-width="1"/><rect x="37" y="6" width="32" height="28" fill="#DDEEFF" stroke="#1B4F8A" stroke-width="1"/><text x="18" y="21" font-size="8" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">O</text><text x="53" y="21" font-size="8" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">SX</text><text x="53" y="31" font-size="10" font-weight="700" fill="#1B4F8A" text-anchor="middle" font-family="Arial">←</text></svg>
             <div class="cc-name">FSL Single — LH</div>
             <div class="cc-code">O-SX → exterior</div>
-            <div class="cc-price">from $3,200</div>
+            <div class="cc-price">from $3,420</div>
           </label>
 
         </div>
@@ -871,10 +871,10 @@ const _checkedAddons = new Set();
 
 // ── Pricing data ────────────────────────────────────────────────────
 const CONFIGS = {
-  'fbo-single-rh': { label:'FBO Single — RH', code:'SX-SO', base:3200, transom:250, minW:78, maxW:108, panels:1, isFBO:true,  isBi:false },
-  'fbo-single-lh': { label:'FBO Single — LH', code:'SO-SX', base:3200, transom:250, minW:78, maxW:108, panels:1, isFBO:true,  isBi:false },
-  'fsl-single-rh': { label:'FSL Single — RH', code:'SX-O',  base:3200, transom:250, minW:78, maxW:108, panels:1, isFBO:false, isBi:false },
-  'fsl-single-lh': { label:'FSL Single — LH', code:'O-SX',  base:3200, transom:250, minW:78, maxW:108, panels:1, isFBO:false, isBi:false },
+  'fbo-single-rh': { label:'FBO Single — RH', code:'SX-SO', base:3420, transom:250, minW:78, maxW:108, panels:1, isFBO:true,  isBi:false },
+  'fbo-single-lh': { label:'FBO Single — LH', code:'SO-SX', base:3420, transom:250, minW:78, maxW:108, panels:1, isFBO:true,  isBi:false },
+  'fsl-single-rh': { label:'FSL Single — RH', code:'SX-O',  base:3420, transom:250, minW:78, maxW:108, panels:1, isFBO:false, isBi:false },
+  'fsl-single-lh': { label:'FSL Single — LH', code:'O-SX',  base:3420, transom:250, minW:78, maxW:108, panels:1, isFBO:false, isBi:false },
 };
 
 let _doorScale = null;

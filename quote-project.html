@@ -341,13 +341,13 @@ body{font-family:Arial,Helvetica,sans-serif;font-size:14px;background:#F0F4F8;co
 <script>
 // ─── CONFIGS ────────────────────────────────────────────────────────────────
 const CONFIGS = {
-  'fbo-bi':  { label:'FBO Bi-Part',   code:'SO-SX-SX-SO', isBi:true,  isFBO:true,  isLH:false, panels:2, base:3900, minW:96,  maxW:192 },
-  'fsl-bi':  { label:'FSL Bi-Part',   code:'O-SX-SX-O',   isBi:true,  isFBO:false, isLH:false, panels:2, base:3900, minW:96,  maxW:192 },
+  'fbo-bi':  { label:'FBO Bi-Part',   code:'SO-SX-SX-SO', isBi:true,  isFBO:true,  isLH:false, panels:2, base:4120, minW:96,  maxW:192 },
+  'fsl-bi':  { label:'FSL Bi-Part',   code:'O-SX-SX-O',   isBi:true,  isFBO:false, isLH:false, panels:2, base:4120, minW:96,  maxW:192 },
   'esa':     { label:'ESA Bi-Part',   code:'P-SX-SX-P',   isBi:true,  isFBO:true,  isLH:false, panels:2, base:null, minW:96,  maxW:192 },
-  'fbo-rh':  { label:'FBO Single RH', code:'SX-SO',        isBi:false, isFBO:true,  isLH:false, panels:1, base:3200, minW:78,  maxW:108 },
-  'fbo-lh':  { label:'FBO Single LH', code:'SO-SX',        isBi:false, isFBO:true,  isLH:true,  panels:1, base:3200, minW:78,  maxW:108 },
-  'fsl-rh':  { label:'FSL Single RH', code:'SX-O',         isBi:false, isFBO:false, isLH:false, panels:1, base:3200, minW:78,  maxW:108 },
-  'fsl-lh':  { label:'FSL Single LH', code:'O-SX',         isBi:false, isFBO:false, isLH:true,  panels:1, base:3200, minW:78,  maxW:108 },
+  'fbo-rh':  { label:'FBO Single RH', code:'SX-SO',        isBi:false, isFBO:true,  isLH:false, panels:1, base:3420, minW:78,  maxW:108 },
+  'fbo-lh':  { label:'FBO Single LH', code:'SO-SX',        isBi:false, isFBO:true,  isLH:true,  panels:1, base:3420, minW:78,  maxW:108 },
+  'fsl-rh':  { label:'FSL Single RH', code:'SX-O',         isBi:false, isFBO:false, isLH:false, panels:1, base:3420, minW:78,  maxW:108 },
+  'fsl-lh':  { label:'FSL Single LH', code:'O-SX',         isBi:false, isFBO:false, isLH:true,  panels:1, base:3420, minW:78,  maxW:108 },
 };
 const SIXTEENTH_LABELS = ['','1/16','1/8','3/16','1/4','5/16','3/8','7/16','1/2','9/16','5/8','11/16','3/4','13/16','7/8','15/16'];
 
@@ -477,22 +477,22 @@ function makeDoorBlock(id) {
           <div class="cfg-group-label" style="margin-bottom:6px;">Bi-Part</div>
           <div class="cfg-card-row">
             <input class="cfg-card-input" type="radio" name="d${id}_config" id="d${id}_cfg_fbo_bi" value="fbo-bi" checked>
-            <label class="cfg-card-lbl" for="d${id}_cfg_fbo_bi"><div class="cfg-card-name">FBO Bi-Part</div><div class="cfg-card-code">SO-SX-SX-SO</div><div class="cfg-card-price">$3,900</div></label>
+            <label class="cfg-card-lbl" for="d${id}_cfg_fbo_bi"><div class="cfg-card-name">FBO Bi-Part</div><div class="cfg-card-code">SO-SX-SX-SO</div><div class="cfg-card-price">$4,120</div></label>
             <input class="cfg-card-input" type="radio" name="d${id}_config" id="d${id}_cfg_fsl_bi" value="fsl-bi">
-            <label class="cfg-card-lbl" for="d${id}_cfg_fsl_bi"><div class="cfg-card-name">FSL Bi-Part</div><div class="cfg-card-code">O-SX-SX-O</div><div class="cfg-card-price">$3,900</div></label>
+            <label class="cfg-card-lbl" for="d${id}_cfg_fsl_bi"><div class="cfg-card-name">FSL Bi-Part</div><div class="cfg-card-code">O-SX-SX-O</div><div class="cfg-card-price">$4,120</div></label>
             <input class="cfg-card-input" type="radio" name="d${id}_config" id="d${id}_cfg_esa" value="esa">
             <label class="cfg-card-lbl" for="d${id}_cfg_esa"><div class="cfg-card-name">ESA Bi-Part</div><div class="cfg-card-code">P-SX-SX-P</div><div class="cfg-card-price" style="color:var(--mgray)">Call</div></label>
           </div>
           <div class="cfg-group-label" style="margin-bottom:6px;margin-top:8px;">Single Slide</div>
           <div class="cfg-card-row row4">
             <input class="cfg-card-input" type="radio" name="d${id}_config" id="d${id}_cfg_fbo_rh" value="fbo-rh">
-            <label class="cfg-card-lbl" for="d${id}_cfg_fbo_rh"><div class="cfg-card-name">FBO RH</div><div class="cfg-card-code">SX-SO</div><div class="cfg-card-price">$3,200</div></label>
+            <label class="cfg-card-lbl" for="d${id}_cfg_fbo_rh"><div class="cfg-card-name">FBO RH</div><div class="cfg-card-code">SX-SO</div><div class="cfg-card-price">$3,420</div></label>
             <input class="cfg-card-input" type="radio" name="d${id}_config" id="d${id}_cfg_fbo_lh" value="fbo-lh">
-            <label class="cfg-card-lbl" for="d${id}_cfg_fbo_lh"><div class="cfg-card-name">FBO LH</div><div class="cfg-card-code">SO-SX</div><div class="cfg-card-price">$3,200</div></label>
+            <label class="cfg-card-lbl" for="d${id}_cfg_fbo_lh"><div class="cfg-card-name">FBO LH</div><div class="cfg-card-code">SO-SX</div><div class="cfg-card-price">$3,420</div></label>
             <input class="cfg-card-input" type="radio" name="d${id}_config" id="d${id}_cfg_fsl_rh" value="fsl-rh">
-            <label class="cfg-card-lbl" for="d${id}_cfg_fsl_rh"><div class="cfg-card-name">FSL RH</div><div class="cfg-card-code">SX-O</div><div class="cfg-card-price">$3,200</div></label>
+            <label class="cfg-card-lbl" for="d${id}_cfg_fsl_rh"><div class="cfg-card-name">FSL RH</div><div class="cfg-card-code">SX-O</div><div class="cfg-card-price">$3,420</div></label>
             <input class="cfg-card-input" type="radio" name="d${id}_config" id="d${id}_cfg_fsl_lh" value="fsl-lh">
-            <label class="cfg-card-lbl" for="d${id}_cfg_fsl_lh"><div class="cfg-card-name">FSL LH</div><div class="cfg-card-code">O-SX</div><div class="cfg-card-price">$3,200</div></label>
+            <label class="cfg-card-lbl" for="d${id}_cfg_fsl_lh"><div class="cfg-card-name">FSL LH</div><div class="cfg-card-code">O-SX</div><div class="cfg-card-price">$3,420</div></label>
           </div>
         </div>
 
