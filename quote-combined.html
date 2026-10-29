@@ -2175,7 +2175,7 @@ body.sheet-mode #plan-svg { background:#fff; }
     </div>
 
     <div class="preview-title" id="preview-title">Live Door Preview
-      <button type="button" class="btn-print-draw" id="btn-print-drawing" onclick="printQuoteDrawing()" title="Opens a preliminary letter sheet. Doortronix issues the confirmation drawing after review.">Print preliminary drawing</button>
+      <button type="button" class="btn-print-draw" id="btn-print-drawing" onclick="printQuoteDrawing()" title="Opens a submittal / estimate drawing. Doortronix issues the confirmation drawing after review.">Print submittal drawing</button>
     </div>
     <div id="drawing-wrap">
       <svg id="door-svg" viewBox="0 0 600 300" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;"></svg>
@@ -2647,6 +2647,28 @@ function printClientEstimate() {
   setTimeout(() => { try { w.print(); } catch (e) {} }, 250);
 }
 
+// Signed-out Save estimate sends the user to sign in / sign up, then finishes the save on return.
+const PENDING_SAVE_KEY = 'dtx_pending_save';
+const PENDING_SAVE_FIELDS = ['f_name', 'f_company', 'f_email', 'f_phone', 'f_project', 'f_location', 'f_po', 'f_shipto', 'f_ship_phone', 'f_ship_email'];
+function resumePendingSave() {
+  let p = null;
+  try { p = JSON.parse(localStorage.getItem(PENDING_SAVE_KEY)); } catch (e) {}
+  if (!p) return;
+  if (!localStorage.getItem('dtx_session')) {
+    if (Date.now() - (p.at || 0) > 86400000) localStorage.removeItem(PENDING_SAVE_KEY);
+    return;
+  }
+  localStorage.removeItem(PENDING_SAVE_KEY);
+  Object.entries(p.fields || {}).forEach(([id, v]) => {
+    const el = document.getElementById(id);
+    if (el && !el.value) el.value = v;
+  });
+  savePortalDraft().then(() => {
+    const s = document.getElementById('save-quote-status');
+    if (s && s.style.display !== 'none') s.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  });
+}
+
 async function savePortalDraft() {
   const t = localStorage.getItem('dtx_session');
   const statusEl = document.getElementById('save-quote-status');
@@ -2662,7 +2684,13 @@ async function savePortalDraft() {
     });
   };
   if (!t) {
-    setStatus('To keep this estimate on your dashboard, <a href="portal/login.html" style="color:#166534;font-weight:700;">sign in</a> or <a href="portal/signup.html" style="color:#166534;font-weight:700;">create an account</a>. You can still print it now without sending it.', false);
+    if (_editingDoorId != null) syncEditedDoorIntoCart();
+    else if (formDoorShouldJoinJob() && !addDoorToCart({ lenient: true, quiet: true })) return;
+    if (!getCart().length) { setStatus('Add at least one opening before saving the estimate.', false); return; }
+    const fields = {};
+    PENDING_SAVE_FIELDS.forEach(id => { const v = fv(id); if (v) fields[id] = v; });
+    try { localStorage.setItem(PENDING_SAVE_KEY, JSON.stringify({ fields, at: Date.now() })); } catch (e) {}
+    location.href = 'portal/login.html?next=../quote-combined.html';
     return;
   }
 
@@ -2797,8 +2825,8 @@ function syncPrintDrawingButton() {
     pb.textContent = 'Print confirmation drawing';
     pb.title = 'Opens the letter confirmation drawing for this build. Print or save as PDF to email after you review.';
   } else {
-    pb.textContent = 'Print preliminary drawing';
-    pb.title = 'Opens a preliminary letter sheet. Doortronix issues the confirmation drawing after review.';
+    pb.textContent = 'Print submittal drawing';
+    pb.title = 'Opens a submittal / estimate drawing. Doortronix issues the confirmation drawing after review.';
   }
 }
 
@@ -9976,6 +10004,7 @@ if (_startParams.get('sheet') !== '1' && !_startType && getCart().length && !_ed
     applyEstimateMeta(JSON.parse(raw));
   } catch (e) { refreshEstimateWorksheet(); }
 })();
+resumePendingSave();
 
 portalMe().then(function (me) {
   window._portalUser = me;
