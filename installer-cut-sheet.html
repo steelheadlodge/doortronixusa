@@ -1183,6 +1183,18 @@ function drawAll() {
   if (isSwingCfg(cfg) || isStorefrontCfg(cfg)) return;
   centerSvgVertically(document.getElementById('door-svg'), 16);
   centerSvgVertically(document.getElementById('plan-svg'), 0);
+  fitSvgLeft(document.getElementById('plan-svg'), 4);
+}
+// Wide doors push the plan's "Closed / Open / Breakaway" labels past x=0.
+function fitSvgLeft(svg, pad) {
+  if (!svg || !svg.children.length) return;
+  try {
+    const b = svg.getBBox();
+    const vb = svg.viewBox.baseVal;
+    const over = pad - b.x;
+    if (over <= 0 || !vb.width) return;
+    svg.setAttribute('viewBox', `${vb.x - over} ${vb.y} ${vb.width + over} ${vb.height}`);
+  } catch (e) { /* ignore */ }
 }
 function centerSvgVertically(svg, extraDown) {
   if (!svg || !svg.children.length) return;
