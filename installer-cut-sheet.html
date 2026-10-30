@@ -914,6 +914,15 @@ function calcCutList() {
     rails: 'Top ' + cutFmt(railLen) + ' (4") · Bot ' + cutFmt(railLen) + ' (' + railIn + '")',
     muntin: hasMuntin ? '1 × ' + cutFmt(railLen) + ' (2")' : '—' });
   panels.push(mk('Active leaf (SX)', nActive));
+  if (cfg.isP) {
+    const pRail = railLen + stileW + 0.125;
+    panels.push({ leaf: 'P panel (verify)', qty: cfg.isBi ? 2 : 1,
+      size: 'No glass',
+      stiles: '1 × ' + cutFmt(leafH) + ' (' + stileTxt + ')',
+      rails: 'Bot only ' + cutFmt(pRail) + ' (' + railIn + '") · no top rail',
+      muntin: '—' });
+    notes.push('P panel: one stile and a bottom rail only — no top rail, no glass. Bottom rail runs to the jamb: FSL fixed-panel rail + stile width + 1/8" weatherstrip gap. Verify before cutting.');
+  }
   if (cfg.isISA) {
     notes.push('ISA — interior mounted. Each SX leaf gets one extra heel stile: closure stile in line with P, pivot stile next to it breaks out through the wall opening. P is a vertical stile on the guide rail, not a glazed sidelite. Header and P stiles set against the interior wall. Cover access from the interior.');
   } else if (cfg.isP) {
