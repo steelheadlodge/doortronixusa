@@ -6068,15 +6068,17 @@ function calcSliderGlass() {
     ? (W - 17.25 - 2 * (face - 1.75)) / 4 - 0.3125
     : W / 2 - ((medium ? 6.75 : 3.75) + face);
   if (isBi && medium) liteW -= 3;
-  const noMuntinH = Hhdr - 17.625;
+  // FSL / surface-mount stiles: +1/4", +1/2" more with no or recessed threshold.
+  const Hg = Hhdr + (cfg.isFBO ? 0 : 0.25 + (/no threshold|recessed/i.test(rv('threshold') || '') ? 0.5 : 0));
+  const noMuntinH = Hg - 17.625;
   const STD_TOP = 90 / 2 - 10;
   let topBase, botBase;
-  if (Hhdr <= 96) {
-    topBase = Hhdr / 2 - 10;
+  if (Hg <= 96) {
+    topBase = Hg / 2 - 10;
     botBase = topBase - railDeduct;
   } else {
     botBase = STD_TOP - railDeduct;
-    topBase = (Hhdr - 20 - railDeduct) - botBase;
+    topBase = (Hg - 20 - railDeduct) - botBase;
   }
   const muntDelta = hasMuntin ? (getSliderMuntinAffIn() - defaultSliderMuntinAff()) : 0;
   const topH = hasMuntin ? Math.max(1, topBase - muntDelta) : noMuntinH;

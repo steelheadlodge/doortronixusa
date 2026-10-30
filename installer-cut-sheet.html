@@ -885,7 +885,8 @@ function calcCutList() {
   }
 
   // Leaves
-  const leafH = Hhdr - 9;     // stile cut: header height − 9"
+  const stileAdd = sliderStileAddIn(d, cfg);
+  const leafH = Hhdr - 9 + stileAdd;
   const railLen = g.liteW;    // rail size = glass width between the stiles
   const nPanels = g.panels;
   const nActive = cfg.isBi ? 2 : 1;
@@ -922,7 +923,9 @@ function calcCutList() {
   }
 
   notes.push('Stiles run full leaf height. Rail size on this list is the glass width between the stiles. Top rail, bottom rail, and muntin are cut to that rail size.');
-  notes.push('Stile cut = header height − 9". SX and SO stiles are the same length.');
+  notes.push(stileAdd
+    ? 'Stile cut = header height − 9" + ' + formatInches(stileAdd) + ' (FSL / surface mount: +1/4"' + (stileAdd > 0.25 ? ', +1/2" no threshold' : '') + '). All stiles the same length.'
+    : 'Stile cut = header height − 9". SX and SO stiles are the same length.');
   if (shopCuts) {
     notes.push('Header length is the beam between the jambs. Rod, narrow filler, stops, and crash bars use the production lengths. No astragal.');
     if (cfg.isBi) notes.push('Bipart snap-in door stop is the single-slide length (rail + 2-3/4") minus 1/8".');
@@ -1408,6 +1411,13 @@ function glassPair(w, h) {
   return formatInches(w) + ' x ' + formatInches(h);
 }
 
+// FSL and surface-mount (P) stiles run 1/4" taller than FBO, plus another 1/2"
+// with no threshold (recessed counts as none). Applied as if the header grew.
+function sliderStileAddIn(d, cfg) {
+  if (!cfg || cfg.isFBO || cfg.isSwing || cfg.isStorefront) return 0;
+  return 0.25 + (/no threshold|recessed/i.test((d && d.threshold) || '') ? 0.5 : 0);
+}
+
 // Factory glass formulas from the 6/5/12 cut-list sheets (4" bottom rail).
 // 6" rail: −2" from bottom lite only. 10" rail: −6" from bottom lite only.
 function calcGlass() {
@@ -1434,18 +1444,19 @@ function calcGlass() {
   }
 
   // Height from the 4" / 2" muntin sheets. Medium stile changes width only.
-  const noMuntinH = Hhdr - 17.625;
+  const Hg = Hhdr + sliderStileAddIn(d, cfg);
+  const noMuntinH = Hg - 17.625;
   // Standard cut sheet is dialed in at a 90" header (equal lites when a 4" rail is used).
   const STD_TOP = 90 / 2 - 10; // 35" — typical top lite that sets the muntin's standard height
   // ≤ 8'0": split the panel into two equal lites (muntin drifts up with height).
   // > 8'0": hold the muntin at its typical height (bottom lite fixed) and grow the top lite.
   let topBase, botBase;
-  if (Hhdr <= 96) {
-    topBase = Hhdr / 2 - 10;
+  if (Hg <= 96) {
+    topBase = Hg / 2 - 10;
     botBase = topBase - railDeduct;
   } else {
     botBase = STD_TOP - railDeduct;              // held at the 7'6" lite; muntin stays at that stile's center (40-1/2" on a 4" rail)
-    topBase = (Hhdr - 20 - railDeduct) - botBase; // = Hhdr - 55; top lite absorbs the extra height
+    topBase = (Hg - 20 - railDeduct) - botBase; // = Hg - 55; top lite absorbs the extra height
   }
   // Shift the top/bot lites when the buyer moves the muntin off the default AFF.
   const muntDelta = hasMuntin ? (sliderMuntinAffIn() - defaultSliderMuntinAff()) : 0;
