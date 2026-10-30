@@ -1462,7 +1462,7 @@ function calcGlass() {
   const muntDelta = hasMuntin ? (sliderMuntinAffIn() - defaultSliderMuntinAff()) : 0;
   const topH = hasMuntin ? Math.max(1, topBase - muntDelta) : noMuntinH;
   const botH = hasMuntin ? Math.max(1, botBase + muntDelta) : noMuntinH - railDeduct;
-  const panels = cfg.isP ? 2 : (isBi ? 4 : 2);
+  const panels = cfg.isP ? (isBi ? 2 : 1) : (isBi ? 4 : 2);
   const fixedLbl = cfg.isP ? 'P' : (cfg.isFBO ? 'SO' : 'O');
 
   const out = { liteW, topH, botH, hasMuntin, panels, fixedLbl, isBi, pPanel: !!cfg.isP, transoms: [] };

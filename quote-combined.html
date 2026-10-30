@@ -6083,7 +6083,7 @@ function calcSliderGlass() {
   const muntDelta = hasMuntin ? (getSliderMuntinAffIn() - defaultSliderMuntinAff()) : 0;
   const topH = hasMuntin ? Math.max(1, topBase - muntDelta) : noMuntinH;
   const botH = hasMuntin ? Math.max(1, botBase + muntDelta) : noMuntinH - railDeduct;
-  const panels = isBi ? 4 : 2;
+  const panels = cfg.isP ? (isBi ? 2 : 1) : (isBi ? 4 : 2);
   const transoms = [];
   if (rv('transom') === 'yes') {
     const ftth = getFtthIn() || Hhdr;
