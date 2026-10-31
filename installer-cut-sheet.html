@@ -1323,7 +1323,8 @@ function roughOpeningStr() {
   const w = getOverallWidthIn(), h = ORDER.door.transom && ORDER.door.ftthFt ? getFTTHIn() : getHeightIn();
   if (w == null || h == null) return '—';
   const a = roAdd();
-  return formatFtIn(w + a.w) + ' W × ' + formatFtIn(h + a.h) + ' H';
+  const nb = s => s.replace(/ /g, '\u00a0');
+  return nb(formatFtIn(w + a.w) + ' W') + ' × ' + nb(formatFtIn(h + a.h) + ' H');
 }
 function getOverallWidthStr() {
   return formatFtIn(getOverallWidthIn());
@@ -1794,6 +1795,10 @@ function getPanelFill() {
   return isDarkBronze() ? '#4A3018' : '#7A9CB8';
 }
 function getGlazeFill() {
+  const gt = (ORDER && ORDER.door && ORDER.door.glassType) || '';
+  if (gt) return /bronze|gray|grey|tint/i.test(gt)
+    ? { fill:'#C8B8A0', stroke:'#8A7060' }
+    : { fill:'#E8F4FD', stroke:'#A8D4F5' };
   if (isBlackFinish()) return { fill:'#C8B8A0', stroke:'#8A7060' };
   return isDarkBronze()
     ? { fill:'#C8B8A0', stroke:'#8A7060' }
@@ -3691,7 +3696,7 @@ function applySubmittalMode() {
   set('doc-sub', 'For architect / GC review and approval');
   set('approve-h', 'Submittal review');
   const hint = document.getElementById('approve-hint');
-  if (hint) hint.innerHTML = '☐ Approved &nbsp; ☐ Approved as noted &nbsp; ☐ Revise &amp; resubmit<br>Field verify all openings before release for fabrication.';
+  if (hint) hint.innerHTML = '<span style="white-space:nowrap">☐ Approved</span> &nbsp; <span style="white-space:nowrap">☐ Approved as noted</span><br><span style="white-space:nowrap">☐ Revise &amp; resubmit</span><br>Field verify all openings before release for fabrication.';
 }
 
 // Factory cut list is internal — hidden from the customer-facing drawing.
