@@ -531,8 +531,10 @@ function syncPlanNotes() {
     ? '2. INTERIOR MOUNTED. HEADER AND P STILES SET AGAINST THE INTERIOR FACE OF THE WALL. SERVICE COVER ACCESS IS FROM THE INTERIOR. EACH SX PANEL HAS TWO HEEL STILES: A CLOSURE STILE IN LINE WITH THE P STILE AND A PIVOT STILE THAT BREAKS OUT THROUGH THE WALL OPENING. P IS A VERTICAL STILE ON THE GUIDE RAIL — NOT A GLAZED SIDELITE.<br>'
     : cfg && cfg.isP
     ? '2. HEADER AND P STILES SET AGAINST THE WALL. SERVICE COVER ACCESS IS FROM THE EXTERIOR ONLY. P IS A VERTICAL STILE ON THE GUIDE RAIL, IN LINE WITH THE SX TRAILING STILE WHEN CLOSED — NOT A GLAZED SIDELITE.<br>'
+    : SUBMITTAL_SHEET && (d.roAddW != null || d.roAddH != null)
+    ? '2. ROUGH OPENING (R.O.) = FRAME SIZE + ' + formatInches(roAdd().w).replace(/^0 /, '') + ' IN WIDTH AND + ' + formatInches(roAdd().h).replace(/^0 /, '') + ' IN HEIGHT FOR SHIM SPACE.<br>'
     : SUBMITTAL_SHEET
-    ? '2. ROUGH OPENING (R.O.) = FRAME SIZE + 3/8"[10] IN WIDTH AND HEIGHT FOR SHIM SPACE.<br>'
+    ? '2. ROUGH OPENING (R.O.) = FRAME SIZE + 1/2"[13] IN WIDTH AND + 1/4"[6] IN HEIGHT (1/4" SHIM SPACE ON SIDES AND TOP OF PACKAGE).<br>'
     : '2. ROUGH OPENING SHALL PROVIDE 1/4"[6] SHIM SPACE ON SIDES AND TOP OF PACKAGE.<br>';
   el.innerHTML =
     '<strong>NOTES:</strong><br>' +
@@ -1312,11 +1314,16 @@ function getOverallWidthIn() {
   if (!cfg || !cfg.isSwing) return w;
   return w + swingSlIn('left') + swingSlIn('right');
 }
-// Rough opening = frame + 3/8" in width and height (shim space).
+// Rough opening = frame + 1/4" shim each side and top, unless the order sets roAddW / roAddH (inches).
+function roAdd() {
+  const d = (ORDER && ORDER.door) || {};
+  return { w: d.roAddW != null ? +d.roAddW : 0.5, h: d.roAddH != null ? +d.roAddH : 0.25 };
+}
 function roughOpeningStr() {
   const w = getOverallWidthIn(), h = ORDER.door.transom && ORDER.door.ftthFt ? getFTTHIn() : getHeightIn();
   if (w == null || h == null) return '—';
-  return formatFtIn(w + 0.375) + ' W × ' + formatFtIn(h + 0.375) + ' H';
+  const a = roAdd();
+  return formatFtIn(w + a.w) + ' W × ' + formatFtIn(h + a.h) + ' H';
 }
 function getOverallWidthStr() {
   return formatFtIn(getOverallWidthIn());
@@ -3315,8 +3322,9 @@ function drawDoor() {
     });
   }
 
-  const roW = formatFtIn(getOverallWidthIn() + 0.375);
-  const roH = formatFtIn((hasTransom && transomH > 2 ? getFTTHIn() : getHeightIn()) + 0.375);
+  const roA = roAdd();
+  const roW = formatFtIn(getOverallWidthIn() + roA.w);
+  const roH = formatFtIn((hasTransom && transomH > 2 ? getFTTHIn() : getHeightIn()) + roA.h);
   const RO_COLOR = '#A32020';
   const outerH = hasTransom && transomH > 2;
   const hDimX = Math.min(dX + dW + 28, vW - (outerH ? 60 : 36) - (SUBMITTAL_SHEET ? 16 : 0));
