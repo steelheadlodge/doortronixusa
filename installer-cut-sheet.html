@@ -155,7 +155,7 @@ html.embed .sheet { margin:0 auto 0; }
         <div class="plan-notes" id="plan-notes">
           <strong>NOTES:</strong><br>
           1. ELECTRICAL REQUIREMENTS: 120 VAC, 5 AMP MIN TO POWER OPERATOR BY ELECTRICAL CONTRACTOR.<br>
-          2. ROUGH OPENING (R.O.) = FRAME SIZE + 3/8"[10] IN WIDTH AND HEIGHT FOR SHIM SPACE.<br>
+          2. ROUGH OPENING SHALL PROVIDE 1/4"[6] SHIM SPACE ON SIDES AND TOP OF PACKAGE.<br>
           3. LIMITS OF ACTIVATION AND SAFETY ZONES ARE FOR REFERENCE ONLY; SEE ANSI/BHMA A156.10 FOR DETAILED REQUIREMENTS.<br>
           4. SEE SPECIFICATIONS FOR ADDITIONAL INFORMATION.<br>
           5. GLASS SIZES, DIMENSIONS, AND ALL DETAILS ON THIS DRAWING ARE PRELIMINARY UNTIL THIS SHEET IS SIGNED AND RETURNED, OR A SIGNED ORDER CONFIRMATION IS ISSUED. DO NOT CUT GLASS FROM THIS DRAWING UNTIL CONFIRMED. GLASS BY OTHERS.
@@ -241,6 +241,7 @@ html.embed .sheet { margin:0 auto 0; }
 <script>
 const SIXTEENTH_LABELS = ['','1/16','1/8','3/16','1/4','5/16','3/8','7/16','1/2','9/16','5/8','11/16','3/4','13/16','7/8','15/16'];
 const IS_SUBMITTAL = true; // compact drawing titles — same geometry as confirmation
+const SUBMITTAL_SHEET = new URLSearchParams(location.search).get('submittal') === '1';
 let ORDER = null;
 
 const CONFIGS = {
@@ -530,7 +531,9 @@ function syncPlanNotes() {
     ? '2. INTERIOR MOUNTED. HEADER AND P STILES SET AGAINST THE INTERIOR FACE OF THE WALL. SERVICE COVER ACCESS IS FROM THE INTERIOR. EACH SX PANEL HAS TWO HEEL STILES: A CLOSURE STILE IN LINE WITH THE P STILE AND A PIVOT STILE THAT BREAKS OUT THROUGH THE WALL OPENING. P IS A VERTICAL STILE ON THE GUIDE RAIL — NOT A GLAZED SIDELITE.<br>'
     : cfg && cfg.isP
     ? '2. HEADER AND P STILES SET AGAINST THE WALL. SERVICE COVER ACCESS IS FROM THE EXTERIOR ONLY. P IS A VERTICAL STILE ON THE GUIDE RAIL, IN LINE WITH THE SX TRAILING STILE WHEN CLOSED — NOT A GLAZED SIDELITE.<br>'
-    : '2. ROUGH OPENING (R.O.) = FRAME SIZE + 3/8"[10] IN WIDTH AND HEIGHT FOR SHIM SPACE.<br>';
+    : SUBMITTAL_SHEET
+    ? '2. ROUGH OPENING (R.O.) = FRAME SIZE + 3/8"[10] IN WIDTH AND HEIGHT FOR SHIM SPACE.<br>'
+    : '2. ROUGH OPENING SHALL PROVIDE 1/4"[6] SHIM SPACE ON SIDES AND TOP OF PACKAGE.<br>';
   el.innerHTML =
     '<strong>NOTES:</strong><br>' +
     '1. ELECTRICAL REQUIREMENTS: 120 VAC, 5 AMP MIN TO POWER OPERATOR BY ELECTRICAL CONTRACTOR.<br>' +
@@ -1151,7 +1154,7 @@ function renderSheet() {
 
   fillTable('particulars', isStorefrontCfg(cfg) ? storefrontParticulars(d, h) : isSwingCfg(cfg) ? swingParticulars(d, h) : [
     ['Frame size', getOverallWidthStr() + ' W × ' + getOverallHeightStr() + ' H'],
-    ['Rough opening', roughOpeningStr()],
+    ...(SUBMITTAL_SHEET ? [['Rough opening', roughOpeningStr()]] : []),
     ['Header height', getHeightStr()],
     ['Net slide (typ.)', getClearOpeningStr() || d.netOpening],
     ['Finish', d.frameFinish],
@@ -1192,7 +1195,7 @@ function renderSheet() {
   fillTable('options-tbl', optionList());
   syncPlanNotes();
   const jobEl = document.getElementById('job-location');
-  if (jobEl) jobEl.innerHTML = (p.location || '—').replace(/\n/g, '<br>');
+  if (jobEl) jobEl.innerHTML = (p.name ? '<strong>' + p.name + '</strong><br>' : '') + (p.location || '—').replace(/\n/g, '<br>');
   document.getElementById('appr-name').textContent = '';
   document.getElementById('appr-date').textContent = '';
 
@@ -2918,11 +2921,11 @@ function drawDoor() {
   const muntLabel = hasMuntinBar ? (formatInches(sliderMuntinAffIn()) + ' CL') : '';
   const muntLabelW = hasMuntinBar ? Math.ceil(muntLabel.length * muntFs * 0.50) : 0;
   const muntPad = 3, muntGap = 8, muntLeader = 16;
-  const mR = hasTransom ? 108 : 76;
+  const mR = (hasTransom ? 84 : 52) + (SUBMITTAL_SHEET ? 16 : 0);
   const mL = hasMuntinBar ? (muntPad + muntLabelW + muntGap + muntLeader) : 44;
   const mT = titleH + 12;
   // Bottom margin: width dim gap + label/tick clearance below door
-  const mB = widthDimGap + 40;
+  const mB = widthDimGap + (SUBMITTAL_SHEET ? 30 : 16);
   const availW = vW - mL - mR, availH = vH - mT - mB;
   const sc  = Math.min(availW / realW, availH / realTotalH);
   const dW  = realW * sc, dH = realTotalH * sc;
@@ -3314,28 +3317,19 @@ function drawDoor() {
 
   const roW = formatFtIn(getOverallWidthIn() + 0.375);
   const roH = formatFtIn((hasTransom && transomH > 2 ? getFTTHIn() : getHeightIn()) + 0.375);
-  const RO_RED = '#C62828';
-  function roDim(x1, y1, x2, y2, lbl, horiz) {
-    const off = 6;
-    l(x1, y1, x2, y2, RO_RED, 0.7);
-    if (horiz) {
-      l(x1, y1 - off, x1, y1 + off, RO_RED, 0.7); l(x2, y1 - off, x2, y1 + off, RO_RED, 0.7);
-      t((x1 + x2) / 2, y1 + 15, lbl, 12, RO_RED, 'middle', '700');
-    } else {
-      l(x1 - off, y1, x1 + off, y1, RO_RED, 0.7); l(x1 - off, y2, x1 + off, y2, RO_RED, 0.7);
-      const cx = x1 + 15, cy = (y1 + y2) / 2;
-      t(cx, cy, lbl, 12, RO_RED, 'middle', '700').setAttribute('transform', `rotate(-90,${cx},${cy})`);
-    }
-  }
-  dimLine(dX, widthDimY, dX+dW, widthDimY, getWidthStr() + ' FRAME', true);
-  roDim(dX, widthDimY + 12, dX + dW, widthDimY + 12, '(' + roW + ' R.O.)', true);
+  const RO_COLOR = '#A32020';
   const outerH = hasTransom && transomH > 2;
-  const hDimX = Math.min(dX + dW + 28, vW - (outerH ? 84 : 60));
+  const hDimX = Math.min(dX + dW + 28, vW - (outerH ? 60 : 36) - (SUBMITTAL_SHEET ? 16 : 0));
+  dimLine(dX, widthDimY, dX+dW, widthDimY, getWidthStr() + (SUBMITTAL_SHEET ? ' FRAME' : ''), true);
   dimLine(hDimX, dY + transomH, hDimX, dY + dH, getHeightStr() + ' header', false, 'right', 13);
   if (outerH) {
     dimLine(hDimX + 24, dY, hDimX + 24, dY + dH, getFTTHStr() + ' overall', false, 'right', 13);
   }
-  roDim(hDimX + (outerH ? 50 : 26), dY, hDimX + (outerH ? 50 : 26), dY + dH, '(' + roH + ' R.O.)', false);
+  if (SUBMITTAL_SHEET) {
+    t((dX + dX + dW) / 2, widthDimY + 16, '(' + roW + ' R.O.)', 11, RO_COLOR, 'middle', '700');
+    const vx = (outerH ? hDimX + 24 : hDimX) + 32, vy = outerH ? dY + dH / 2 : dY + transomH + (dH - transomH) / 2;
+    t(vx, vy, '(' + roH + ' R.O.)', 11, RO_COLOR, 'middle', '700').setAttribute('transform', `rotate(-90,${vx},${vy})`);
+  }
 
   // Door tags (architect-style hexagons) beside the elevation title.
   doorTagList().forEach((tag, i) => {
