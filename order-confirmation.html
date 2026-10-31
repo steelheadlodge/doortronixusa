@@ -1056,8 +1056,9 @@ function calcClearOpeningIn() {
 function getClearOpeningStr() {
   const n = calcClearOpeningIn();
   if (n === null || n <= 0) return ORDER.door.netOpening || '';
-  const ft = Math.floor(n / 12);
-  const rem = Math.round(n - ft * 12);
+  const whole = Math.round(n);
+  const ft = Math.floor(whole / 12);
+  const rem = whole - ft * 12;
   return rem === 0 ? `${ft}'-0"` : `${ft}'-${rem}"`;
 }
 function getStileW(sc) {
