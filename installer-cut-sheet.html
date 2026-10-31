@@ -154,7 +154,7 @@ html.embed .sheet { margin:0 auto 0; }
         <div class="plan-notes" id="plan-notes">
           <strong>NOTES:</strong><br>
           1. ELECTRICAL REQUIREMENTS: 120 VAC, 5 AMP MIN TO POWER OPERATOR BY ELECTRICAL CONTRACTOR.<br>
-          2. ROUGH OPENING SHALL PROVIDE 1/4"[6] SHIM SPACE ON SIDES AND TOP OF PACKAGE.<br>
+          2. ROUGH OPENING (R.O.) = FRAME SIZE + 3/8"[10] IN WIDTH AND HEIGHT FOR SHIM SPACE.<br>
           3. LIMITS OF ACTIVATION AND SAFETY ZONES ARE FOR REFERENCE ONLY; SEE ANSI/BHMA A156.10 FOR DETAILED REQUIREMENTS.<br>
           4. SEE SPECIFICATIONS FOR ADDITIONAL INFORMATION.<br>
           5. GLASS SIZES, DIMENSIONS, AND ALL DETAILS ON THIS DRAWING ARE PRELIMINARY UNTIL THIS SHEET IS SIGNED AND RETURNED, OR A SIGNED ORDER CONFIRMATION IS ISSUED. DO NOT CUT GLASS FROM THIS DRAWING UNTIL CONFIRMED. GLASS BY OTHERS.
@@ -524,7 +524,7 @@ function syncPlanNotes() {
     ? '2. INTERIOR MOUNTED. HEADER AND P STILES SET AGAINST THE INTERIOR FACE OF THE WALL. SERVICE COVER ACCESS IS FROM THE INTERIOR. EACH SX PANEL HAS TWO HEEL STILES: A CLOSURE STILE IN LINE WITH THE P STILE AND A PIVOT STILE THAT BREAKS OUT THROUGH THE WALL OPENING. P IS A VERTICAL STILE ON THE GUIDE RAIL — NOT A GLAZED SIDELITE.<br>'
     : cfg && cfg.isP
     ? '2. HEADER AND P STILES SET AGAINST THE WALL. SERVICE COVER ACCESS IS FROM THE EXTERIOR ONLY. P IS A VERTICAL STILE ON THE GUIDE RAIL, IN LINE WITH THE SX TRAILING STILE WHEN CLOSED — NOT A GLAZED SIDELITE.<br>'
-    : '2. ROUGH OPENING SHALL PROVIDE 1/4"[6] SHIM SPACE ON SIDES AND TOP OF PACKAGE.<br>';
+    : '2. ROUGH OPENING (R.O.) = FRAME SIZE + 3/8"[10] IN WIDTH AND HEIGHT FOR SHIM SPACE.<br>';
   el.innerHTML =
     '<strong>NOTES:</strong><br>' +
     '1. ELECTRICAL REQUIREMENTS: 120 VAC, 5 AMP MIN TO POWER OPERATOR BY ELECTRICAL CONTRACTOR.<br>' +
@@ -1145,6 +1145,7 @@ function renderSheet() {
 
   fillTable('particulars', isStorefrontCfg(cfg) ? storefrontParticulars(d, h) : isSwingCfg(cfg) ? swingParticulars(d, h) : [
     ['Frame size', getOverallWidthStr() + ' W × ' + getOverallHeightStr() + ' H'],
+    ['Rough opening', roughOpeningStr()],
     ['Header height', getHeightStr()],
     ['Net slide (typ.)', getClearOpeningStr() || d.netOpening],
     ['Finish', d.frameFinish],
@@ -1301,6 +1302,12 @@ function getOverallWidthIn() {
   if (w == null) return null;
   if (!cfg || !cfg.isSwing) return w;
   return w + swingSlIn('left') + swingSlIn('right');
+}
+// Rough opening = frame + 3/8" in width and height (shim space).
+function roughOpeningStr() {
+  const w = getOverallWidthIn(), h = ORDER.door.transom && ORDER.door.ftthFt ? getFTTHIn() : getHeightIn();
+  if (w == null || h == null) return '—';
+  return formatFtIn(w + 0.375) + ' W × ' + formatFtIn(h + 0.375) + ' H';
 }
 function getOverallWidthStr() {
   return formatFtIn(getOverallWidthIn());
@@ -3280,11 +3287,29 @@ function drawDoor() {
 
   // Dim lines — width below the door; frame heights on the right, matching the
   // swing drawings: inner = header height, outer = overall frame height.
-  dimLine(dX, widthDimY, dX+dW, widthDimY, getWidthStr(), true);
+  // Crash bars: two per glazed panel. Sidelite bars are on the exterior face (solid
+  // in this exterior view); SX bars are on the interior face (dashed, hidden).
+  {
+    const sxIdx = isP ? panels.map((_, i) => i)
+      : isBi ? [1, 2]
+      : [isLH ? 1 : 0];
+    const bh = Math.max(1.5, sc * 1.5);
+    [34, 24].forEach(aff => {
+      const yy = floorY - aff * sc;
+      panels.forEach(({ x, w }, i) => {
+        const bar = r(x + sc, yy - bh / 2, Math.max(4, w - sc * 2), bh, sxIdx.includes(i) ? 'none' : frame, '#777', 1);
+        if (sxIdx.includes(i)) bar.setAttribute('stroke-dasharray', '4,2');
+      });
+    });
+  }
+
+  const roW = formatFtIn(getOverallWidthIn() + 0.375);
+  const roH = formatFtIn((hasTransom && transomH > 2 ? getFTTHIn() : getHeightIn()) + 0.375);
+  dimLine(dX, widthDimY, dX+dW, widthDimY, getWidthStr() + ' frame  ·  R.O. ' + roW, true);
   const hDimX = Math.min(dX + dW + 28, vW - (hasTransom && transomH > 2 ? 60 : 36));
-  dimLine(hDimX, dY + transomH, hDimX, dY + dH, getHeightStr() + ' header', false, 'right', 13);
+  dimLine(hDimX, dY + transomH, hDimX, dY + dH, getHeightStr() + ' header' + (hasTransom && transomH > 2 ? '' : '  ·  R.O. ' + roH), false, 'right', 13);
   if (hasTransom && transomH > 2) {
-    dimLine(hDimX + 24, dY, hDimX + 24, dY + dH, getFTTHStr() + ' overall', false, 'right', 13);
+    dimLine(hDimX + 24, dY, hDimX + 24, dY + dH, getFTTHStr() + ' overall  ·  R.O. ' + roH, false, 'right', 13);
   }
 
   // Share horizontal scale with plan view so they line up
