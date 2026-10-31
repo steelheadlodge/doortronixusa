@@ -531,7 +531,12 @@ function syncPlanNotes() {
     pNote +
     '3. LIMITS OF ACTIVATION AND SAFETY ZONES ARE FOR REFERENCE ONLY; SEE ' + ansi + ' FOR DETAILED REQUIREMENTS.<br>' +
     '4. SEE SPECIFICATIONS FOR ADDITIONAL INFORMATION.<br>' +
-    '5. GLASS SIZES, DIMENSIONS, AND ALL DETAILS ON THIS DRAWING ARE PRELIMINARY UNTIL THIS SHEET IS SIGNED AND RETURNED, OR A SIGNED ORDER CONFIRMATION IS ISSUED. DO NOT CUT GLASS FROM THIS DRAWING UNTIL CONFIRMED. GLASS BY OTHERS.';
+    (glassByDoortronix()
+      ? '5. FIELD VERIFY ALL OPENING DIMENSIONS BEFORE RELEASE FOR FABRICATION. GLASS SUPPLIED AND INSTALLED BY DOORTRONIX (PREGLAZED).'
+      : '5. GLASS SIZES, DIMENSIONS, AND ALL DETAILS ON THIS DRAWING ARE PRELIMINARY UNTIL THIS SHEET IS SIGNED AND RETURNED, OR A SIGNED ORDER CONFIRMATION IS ISSUED. DO NOT CUT GLASS FROM THIS DRAWING UNTIL CONFIRMED. GLASS BY OTHERS.');
+}
+function glassByDoortronix() {
+  return !!(ORDER && ORDER.door && ORDER.door.glassByDtx);
 }
 function slideSensorStr(d) {
   const s = (d && d.sensor) || '';
@@ -1160,7 +1165,8 @@ function renderSheet() {
   const hideGlass = glassSizesHidden();
   const prep = (d.doorGlassPrep || '').trim();
   const glassH = document.getElementById('glass-h');
-  if (glassH) glassH.textContent = (prep && !hideGlass) ? ('Glass sizes — ' + prep) : 'Glass sizes';
+  if (glassH) glassH.textContent = glassByDoortronix() ? 'Glass — supplied by Doortronix'
+    : (prep && !hideGlass) ? ('Glass sizes — ' + prep) : 'Glass sizes';
   const glassNote = document.getElementById('glass-note');
   if (glassNote) {
     const copyHint = ' <span class="screen-only">Click a Width or Height cell, then Ctrl+C / ⌘C.</span>';
@@ -1168,7 +1174,9 @@ function renderSheet() {
     const cutRule = factorySheet
       ? 'Glass by others. Sizes confirmed for production; OK to cut from this sheet.'
       : 'Glass by others. Do not cut glass until we receive your order request and send a confirmation drawing with approved, confirmed sizes.';
-    glassNote.innerHTML = hideGlass
+    glassNote.innerHTML = glassByDoortronix()
+      ? 'Glass supplied and installed by Doortronix (preglazed). Cut sizes by Doortronix.'
+      : hideGlass
       ? 'Glass sizes not shown until confirmed with the factory. Do not cut glass from this sheet.'
       : (isStorefrontCfg(cfg) ? 'Cut size = daylight + 5/8". ' : '') + cutRule + copyHint;
   }
@@ -1659,6 +1667,12 @@ function glassSizesHidden() {
 
 /** Structured glass cut list — {label, qty, w, h}. w/h are inches (decimal). */
 function glassSizeItems() {
+  if (glassByDoortronix()) {
+    const d = ORDER.door;
+    const rows = [{ label: 'Door panels', qty: '', w: null, h: null, note: d.glassType || ((d.doorGlassPrep || '1/4"') + ' glass') }];
+    if (d.transom) rows.push({ label: 'Transom', qty: '', w: null, h: null, note: d.transomGlassType || d.glassType || ((d.transomGlassPrep || '1/4"') + ' glass') });
+    return rows;
+  }
   if (glassSizesHidden()) {
     const cfg = CONFIGS[ORDER.door.configKey];
     return [{ label: 'Glass sizes', qty: '', w: null, h: null, note: 'Confirm with factory' }];
@@ -1721,7 +1735,7 @@ function glassSizeRows() {
 }
 function fillGlassTable() {
   const items = glassSizeItems();
-  const hide = glassSizesHidden() || items.every(it => it.w == null);
+  const hide = glassByDoortronix() || glassSizesHidden() || items.every(it => it.w == null);
   const head = hide
     ? ''
     : '<thead><tr><th>Lite</th><th class="num">Qty</th><th class="num">Width</th><th class="num">Height</th></tr></thead>';
@@ -3608,14 +3622,25 @@ function applyPrelimMode() {
   if (sign) sign.style.display = 'none';
 }
 
+function applySubmittalMode() {
+  const set = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
+  set('doc-title', 'Submittal Drawing');
+  set('doc-sub', 'For architect / GC review and approval');
+  set('approve-h', 'Submittal review');
+  const hint = document.getElementById('approve-hint');
+  if (hint) hint.innerHTML = '☐ Approved &nbsp; ☐ Approved as noted &nbsp; ☐ Revise &amp; resubmit<br>Field verify all openings before release for fabrication.';
+}
+
 // Factory cut list is internal — hidden from the customer-facing drawing.
 // Reveal the button (and optionally auto-open) with ?factory=1 / ?cutlist=1, OR
 // whenever a signed-in admin is viewing the drawing (independent of the URL).
 // Public / unsigned opens stay preliminary unless ?confirm=1 or ?factory=1.
 (function () {
   const q = new URLSearchParams(location.search);
+  const isSubmittal = q.get('submittal') === '1';
   const isConfirm = q.get('confirm') === '1' || q.get('factory') === '1';
-  if (!isConfirm) applyPrelimMode();
+  if (isSubmittal) applySubmittalMode();
+  else if (!isConfirm) applyPrelimMode();
   const internal = q.get('factory') === '1' || q.get('cutlist') === '1';
   const btn = document.getElementById('btn-cutlist');
   if (btn && internal) btn.style.display = '';
