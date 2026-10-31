@@ -3287,19 +3287,14 @@ function drawDoor() {
 
   // Dim lines — width below the door; frame heights on the right, matching the
   // swing drawings: inner = header height, outer = overall frame height.
-  // Crash bars: two per glazed panel. Sidelite bars are on the exterior face (solid
-  // in this exterior view); SX bars are on the interior face (dashed, hidden).
+  // Crash bars: two per glazed panel, cut to rail + 2-3/8", so each end laps
+  // 1-3/16" onto the stile on the face it mounts to.
   {
-    const sxIdx = isP ? panels.map((_, i) => i)
-      : isBi ? [1, 2]
-      : [isLH ? 1 : 0];
+    const lap = 1.1875 * sc;
     const bh = Math.max(1.5, sc * 1.5);
     [34, 24].forEach(aff => {
       const yy = floorY - aff * sc;
-      panels.forEach(({ x, w }, i) => {
-        const bar = r(x + sc, yy - bh / 2, Math.max(4, w - sc * 2), bh, sxIdx.includes(i) ? 'none' : frame, '#777', 1);
-        if (sxIdx.includes(i)) bar.setAttribute('stroke-dasharray', '4,2');
-      });
+      panels.forEach(({ x, w }) => r(x - lap, yy - bh / 2, w + lap * 2, bh, frame, '#777', 1));
     });
   }
 
