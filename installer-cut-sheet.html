@@ -42,11 +42,12 @@ html, body { background:#E8EEF4; color:var(--ink); font-family:Arial, Helvetica,
 .meta .cell { padding:4px 7px; border-right:1px solid #CCC; border-bottom:1px solid #EEE; min-width:0; }
 .meta .cell:nth-child(4n) { border-right:none; }
 .meta .cell.wide { grid-column:1 / -1; border-right:none; border-bottom:none; }
+.meta .cell.span2 { grid-column:span 2; border-right:none; }
 .meta .k { font-size:9px; text-transform:uppercase; letter-spacing:.4px; color:#666; }
 .meta .v { font-size:12px; font-weight:700; line-height:1.25; }
 .meta .cell.wide .v { font-size:13px; }
 .meta .v.tag { font-size:17px; color:#1B4F8A; }
-.meta .v.tag.tag-long { font-size:14px; white-space:nowrap; }
+.meta .v.tag.tag-long { font-size:13px; white-space:nowrap; }
 
 .body { flex:1; min-height:0; display:grid; grid-template-columns:1.35fr 0.65fr; gap:8px; }
 .draws { min-height:0; display:flex; flex-direction:column; border:1px solid var(--line); }
@@ -1140,6 +1141,7 @@ function renderSheet() {
     ['Door / tag', doorMarks()],
     ['Quantity', qty + (qty === 1 ? ' opening' : ' openings')],
   ];
+  if (p.doorLocation && String(p.doorLocation).trim()) cells.push(['Door location', p.doorLocation]);
   // Lead time is optional — omit the row entirely when blank.
   if (ORDER.leadTime && String(ORDER.leadTime).trim()) cells.push(['Lead time', ORDER.leadTime]);
   const modelPrefix = isStorefrontCfg(cfg) ? 'DT-SF' : (isSwingCfg(cfg) ? 'DT-SWING' : 'DT-3000');
@@ -1152,7 +1154,7 @@ function renderSheet() {
       ? modelPrefix + '  ·  ' + cfg.label + '  ·  frame only'
       : modelPrefix + '  ·  ' + cfg.label + ' (' + cfg.code + ')';
   document.getElementById('meta').innerHTML = cells.map(([k,v]) =>
-    '<div class="cell"><div class="k">' + k + '</div><div class="v' + (k === 'Door / tag' ? ' tag' + (String(v || '').length > 20 ? ' tag-long' : '') : '') + '">' + dash(v) + '</div></div>').join('')
+    '<div class="cell' + (k === 'Door location' ? ' span2' : '') + '"><div class="k">' + k + '</div><div class="v' + (k === 'Door / tag' ? ' tag' + (String(v || '').length > 20 ? ' tag-long' : '') : '') + '">' + dash(v) + '</div></div>').join('')
     + '<div class="cell wide"><div class="k">Model / config</div><div class="v">' + dash(modelStr) + '</div></div>';
 
   fillTable('particulars', isStorefrontCfg(cfg) ? storefrontParticulars(d, h) : isSwingCfg(cfg) ? swingParticulars(d, h) : [
