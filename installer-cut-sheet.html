@@ -1160,6 +1160,7 @@ function renderSheet() {
   fillTable('particulars', isStorefrontCfg(cfg) ? storefrontParticulars(d, h) : isSwingCfg(cfg) ? swingParticulars(d, h) : [
     ['Frame size', getOverallWidthStr() + ' W × ' + getOverallHeightStr() + ' H'],
     ...(SUBMITTAL_SHEET ? [['Rough opening', roughOpeningStr()]] : []),
+    ...(cfg && cfg.isP && +d.wallOpeningW > 0 ? [['Wall opening', formatInches(+d.wallOpeningW) + ' W' + (+d.wallOpeningH > 0 ? ' × ' + formatInches(+d.wallOpeningH) + ' H' : '')]] : []),
     ['Header height', getHeightStr()],
     ['Net slide (typ.)', getClearOpeningStr() || d.netOpening],
     ['Finish', d.frameFinish],
@@ -1345,7 +1346,9 @@ function calcClearOpeningIn() {
   if (!cfg || wIn === null) return null;
   const baseW = cfg.isBi ? 96 : 78;
   const baseOpen = cfg.isBi ? 36 : 33;
-  return baseOpen + Math.floor(wIn - baseW) * 0.5;
+  // P singles are built on the stock header/pulley, which nets 1-1/2" under the published opening.
+  const pLoss = cfg.isP && !cfg.isBi ? 1.5 : 0;
+  return baseOpen + Math.floor(wIn - baseW) * 0.5 - pLoss;
 }
 function getClearOpeningStr() {
   const cfg = CONFIGS[ORDER.door.configKey];

@@ -1321,6 +1321,16 @@ body.sheet-mode #plan-svg { background:#fff; }
           <span class="hint size-range-note" id="height-range-note">Standard frame height: 7'6" to 8'0". Over 8'0": +$200/ft</span>
         </div>
 
+        <!-- Wall opening (P packages) -->
+        <div class="field" id="wall-opening-field" style="display:none">
+          <label>Wall Opening (rough opening in the wall)</label>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+            <div class="field"><input type="number" id="f_wo_w" name="wallOpeningW" min="0" step="0.125" placeholder="Width (inches)"></div>
+            <div class="field"><input type="number" id="f_wo_h" name="wallOpeningH" min="0" step="0.125" placeholder="Height (inches)"></div>
+          </div>
+          <span class="hint" id="wall-opening-note"></span>
+        </div>
+
         <!-- Transom -->
         <div class="field" id="transom-field">
           <label>Transom</label>
@@ -2867,10 +2877,10 @@ const CONFIGS = {
   'fsl-bi':        { label:'FSL Bi-Part',      code:'O-SX-SX-O',  base:4120, transom:250, minW:96,  maxW:192, panels:2, isFBO:false, isBi:true  },
   'psx-bi':        { label:'ESA Bi-Part',      code:'P-SX-SX-P',  base:3820, transom:250, minW:96,  maxW:192, panels:2, isFBO:false, isBi:true, isP:true },
   'isa-bi':        { label:'ISA Bi-Part',      code:'P-SX-SX-P',  base:3920, transom:250, minW:96,  maxW:192, panels:2, isFBO:false, isBi:true, isP:true, isISA:true },
-  'psx-single-lh': { label:'ESA Single — LH',  code:'P-SX',       base:3270, transom:250, minW:78,  maxW:108, panels:1, isFBO:false, isBi:false, isP:true },
-  'psx-single-rh': { label:'ESA Single — RH',  code:'SX-P',       base:3270, transom:250, minW:78,  maxW:108, panels:1, isFBO:false, isBi:false, isP:true },
-  'isa-single-lh': { label:'ISA Single — LH',  code:'P-SX',       base:3320, transom:250, minW:78,  maxW:108, panels:1, isFBO:false, isBi:false, isP:true, isISA:true },
-  'isa-single-rh': { label:'ISA Single — RH',  code:'SX-P',       base:3320, transom:250, minW:78,  maxW:108, panels:1, isFBO:false, isBi:false, isP:true, isISA:true },
+  'psx-single-lh': { label:'ESA Single — LH',  code:'P-SX',       base:3270, transom:250, minW:78,  maxW:111, panels:1, isFBO:false, isBi:false, isP:true },
+  'psx-single-rh': { label:'ESA Single — RH',  code:'SX-P',       base:3270, transom:250, minW:78,  maxW:111, panels:1, isFBO:false, isBi:false, isP:true },
+  'isa-single-lh': { label:'ISA Single — LH',  code:'P-SX',       base:3320, transom:250, minW:78,  maxW:111, panels:1, isFBO:false, isBi:false, isP:true, isISA:true },
+  'isa-single-rh': { label:'ISA Single — RH',  code:'SX-P',       base:3320, transom:250, minW:78,  maxW:111, panels:1, isFBO:false, isBi:false, isP:true, isISA:true },
   'fbo-single-rh': { label:'FBO Single — RH',  code:'SX-SO',      base:3420, transom:250, minW:78,  maxW:108, panels:1, isFBO:true,  isBi:false },
   'fbo-single-lh': { label:'FBO Single — LH',  code:'SO-SX',      base:3420, transom:250, minW:78,  maxW:108, panels:1, isFBO:true,  isBi:false },
   'fsl-single-rh': { label:'FSL Single — RH',  code:'SX-O',       base:3420, transom:250, minW:78,  maxW:108, panels:1, isFBO:false, isBi:false },
@@ -4556,6 +4566,14 @@ function syncSwingUi() {
   if (handField) handField.style.display = (swing && !twin && !pair) ? '' : 'none';
   const fwField = document.getElementById('frame-width-field');
   if (fwField) fwField.style.display = twin ? 'none' : '';
+  const woField = document.getElementById('wall-opening-field');
+  if (woField) woField.style.display = (cfg && cfg.isP) ? '' : 'none';
+  const woNote = document.getElementById('wall-opening-note');
+  if (woNote && cfg && cfg.isP) {
+    woNote.textContent = cfg.isBi
+      ? 'Tell us the opening in the wall. We will size the frame to give you the full opening and show it on your drawing.'
+      : 'Enter the opening in the wall and we size the frame to it, including the 8" header above the opening. Your drawing shows the matching frame and clear opening.';
+  }
   const slLocLbl = document.getElementById('swing-sidelite-loc-label');
   const slLocHint = document.getElementById('swing-sidelite-loc-hint');
   if (slLocLbl) slLocLbl.textContent = twin ? 'Outer sidelites' : 'Integral Sidelites';
@@ -4794,6 +4812,8 @@ function captureCurrentDoor() {
     widthRFt:      isSwingTwin() ? Math.floor(getTwinDoorIn('right') / 12) : undefined,
     widthRIn:      isSwingTwin() ? getTwinDoorIn('right') % 12 : undefined,
     heightFt:      parseInt(fv('f_hft'), 10) || 0,
+    wallOpeningW:  (cfg && cfg.isP) ? wallOpeningIn().w : null,
+    wallOpeningH:  (cfg && cfg.isP) ? wallOpeningIn().h : null,
     heightInParts: parseInt(fv('f_hin'), 10) || 0,
     height16:      parseInt(fv('f_h16'), 10) || 0,
     ftthFt:        parseInt(fv('f_ftthft'), 10) || 0,
@@ -5149,6 +5169,7 @@ function resetDoorForm() {
   const keepType = (_orderKind === 'operator') ? 'bi-part' : (_currentDoorType || 'bi-part');
   setDoorType(keepType);
   ['f_wft','f_win','f_w16'].forEach(id => { const e = document.getElementById(id); if(e) e.value = id==='f_wft'?'':0; });
+  ['f_wo_w','f_wo_h'].forEach(id => { const e = document.getElementById(id); if (e) e.value = ''; });
   document.getElementById('f_hft').value = '7';
   document.getElementById('f_hin').value = '6';
   document.getElementById('f_h16').value = '0';
@@ -6610,7 +6631,9 @@ function calcNetOpeningIn() {
   // A leftover 1/2" of frame (8'-2-1/2") does not add a 1/4" of opening.
   const baseW = cfg.isBi ? 96 : 78;
   const baseOpen = cfg.isBi ? 36 : 33;
-  return baseOpen + Math.floor(wIn - baseW) * 0.5;
+  // P singles are built on the stock header/pulley, which nets 1-1/2" under the published opening.
+  const pLoss = cfg.isP && !cfg.isBi ? 1.5 : 0;
+  return baseOpen + Math.floor(wIn - baseW) * 0.5 - pLoss;
 }
 function getOpenStr() {
   const cfg = getConfig();
@@ -9510,7 +9533,22 @@ function onQuoteFormUpdate(e) {
   if (name === 'swingRailsR' || name === 'swingRailSideR') _twinRailsTouched.right = true;
   if (name === 'swingPlateQty') _plateQtyTouched = true;
   if (name === 'swingPlate') _plateKindTouched = true;
+  if (name === 'wallOpeningW' || name === 'wallOpeningH' || name === 'config') applyWallOpening();
   updateAll();
+}
+// P packages: frame from the wall opening. Single: W = 2 × opening + 15" (3" over nominal so the
+// stock header nets the full opening), H = opening + 8" header. Bi-part add TBD — sized by Doortronix.
+const P_HEADER_IN = 8;
+function wallOpeningIn() {
+  const w = parseFloat(fv('f_wo_w')), h = parseFloat(fv('f_wo_h'));
+  return { w: w > 0 ? w : null, h: h > 0 ? h : null };
+}
+function applyWallOpening() {
+  const cfg = getConfig();
+  if (!cfg || !cfg.isP || cfg.isBi) return;
+  const wo = wallOpeningIn();
+  if (wo.w) setFrameWidthIn(wo.w * 2 + 15);
+  if (wo.h) setFrameHeightIn(wo.h + P_HEADER_IN);
 }
 document.getElementById('quoteForm').addEventListener('input', onQuoteFormUpdate);
 document.getElementById('quoteForm').addEventListener('change', onQuoteFormUpdate);
@@ -9701,6 +9739,8 @@ function buildSheetOrder() {
     holdBeams: noHoldBeams() ? 'None' : 'Included',
     locking: cfg && cfg.isSwing ? (cfg.isBi ? 'Deadbolt + flushbolts' : cfg.isTwin ? 'Deadbolt ×2' : 'Adams Rite deadbolt') : rv('locking'),
     widthFt, widthIn, width16,
+    wallOpeningW: (cfg && cfg.isP) ? wallOpeningIn().w : null,
+    wallOpeningH: (cfg && cfg.isP) ? wallOpeningIn().h : null,
     heightFt: parseInt(fv('f_hft'), 10) || 0,
     heightIn: parseInt(fv('f_hin'), 10) || 0,
     height16: parseInt(fv('f_h16'), 10) || 0,
