@@ -484,9 +484,10 @@ function lockLabel() {
   if (hits.length) return hits.map(a => a.qty > 1 ? a.name + ' ×' + a.qty : a.name).join(', ');
   return 'Standard hooklock';
 }
+// Slider crash bars are an option, never standard: drawn only when the order selects them.
 function noCrashBars() {
   const v = ORDER && ORDER.door && ORDER.door.crashBars;
-  return v === false || /^none$/i.test(String(v || ''));
+  return !v || /^(none|no|0|false)$/i.test(String(v).trim());
 }
 function isSwitchAddon(name) {
   return /rocker|key switch|knob switch|function switch/i.test(name || '');
