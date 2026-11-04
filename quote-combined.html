@@ -2339,6 +2339,38 @@ function expediteFeeForCart(items) {
 }
 const EXPEDITE_LABEL = 'Expedite — ships in 10 business days (20%, $750 min per opening)';
 
+// Shipping crate, priced by frame width: [max width in, first opening in a crate, each added opening].
+// Widest openings crate first; up to 3 openings per crate. Over 16'-0" is quoted.
+const CRATE_TIERS = [[96, 275, 140], [144, 325, 165], [192, 375, 190]];
+const CRATE_MAX_OPENINGS = 3;
+const CRATE_LABEL = 'Shipping crate';
+function crateWidthIn(d) {
+  return (Number(d.widthIn) || 0) + (Number(d.twinDoorWInR) || 0) + (Number(d.swingSideliteWIn) || 0);
+}
+function crateFeeForItems(items) {
+  const widths = [];
+  let oversize = 0;
+  (items || []).forEach(d => {
+    if (!d || d.kind === 'operator' || isStorefrontItem(d) || !(Number(d.estimatedTotal) > 0)) return;
+    const w = crateWidthIn(d);
+    for (let i = 0; i < (d.quantity || 1); i++) {
+      if (w > CRATE_TIERS[CRATE_TIERS.length - 1][0]) oversize++;
+      else widths.push(w);
+    }
+  });
+  widths.sort((a, b) => b - a);
+  const fee = widths.reduce((s, w, i) => {
+    const t = CRATE_TIERS.find(t => w <= t[0]);
+    return s + (i % CRATE_MAX_OPENINGS === 0 ? t[1] : t[2]);
+  }, 0);
+  return { fee, oversize, openings: widths.length };
+}
+function crateLabel(c) {
+  if (!c.openings) return CRATE_LABEL + (c.oversize ? ' — over 16′, quoted separately' : '');
+  const crates = Math.ceil(c.openings / CRATE_MAX_OPENINGS);
+  return CRATE_LABEL + ' (' + c.openings + ' opening' + (c.openings > 1 ? 's' : '') + (crates > 1 ? ', ' + crates + ' crates' : '') + ')' + (c.oversize ? ' — over 16′ quoted separately' : '');
+}
+
 // Saved quotes (drafts). Any signed-in account holder can save an in-progress
 // project and reopen it later from the portal.
 let _currentDraftId = null;
@@ -2551,10 +2583,11 @@ function jobPriceSummary(cart) {
   const misc = estMoney(meta.misc);
   const travel = estMoney(meta.travel);
   const rush = expediteFeeForCart(doors);
-  const direct = estMoney(net + rush + glass + freight + labor + misc + travel);
+  const crate = crateFeeForItems(doors);
+  const direct = estMoney(net + rush + crate.fee + glass + freight + labor + misc + travel);
   const markup = estMoney(direct * meta.markupPct / 100);
   return {
-    doors, net, rush, unpriced, meta, glass, freight, labor, misc, travel, direct, markup,
+    doors, net, rush, crate, unpriced, meta, glass, freight, labor, misc, travel, direct, markup,
     sell: estMoney(direct + markup),
   };
 }
@@ -2572,6 +2605,8 @@ function estimateCostRows(s) {
     ['Doortronix package (contractor net)', s.net > 0 ? fmtEst(s.net) : '—'],
   ];
   if (s.rush > 0) rows.push([EXPEDITE_LABEL, fmtEst(s.rush)]);
+  if (s.crate.fee > 0) rows.push([crateLabel(s.crate), fmtEst(s.crate.fee)]);
+  else if (s.crate.oversize) rows.push([crateLabel(s.crate), 'TBD']);
   if (s.glass > 0) rows.push(['Glass', fmtEst(s.glass)]);
   if (s.freight > 0) rows.push(['Freight', fmtEst(s.freight)]);
   if (s.labor > 0) rows.push([laborLabel(s.meta, s.labor), fmtEst(s.labor)]);
@@ -5354,7 +5389,7 @@ function renderCart() {
   }
 
   cartSection.style.display = 'block';
-  const projTotal = cart.reduce((s, d) => s + (d.estimatedTotal || 0), 0) + expediteFeeForCart(cart);
+  const projTotal = cart.reduce((s, d) => s + (d.estimatedTotal || 0), 0) + expediteFeeForCart(cart) + crateFeeForItems(cart).fee;
   document.getElementById('cart-total-badge').textContent = 'Doortronix net: ' + (projTotal > 0 ? '$' + projTotal.toLocaleString() : '—');
 
   cartCards.innerHTML = cart.map((d, i) => {
@@ -5424,7 +5459,8 @@ async function submitAllDoors() {
   }
 
   const rushFee = expediteFeeForCart(cart);
-  const projTotal = cart.reduce((s, d) => s + (d.estimatedTotal || 0), 0) + rushFee;
+  const crate = crateFeeForItems(cart);
+  const projTotal = cart.reduce((s, d) => s + (d.estimatedTotal || 0), 0) + rushFee + crate.fee;
   const doorBlocks = cart.map((d, i) => {
     if (d.kind === 'operator') {
       return `ITEM ${i+1}: ${d.configLabel} (${d.configCode}) — Qty: ${d.quantity||1}\n` +
@@ -5469,7 +5505,8 @@ async function submitAllDoors() {
            `  Est. Price: ${d.estimatedTotal ? '$'+d.estimatedTotal.toLocaleString() : 'Call for pricing'}` +
            (d.locationTags ? `\n  Locations: ${d.locationTags}` : '') +
            (d.notes ? `\n  Notes: ${d.notes}` : '');
-  }).join('\n\n') + (rushFee > 0 ? `\n\n${EXPEDITE_LABEL}: $${rushFee.toLocaleString()}` : '');
+  }).join('\n\n') + (rushFee > 0 ? `\n\n${EXPEDITE_LABEL}: $${rushFee.toLocaleString()}` : '') +
+    (crate.fee > 0 ? `\n\n${crateLabel(crate)}: $${crate.fee.toLocaleString()}` : '');
 
   const payload = {
     _cc: FORMSPREE_CC,
@@ -7292,20 +7329,28 @@ function calcPrice() {
   }
   const rushFee = isExpedite() ? expediteFeeFor(grandTotal, qty, !(cfg && cfg.isStorefront)) : 0;
   if (rushFee) html += `<div class="price-line"><span class="pl">${EXPEDITE_LABEL}</span><span class="pv add">+${fmt(rushFee)}</span></div>`;
+  const crate = crateFeeForItems([{
+    config: rv('config'), estimatedTotal: grandTotal, quantity: qty,
+    widthIn: getWidthIn(), twinDoorWInR: isSwingTwin() ? getTwinDoorIn('right') : 0,
+    swingSideliteWIn: (cfg && cfg.isSwing) ? getSwingSideliteInTotal() : 0,
+  }]);
+  const crateFee = crate.fee;
+  if (crateFee) html += `<div class="price-line"><span class="pl">${crateLabel(crate)}</span><span class="pv add">+${fmt(crateFee)}</span></div>`;
+  else if (crate.oversize) html += `<div class="price-line"><span class="pl">${crateLabel(crate)}</span><span class="pv">TBD</span></div>`;
   const _disc = (window._portalUser && window._portalUser.discountPct > 0) ? window._portalUser.discountPct : 0;
-  const _your = Math.round(grandTotal * (1 - _disc / 100)) + rushFee;
-  html += `<div class="price-total-row"><span class="pt-label">Estimated Total</span><span class="pt-value">${fmt(grandTotal + rushFee)}</span></div>`;
+  const _your = Math.round(grandTotal * (1 - _disc / 100)) + rushFee + crateFee;
+  html += `<div class="price-total-row"><span class="pt-label">Estimated Total</span><span class="pt-value">${fmt(grandTotal + rushFee + crateFee)}</span></div>`;
   if (_disc) {
     html += `<div class="price-total-row"><span class="pt-label">Your net (${_disc}% distributor)</span><span class="pt-value">${fmt(_your)}</span></div>`;
   }
-  html += `<div class="price-note">${_disc ? 'Your distributor net is applied from your account — not from this page. ' : ''}Net contractor pricing. Does not include glass, freight, installation, or taxes. Doortronix will confirm final pricing and freight within 24 hours.</div>`;
+  html += `<div class="price-note">${_disc ? 'Your distributor net is applied from your account — not from this page. ' : ''}Net contractor pricing. Shipping crate included; openings on the same job share crates, up to 3 per crate. Does not include glass, freight, installation, or taxes. Doortronix will confirm final pricing and freight within 24 hours.</div>`;
 
   // New-work (swing) pricing gate — suppress dollar amounts for the public
   const _gated = pricingGated(cfg);
   if (_gated) {
     html = `<div class="price-call"><div class="pc-label">Pricing on request</div><div class="pc-phone">(888) 453-5196</div><div style="font-size:11px;color:var(--mgray);margin-top:8px;">Swing package pricing is being finalized. Contact Doortronix for a quote.</div></div>`;
   }
-  const _totText = _gated ? 'Request' : fmt(_disc ? _your : grandTotal + rushFee);
+  const _totText = _gated ? 'Request' : fmt(_disc ? _your : grandTotal + rushFee + crateFee);
   body.innerHTML = html;
   const headerTotal = document.getElementById('price-header-total');
   if (headerTotal) headerTotal.textContent = _totText;
@@ -7317,7 +7362,7 @@ function calcPrice() {
   if (formHeaderTotal) formHeaderTotal.textContent = _totText;
 
   // Store for confirmation
-  window._priceData = { lines, total, qty, grandTotal, rushFee, yourTotal: _your, discountPct: _disc, gated: _gated };
+  window._priceData = { lines, total, qty, grandTotal, rushFee, crateFee, yourTotal: _your, discountPct: _disc, gated: _gated };
   } catch(e) {
     if (body) body.innerHTML = `<div class="price-empty" style="color:red;">Price error: ${e.message}</div>`;
   }
@@ -9666,7 +9711,10 @@ document.getElementById('quoteForm').addEventListener('submit', async function(e
     netOpening: getOpenStr(),
     alarmContacts: alarmContacts2,
     addons: addons.join(', ') || 'None',
-    estimatedTotal: (pd && pd.gated) ? 'Pricing on request' : (pd ? '$' + (pd.grandTotal + (pd.rushFee || 0)).toLocaleString() + (pd.rushFee ? ' (incl. $' + pd.rushFee.toLocaleString() + ' expedite)' : '') : 'See notes'),
+    estimatedTotal: (pd && pd.gated) ? 'Pricing on request' : (pd ? (() => {
+      const incl = [pd.rushFee ? '$' + pd.rushFee.toLocaleString() + ' expedite' : '', pd.crateFee ? '$' + pd.crateFee.toLocaleString() + ' shipping crate' : ''].filter(Boolean);
+      return '$' + (pd.grandTotal + (pd.rushFee || 0) + (pd.crateFee || 0)).toLocaleString() + (incl.length ? ' (incl. ' + incl.join(', ') + ')' : '');
+    })() : 'See notes'),
     submissionType: 'single-door-direct',
     notes: fv('f_notes'),
   };
@@ -9700,7 +9748,7 @@ document.getElementById('quoteForm').addEventListener('submit', async function(e
       name: data.name, email: data.email, phone: data.phone,
       projectName: data.projectName, location: data.location,
       poNumber: data.poNumber, shipDate: data.shipDate,
-    }, [captureCurrentDoor()], pd ? pd.grandTotal + (pd.rushFee || 0) : 0);
+    }, [captureCurrentDoor()], pd ? pd.grandTotal + (pd.rushFee || 0) + (pd.crateFee || 0) : 0);
   } catch (err) {
     showCartError('Quote email sent, but your account did not save the order: ' + err.message);
     return;
