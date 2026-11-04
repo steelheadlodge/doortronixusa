@@ -1194,6 +1194,8 @@ function renderSheet() {
       ? 'Glass supplied and installed by Doortronix (preglazed). Cut sizes by Doortronix.'
       : hideGlass
       ? 'Glass sizes not shown until confirmed with the factory. Do not cut glass from this sheet.'
+      : d.glassFactoryConfirmed && !factorySheet
+      ? 'Glass by others. Sizes confirmed with the factory. Do not cut glass until this drawing is signed and returned.' + copyHint
       : (isStorefrontCfg(cfg) ? 'Cut size = daylight + 5/8". ' : '') + cutRule + copyHint;
   }
 
@@ -1687,6 +1689,7 @@ function glassSizesHidden() {
   if (!d) return false;
   if (isStorefrontCfg(CONFIGS[d.configKey]) || d.typeCategory === 'storefront' || d.configKey === 'storefront-fixed') return false;
   if (isSwingCfg(CONFIGS[d.configKey])) return false;
+  if (d.glassFactoryConfirmed) return false;
   if (CONFIGS[d.configKey] && CONFIGS[d.configKey].isP) return true;
   return d.stileWidth === 'medium';
 }
