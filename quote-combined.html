@@ -4570,9 +4570,7 @@ function syncSwingUi() {
   if (woField) woField.style.display = (cfg && cfg.isP) ? '' : 'none';
   const woNote = document.getElementById('wall-opening-note');
   if (woNote && cfg && cfg.isP) {
-    woNote.textContent = cfg.isBi
-      ? 'Tell us the opening in the wall. We will size the frame to give you the full opening and show it on your drawing.'
-      : 'Enter the opening in the wall and we size the frame to it, including the 8" header above the opening. Your drawing shows the matching frame and clear opening.';
+    woNote.textContent = 'Enter the opening in the wall and we size the frame to it, including the 8" header above the opening. Your drawing shows the matching frame and clear opening.';
   }
   const slLocLbl = document.getElementById('swing-sidelite-loc-label');
   const slLocHint = document.getElementById('swing-sidelite-loc-hint');
@@ -9534,18 +9532,29 @@ function onQuoteFormUpdate(e) {
   if (name === 'wallOpeningW' || name === 'wallOpeningH' || name === 'config') applyWallOpening();
   updateAll();
 }
-// P packages: frame from the wall opening. Single: W = 2 × opening + 12" (standard clear-opening
-// formula), H = opening + 8" header. Bi-part add TBD — sized by Doortronix.
+// P packages: frame from the wall opening, per the architectural drawings. Single (P-SX sheet):
+// W = 2 × opening + 12". Bi-part (P-SX-SX-P sheet wall-opening column): table rows exact,
+// linear between rows, 2 × opening + 10" past the ends. H = opening + 8" header.
 const P_HEADER_IN = 8;
+const P_BI_WALL_TO_FRAME = [[48, 108], [55, 120], [67, 144], [79, 168], [91, 192]];
+function pBiFrameFromWall(wo) {
+  const t = P_BI_WALL_TO_FRAME;
+  if (wo <= t[0][0]) return wo * 2 + 12;
+  for (let i = 1; i < t.length; i++) {
+    const [w0, f0] = t[i - 1], [w1, f1] = t[i];
+    if (wo <= w1) return f0 + (wo - w0) * (f1 - f0) / (w1 - w0);
+  }
+  return wo * 2 + 10;
+}
 function wallOpeningIn() {
   const w = parseFloat(fv('f_wo_w')), h = parseFloat(fv('f_wo_h'));
   return { w: w > 0 ? w : null, h: h > 0 ? h : null };
 }
 function applyWallOpening() {
   const cfg = getConfig();
-  if (!cfg || !cfg.isP || cfg.isBi) return;
+  if (!cfg || !cfg.isP) return;
   const wo = wallOpeningIn();
-  if (wo.w) setFrameWidthIn(wo.w * 2 + 12);
+  if (wo.w) setFrameWidthIn(Math.round((cfg.isBi ? pBiFrameFromWall(wo.w) : wo.w * 2 + 12) * 16) / 16);
   if (wo.h) setFrameHeightIn(wo.h + P_HEADER_IN);
 }
 document.getElementById('quoteForm').addEventListener('input', onQuoteFormUpdate);
