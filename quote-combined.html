@@ -650,9 +650,9 @@ body.sheet-mode #plan-svg { background:#fff; }
           <label>Requested Timeline</label>
           <select name="timeline" id="f_timeline">
             <option value="standard">Standard — 3–4 weeks</option>
-            <option value="expedite">Expedited (rush) — call to confirm</option>
+            <option value="expedite">Expedited — ships in 10 business days (+20%)</option>
           </select>
-          <span class="hint">Standard lead time is 3–4 weeks from cleared payment. Need it sooner? Choose expedited and we’ll confirm availability and any rush fee.</span>
+          <span class="hint">Standard lead time is 3–4 weeks from cleared payment. Expedited ships in 10 business days from cleared payment and the signed confirmation drawing. Rush fee is 20% of the door package, $750 minimum per opening. Clear and dark bronze stock finishes only; black anodized and custom sizes by call. Expedited freight is extra. Subject to shop capacity, confirmed when we accept the order.</span>
         </div>
         <div class="field full">
           <label>Job location</label>
@@ -2317,10 +2317,27 @@ async function savePortalOrder(hdr, doors, listTotal) {
 // Human-readable requested timeline (Standard vs Expedited). Carried through the
 // existing shipDate field so downstream (order save, quote email) is unchanged.
 function shipTimelineStr() {
-  return fv('f_timeline') === 'expedite'
-    ? 'Expedited (rush) — confirm availability'
+  return isExpedite()
+    ? 'Expedited — ships in 10 business days (+20% rush, $750 min per opening)'
     : 'Standard — 3–4 weeks';
 }
+
+const EXPEDITE_PCT = 20;
+const EXPEDITE_MIN_PER_OPENING = 750;
+const EXPEDITE_LEAD_TIME = 'Expedited — ships 10 business days from cleared payment and signed drawing';
+function isExpedite() { return fv('f_timeline') === 'expedite'; }
+// Door packages carry the per-opening minimum; operators and storefront frames are 20% only.
+function expediteFeeFor(amount, qty, perOpeningMin) {
+  if (!(amount > 0)) return 0;
+  const pct = Math.round(amount * EXPEDITE_PCT / 100);
+  return perOpeningMin ? Math.max(pct, EXPEDITE_MIN_PER_OPENING * (qty || 1)) : pct;
+}
+function expediteFeeForCart(items) {
+  if (!isExpedite()) return 0;
+  return (items || []).reduce((s, d) => s + expediteFeeFor(Number(d.estimatedTotal), d.quantity || 1,
+    d.kind !== 'operator' && !isStorefrontItem(d)), 0);
+}
+const EXPEDITE_LABEL = 'Expedite — ships in 10 business days (20%, $750 min per opening)';
 
 // Saved quotes (drafts). Any signed-in account holder can save an in-progress
 // project and reopen it later from the portal.
@@ -2533,10 +2550,11 @@ function jobPriceSummary(cart) {
   const labor = laborCost(meta);
   const misc = estMoney(meta.misc);
   const travel = estMoney(meta.travel);
-  const direct = estMoney(net + glass + freight + labor + misc + travel);
+  const rush = expediteFeeForCart(doors);
+  const direct = estMoney(net + rush + glass + freight + labor + misc + travel);
   const markup = estMoney(direct * meta.markupPct / 100);
   return {
-    doors, net, unpriced, meta, glass, freight, labor, misc, travel, direct, markup,
+    doors, net, rush, unpriced, meta, glass, freight, labor, misc, travel, direct, markup,
     sell: estMoney(direct + markup),
   };
 }
@@ -2553,6 +2571,7 @@ function estimateCostRows(s) {
   const rows = [
     ['Doortronix package (contractor net)', s.net > 0 ? fmtEst(s.net) : '—'],
   ];
+  if (s.rush > 0) rows.push([EXPEDITE_LABEL, fmtEst(s.rush)]);
   if (s.glass > 0) rows.push(['Glass', fmtEst(s.glass)]);
   if (s.freight > 0) rows.push(['Freight', fmtEst(s.freight)]);
   if (s.labor > 0) rows.push([laborLabel(s.meta, s.labor), fmtEst(s.labor)]);
@@ -5335,7 +5354,7 @@ function renderCart() {
   }
 
   cartSection.style.display = 'block';
-  const projTotal = cart.reduce((s, d) => s + (d.estimatedTotal || 0), 0);
+  const projTotal = cart.reduce((s, d) => s + (d.estimatedTotal || 0), 0) + expediteFeeForCart(cart);
   document.getElementById('cart-total-badge').textContent = 'Doortronix net: ' + (projTotal > 0 ? '$' + projTotal.toLocaleString() : '—');
 
   cartCards.innerHTML = cart.map((d, i) => {
@@ -5404,7 +5423,8 @@ async function submitAllDoors() {
     return;
   }
 
-  const projTotal = cart.reduce((s, d) => s + (d.estimatedTotal || 0), 0);
+  const rushFee = expediteFeeForCart(cart);
+  const projTotal = cart.reduce((s, d) => s + (d.estimatedTotal || 0), 0) + rushFee;
   const doorBlocks = cart.map((d, i) => {
     if (d.kind === 'operator') {
       return `ITEM ${i+1}: ${d.configLabel} (${d.configCode}) — Qty: ${d.quantity||1}\n` +
@@ -5449,7 +5469,7 @@ async function submitAllDoors() {
            `  Est. Price: ${d.estimatedTotal ? '$'+d.estimatedTotal.toLocaleString() : 'Call for pricing'}` +
            (d.locationTags ? `\n  Locations: ${d.locationTags}` : '') +
            (d.notes ? `\n  Notes: ${d.notes}` : '');
-  }).join('\n\n');
+  }).join('\n\n') + (rushFee > 0 ? `\n\n${EXPEDITE_LABEL}: $${rushFee.toLocaleString()}` : '');
 
   const payload = {
     _cc: FORMSPREE_CC,
@@ -7270,9 +7290,11 @@ function calcPrice() {
     html += `<div class="price-line"><span class="pl">Per unit subtotal</span><span class="pv">${fmt(total)}</span></div>`;
     html += `<div class="price-line"><span class="pl">× ${qty} openings</span><span class="pv">${fmt(grandTotal)}</span></div>`;
   }
+  const rushFee = isExpedite() ? expediteFeeFor(grandTotal, qty, !(cfg && cfg.isStorefront)) : 0;
+  if (rushFee) html += `<div class="price-line"><span class="pl">${EXPEDITE_LABEL}</span><span class="pv add">+${fmt(rushFee)}</span></div>`;
   const _disc = (window._portalUser && window._portalUser.discountPct > 0) ? window._portalUser.discountPct : 0;
-  const _your = Math.round(grandTotal * (1 - _disc / 100));
-  html += `<div class="price-total-row"><span class="pt-label">Estimated Total</span><span class="pt-value">${fmt(grandTotal)}</span></div>`;
+  const _your = Math.round(grandTotal * (1 - _disc / 100)) + rushFee;
+  html += `<div class="price-total-row"><span class="pt-label">Estimated Total</span><span class="pt-value">${fmt(grandTotal + rushFee)}</span></div>`;
   if (_disc) {
     html += `<div class="price-total-row"><span class="pt-label">Your net (${_disc}% distributor)</span><span class="pt-value">${fmt(_your)}</span></div>`;
   }
@@ -7283,7 +7305,7 @@ function calcPrice() {
   if (_gated) {
     html = `<div class="price-call"><div class="pc-label">Pricing on request</div><div class="pc-phone">(888) 453-5196</div><div style="font-size:11px;color:var(--mgray);margin-top:8px;">Swing package pricing is being finalized. Contact Doortronix for a quote.</div></div>`;
   }
-  const _totText = _gated ? 'Request' : fmt(_disc ? _your : grandTotal);
+  const _totText = _gated ? 'Request' : fmt(_disc ? _your : grandTotal + rushFee);
   body.innerHTML = html;
   const headerTotal = document.getElementById('price-header-total');
   if (headerTotal) headerTotal.textContent = _totText;
@@ -7295,7 +7317,7 @@ function calcPrice() {
   if (formHeaderTotal) formHeaderTotal.textContent = _totText;
 
   // Store for confirmation
-  window._priceData = { lines, total, qty, grandTotal, yourTotal: _your, discountPct: _disc, gated: _gated };
+  window._priceData = { lines, total, qty, grandTotal, rushFee, yourTotal: _your, discountPct: _disc, gated: _gated };
   } catch(e) {
     if (body) body.innerHTML = `<div class="price-empty" style="color:red;">Price error: ${e.message}</div>`;
   }
@@ -9531,6 +9553,7 @@ function onQuoteFormUpdate(e) {
   if (name === 'swingPlate') _plateKindTouched = true;
   if (name === 'wallOpeningW' || name === 'wallOpeningH' || name === 'config') applyWallOpening();
   updateAll();
+  if (name === 'timeline') renderCart();
 }
 // P packages: frame from the wall opening, per the architectural drawings. Single (P-SX sheet):
 // W = 2 × opening + 12". Bi-part (P-SX-SX-P sheet wall-opening column): table rows exact,
@@ -9643,7 +9666,7 @@ document.getElementById('quoteForm').addEventListener('submit', async function(e
     netOpening: getOpenStr(),
     alarmContacts: alarmContacts2,
     addons: addons.join(', ') || 'None',
-    estimatedTotal: (pd && pd.gated) ? 'Pricing on request' : (pd ? '$' + pd.grandTotal.toLocaleString() : 'See notes'),
+    estimatedTotal: (pd && pd.gated) ? 'Pricing on request' : (pd ? '$' + (pd.grandTotal + (pd.rushFee || 0)).toLocaleString() + (pd.rushFee ? ' (incl. $' + pd.rushFee.toLocaleString() + ' expedite)' : '') : 'See notes'),
     submissionType: 'single-door-direct',
     notes: fv('f_notes'),
   };
@@ -9677,7 +9700,7 @@ document.getElementById('quoteForm').addEventListener('submit', async function(e
       name: data.name, email: data.email, phone: data.phone,
       projectName: data.projectName, location: data.location,
       poNumber: data.poNumber, shipDate: data.shipDate,
-    }, [captureCurrentDoor()], pd ? pd.grandTotal : 0);
+    }, [captureCurrentDoor()], pd ? pd.grandTotal + (pd.rushFee || 0) : 0);
   } catch (err) {
     showCartError('Quote email sent, but your account did not save the order: ' + err.message);
     return;
@@ -9804,7 +9827,7 @@ function buildSheetOrder() {
   return {
     ref: 'DTX-' + Date.now().toString().slice(-6),
     issuedDate: new Date().toISOString().slice(0, 10),
-    leadTime: fv('f_leadtime'),
+    leadTime: fv('f_leadtime') || (isExpedite() ? EXPEDITE_LEAD_TIME : ''),
     customer: { name: fv('f_name'), company: fv('f_company') },
     project: {
       name: fv('f_project'),
