@@ -2877,10 +2877,10 @@ const CONFIGS = {
   'fsl-bi':        { label:'FSL Bi-Part',      code:'O-SX-SX-O',  base:4120, transom:250, minW:96,  maxW:192, panels:2, isFBO:false, isBi:true  },
   'psx-bi':        { label:'ESA Bi-Part',      code:'P-SX-SX-P',  base:3820, transom:250, minW:96,  maxW:192, panels:2, isFBO:false, isBi:true, isP:true },
   'isa-bi':        { label:'ISA Bi-Part',      code:'P-SX-SX-P',  base:3920, transom:250, minW:96,  maxW:192, panels:2, isFBO:false, isBi:true, isP:true, isISA:true },
-  'psx-single-lh': { label:'ESA Single — LH',  code:'P-SX',       base:3270, transom:250, minW:78,  maxW:111, panels:1, isFBO:false, isBi:false, isP:true },
-  'psx-single-rh': { label:'ESA Single — RH',  code:'SX-P',       base:3270, transom:250, minW:78,  maxW:111, panels:1, isFBO:false, isBi:false, isP:true },
-  'isa-single-lh': { label:'ISA Single — LH',  code:'P-SX',       base:3320, transom:250, minW:78,  maxW:111, panels:1, isFBO:false, isBi:false, isP:true, isISA:true },
-  'isa-single-rh': { label:'ISA Single — RH',  code:'SX-P',       base:3320, transom:250, minW:78,  maxW:111, panels:1, isFBO:false, isBi:false, isP:true, isISA:true },
+  'psx-single-lh': { label:'ESA Single — LH',  code:'P-SX',       base:3270, transom:250, minW:78,  maxW:108, panels:1, isFBO:false, isBi:false, isP:true },
+  'psx-single-rh': { label:'ESA Single — RH',  code:'SX-P',       base:3270, transom:250, minW:78,  maxW:108, panels:1, isFBO:false, isBi:false, isP:true },
+  'isa-single-lh': { label:'ISA Single — LH',  code:'P-SX',       base:3320, transom:250, minW:78,  maxW:108, panels:1, isFBO:false, isBi:false, isP:true, isISA:true },
+  'isa-single-rh': { label:'ISA Single — RH',  code:'SX-P',       base:3320, transom:250, minW:78,  maxW:108, panels:1, isFBO:false, isBi:false, isP:true, isISA:true },
   'fbo-single-rh': { label:'FBO Single — RH',  code:'SX-SO',      base:3420, transom:250, minW:78,  maxW:108, panels:1, isFBO:true,  isBi:false },
   'fbo-single-lh': { label:'FBO Single — LH',  code:'SO-SX',      base:3420, transom:250, minW:78,  maxW:108, panels:1, isFBO:true,  isBi:false },
   'fsl-single-rh': { label:'FSL Single — RH',  code:'SX-O',       base:3420, transom:250, minW:78,  maxW:108, panels:1, isFBO:false, isBi:false },
@@ -6631,9 +6631,7 @@ function calcNetOpeningIn() {
   // A leftover 1/2" of frame (8'-2-1/2") does not add a 1/4" of opening.
   const baseW = cfg.isBi ? 96 : 78;
   const baseOpen = cfg.isBi ? 36 : 33;
-  // P singles are built on the stock header/pulley, which nets 1-1/2" under the published opening.
-  const pLoss = cfg.isP && !cfg.isBi ? 1.5 : 0;
-  return baseOpen + Math.floor(wIn - baseW) * 0.5 - pLoss;
+  return baseOpen + Math.floor(wIn - baseW) * 0.5;
 }
 function getOpenStr() {
   const cfg = getConfig();
@@ -9536,8 +9534,8 @@ function onQuoteFormUpdate(e) {
   if (name === 'wallOpeningW' || name === 'wallOpeningH' || name === 'config') applyWallOpening();
   updateAll();
 }
-// P packages: frame from the wall opening. Single: W = 2 × opening + 15" (3" over nominal so the
-// stock header nets the full opening), H = opening + 8" header. Bi-part add TBD — sized by Doortronix.
+// P packages: frame from the wall opening. Single: W = 2 × opening + 12" (standard clear-opening
+// formula), H = opening + 8" header. Bi-part add TBD — sized by Doortronix.
 const P_HEADER_IN = 8;
 function wallOpeningIn() {
   const w = parseFloat(fv('f_wo_w')), h = parseFloat(fv('f_wo_h'));
@@ -9547,7 +9545,7 @@ function applyWallOpening() {
   const cfg = getConfig();
   if (!cfg || !cfg.isP || cfg.isBi) return;
   const wo = wallOpeningIn();
-  if (wo.w) setFrameWidthIn(wo.w * 2 + 15);
+  if (wo.w) setFrameWidthIn(wo.w * 2 + 12);
   if (wo.h) setFrameHeightIn(wo.h + P_HEADER_IN);
 }
 document.getElementById('quoteForm').addEventListener('input', onQuoteFormUpdate);

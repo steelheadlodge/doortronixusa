@@ -955,7 +955,7 @@ function calcCutList() {
 
   notes.push('Stiles run full leaf height. Rail size on this list is the glass width between the stiles. Top rail, bottom rail, and muntin are cut to that rail size.');
   notes.push(stileAdd
-    ? 'Stile cut = header height − 9" + ' + formatInches(stileAdd) + ' (FSL / surface mount: +1/4"' + (stileAdd > 0.25 ? ', +1/2" no threshold' : '') + '). All stiles the same length.'
+    ? 'Stile cut = header height − 9" + ' + formatInches(stileAdd).replace(/^0 /, '') + ' (FSL / surface mount: +1/4"' + (stileAdd > 0.25 ? ', +1/2" no threshold' : '') + '). All stiles the same length.'
     : 'Stile cut = header height − 9". SX and SO stiles are the same length.');
   if (shopCuts) {
     notes.push('Header length is the beam between the jambs. Rod, narrow filler, stops, and crash bars use the production lengths. No astragal.');
@@ -965,6 +965,7 @@ function calcCutList() {
     notes.push('Medium-stile single production cuts are not on this list yet — narrow-stile single and bipart only.');
   }
   notes.push('Glass: two equal lites per leaf up to 8\u20320" header; above 8\u20320" the muntin holds at its 7\u20326" height and the top lite grows.');
+  if (W <= 84) notes.unshift('<strong>HEADER MOD REQUIRED: frame is 7\u20320" wide or less. Modify the header and pulley to get the published clear opening (' + (getClearOpeningStr() || '—') + ').</strong>');
 
   return { isSwing, frame, panels, glass: glassSizeRows(), meta: { W, frameH, Hhdr, transomH, railIn, stileW, finish, hasMuntin }, notes };
 }
@@ -1350,9 +1351,7 @@ function calcClearOpeningIn() {
   if (!cfg || wIn === null) return null;
   const baseW = cfg.isBi ? 96 : 78;
   const baseOpen = cfg.isBi ? 36 : 33;
-  // P singles are built on the stock header/pulley, which nets 1-1/2" under the published opening.
-  const pLoss = cfg.isP && !cfg.isBi ? 1.5 : 0;
-  return baseOpen + Math.floor(wIn - baseW) * 0.5 - pLoss;
+  return baseOpen + Math.floor(wIn - baseW) * 0.5;
 }
 function getClearOpeningStr() {
   const cfg = CONFIGS[ORDER.door.configKey];
