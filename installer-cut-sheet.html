@@ -484,6 +484,10 @@ function lockLabel() {
   if (hits.length) return hits.map(a => a.qty > 1 ? a.name + ' ×' + a.qty : a.name).join(', ');
   return 'Standard hooklock';
 }
+function noCrashBars() {
+  const v = ORDER && ORDER.door && ORDER.door.crashBars;
+  return v === false || /^none$/i.test(String(v || ''));
+}
 function isSwitchAddon(name) {
   return /rocker|key switch|knob switch|function switch/i.test(name || '');
 }
@@ -922,7 +926,7 @@ function calcCutList() {
     if (!cfg.isBi && narrow) {
       frame.push({ part: 'Horizontal glass stop', profile: d.doorGlassPrep || '1/4"', qty: (hasMuntin ? 3 : 2) * nPanels, len: railLen - 0.0625, note: 'Rail − 1/16"' });
     }
-    frame.push({ part: 'Crash bar', profile: '', qty: nPanels * 2, len: railLen + 2.375, note: 'Rail + 2-3/8", two per panel — sidelites on the exterior face, SX on the interior face' });
+    if (!noCrashBars()) frame.push({ part: 'Crash bar', profile: '', qty: nPanels * 2, len: railLen + 2.375, note: 'Rail + 2-3/8", two per panel — sidelites on the exterior face, SX on the interior face' });
   }
   const panelW = g.liteW + 2 * stileW;
   const stileTxt = stileW === 3.75 ? '3-3/4"' : '2-1/2"';
@@ -1169,7 +1173,7 @@ function renderSheet() {
     ['Sensors', slideSensorStr(d)],
     ['Hold beams', /none|no/i.test(d.holdBeams || '') ? 'NO HOLD BEAMS' : 'Included'],
     ['Glass prep', d.doorGlassPrep],
-    ['Crash bars', cfg.isP ? '2 per SX panel, interior face' : '2 per panel — ' + (cfg.isFBO ? 'SO' : 'O') + ' exterior face, SX interior face'],
+    ['Crash bars', noCrashBars() ? 'None' : cfg.isP ? '2 per SX panel, interior face' : '2 per panel — ' + (cfg.isFBO ? 'SO' : 'O') + ' exterior face, SX interior face'],
     ['Frame profile', sliderFrameFaceIn(d) === 2 ? '2" × 4-1/2" (1" glass)' : '1-3/4" × 4-1/2" (std)'],
     ['Threshold', d.threshold],
     ['Locking', lockLabel()],
@@ -3319,7 +3323,7 @@ function drawDoor() {
   // 1-3/16" onto the stiles on the face it mounts to. Sidelites mount on the
   // exterior (lap visible here); SX mount on the interior, so from the exterior
   // only the part behind the glass shows. Heights are bottom of door to bottom of bar.
-  {
+  if (!noCrashBars()) {
     const sxIdx = isP ? panels.map((_, i) => i)
       : isBi ? [1, 2]
       : [isLH ? 1 : 0];
