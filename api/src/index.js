@@ -396,7 +396,7 @@ async function updateMe(request, env, session) {
   const name = String(body.name || session.name).trim().slice(0, 80);
   const phone = String(body.phone || '').trim().slice(0, 40);
   await env.DB.prepare('UPDATE users SET name = ?, phone = ? WHERE id = ?').bind(name, phone, session.id).run();
-  if (body.company && String(body.company).trim().length >= 2) {
+  if (!session.isAdmin && body.company && String(body.company).trim().length >= 2) {
     await env.DB.prepare('UPDATE companies SET name = ? WHERE id = ?')
       .bind(String(body.company).trim().slice(0, 120), session.companyId).run();
   }
@@ -1056,6 +1056,33 @@ function publicUser(s) {
   };
 }
 
+async function factoryCompanyId(env) {
+  const named = await env.DB.prepare(
+    `SELECT id FROM companies WHERE name = 'Doortronix Inc' COLLATE NOCASE LIMIT 1`
+  ).first();
+  if (named) return named.id;
+  const first = await env.DB.prepare(
+    `SELECT company_id AS id FROM users WHERE is_admin = 1 ORDER BY id ASC LIMIT 1`
+  ).first();
+  return first?.id || null;
+}
+
+async function applyFactoryWorkspace(env, session) {
+  if (!session?.isAdmin) return session;
+  const id = await factoryCompanyId(env);
+  if (!id || id === session.companyId) return session;
+  const co = await env.DB.prepare(
+    'SELECT id, name, discount_pct, deposit_pct, self_serve FROM companies WHERE id = ?'
+  ).bind(id).first();
+  if (!co) return session;
+  session.companyId = co.id;
+  session.companyName = co.name;
+  session.discountPct = co.discount_pct;
+  session.depositPct = co.deposit_pct;
+  session.selfServe = co.self_serve;
+  return session;
+}
+
 async function getSession(request, env) {
   const token = bearerToken(request);
   if (!token) return null;
@@ -1072,7 +1099,7 @@ async function getSession(request, env) {
     await env.DB.prepare('DELETE FROM sessions WHERE token = ?').bind(token).run();
     return null;
   }
-  return {
+  return applyFactoryWorkspace(env, {
     id: row.id,
     email: row.email,
     name: row.name,
@@ -1083,7 +1110,7 @@ async function getSession(request, env) {
     depositPct: row.deposit_pct,
     selfServe: row.self_serve,
     isAdmin: !!row.is_admin,
-  };
+  });
 }
 
 async function loadSessionUser(env, userId) {
@@ -1092,7 +1119,7 @@ async function loadSessionUser(env, userId) {
             c.name AS company_name, c.discount_pct, c.deposit_pct, c.self_serve
      FROM users u JOIN companies c ON c.id = u.company_id WHERE u.id = ?`
   ).bind(userId).first();
-  return {
+  return applyFactoryWorkspace(env, {
     id: row.id,
     email: row.email,
     name: row.name,
@@ -1103,7 +1130,7 @@ async function loadSessionUser(env, userId) {
     depositPct: row.deposit_pct,
     selfServe: row.self_serve,
     isAdmin: !!row.is_admin,
-  };
+  });
 }
 
 async function bootstrapAdmin(request, env) {
@@ -1117,7 +1144,12 @@ async function bootstrapAdmin(request, env) {
   const email = normalizeEmail(body.email);
   const user = await env.DB.prepare('SELECT id FROM users WHERE email = ?').bind(email).first();
   if (!user) return json({ error: 'Create that login first, then bootstrap it.' }, 404, request);
-  await env.DB.prepare('UPDATE users SET is_admin = 1 WHERE id = ?').bind(user.id).run();
+  const factoryId = await factoryCompanyId(env);
+  if (factoryId) {
+    await env.DB.prepare('UPDATE users SET is_admin = 1, company_id = ? WHERE id = ?').bind(factoryId, user.id).run();
+  } else {
+    await env.DB.prepare('UPDATE users SET is_admin = 1 WHERE id = ?').bind(user.id).run();
+  }
   return json({ ok: true, email }, 200, request);
 }
 
