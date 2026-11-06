@@ -1710,10 +1710,10 @@ body.sheet-mode #plan-svg { background:#fff; }
         <div class="field" id="hold-beams-field">
           <label>Hold Beams</label>
           <div class="chip-group">
-            <input type="radio" name="holdBeams" id="hb_std" value="Included" checked>
-            <label for="hb_std">Included (std)</label>
-            <input type="radio" name="holdBeams" id="hb_none" value="None">
-            <label for="hb_none">No Hold Beams (no credit)</label>
+            <input type="radio" name="holdBeams" id="hb_none" value="None" checked>
+            <label for="hb_none">None (std)</label>
+            <input type="radio" name="holdBeams" id="hb_std" value="Included">
+            <label for="hb_std">Add Hold Beams (+$200)</label>
           </div>
         </div>
 
@@ -5120,8 +5120,8 @@ function loadDoorIntoForm(door) {
   } else if (door.swingSideliteWIn) {
     slWidthSetIds('sl_rwft', 'sl_rwin', door.swingSideliteWIn);
   }
-  const hbStd = document.getElementById('hb_std');
-  if (hbStd) hbStd.checked = true;
+  const hbNone = document.getElementById('hb_none');
+  if (hbNone) hbNone.checked = true;
   ['glazing','transom','transomGlassPrep','glassPrep','stileWidth','bottomRail','muntin','threshold','sensor','holdBeams','swingDir','swingHand','swingEnergy','swingStop','swingCrashIn','swingCrashOut','swingScan','swingApproach','swingHdrSafe','swingPlate','swingPlateLogo','swingPlateFinish','swingPlateWireless','swingPull','swingPushBar','swingSidelite','swingSideliteGlass'].forEach(name => {
     let v = door[name]; if (!v && v !== '0') return;
     if (name === 'sensor') v = normSensor(v);
@@ -5500,7 +5500,7 @@ async function submitAllDoors() {
            `  Width: ${d.widthStr} | Height: ${d.heightStr}\n` +
            `  Finish: ${d.glazing} | Glass Prep: ${d.glassPrep} | Threshold: ${d.threshold}\n` +
            swingLine +
-           `  Sensor: ${sensor}${d.holdBeams === 'None' ? ' | NO HOLD BEAMS' : ''} | Transom: ${d.transom === 'yes' ? 'Yes (+$250)' : 'No'} | Stile: ${stile} | Bottom Rail: ${rail}\n` +
+           `  Sensor: ${sensor}${d.holdBeams === 'Included' ? ' | HOLD BEAMS (+$' + HOLD_BEAMS_PRICE + ')' : ''} | Transom: ${d.transom === 'yes' ? 'Yes (+$250)' : 'No'} | Stile: ${stile} | Bottom Rail: ${rail}\n` +
            `  Muntin: ${d.muntin}${d.muntinAffs && d.muntinAffs.length ? ' @ ' + d.muntinAffs.map(a => a + '" AFF').join(' / ') : ''} | Add-ons: ${d.addons.join(', ') || 'None'}\n` +
            `  Est. Price: ${d.estimatedTotal ? '$'+d.estimatedTotal.toLocaleString() : 'Call for pricing'}` +
            (d.locationTags ? `\n  Locations: ${d.locationTags}` : '') +
@@ -6878,9 +6878,10 @@ function updateAddonVisibility() {
 // ── Price calculation ───────────────────────────────────────────────
 // Swing package prices are public contractor net, same as sliders.
 function pricingGated() { return false; }
+const HOLD_BEAMS_PRICE = 200;
 function noHoldBeams() {
   const cfg = getConfig();
-  return !!(cfg && !cfg.isSwing && !cfg.isStorefront && rv('holdBeams') === 'None');
+  return !!(cfg && !cfg.isSwing && !cfg.isStorefront && rv('holdBeams') !== 'Included');
 }
 // Older saved quotes carry "Standard (incl.)" / "Standard Optex (incl.)"; the i-oneXT is now the included sensor.
 function normSensor(s) {
@@ -6991,7 +6992,10 @@ function calcPrice() {
       lines.push({ label: 'Optex i-oneXT Sensor (std)', amount: 0 });
     }
   }
-  if (noHoldBeams()) lines.push({ label: 'No hold beams (no credit)', amount: 0 });
+  if (!cfg.isSwing && !cfg.isStorefront && !noHoldBeams()) {
+    total += HOLD_BEAMS_PRICE;
+    lines.push({ label: 'Hold beams', amount: HOLD_BEAMS_PRICE });
+  }
   if (cfg.isSwing) {
     lines.push({ label: 'Medium 3-3/4" stile', amount: 0 });
     lines.push({ label: 'Frame profile ' + getSwingFrameProfileStr(), amount: 0 });
@@ -7427,7 +7431,7 @@ function updateSpecSummary() {
       ['Sidelites', (getSwingSideliteLoc() === 'none' && !cfg.isTwin) ? 'None' : getSwingSideliteStr() + ' · ' + getSwingSideliteProfileStr()],
     ] : []),
     ...(cfg && !cfg.isSwing && !cfg.isStorefront ? [['Sensor', normSensor(rv('sensor'))]] : []),
-    ...(cfg && !cfg.isSwing && !cfg.isStorefront ? [['Hold Beams', noHoldBeams() ? 'None (no credit)' : 'Included']] : []),
+    ...(cfg && !cfg.isSwing && !cfg.isStorefront ? [['Hold Beams', noHoldBeams() ? 'None' : 'Added (+$' + HOLD_BEAMS_PRICE + ')']] : []),
     ['Transom', rv('transom') === 'yes' ? `Yes (+$250)${ftthStr && ftthStr !== '—' ? ' — overall ' + ftthStr : ''}` : 'No'],
     ['Frame Width', getWidthStr() + (cfg && cfg.isSwing && (getSwingSideliteLoc() !== 'none' || cfg.isTwin) ? ' door · ' + inToStr(getSwingOverallIn()) + ' overall' : '')],
     ['Header Height', getHeightStr()],
@@ -9702,7 +9706,7 @@ document.getElementById('quoteForm').addEventListener('submit', async function(e
       : ((rv('muntin') || '2" Muntin (std)') + (swingMuntinCount() ? ' @ ' + (cfg && cfg.isSwing ? getSwingMuntinAffs() : [getSliderMuntinAffIn()]).map(a => (cfg && cfg.isSwing ? a + '"' : fmtInches(a)) + ' AFF').join(' / ') : '')),
     threshold: cfg && cfg.isStorefront ? '—' : rv('threshold'),
     sensor: cfg && (cfg.isStorefront || cfg.isSwing) ? '—' : normSensor(rv('sensor')),
-    holdBeams: (cfg && !cfg.isSwing && !cfg.isStorefront) ? (noHoldBeams() ? 'None (no credit)' : 'Included') : 'N/A',
+    holdBeams: (cfg && !cfg.isSwing && !cfg.isStorefront) ? (noHoldBeams() ? 'None' : 'Added (+$' + HOLD_BEAMS_PRICE + ')') : 'N/A',
     transom: (cfg && cfg.isStorefront) ? 'No' : (rv('transom') === 'yes' ? 'Yes' : 'No'),
     sfGlass: cfg && cfg.isStorefront ? storefrontGlassStr() : '',
     sfVerticals: cfg && cfg.isStorefront ? getStorefrontVerticals() : 0,
